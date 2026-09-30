@@ -50,17 +50,26 @@ const parseRequested = (requested: string | string[]) => {
  * For each requested locale, in order: an exact match, then the locale with
  * its subtags dropped one at a time (`pt-BR` → `pt`), then any supported
  * locale of the same language (`pt-PT` → `pt-BR`). Only when no requested
- * locale matches at all does `fallback` apply.
+ * locale matches at all does `fallback` apply; without one, the result is
+ * `undefined`, so a caller can tell "nothing matched" from a real match.
  */
-export const negotiateLocale = ({
-  requested,
-  supported,
-  fallback,
-}: {
+export function negotiateLocale(args: {
   requested?: string | string[] | null;
   supported: string[];
   fallback: string;
-}): string => {
+}): string;
+export function negotiateLocale(args: {
+  requested?: string | string[] | null;
+  supported: string[];
+  fallback?: undefined;
+}): string | undefined;
+export function negotiateLocale(args: {
+  requested?: string | string[] | null;
+  supported: string[];
+  fallback?: string;
+}): string | undefined {
+  const { requested, supported, fallback } = args;
+
   if (!requested) {
     return fallback;
   }
@@ -93,4 +102,4 @@ export const negotiateLocale = ({
   }
 
   return fallback;
-};
+}

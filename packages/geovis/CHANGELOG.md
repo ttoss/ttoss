@@ -3,6 +3,354 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.25.0 (2026-09-30)
+
+- Feat/geovis workspace layout (#1201) ([22e2501](https://github.com/ttoss/ttoss/commit/22e2501eb886c16e303f23041b6cc5fa80512850)), closes [#1201](https://github.com/ttoss/ttoss/issues/1201)
+- Feat geovis prd 002 ai operation surface (#1140) ([f6fd35a](https://github.com/ttoss/ttoss/commit/f6fd35a7014887eaf0fad549f23bd2b9b7f0ca6e)), closes [#1140](https://github.com/ttoss/ttoss/issues/1140)
+- Feat geovis prd-001 repairable errors (#1132) ([884a417](https://github.com/ttoss/ttoss/commit/884a417bf2da1f2c50eae69df6281c2bf7c071b3)), closes [#1132](https://github.com/ttoss/ttoss/issues/1132)
+
+### Bug Fixes
+
+- **geovis:** reconcile maplibre layer paint order to spec.layers on u… ([#1195](https://github.com/ttoss/ttoss/issues/1195)) ([d9d82d1](https://github.com/ttoss/ttoss/commit/d9d82d1911c87d69d805eefcc98593e6a5dcdef8)), closes [#1129](https://github.com/ttoss/ttoss/issues/1129)
+- **geovis:** stop dropping spec updates while the style is still parsing ([#1239](https://github.com/ttoss/ttoss/issues/1239)) ([47069c3](https://github.com/ttoss/ttoss/commit/47069c37a502579b3d2466c85e84ffeb139f2fcc))
+- **geovis:** use absolute ADR URLs in README to unblock docs build ([#1158](https://github.com/ttoss/ttoss/issues/1158)) ([07cfb2a](https://github.com/ttoss/ttoss/commit/07cfb2ae640a0c5b500b49ddcc3b2194ad373f94))
+
+### Features
+
+- **eslint-config:** enforce the quality metrics ESLint can, drop the config that does nothing ([#1211](https://github.com/ttoss/ttoss/issues/1211)) ([5673a18](https://github.com/ttoss/ttoss/commit/5673a1817b104a403466d07ac2ecd589bc4ddd49)), closes [ttoss/i18n-cli#build-config](https://github.com/ttoss/i18n-cli/issues/build-config)
+- **geovis:** internal auto fit-to-data camera centering in @ttoss/geovis ([#1218](https://github.com/ttoss/ttoss/issues/1218)) ([aead868](https://github.com/ttoss/ttoss/commit/aead868b86326becce3fdfad7229a8e29cb09dce))
+- **geovis-workspace:** add a color-ramp control to the settings zone ([#1245](https://github.com/ttoss/ttoss/issues/1245)) ([87796e8](https://github.com/ttoss/ttoss/commit/87796e8d4c631c1ce6701f4effd5c285356d5698))
+- **geovis-workspace:** tab-based preview sidebar with time-lapse tim… ([#1200](https://github.com/ttoss/ttoss/issues/1200)) ([9880b1c](https://github.com/ttoss/ttoss/commit/9880b1cd5cf80857cdc5a198415cd25e7ead4ca1))
+- **geovis, geovis-workspace:** add cursor control, shouldOpen guard,… ([#1147](https://github.com/ttoss/ttoss/issues/1147)) ([92136f8](https://github.com/ttoss/ttoss/commit/92136f8aba7928617b05921722a4691c55ba293b))
+- **geovis:** close validateSpec coverage gaps for golden test set ([#1250](https://github.com/ttoss/ttoss/issues/1250)) ([d2129f9](https://github.com/ttoss/ttoss/commit/d2129f94f033fef9bcb24005e3171e302d4dc070))
+- **geovis:** pin icon images and a "Ver mais" panel for long layer l… ([#1264](https://github.com/ttoss/ttoss/issues/1264)) ([287e879](https://github.com/ttoss/ttoss/commit/287e8796653b65469ae60e7b7f63cd42d9476f65))
+- **geovis:** support interaction and labels on vector-tile layers ([#1234](https://github.com/ttoss/ttoss/issues/1234)) ([f7baf24](https://github.com/ttoss/ttoss/commit/f7baf24a06c358b6ad5fb0a9348174931449ec60))
+
+### BREAKING CHANGES
+
+- `config.controls`, `config.leftSidebar.menus`,
+  `config.leftSidebarPreview`, `LayerListControls`, `onLayerVisibilityChange`,
+  and the `GeovisWorkspaceMenu`/`GeovisWorkspaceControls` types are removed.
+  Configure the left sidebar via `config.leftSidebar.sections`.
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+- feat(geovis): crossfade transition, prototype legend/control restyle
+
+Add a `crossfade` layer transition and align the legend and layer control
+with the design prototype.
+
+- Crossfade: on a geojson `data` change a shadow layer holds the NEW data and
+  fades in while the real layer keeps the OLD data and fades out, avoiding the
+  new-source parse flash. The fade only begins once the shadow source has
+  parsed, and the shadow is painted with the layer's `mapData` feature-state so
+  new points fade in already coloured (no white-then-coloured pop).
+- Legend: prototype card styling with an optional icon chip, footer value, and
+  a `position` offset that animates so the legend can slide clear of a panel.
+- Layer control: prototype trigger button with an optional `control.icon` and a
+  count badge. New spec fields land in `schema.json` and the `types`.
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+- chore(storybook): flatten geovis story titles and add crossfade story
+
+Drop the `Basemap`/`Fixtures`/`View` subfolders so every geovis story sits at
+the top level of the sidebar, and refresh the crossfade demo story.
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+- feat(geovis-workspace): add appearance card|bare option
+
+`config.appearance` controls the workspace container framing: `'card'`
+(default) keeps the border/radius/background for standalone use (e.g.
+Storybook); `'bare'` drops the border and radius so the workspace fills its
+container edge-to-edge when embedded in an app that owns the framing. Removes
+the need for consumers to strip the card chrome with brittle CSS.
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+- to validateSpec's return shape, accepted by ADR-0001
+  (pre-1.0). @ttoss/geovis-workspace does not consume validateSpec, so
+  no dependent changes were needed.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01UPEHrtopKmL6s9RQWmdgHR
+
+- feat(geovis): complete PRD-001 phases 2-5 (repair, runtime, capabilities, versioning)
+
+Phase 2: round-trip test proving every D3 repair produces a spec that
+re-validates cleanly.
+
+Phase 3: runtime.update/applyPatch validate before mutating and return
+GeoVisResult; the adapter is never called on failure and spec/result stay
+at their last accepted value. GeoVisProvider consumes results through a
+new `result` context field, retiring PolicyViolation/policyViolations —
+policy violations now flow through the same GeoVisIssue shape as warnings
+on a resolved result.
+
+Phase 4: CapabilitySet becomes the ADR-0002 structured tree (sourceTypes,
+layerGeometries, dataFeatures.featureState, viewFeatures), grounded in
+what MapLibreAdapter actually implements and tests actually exercise.
+validateSpec accepts the active adapter's capabilities and emits
+unsupported-\* issues with repair straight from the tree; unsupported specs
+are rejected before mount.
+
+Phase 5: audited every declared capability against the test suite (one
+raster-geometry gap found and closed rather than hidden) and added spec
+schema versioning (SPEC_SCHEMA_VERSION, schemaVersion field,
+invalid-schema-version issue).
+
+Two gaps found along the way, fixed in place: layers[].sourceId had no
+referential check at all (a genuine "broken reference" hole), and wiring
+real validation into the runtime exposed that a top-level `id` field used
+throughout tests/stories was never in the schema/type (additive fix,
+matches the existing title/description convention).
+
+Split validateSpec.ts and createRuntime.ts per the monorepo's
+max-lines/max-lines-per-function rules once the new logic pushed them
+over the limit.
+
+Updated the InvalidRawCountChoropleth story to read useGeoVis().result
+instead of the retired policyViolations, and fixed a latent bug where the
+fixture's policy metadata never reached the spec the story actually
+builds — the warning banner could never have rendered before this.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01UPEHrtopKmL6s9RQWmdgHR
+
+- Add implementation plan for PRD-002 AI Operation Surface
+
+Six tracer-bullet phases covering the closed action vocabulary
+(set-map-data, set-filter, toggle-layer, select-feature, set-view-preset),
+dispatch() validation, the action log, and an incrementally-built
+context packet covering map type, sources/layers, legends, data
+bindings, filters, view presets, selection, allowed actions, and the
+last structured result.
+
+- feat(geovis): add dispatch() core, action log, and toggle-layer (PRD-002 phase 1)
+
+Adds GeoVisRuntime.dispatch()/getActionLog()/getContextPacket() (ADR-0003,
+ADR-0004) and the first action, toggle-layer, compiled to the existing
+SpecPatch mechanism.
+
+Non-trivial decision made without synchronous confirmation (AskUserQuestion
+failed twice in this session, no interactive user available): toggle-layer
+needed a way to patch layer.visible, which did not exist before (the only
+replace SpecPatch handled paint properties). Extended the existing
+mechanism -- applyLayerPatchToSpec (createRuntime.ts) and applyLayerPatch
+(patchDispatch.ts) now also accept a 3-part layer.<id>.visible path,
+re-syncing outline/click-anchor companion layers -- rather than routing
+toggle-layer through a full update() re-mount, honoring ADR-0003's rule that
+actions must not require re-emitting the whole spec. Flagged for review.
+
+Also adds the unknown-layer-id issue code (mismatch category, same
+allowed-values repair shape as unknown-map-data-id/unknown-source).
+
+Coverage threshold raised to match (never decreases per package convention).
+
+- feat(geovis): add select-feature and runtime-level selection (PRD-002 phase 2)
+
+Promotes selection out of GeoVisClickContext into the framework-agnostic
+runtime (getSelection()), so dispatch({type:'select-feature'}) and a human
+click share one source of truth. useMapClick/GeoVisClickContext now dispatch
+select-feature instead of mutating feature-state directly; the MapLibre
+adapter gains setSelection(), consolidating the swap logic previously
+duplicated in the click hook into adapters/maplibre/selection.ts.
+getContextPacket() gains `selection`.
+
+Two non-trivial decisions made without synchronous confirmation
+(AskUserQuestion keeps failing with no interactive user available in this
+session) -- flagged for review:
+
+1. Dropped the needsSelectedState gate that used to limit
+   feature-state.selected writes to layers with selectedPaint/clickAnchor.
+   Every click now dispatches select-feature unconditionally; the write is
+   inert for layers without a companion layer consuming it (verified no
+   other consumer reads feature-state.selected), so this is not expected to
+   be user-visible, but it is a behavior change from before.
+
+2. Found and fixed a real gap from Phase 1: GeoVisContextValue had no
+   `dispatch`, so a React consumer calling `useGeoVis().runtime.dispatch(...)`
+   directly for a spec-changing action (toggle-layer) would go stale --
+   `committed.spec`/`result` never re-synced, unlike applyPatch/setView.
+   Added `dispatch` to GeoVisContextValue/GeoVisProvider, mirroring
+   applyPatch's existing sync pattern.
+
+Also adds the unknown-feature-id issue code (mismatch category), only
+checked when the target layer has mapDataId (cheap: rows already loaded).
+
+Coverage threshold raised to match (never decreases per package convention).
+
+- feat(geovis): add set-map-data action (PRD-002 phase 3)
+
+dispatch({type:'set-map-data', layerId, mapDataId}) rebinds which mapData
+entry drives a layer's styling -- "swap the joined dataset" (ADR-0003).
+Compiles to a new top-level layer.<id>.mapDataId SpecPatch (extends the
+same replace mechanism toggle-layer's visible field added in Phase 1, now
+generalized to a small field->applier lookup table on both the runtime and
+MapLibre adapter sides to keep dispatch complexity flat as fields grow).
+
+Only the action-level layerId check is bespoke; an invalid mapDataId or a
+source-scope conflict is caught by the same validateSpec pass every patch
+already goes through -- no duplicated referential logic.
+
+On the live map, rebinding only recomputes the layer's paint
+(reapplyLayerPaint, extracted from syncSourcesAndLayers' upsertLayers for
+reuse) -- no feature-state write needed, since every mapData entry's rows
+are already resident on their source regardless of which layer points at
+it today (reapplyAllMapData applies all of them unconditionally).
+
+getContextPacket().layers[] gains mapDataId/dimension; allowedActions
+includes set-map-data once the spec has a layer and a mapData entry.
+
+Coverage threshold raised to match (never decreases per package convention).
+
+- feat(geovis): add set-filter action and layer.filter spec concept (PRD-002 phase 4)
+
+Introduces the plan's first genuinely new spec concept: VisualizationLayer.filter
+({property, operator, value}), compiled to the engine's native filter expression
+via a new adapters/maplibre/layerFilter.ts translation module. Reads
+feature.properties[property] directly -- the same access path propertyName
+already uses, not the mapData-joined feature-state value.
+
+Gated by a new CapabilitySet.dataFeatures.filter (declared ['geojson'] on the
+MapLibre adapter, mirroring featureState's "declared means tested" scoping,
+even though MapLibre's native filter works on any source type -- the narrower
+declaration reflects what's fixture-tested today). set-filter is the first
+producer of the unsupported-data-feature code, reserved since PRD-001.
+
+dispatch({type:'set-filter', layerId, filter}) extends the layer.<id>.<field>
+replace mechanism (now a 3-entry lookup table on both runtime and adapter
+sides) alongside visible/mapDataId. filter: null clears the filter -- compiled
+to patch.value: null specifically, since value: undefined is treated as a
+no-op by the existing applyPatchToRuntime guard.
+
+Full update() now also syncs an existing layer's native filter via
+map.setFilter (upsertLayers previously never touched this field for
+already-mounted layers), and toMaplibreLayer sets it at mount/add time.
+
+getContextPacket().layers[] gains filter; allowedActions gains set-filter,
+now gated on both spec shape and the active adapter's declared capability
+(buildContextPacket's signature grows a capabilities parameter).
+
+Coverage threshold raised to match (never decreases per package convention).
+
+- feat(geovis): add set-view-preset action (PRD-002 phase 5, completes v1 vocabulary)
+
+Introduces VisualizationSpec.viewPresets (ViewPreset[]: {id, label?, view}) --
+named camera positions the AI (or a UI control) can jump to by id, bounded to
+what the application actually curated instead of raw coordinates an AI would
+have to invent. Factored the inline view schema into $defs/ViewState so both
+spec.view and viewPresets[].view share one definition.
+
+dispatch({type:'set-view-preset', presetId}) resolves presetId against
+spec.viewPresets and compiles to the existing runtime.setView() mechanism --
+no new engine code. This is a third kind of action outcome (ActionOutcome
+gains setViewOptions, alongside patch and selection), reusing setRuntimeView
+directly rather than duplicating its camera-move/spec.view-sync logic. Only
+center/zoom/pitch/bearing carry over; view.projection does not -- setView()'s
+imperative camera move never supported it, a pre-existing limitation this
+action doesn't attempt to fix.
+
+Adds the unknown-view-preset issue code (mismatch), repair listing declared
+preset ids -- never the presets' raw view values, consistent with the packet
+never handing back coordinates either.
+
+getContextPacket() gains viewPresets ({id, label} only); allowedActions gains
+set-view-preset once the spec declares at least one entry.
+
+This completes the plan's v1 action vocabulary: toggle-layer, select-feature,
+set-map-data, set-filter, set-view-preset all implemented and dispatchable.
+
+Coverage threshold raised to match (never decreases per package convention).
+
+- docs(geovis): demote SpecPatch, close out PRD-002 plan (phase 6)
+
+Reclassifies SpecPatch/applyPatch in README and TSDoc (GeoVisRuntime,
+GeoVisContextValue) as the low-level escape hatch dispatch() supersedes for
+anything expressible as one of its five actions -- mirrors getNativeInstance's
+"available, not primary" framing. README's Action log section now says
+explicitly that undo/redo is not built on the log yet.
+
+Non-trivial scoping decision, flagged for review (AskUserQuestion unavailable
+throughout this session): the plan's Phase 6 called for migrating
+useBoundaryToggle to dispatch(). On inspection it's a pre-runtime
+spec-composition hook (derives a VisualizationSpec for the caller to pass
+into <GeoVisProvider>) with no access to a live runtime -- dispatch() only
+exists on one. Migrating it would mean a breaking redesign of its public API,
+not a convergence. Left as-is; only useMapClick/useGeoVisClick (Phase 2)
+actually fit the "runtime-mutating hook" pattern this Should item targets.
+Documented in the plan's new Implementation notes section, along with every
+other correction found while implementing phases 1-5.
+
+Marks PRD-002 status as implemented, resolves its "exact v1 action
+vocabulary" open question, and updates the roadmap's "Where we are" to
+reflect R2 as built.
+
+No functional code changes -- tests/type-check unchanged at 711 passing.
+
+- feat(geovis): remove optional id property from VisualizationSpec
+
+- test(geovis): remove id property in GeoVisCanvas and fitBoundsToBboxLifeCycle tests
+
+- test(geovis): update validateSpec assertion to check status instead of valid property
+
+- docs: clarify context value sync and adjust coverage thresholds for prd-002
+- to validateSpec's return shape, accepted by ADR-0001
+  (pre-1.0). @ttoss/geovis-workspace does not consume validateSpec, so
+  no dependent changes were needed.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01UPEHrtopKmL6s9RQWmdgHR
+
+- feat(geovis): complete PRD-001 phases 2-5 (repair, runtime, capabilities, versioning)
+
+Phase 2: round-trip test proving every D3 repair produces a spec that
+re-validates cleanly.
+
+Phase 3: runtime.update/applyPatch validate before mutating and return
+GeoVisResult; the adapter is never called on failure and spec/result stay
+at their last accepted value. GeoVisProvider consumes results through a
+new `result` context field, retiring PolicyViolation/policyViolations —
+policy violations now flow through the same GeoVisIssue shape as warnings
+on a resolved result.
+
+Phase 4: CapabilitySet becomes the ADR-0002 structured tree (sourceTypes,
+layerGeometries, dataFeatures.featureState, viewFeatures), grounded in
+what MapLibreAdapter actually implements and tests actually exercise.
+validateSpec accepts the active adapter's capabilities and emits
+unsupported-\* issues with repair straight from the tree; unsupported specs
+are rejected before mount.
+
+Phase 5: audited every declared capability against the test suite (one
+raster-geometry gap found and closed rather than hidden) and added spec
+schema versioning (SPEC_SCHEMA_VERSION, schemaVersion field,
+invalid-schema-version issue).
+
+Two gaps found along the way, fixed in place: layers[].sourceId had no
+referential check at all (a genuine "broken reference" hole), and wiring
+real validation into the runtime exposed that a top-level `id` field used
+throughout tests/stories was never in the schema/type (additive fix,
+matches the existing title/description convention).
+
+Split validateSpec.ts and createRuntime.ts per the monorepo's
+max-lines/max-lines-per-function rules once the new logic pushed them
+over the limit.
+
+Updated the InvalidRawCountChoropleth story to read useGeoVis().result
+instead of the retired policyViolations, and fixed a latent bug where the
+fixture's policy metadata never reached the spec the story actually
+builds — the warning banner could never have rendered before this.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01UPEHrtopKmL6s9RQWmdgHR
+
+- fix(geovis): update test to check for resolved status instead of valid
+
+- test(geovis-workspace): adjust coverage thresholds to realistic values
+
+- test(geovis): adjust coverage thresholds to realistic values
+
 ## [0.24.1](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.24.0...@ttoss/geovis@0.24.1) (2026-09-28)
 
 **Note:** Version bump only for package @ttoss/geovis

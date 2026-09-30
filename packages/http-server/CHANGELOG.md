@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.11.0 (2026-09-30)
+
+### Features
+
+- **http-server:** add toHttpError and applyHttpErrorHeaders ([#1178](https://github.com/ttoss/ttoss/issues/1178)) ([5cfb144](https://github.com/ttoss/ttoss/commit/5cfb144712ba40d0d16394d39393bc58ba41923c))
+- i18n boundary adapters (appsync-api, http-server, MCP) and LocalizedText ([#1266](https://github.com/ttoss/ttoss/issues/1266)) ([297b436](https://github.com/ttoss/ttoss/commit/297b436523c11809746ee56f8abd6a0463767935))
+- **ids,postgresdb,http-server,http-server-mcp-openapi:** public ids, atomically, in-process dispatch and full tool schemas ([#1282](https://github.com/ttoss/ttoss/issues/1282)) ([274114c](https://github.com/ttoss/ttoss/commit/274114c689488d51c03f2240b932f860d7eb72ac))
+
+## [0.10.4](https://github.com/ttoss/ttoss/compare/@ttoss/http-server@0.10.3...@ttoss/http-server@0.10.4) (2026-09-29)
+
+**Note:** Version bump only for package @ttoss/http-server
+
+## [0.10.3](https://github.com/ttoss/ttoss/compare/@ttoss/http-server@0.10.2...@ttoss/http-server@0.10.3) (2026-09-29)
+
+**Note:** Version bump only for package @ttoss/http-server
+
 ## [0.10.2](https://github.com/ttoss/ttoss/compare/@ttoss/http-server@0.10.1...@ttoss/http-server@0.10.2) (2026-09-28)
 
 **Note:** Version bump only for package @ttoss/http-server

@@ -73,6 +73,8 @@ export const extractBodyProps = (args: {
   oneOf?: unknown[];
   anyOf?: unknown[];
   allOf?: unknown[];
+  /** The property's whole schema, with every `$ref` inlined. */
+  schema: Record<string, unknown>;
 }> => {
   const toArgName = args.toArgName ?? snakeToCamel;
   const bodySchema = resolveBodySchema(args);
@@ -107,6 +109,7 @@ export const extractBodyProps = (args: {
       oneOf: Array.isArray(val.oneOf) ? val.oneOf : undefined,
       anyOf: Array.isArray(val.anyOf) ? val.anyOf : undefined,
       allOf: Array.isArray(val.allOf) ? val.allOf : undefined,
+      schema: value as Record<string, unknown>,
     };
   });
 };

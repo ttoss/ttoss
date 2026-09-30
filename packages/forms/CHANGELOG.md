@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.50.0 (2026-09-30)
+
+### Bug Fixes
+
+- **components:** write the NotificationsMenu and InstallPwa sources in English ([#1268](https://github.com/ttoss/ttoss/issues/1268)) ([7bf67c6](https://github.com/ttoss/ttoss/commit/7bf67c6b2462ffcc295126e97065150cf0bd4059))
+
+### Features
+
+- **components:** make the date picker follow the I18nProvider locale ([#1275](https://github.com/ttoss/ttoss/issues/1275)) ([d877468](https://github.com/ttoss/ttoss/commit/d8774686b39aa7b1f45df282fbc65ced4a9c6197)), closes [#1262](https://github.com/ttoss/ttoss/issues/1262)
+- **eslint-config:** enforce the quality metrics ESLint can, drop the config that does nothing ([#1211](https://github.com/ttoss/ttoss/issues/1211)) ([5673a18](https://github.com/ttoss/ttoss/commit/5673a1817b104a403466d07ac2ecd589bc4ddd49)), closes [ttoss/i18n-cli#build-config](https://github.com/ttoss/i18n-cli/issues/build-config)
+- explicit ids in \*.persisted.messages files, and pt-BR for components, forms, react-auth-core ([#1267](https://github.com/ttoss/ttoss/issues/1267)) ([6333695](https://github.com/ttoss/ttoss/commit/63336959e3e06e8e0ba9d244291bc897440c74e3))
+- **forms:** render Zod errors in the current locale ([#1272](https://github.com/ttoss/ttoss/issues/1272)) ([2f7579e](https://github.com/ttoss/ttoss/commit/2f7579e67b29f57bc68a48058d8618ee61361e61)), closes [#1262](https://github.com/ttoss/ttoss/issues/1262)
+- i18n Phase 0 + Phase 1 — @ttoss/i18n-core, multi-locale ttoss-i18n, canonical id pattern ([#1265](https://github.com/ttoss/ttoss/issues/1265)) ([4533535](https://github.com/ttoss/ttoss/commit/4533535869f543724ef170929e99ae723b3efb70)), closes [#1262](https://github.com/ttoss/ttoss/issues/1262) [#1056](https://github.com/ttoss/ttoss/issues/1056) [#1056](https://github.com/ttoss/ttoss/issues/1056)
+
+## [0.49.2](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.49.1...@ttoss/forms@0.49.2) (2026-09-29)
+
+**Note:** Version bump only for package @ttoss/forms
+
+## [0.49.1](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.49.0...@ttoss/forms@0.49.1) (2026-09-29)
+
+**Note:** Version bump only for package @ttoss/forms
+
 # [0.49.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.48.0...@ttoss/forms@0.49.0) (2026-09-28)
 
 ### Features

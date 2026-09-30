@@ -5,6 +5,7 @@ import {
   extractBodyProps,
   extractPinnedBody,
 } from './body';
+import { buildFullInputSchema } from './fullSchema';
 import {
   argNameMapper,
   collectServerManagedParameters,
@@ -49,6 +50,12 @@ export const getJsonSchemaType = (
 
 const sanitizeDescription = (description: string | undefined): string => {
   return (description || '').replace(/'/g, "\\'").replace(/\n/g, ' ').trim();
+};
+
+const defaultDescribe: NonNullable<OpenApiToToolsOptions['describe']> = ({
+  operation,
+}) => {
+  return sanitizeDescription(operation.description);
 };
 
 /**
@@ -179,12 +186,15 @@ export const buildInputSchema = (
       }),
   ];
 
+  // Path params first and body props last, so a later one wins a name clash.
   const properties: Record<string, JsonSchemaProperty> = {};
-  for (const param of allParams) {
-    properties[param.argName] =
-      'description' in param
-        ? (normalizeNullable(buildTypedProperty(param)) as JsonSchemaProperty)
-        : { type: 'string', description: '' }; // path param
+  for (const param of modelPathParams) {
+    properties[param.argName] = { type: 'string', description: '' };
+  }
+  for (const param of [...modelQueryParams, ...bodyProps]) {
+    properties[param.argName] = normalizeNullable(
+      buildTypedProperty(param)
+    ) as JsonSchemaProperty;
   }
 
   // `required` is omitted rather than set to `undefined`: JSON has no
@@ -196,6 +206,46 @@ export const buildInputSchema = (
     properties,
     ...(requiredFields.length > 0 ? { required: requiredFields } : {}),
   };
+};
+
+const SUPPORTED_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
+
+/** The tool description, from `options.describe` or the default. */
+const describeOperation = (args: {
+  options: ResolvedToolOptions;
+  operation: OperationSpec;
+  /** Uppercase HTTP method. */
+  method: string;
+  pathTemplate: string;
+}): string => {
+  const { options, operation, method, pathTemplate } = args;
+
+  return (options.describe ?? defaultDescribe)({
+    operation,
+    method,
+    pathTemplate,
+  });
+};
+
+/** The `inputSchema` at the detail {@link OpenApiToToolsOptions.schemaDetail} asks for. */
+const selectInputSchema = (args: {
+  schemaDetail: ResolvedToolOptions['schemaDetail'];
+  pathParams: ReturnType<typeof extractPathParams>;
+  queryParams: ReturnType<typeof extractQueryParams>;
+  bodyProps: ReturnType<typeof extractBodyProps>;
+}): JsonObjectSchema => {
+  if (args.schemaDetail !== 'full') {
+    return buildInputSchema(args.pathParams, args.queryParams, args.bodyProps);
+  }
+
+  return buildFullInputSchema({
+    // A path parameter is always required: OpenAPI requires `required: true`.
+    pathParams: args.pathParams.map((param) => {
+      return { ...param, required: true };
+    }),
+    queryParams: args.queryParams,
+    bodyProps: args.bodyProps,
+  });
 };
 
 /** Collects every `x-` prefixed extension declared on the operation. */
@@ -229,13 +279,11 @@ export const processOperation = (args: {
   }>;
 }): ToolDefinition | null => {
   const httpMethod = args.method.toUpperCase();
-  if (!['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].includes(httpMethod)) {
-    return null;
-  }
-
-  if (!args.operation.operationId) return null;
-
-  if (args.operation[args.options.excludeExtension]) {
+  if (
+    !SUPPORTED_METHODS.includes(httpMethod) ||
+    !args.operation.operationId ||
+    args.operation[args.options.excludeExtension]
+  ) {
     return null;
   }
 
@@ -251,21 +299,15 @@ export const processOperation = (args: {
   const { documents, serverManagedExtension } = args.options;
   const toArgName = argNameMapper(args.options.argumentNames);
 
-  const pathParams = extractPathParams({
+  const paramArgs = {
     parameters,
     spec: args.spec,
     documents,
     toArgName,
     serverManagedExtension,
-  });
-
-  const queryParams = extractQueryParams({
-    parameters,
-    spec: args.spec,
-    documents,
-    toArgName,
-    serverManagedExtension,
-  });
+  };
+  const pathParams = extractPathParams(paramArgs);
+  const queryParams = extractQueryParams(paramArgs);
 
   const bodyArgs = {
     requestBody: args.operation.requestBody,
@@ -275,7 +317,12 @@ export const processOperation = (args: {
   };
   const bodyProps = extractBodyProps({ ...bodyArgs, toArgName });
 
-  const inputSchema = buildInputSchema(pathParams, queryParams, bodyProps);
+  const inputSchema = selectInputSchema({
+    schemaDetail: args.options.schemaDetail,
+    pathParams,
+    queryParams,
+    bodyProps,
+  });
 
   const serverManagedParameters = collectServerManagedParameters({
     pathParams,
@@ -285,7 +332,7 @@ export const processOperation = (args: {
 
   return {
     name: toolName,
-    description: sanitizeDescription(args.operation.description),
+    description: describeOperation({ ...args, method: httpMethod }),
     inputSchema,
     method: httpMethod,
     pathTemplate: args.pathTemplate,
@@ -348,6 +395,8 @@ const resolveOptions = (
     serverManagedExtension:
       options.serverManagedExtension ?? DEFAULT_SERVER_MANAGED_EXTENSION,
     argumentNames: options.argumentNames ?? 'camelCase',
+    schemaDetail: options.schemaDetail,
+    describe: options.describe,
     documents: options.documents,
   };
 };

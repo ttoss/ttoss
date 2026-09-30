@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.16.0 (2026-09-30)
+
+### Bug Fixes
+
+- **auth-core:** use absolute docs URL for the http-server-auth cross-link ([#1173](https://github.com/ttoss/ttoss/issues/1173)) ([a59a316](https://github.com/ttoss/ttoss/commit/a59a31676a15c3e947016b84eae451ca0b6d307d))
+- **auth:** hash client secrets at rest instead of storing plaintext ([#1182](https://github.com/ttoss/ttoss/issues/1182)) ([8f7b24e](https://github.com/ttoss/ttoss/commit/8f7b24ea7c74779d5ddf52d41f05fa0e075349da))
+- **auth:** serve RFC 9728 protected-resource metadata at the path-derived location, from one shared primitive ([#1212](https://github.com/ttoss/ttoss/issues/1212)) ([174bfca](https://github.com/ttoss/ttoss/commit/174bfca15dfd7c5d5048f5fd87a5da81faf37189))
+
+### Features
+
+- **auth-core:** add configurable email and password auth flows ([#1172](https://github.com/ttoss/ttoss/issues/1172)) ([5e75701](https://github.com/ttoss/ttoss/commit/5e7570145fdeafea947c3a78dbb00132b8f3744c))
+- **auth-core:** cap how often one address can be mailed ([#1175](https://github.com/ttoss/ttoss/issues/1175)) ([ef5ea08](https://github.com/ttoss/ttoss/commit/ef5ea08b9e3fce60b9c1861df4ac0c5a3ab88cc7))
+- **eslint-config:** enforce the quality metrics ESLint can, drop the config that does nothing ([#1211](https://github.com/ttoss/ttoss/issues/1211)) ([5673a18](https://github.com/ttoss/ttoss/commit/5673a1817b104a403466d07ac2ecd589bc4ddd49)), closes [ttoss/i18n-cli#build-config](https://github.com/ttoss/i18n-cli/issues/build-config)
+- **http-server-mcp,auth-core:** add resource indicator and OIDC verifier ([#1170](https://github.com/ttoss/ttoss/issues/1170)) ([7646b7c](https://github.com/ttoss/ttoss/commit/7646b7ca55844a2d087587865cb9e218b392141b))
+
 ## [0.15.1](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.15.0...@ttoss/auth-core@0.15.1) (2026-09-28)
 
 **Note:** Version bump only for package @ttoss/auth-core

@@ -152,6 +152,35 @@ const db = await initialize({
 The lock blocks rather than tries (`pg_advisory_lock`, not
 `pg_try_advisory_lock`): a waiter must wait out the holder, never skip the sync.
 
+### Transactions without threading them
+
+`atomically` runs a function as one transaction: every query inside it commits
+together, or none does, and no `transaction` option has to be passed to each
+call. A write made of several steps — a batch, or a record plus its relations —
+cannot leave its first half behind when a later step throws, so retrying it
+never writes that half twice.
+
+```typescript
+import { atomically } from '@ttoss/postgresdb';
+
+await atomically({
+  sequelize: db.sequelize,
+  fn: async () => {
+    const order = await db.Order.create({ customerId });
+    await db.OrderItem.bulkCreate(
+      items.map((item) => ({ ...item, orderId: order.id }))
+    );
+  },
+});
+```
+
+It uses Sequelize's implicit transactions (`Sequelize.useCLS`) backed by
+`AsyncLocalStorage`, so there is no `cls-hooked` dependency; a namespace the
+application installed itself is kept. A nested `atomically` joins the
+transaction already open rather than opening a second one. CLS is enabled for
+the whole process on the first call, so from then on every managed
+`sequelize.transaction(fn)` also propagates implicitly.
+
 ### CRUD Operations
 
 All models are accessible via the `db` object. See [Sequelize documentation](https://sequelize.org/master/manual/model-querying-basics.html) for complete query API.
@@ -669,6 +698,15 @@ Serializes a boot-time `sequelize.sync()` across concurrently-starting instances
 - `sequelize` (required): The Sequelize instance to synchronize
 - `key` (required): A stable, caller-chosen 64-bit integer used as the advisory lock key. Keep it constant across releases
 - `sync` (optional): Options forwarded to `sequelize.sync()` (e.g. `{ alter: true }`)
+
+### `atomically(options)`
+
+Runs `fn` inside one transaction that every query in it joins implicitly. A nested call joins the open transaction.
+
+**Options:**
+
+- `sequelize` (required): The Sequelize instance
+- `fn` (required): The async function to run; its result is returned
 
 ### `createMigrationRunner(options)`
 

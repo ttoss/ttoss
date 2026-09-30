@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.29.0 (2026-09-30)
+
+### Features
+
+- explicit ids in \*.persisted.messages files, and pt-BR for components, forms, react-auth-core ([#1267](https://github.com/ttoss/ttoss/issues/1267)) ([6333695](https://github.com/ttoss/ttoss/commit/63336959e3e06e8e0ba9d244291bc897440c74e3))
+- i18n boundary adapters (appsync-api, http-server, MCP) and LocalizedText ([#1266](https://github.com/ttoss/ttoss/issues/1266)) ([297b436](https://github.com/ttoss/ttoss/commit/297b436523c11809746ee56f8abd6a0463767935))
+
+## [0.28.3](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.28.2...@ttoss/appsync-api@0.28.3) (2026-09-29)
+
+**Note:** Version bump only for package @ttoss/appsync-api
+
+## [0.28.2](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.28.1...@ttoss/appsync-api@0.28.2) (2026-09-29)
+
+**Note:** Version bump only for package @ttoss/appsync-api
+
 ## [0.28.1](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.28.0...@ttoss/appsync-api@0.28.1) (2026-09-28)
 
 **Note:** Version bump only for package @ttoss/appsync-api

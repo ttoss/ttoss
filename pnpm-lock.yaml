@@ -1551,6 +1551,9 @@ importers:
 
   packages/http-server-mcp-openapi:
     dependencies:
+      '@ttoss/http-server':
+        specifier: workspace:^
+        version: link:../http-server
       '@ttoss/http-server-mcp':
         specifier: workspace:^
         version: link:../http-server-mcp
@@ -1561,9 +1564,6 @@ importers:
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config
-      '@ttoss/http-server':
-        specifier: workspace:^
-        version: link:../http-server
       jest:
         specifier: ^30.4.2
         version: 30.4.2(@types/node@26.1.1)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@swc/core@1.15.40(@swc/helpers@0.5.23))(@types/node@26.1.1)(typescript@6.0.3))

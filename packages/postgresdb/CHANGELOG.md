@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.14.0 (2026-09-30)
+
+### Features
+
+- **ids,postgresdb,http-server,http-server-mcp-openapi:** public ids, atomically, in-process dispatch and full tool schemas ([#1282](https://github.com/ttoss/ttoss/issues/1282)) ([274114c](https://github.com/ttoss/ttoss/commit/274114c689488d51c03f2240b932f860d7eb72ac))
+- **postgresdb:** add ledger-backed migrations and a migrate CLI command ([#1240](https://github.com/ttoss/ttoss/issues/1240)) ([bced70d](https://github.com/ttoss/ttoss/commit/bced70dfc2c1940994a565251d57e6a31bf72f4f))
+
 ## [0.13.1](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.13.0...@ttoss/postgresdb@0.13.1) (2026-09-28)
 
 **Note:** Version bump only for package @ttoss/postgresdb

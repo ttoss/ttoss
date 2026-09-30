@@ -1,4 +1,5 @@
 import {
+  atomically,
   BeforeCreate,
   BeforeUpdate,
   Column,
@@ -100,6 +101,7 @@ export const models = {
 };
 
 export {
+  atomically,
   createMigrationRunner,
   defineMigration,
   initialize,

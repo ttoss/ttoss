@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.8.0 (2026-09-30)
+
+### Features
+
+- **eslint-config:** enforce the quality metrics ESLint can, drop the config that does nothing ([#1211](https://github.com/ttoss/ttoss/issues/1211)) ([5673a18](https://github.com/ttoss/ttoss/commit/5673a1817b104a403466d07ac2ecd589bc4ddd49)), closes [ttoss/i18n-cli#build-config](https://github.com/ttoss/i18n-cli/issues/build-config)
+- i18n Phase 0 + Phase 1 — @ttoss/i18n-core, multi-locale ttoss-i18n, canonical id pattern ([#1265](https://github.com/ttoss/ttoss/issues/1265)) ([4533535](https://github.com/ttoss/ttoss/commit/4533535869f543724ef170929e99ae723b3efb70)), closes [#1262](https://github.com/ttoss/ttoss/issues/1262) [#1056](https://github.com/ttoss/ttoss/issues/1056) [#1056](https://github.com/ttoss/ttoss/issues/1056)
+
+## [0.7.9](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.7.8...@ttoss/react-wizard@0.7.9) (2026-09-29)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
+## [0.7.8](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.7.7...@ttoss/react-wizard@0.7.8) (2026-09-29)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
 ## [0.7.7](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.7.6...@ttoss/react-wizard@0.7.7) (2026-09-28)
 
 **Note:** Version bump only for package @ttoss/react-wizard

@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.8.0 (2026-09-30)
+
+### Bug Fixes
+
+- **auth:** serve RFC 9728 protected-resource metadata at the path-derived location, from one shared primitive ([#1212](https://github.com/ttoss/ttoss/issues/1212)) ([174bfca](https://github.com/ttoss/ttoss/commit/174bfca15dfd7c5d5048f5fd87a5da81faf37189))
+
+### Features
+
+- **auth-core:** add configurable email and password auth flows ([#1172](https://github.com/ttoss/ttoss/issues/1172)) ([5e75701](https://github.com/ttoss/ttoss/commit/5e7570145fdeafea947c3a78dbb00132b8f3744c))
+- **auth-core:** cap how often one address can be mailed ([#1175](https://github.com/ttoss/ttoss/issues/1175)) ([ef5ea08](https://github.com/ttoss/ttoss/commit/ef5ea08b9e3fce60b9c1861df4ac0c5a3ab88cc7))
+
+## [0.7.5](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-auth@0.7.4...@ttoss/http-server-auth@0.7.5) (2026-09-29)
+
+**Note:** Version bump only for package @ttoss/http-server-auth
+
+## [0.7.4](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-auth@0.7.3...@ttoss/http-server-auth@0.7.4) (2026-09-29)
+
+**Note:** Version bump only for package @ttoss/http-server-auth
+
 ## [0.7.3](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-auth@0.7.2...@ttoss/http-server-auth@0.7.3) (2026-09-28)
 
 **Note:** Version bump only for package @ttoss/http-server-auth
