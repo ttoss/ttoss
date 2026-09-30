@@ -287,8 +287,11 @@ export const createI18n = ({
   defaultLocale?: string;
   onError?: OnErrorFn;
 }): I18n => {
+  // An explicit `onError: undefined` replaces formatjs's default handler, and
+  // a missing translation then throws `onError is not a function` instead of
+  // falling back to `defaultMessage`.
   const intl = createIntl(
-    { locale, messages, defaultLocale, onError },
+    { locale, messages, defaultLocale, ...(onError ? { onError } : {}) },
     createIntlCache()
   );
 
