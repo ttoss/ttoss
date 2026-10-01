@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.1](https://github.com/ttoss/ttoss/compare/carlin@3.0.0...carlin@3.0.1) (2026-10-01)
+
+**Note:** Version bump only for package carlin
+
 # 3.0.0 (2026-09-30)
 
 - feat(carlin)!: exclude source maps from the static-app S3 upload by default (#1196) ([b37f275](https://github.com/ttoss/ttoss/commit/b37f27533cccaea1ed28ddd79e6bf4cacb81032e)), closes [#1196](https://github.com/ttoss/ttoss/issues/1196)
