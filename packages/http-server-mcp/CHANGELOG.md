@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.34.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.33.2...@ttoss/http-server-mcp@0.34.0) (2026-10-01)
+
+- feat(http-server-mcp,http-server-mcp-openapi)!: one Tool type, registered directly or deferred (#1291) ([b0a6d6a](https://github.com/ttoss/ttoss/commit/b0a6d6addadaede03101a86c4a35ffa4e0ce3c8b)), closes [#1291](https://github.com/ttoss/ttoss/issues/1291) [#1290](https://github.com/ttoss/ttoss/issues/1290)
+
+### BREAKING CHANGES
+
+- `registerToolFromSchema`, `createGatedToolRegistrar` and
+  `registerOpenApiTools` are removed. See each package's MIGRATIONS.md.
+
 ## [0.33.2](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.33.1...@ttoss/http-server-mcp@0.33.2) (2026-10-01)
 
 **Note:** Version bump only for package @ttoss/http-server-mcp
