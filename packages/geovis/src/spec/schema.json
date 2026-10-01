@@ -716,40 +716,72 @@
         },
         "items": {
           "type": "array",
+          "description": "Toggles, and categories of them, in the order shown. A category holds toggles only.",
           "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["id", "label", "layers"],
-            "properties": {
-              "id": {
-                "type": "string",
-                "minLength": 1
-              },
-              "label": {
-                "type": "string",
-                "minLength": 1
-              },
-              "thumbnail": {
-                "type": "string",
-                "minLength": 1
-              },
-              "layers": {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "defaultActive": {
-                "type": "boolean"
-              }
-            }
+            "anyOf": [
+              { "$ref": "#/$defs/LayerControlItem" },
+              { "$ref": "#/$defs/LayerControlGroup" }
+            ]
           }
         }
       }
     }
   },
   "$defs": {
+    "LayerControlItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "layers"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "thumbnail": {
+          "type": "string",
+          "minLength": 1
+        },
+        "layers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "defaultActive": {
+          "type": "boolean"
+        }
+      }
+    },
+    "LayerControlGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "items"],
+      "description": "A category: a card that opens a panel of its own toggles. Groups do not nest.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "thumbnail": {
+          "type": "string",
+          "minLength": 1
+        },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/LayerControlItem" }
+        }
+      }
+    },
     "ViewState": {
       "type": "object",
       "additionalProperties": false,

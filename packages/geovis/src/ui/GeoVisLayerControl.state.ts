@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { layerControlItems } from '../spec/layerControl';
 import type { LayerControl, VisualizationSpec } from '../spec/types';
 import type { useGeoVis } from './contexts';
 import { resolveItemActive } from './GeoVisLayerControl.items';
@@ -18,9 +19,9 @@ export const buildHoverHandlers = ({
 }: {
   trigger: string;
   /**
-   * Whether the full panel is open. It was opened by an explicit click, so a
-   * stray pointer or focus leaving the control must not close it — only its
-   * own dismissals do (close button, `Escape`, click outside).
+   * Whether a panel opened by an explicit click is up — the full panel or a
+   * category's. A stray pointer or focus leaving the control must not close
+   * it; only its own dismissals do (close button, `Escape`, click outside).
    */
   pinned: boolean;
   setExpanded: SetExpanded;
@@ -134,7 +135,8 @@ export const useLayerVisibilitySync = ({
 }) => {
   React.useEffect(() => {
     if (!control) return;
-    for (const item of control.items) {
+    // A category holds no layers of its own: its items are the toggles.
+    for (const item of layerControlItems(control.items)) {
       const desired = resolveItemActive(item, activeById);
       for (const layer of layers) {
         if (!item.layers.includes(layer.id)) continue;
@@ -152,20 +154,49 @@ export const useLayerVisibilitySync = ({
 };
 
 /**
- * Whether the full panel replaces the summary strip. Only meaningful while
+ * Which panel the expanded control shows: the summary strip, the full panel
+ * ("Ver mais"), or a category's panel — which can be opened from either, and
+ * whose back button returns to whichever it was opened from.
+ */
+export type ControlView = { full: boolean; groupId: string | null };
+
+const STRIP: ControlView = { full: false, groupId: null };
+
+/**
+ * The expanded control's view (see {@link ControlView}). Only meaningful while
  * `expanded`, and reset whenever the control collapses — however that happens
  * (trigger, dismissal, or the compact bar opening the legend instead) — so the
  * next expansion starts from the summary strip. The reset happens during
  * render rather than in an effect, so a collapsed-then-reopened control never
- * paints the stale full panel for a frame.
+ * paints a stale panel for a frame.
+ *
+ * @param expanded - Whether the control is expanded.
+ * @returns The view, whether it is pinned open (anything but the strip), and
+ *   the moves between views.
  */
-export const useShowAll = (expanded: boolean): [boolean, () => void] => {
-  const [showAll, setShowAll] = React.useState(false);
-  if (!expanded && showAll) setShowAll(false);
-  return [
-    expanded && showAll,
-    () => {
-      return setShowAll(true);
+export const useControlView = (expanded: boolean) => {
+  const [view, setView] = React.useState<ControlView>(STRIP);
+  if (!expanded && (view.full || view.groupId !== null)) setView(STRIP);
+  const current = expanded ? view : STRIP;
+
+  return {
+    view: current,
+    pinned: current.full || current.groupId !== null,
+    openFull: () => {
+      setView((prev) => {
+        return { ...prev, full: true };
+      });
     },
-  ];
+    openGroup: (groupId: string) => {
+      setView((prev) => {
+        return { ...prev, groupId };
+      });
+    },
+    // Leaves the category for the view it was opened from.
+    back: () => {
+      setView((prev) => {
+        return { ...prev, groupId: null };
+      });
+    },
+  };
 };

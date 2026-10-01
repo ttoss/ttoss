@@ -56,6 +56,12 @@ export const warningMessages = defineMessages({
       'Two map data entries declare the same dimension for the same source.',
     description: 'Warnings panel: mapData color/size dimension collides.',
   },
+  'duplicate-control-item-id': {
+    defaultMessage:
+      'Two layer-control entries share an id; each toggle and category needs its own.',
+    description:
+      'Warnings panel: an id repeats among the layer control toggles and categories.',
+  },
   'state-key-collision': {
     defaultMessage:
       'Two map data entries collide on the same feature-state key.',

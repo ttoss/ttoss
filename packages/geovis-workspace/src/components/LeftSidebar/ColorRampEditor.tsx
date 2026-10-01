@@ -8,6 +8,12 @@ import type {
   GeovisWorkspaceSidebarColorRampOption,
 } from '../../context/GeovisWorkspaceContext';
 import { messages } from '../../messages';
+import { ColorPickerCard } from './ColorPickerCard';
+import {
+  CustomColorButton,
+  type PickerTarget,
+  ToneRow,
+} from './ColorRampTones';
 import { rampFromBase } from './rampFromBase';
 import { COLOR, FONT_HEAD } from './theme';
 
@@ -103,20 +109,23 @@ const EditorHeader = ({ onCancel }: { onCancel: () => void }) => {
   );
 };
 
-/** The presets, and the free input that reaches past them. */
+/** The presets, and the pipette that opens the picker for any other base. */
 const BaseColorRow = ({
   baseColors,
   allowCustomColor,
   baseColor,
+  pickerOpen,
   onPick,
+  onOpenPicker,
 }: {
   baseColors: GeovisWorkspaceSidebarColorRampCreate['baseColors'];
   allowCustomColor: boolean;
   baseColor: string;
+  /** Whether the picker is up for the base color. */
+  pickerOpen: boolean;
   onPick: (color: string) => void;
+  onOpenPicker: (anchor: HTMLElement) => void;
 }) => {
-  const { intl } = useI18n();
-
   return (
     <Flex sx={{ flexWrap: 'wrap', gap: '6px', marginBottom: '10px' }}>
       {baseColors.map((swatch) => {
@@ -134,64 +143,8 @@ const BaseColorRow = ({
       })}
 
       {allowCustomColor ? (
-        <Box
-          as="label"
-          sx={{
-            position: 'relative',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '26px',
-            height: '26px',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            backgroundColor: COLOR.surface,
-            border: `1px dashed ${COLOR.textDisabled}`,
-            color: COLOR.textFaint,
-          }}
-        >
-          <Icon icon="lucide:pipette" style={{ fontSize: '12px' }} />
-          <input
-            type="color"
-            value={baseColor}
-            aria-label={intl.formatMessage(messages.customColor)}
-            onChange={(event) => {
-              onPick(event.target.value);
-            }}
-            style={{
-              position: 'absolute',
-              width: '100%',
-              height: '100%',
-              opacity: 0,
-              cursor: 'pointer',
-            }}
-          />
-        </Box>
+        <CustomColorButton open={pickerOpen} onToggle={onOpenPicker} />
       ) : null}
-    </Flex>
-  );
-};
-
-/** The sweep the chosen base would add, drawn as one strip. */
-const RampPreview = ({ colors }: { colors: string[] }) => {
-  return (
-    <Flex
-      aria-hidden
-      sx={{
-        borderRadius: '4px',
-        overflow: 'hidden',
-        boxShadow: `0 0 0 1px ${COLOR.border}`,
-      }}
-    >
-      {colors.map((color, index) => {
-        return (
-          <Box
-            // The sweep may repeat a color, so the index is what stays stable.
-            key={`${color}-${index}`}
-            sx={{ flex: 1, height: '22px', backgroundColor: color }}
-          />
-        );
-      })}
     </Flex>
   );
 };
@@ -261,7 +214,125 @@ const NameRow = ({
 };
 
 /**
- * The editor for a ramp the reader builds: a base color, a preview, and a name.
+ * The name a ramp gets when the reader leaves the field empty: the preset's
+ * name with "personalizado" when the base is a preset, its hex code otherwise.
+ */
+const useDefaultName = ({
+  baseColors,
+  baseColor,
+}: {
+  baseColors: GeovisWorkspaceSidebarColorRampCreate['baseColors'];
+  baseColor: string;
+}): string => {
+  const { intl } = useI18n();
+  const preset = baseColors.find((swatch) => {
+    return swatch.color.toLowerCase() === baseColor.toLowerCase();
+  });
+
+  return preset
+    ? intl.formatMessage(messages.customColorScaleName, { base: preset.name })
+    : baseColor.toUpperCase();
+};
+
+/**
+ * The ramp being built: its base color, its name, the tones the reader
+ * adjusted, and which of them — or the base — the picker is editing.
+ *
+ * The saved ramp is the one built from the base with the adjustments laid
+ * over it, tone by tone. A new base (a preset, or one applied from the
+ * picker) builds a new ramp, so it drops every adjustment: they were made
+ * against tones that no longer exist.
+ *
+ * Applying a color to the base also writes its hex code into an empty name
+ * field; a later apply replaces its own code, and a name the reader typed is
+ * never overwritten.
+ */
+const useRampDraft = ({
+  create,
+  classes,
+}: {
+  create: GeovisWorkspaceSidebarColorRampCreate;
+  classes: number;
+}) => {
+  const { baseColors, rampFrom } = create;
+  const [baseColor, setBaseColor] = React.useState<string>(() => {
+    return baseColors[0]?.color ?? '#000000';
+  });
+  const [name, setName] = React.useState('');
+  const [tones, setTones] = React.useState<Record<number, string>>({});
+  const [picker, setPicker] = React.useState<{
+    target: PickerTarget;
+    anchor: HTMLElement;
+  } | null>(null);
+  const autoName = React.useRef<string | null>(null);
+
+  const build = rampFrom ?? rampFromBase;
+  const colors = build({ baseColor, classes }).map((color, index) => {
+    return tones[index] ?? color;
+  });
+  const defaultName = useDefaultName({ baseColors, baseColor });
+
+  const pickBase = (color: string) => {
+    setBaseColor(color);
+    setTones({});
+  };
+
+  const applyPicker = (color: string) => {
+    const target = picker?.target;
+    setPicker(null);
+    if (typeof target === 'number') {
+      setTones((current) => {
+        return { ...current, [target]: color };
+      });
+      return;
+    }
+    pickBase(color);
+    const hex = color.toUpperCase();
+    if (name.trim() === '' || name === autoName.current) {
+      setName(hex);
+      autoName.current = hex;
+    }
+  };
+
+  return {
+    baseColor,
+    name,
+    setName,
+    colors,
+    defaultName,
+    adjusted: new Set(Object.keys(tones).map(Number)),
+    picker,
+    // The target's current color, for the card to open on. A tone can only
+    // be opened from the row, so its index is always one of `colors`.
+    pickerColor:
+      typeof picker?.target === 'number'
+        ? (colors[picker.target] as string)
+        : baseColor,
+    /*
+     * A ramp with no classes has nothing to save: an unparseable custom color
+     * yields an empty sweep, and saving it would put a blank row in the list.
+     */
+    ready: colors.length > 0,
+    pickBase,
+    applyPicker,
+    closePicker: () => {
+      setPicker(null);
+    },
+    // A second press on the button that opened the picker closes it.
+    togglePicker: (target: PickerTarget, anchor: HTMLElement) => {
+      setPicker((current) => {
+        return current?.target === target ? null : { target, anchor };
+      });
+    },
+    resetTones: () => {
+      setTones({});
+    },
+  };
+};
+
+/**
+ * The editor for a ramp the reader builds: a base color, a preview, and a name
+ * — optional, defaulting to one drawn from the base (see `useDefaultName`).
  *
  * It replaces the affordance that opened it rather than opening over the panel.
  * The list it is adding to has to stay visible — the reader is choosing a color
@@ -292,22 +363,8 @@ export const ColorRampEditor = ({
   }) => void;
   onCancel: () => void;
 }) => {
-  const { baseColors, allowCustomColor = true, rampFrom } = create;
-
-  const [baseColor, setBaseColor] = React.useState<string>(() => {
-    return baseColors[0]?.color ?? '#000000';
-  });
-  const [name, setName] = React.useState('');
-
-  const build = rampFrom ?? rampFromBase;
-  const colors = build({ baseColor, classes });
-
-  /*
-   * A ramp with no classes has nothing to save: an unparseable custom color
-   * yields an empty sweep, and saving it would put a nameless blank row in the
-   * list. The button goes quiet instead of failing after the fact.
-   */
-  const ready = name.trim().length > 0 && colors.length > 0;
+  const { baseColors, allowCustomColor = true } = create;
+  const draft = useRampDraft({ create, classes });
 
   return (
     <Box
@@ -324,20 +381,51 @@ export const ColorRampEditor = ({
       <BaseColorRow
         baseColors={baseColors}
         allowCustomColor={allowCustomColor}
-        baseColor={baseColor}
-        onPick={setBaseColor}
-      />
-
-      <RampPreview colors={colors} />
-
-      <NameRow
-        name={name}
-        ready={ready}
-        onName={setName}
-        onCommit={() => {
-          onCommit({ option: { label: name.trim(), colors }, baseColor });
+        baseColor={draft.baseColor}
+        pickerOpen={draft.picker?.target === 'base'}
+        onPick={draft.pickBase}
+        onOpenPicker={(anchor) => {
+          draft.togglePicker('base', anchor);
         }}
       />
+
+      <ToneRow
+        colors={draft.colors}
+        adjusted={draft.adjusted}
+        editing={
+          typeof draft.picker?.target === 'number' ? draft.picker.target : null
+        }
+        onEdit={(index, anchor) => {
+          draft.togglePicker(index, anchor);
+        }}
+        onReset={draft.resetTones}
+      />
+
+      <NameRow
+        name={draft.name}
+        ready={draft.ready}
+        onName={draft.setName}
+        onCommit={() => {
+          onCommit({
+            option: {
+              label: draft.name.trim() || draft.defaultName,
+              colors: draft.colors,
+            },
+            baseColor: draft.baseColor,
+          });
+        }}
+      />
+
+      {draft.picker ? (
+        <ColorPickerCard
+          // A fresh card per target, so it opens on that target's color.
+          key={String(draft.picker.target)}
+          anchor={draft.picker.anchor}
+          color={draft.pickerColor}
+          onApply={draft.applyPicker}
+          onCancel={draft.closePicker}
+        />
+      ) : null}
     </Box>
   );
 };

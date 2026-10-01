@@ -29,6 +29,60 @@ export const messages = defineMessages({
     description:
       'Accessible label for the button that closes the color-ramp editor.',
   },
+  customizeStyles: {
+    defaultMessage: 'Customizar estilos',
+    description:
+      'Tooltip (title) of the pipette button that opens the custom color picker in the color-ramp editor.',
+  },
+  customColorScaleName: {
+    defaultMessage: '{base} personalizado',
+    description:
+      'Default name of a color ramp saved without one, built from the base color preset named `base`.',
+  },
+  toneRowLabel: {
+    defaultMessage: 'Tons · clique para ajustar',
+    description:
+      'Heading of the row of tones in the color-ramp editor; each tone opens the custom color picker.',
+  },
+  resetTones: {
+    defaultMessage: 'Restaurar',
+    description:
+      'Button in the color-ramp editor that drops every tone adjustment, back to the ramp built from the base color.',
+  },
+  toneTitle: {
+    defaultMessage: 'Tom {index} · {color}',
+    description:
+      'Tooltip and accessible name of one tone in the color-ramp editor: its position and hex code.',
+  },
+  colorPickerSaturation: {
+    defaultMessage: 'Saturação e brilho',
+    description:
+      'Accessible label for the square of the custom color picker that sets saturation and brightness.',
+  },
+  colorPickerHue: {
+    defaultMessage: 'Matiz',
+    description: 'Accessible label for the hue bar of the custom color picker.',
+  },
+  colorPickerHex: {
+    defaultMessage: 'Hexadecimal',
+    description:
+      'Accessible label for the hex code field of the custom color picker.',
+  },
+  colorPickerHexUnit: {
+    defaultMessage: 'Hex',
+    description:
+      'Short caption beside the hex code field of the custom color picker.',
+  },
+  colorPickerCancel: {
+    defaultMessage: 'Cancelar',
+    description:
+      'Label of the button that closes the custom color picker without applying the color.',
+  },
+  colorPickerApply: {
+    defaultMessage: 'Aplicar',
+    description:
+      'Label of the button that applies the color chosen in the custom color picker.',
+  },
   removeColorScale: {
     defaultMessage: 'Remover escala',
     description:

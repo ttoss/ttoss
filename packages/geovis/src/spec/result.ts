@@ -40,6 +40,7 @@ export type GeoVisIssueCode =
   | 'unsupported-patch-target'
   | 'missing-source-layer'
   | 'missing-map-data-for-map-type'
+  | 'duplicate-control-item-id'
   | 'policy-violation';
 
 /**
@@ -74,6 +75,7 @@ export const ISSUE_CODE_STATUS: Record<
   'unsupported-patch-target': 'unsupported',
   'missing-source-layer': 'mismatch',
   'missing-map-data-for-map-type': 'mismatch',
+  'duplicate-control-item-id': 'invalid',
 };
 
 /** Precedence order used to pick one overall status when issues span categories. */
