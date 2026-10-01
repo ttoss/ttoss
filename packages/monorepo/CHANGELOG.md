@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 1.31.0 (2026-10-01)
+
+### Features
+
+- **i18n-core:** tell whether a reference renders in the instance's locale ([#1276](https://github.com/ttoss/ttoss/issues/1276)) ([21f046f](https://github.com/ttoss/ttoss/commit/21f046ffde3266f6a4180d0ea080f860a3a10327))
+
 ## 1.30.2 (2026-09-30)
 
 **Note:** Version bump only for package @ttoss/monorepo
