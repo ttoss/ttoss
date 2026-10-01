@@ -176,4 +176,66 @@ export const messages = defineMessages({
     description:
       'Accessible label for the forward stepper in the compact timeline bar anchored to the map.',
   },
+  exportMap: {
+    defaultMessage: 'Exportar mapa como PNG',
+    description:
+      'Accessible label and tooltip of the left sidebar button that opens the map export dialog.',
+  },
+  exportTitle: {
+    defaultMessage: 'Exportar mapa',
+    description: 'Heading of the map export dialog.',
+  },
+  exportClose: {
+    defaultMessage: 'Fechar',
+    description:
+      'Accessible label for the button that closes the map export dialog.',
+  },
+  exportPreviewAlt: {
+    defaultMessage: 'Prévia do mapa exportado',
+    description:
+      'Alternative text of the image previewing the PNG the export dialog will download.',
+  },
+  exportPreviewCaption: {
+    defaultMessage: 'Prévia · visualização atual',
+    description:
+      'Caption under the export preview, saying it reflects the map as it is on screen now.',
+  },
+  exportDimensions: {
+    defaultMessage: '{width} × {height} px',
+    description:
+      'Pixel size of the image the export dialog will download, shown under its preview. Width and height arrive already formatted.',
+  },
+  exportFileName: {
+    defaultMessage: 'Nome do arquivo',
+    description: 'Label of the file-name field in the map export dialog.',
+  },
+  exportIncludeLegend: {
+    defaultMessage: 'Incluir legenda',
+    description:
+      'Toggle in the map export dialog that draws the legend card on the image.',
+  },
+  exportIncludeMenu: {
+    defaultMessage: 'Incluir menu',
+    description:
+      'Toggle in the map export dialog that draws the left sidebar menu over the map on the image, where it sits on screen.',
+  },
+  exportCancel: {
+    defaultMessage: 'Cancelar',
+    description: 'Button that closes the map export dialog without exporting.',
+  },
+  exportDownload: {
+    defaultMessage: 'Baixar PNG',
+    description: 'Button that downloads the exported map as a PNG file.',
+  },
+  exportGenerating: {
+    defaultMessage: 'Gerando…',
+    description:
+      'Label of the download button while the PNG is being generated.',
+  },
+  exportError: {
+    defaultMessage:
+      'Não foi possível exportar o mapa. Os tiles podem não permitir a captura da imagem.',
+    description:
+      'Error shown in the map export dialog when capturing or encoding the image fails — usually cross-origin map tiles served without CORS.',
+  },
 });

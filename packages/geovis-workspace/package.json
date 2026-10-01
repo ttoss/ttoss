@@ -32,6 +32,9 @@
     "i18n": "ttoss-i18n",
     "test": "jest --projects tests/unit"
   },
+  "dependencies": {
+    "html-to-image": "^1.11.13"
+  },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@ttoss/geovis": "workspace:^",

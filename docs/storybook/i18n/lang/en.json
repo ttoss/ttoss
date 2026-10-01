@@ -177,6 +177,11 @@
     "defaultMessage": "Map could not be shown",
     "description": "Title shown in the map area on first mount when the spec fails before anything has ever resolved."
   },
+  "2WYBl8": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "{width} × {height} px",
+    "description": "Pixel size of the image the export dialog will download, shown under its preview. Width and height arrive already formatted."
+  },
   "2a5j+J": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "This map violates the cartography policy.",
@@ -237,6 +242,11 @@
     "defaultMessage": "Selecionado",
     "description": "Locator filter: heading above the currently selected place."
   },
+  "CBHuv6": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Não foi possível exportar o mapa. Os tiles podem não permitir a captura da imagem.",
+    "description": "Error shown in the map export dialog when capturing or encoding the image fails — usually cross-origin map tiles served without CORS."
+  },
   "CI5FMY": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Remover escala",
@@ -256,6 +266,11 @@
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "This field cannot be updated without a full spec update.",
     "description": "Warnings panel: an applyPatch call targeted a field outside SpecPatchTarget."
+  },
+  "JEHTGl": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Cancelar",
+    "description": "Button that closes the map export dialog without exporting."
   },
   "KAQU1v": {
     "module": "@ttoss/geovis-workspace",
@@ -302,6 +317,16 @@
     "defaultMessage": "Two map data entries share the same id.",
     "description": "Warnings panel: mapData ids collide."
   },
+  "TWTWvW": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Prévia · visualização atual",
+    "description": "Caption under the export preview, saying it reflects the map as it is on screen now."
+  },
+  "TaaBBa": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Fechar",
+    "description": "Accessible label for the button that closes the map export dialog."
+  },
   "TzOKEV": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Legend thresholds must be in ascending order.",
@@ -317,10 +342,30 @@
     "defaultMessage": "The size mode configuration is invalid.",
     "description": "Warnings panel: sizeBy.mode is malformed."
   },
+  "VNccNh": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Exportar mapa",
+    "description": "Heading of the map export dialog."
+  },
   "Vd+Q3o": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "{count} rec.",
     "description": "Abbreviated record count beside the current value in the compact timeline bar anchored to the map."
+  },
+  "XNN1t0": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Gerando…",
+    "description": "Label of the download button while the PNG is being generated."
+  },
+  "XaODNr": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Baixar PNG",
+    "description": "Button that downloads the exported map as a PNG file."
+  },
+  "XzPKNh": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Prévia do mapa exportado",
+    "description": "Alternative text of the image previewing the PNG the export dialog will download."
   },
   "YQPd8E": {
     "module": "@ttoss/geovis-workspace",
@@ -347,6 +392,11 @@
     "defaultMessage": "Nome da escala",
     "description": "Placeholder of the name field in the color-ramp editor."
   },
+  "c5T3as": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Incluir legenda",
+    "description": "Toggle in the map export dialog that draws the legend card on the image."
+  },
   "cDAeJo": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "This source type is not supported.",
@@ -372,10 +422,20 @@
     "defaultMessage": "Open menu",
     "description": "Accessible label for the button that opens the left sidebar."
   },
+  "emipod": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Exportar mapa como PNG",
+    "description": "Accessible label and tooltip of the left sidebar button that opens the map export dialog."
+  },
   "j3dtho": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Close details",
     "description": "Accessible label for the button that closes the right sidebar."
+  },
+  "jecbZ/": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Nome do arquivo",
+    "description": "Label of the file-name field in the map export dialog."
   },
   "n6ryYu": {
     "module": "@ttoss/geovis-workspace",
@@ -391,6 +451,11 @@
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Previous step",
     "description": "Accessible label for the back stepper in the compact timeline bar anchored to the map."
+  },
+  "qOPKRg": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Incluir menu",
+    "description": "Toggle in the map export dialog that draws the left sidebar menu over the map on the image, where it sits on screen."
   },
   "s0Ww26": {
     "module": "@ttoss/geovis-workspace",

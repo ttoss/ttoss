@@ -155,6 +155,10 @@ Each entry in `spec.legends` (or `layer.legends`) defines one choropleth legend.
 | `noDataLabel`   | `string`               |          | Label for the "no data" swatch at the bottom of the legend. When omitted, no "no data" entry is shown.                                                            |
 | `reference`     | `string`               |          | Bibliographic attribution below the swatches. Supports `{link:visible text\|https://example.com}` inline link syntax.                                             |
 
+To draw a legend outside the DOM (an exported image, say), `resolveLegend(spec, legendId)`
+returns its `LegendSpec` and `resolveLegendItems({ spec, legendId, formatValue? })`
+returns the `{ color, label }` rows `GeoVisLegend` would render.
+
 ### `LabelFormatSpec`
 
 Controls how quantitative legend bin labels are generated. Set on `LegendSpec.labelFormat`.

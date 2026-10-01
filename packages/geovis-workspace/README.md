@@ -285,6 +285,22 @@ pluralized source count. It renders nothing — and contributes no content
 toward showing the right sidebar — when the spec has neither, so it never
 appears as an always-on placeholder.
 
+## Map export
+
+The left sidebar carries a download button beside its close control, with no
+configuration needed. It opens a dialog that exports the map as a PNG, showing a
+preview, a file name suggested from the active variation and the timeline's
+value (`taxa-cumulativa_2024`), and two toggles: **Incluir legenda** (the active
+legend's color rows, bottom-right; on by default) and **Incluir menu** (the left
+sidebar, drawn where it sits over the map; off by default).
+
+The map is captured once when the dialog opens, at the canvas's own resolution
+(its on-screen size times the device pixel ratio), and the menu with it,
+rendered from the DOM by [`html-to-image`](https://github.com/bubkoo/html-to-image);
+the toggles only redraw what lies over that frame. Basemap tiles must be served
+with CORS headers — a cross-origin tile without them taints the canvas, and the
+dialog reports the failure instead of downloading.
+
 ## API
 
 ### `GeovisWorkspace` props

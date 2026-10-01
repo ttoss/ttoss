@@ -38,6 +38,9 @@ test('package exports expected public symbols', () => {
   expect(typeof geovis.toggleBoundaryGroup).toBe('function');
   expect(typeof geovis.customizeBoundaryGroup).toBe('function');
   expect(typeof geovis.useBoundaryToggle).toBe('function');
+  // Legend resolution, for drawing a legend outside the DOM (an exported image)
+  expect(typeof geovis.resolveLegend).toBe('function');
+  expect(typeof geovis.resolveLegendItems).toBe('function');
   // createRuntime
   expect(typeof geovis.createRuntime).toBe('function');
   // GeoVisResult taxonomy (PRD-001 / ADR-0001)

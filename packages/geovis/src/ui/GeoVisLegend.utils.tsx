@@ -275,6 +275,42 @@ export const buildColorItems = (
   return buildQuantitativeItems({ legend, breaks, formatValue });
 };
 
+/**
+ * The color rows a legend draws — one `{ color, label }` per bin or category —
+ * resolved the same way `GeoVisLegend` resolves them, for callers that paint
+ * the legend somewhere other than the DOM (an exported image, say).
+ *
+ * Proportional-circle size keys are not color rows and are left out.
+ *
+ * @param params.spec - The visualization spec holding the legend.
+ * @param params.legendId - Id of the legend, top-level or per-layer.
+ * @param params.formatValue - Formats bin bounds; the same default as `GeoVisLegend` when omitted.
+ * @returns The legend's color rows; empty when the legend is missing or has none.
+ *
+ * @example
+ * resolveLegendItems({ spec, legendId: 'rate' });
+ * // [{ binIndex: 0, label: '< 5', color: '#eff3ff' }, ...]
+ */
+export const resolveLegendItems = ({
+  spec,
+  legendId,
+  formatValue,
+}: {
+  spec: VisualizationSpec;
+  legendId: string;
+  formatValue?: (value: number) => string;
+}): LegendItem[] => {
+  const legend = resolveLegend(spec, legendId);
+  const breaks = computeNormalizedBreaks(undefined, legend);
+
+  return buildColorItems(
+    legend,
+    breaks,
+    formatValue ?? defaultFormatValue,
+    spec
+  );
+};
+
 export const hasLegendContent = (
   legend: LegendSpec | undefined,
   items: LegendItem[],

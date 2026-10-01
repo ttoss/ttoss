@@ -35,6 +35,10 @@
     "defaultMessage": "Map could not be shown",
     "description": "Title shown in the map area on first mount when the spec fails before anything has ever resolved."
   },
+  "2WYBl8": {
+    "defaultMessage": "{width} × {height} px",
+    "description": "Pixel size of the image the export dialog will download, shown under its preview. Width and height arrive already formatted."
+  },
   "2a5j+J": {
     "defaultMessage": "This map violates the cartography policy.",
     "description": "Warnings panel: spec.metadata flags a policy violation."
@@ -83,6 +87,10 @@
     "defaultMessage": "Selecionado",
     "description": "Locator filter: heading above the currently selected place."
   },
+  "CBHuv6": {
+    "defaultMessage": "Não foi possível exportar o mapa. Os tiles podem não permitir a captura da imagem.",
+    "description": "Error shown in the map export dialog when capturing or encoding the image fails — usually cross-origin map tiles served without CORS."
+  },
   "CI5FMY": {
     "defaultMessage": "Remover escala",
     "description": "Accessible label for the button that removes a ramp the reader built."
@@ -98,6 +106,10 @@
   "IUwKDh": {
     "defaultMessage": "This field cannot be updated without a full spec update.",
     "description": "Warnings panel: an applyPatch call targeted a field outside SpecPatchTarget."
+  },
+  "JEHTGl": {
+    "defaultMessage": "Cancelar",
+    "description": "Button that closes the map export dialog without exporting."
   },
   "KAQU1v": {
     "defaultMessage": "A layer references a map data id that does not exist.",
@@ -135,6 +147,14 @@
     "defaultMessage": "Two map data entries share the same id.",
     "description": "Warnings panel: mapData ids collide."
   },
+  "TWTWvW": {
+    "defaultMessage": "Prévia · visualização atual",
+    "description": "Caption under the export preview, saying it reflects the map as it is on screen now."
+  },
+  "TaaBBa": {
+    "defaultMessage": "Fechar",
+    "description": "Accessible label for the button that closes the map export dialog."
+  },
   "TzOKEV": {
     "defaultMessage": "Legend thresholds must be in ascending order.",
     "description": "Warnings panel: colorBy.thresholds are not sorted."
@@ -147,9 +167,25 @@
     "defaultMessage": "The size mode configuration is invalid.",
     "description": "Warnings panel: sizeBy.mode is malformed."
   },
+  "VNccNh": {
+    "defaultMessage": "Exportar mapa",
+    "description": "Heading of the map export dialog."
+  },
   "Vd+Q3o": {
     "defaultMessage": "{count} rec.",
     "description": "Abbreviated record count beside the current value in the compact timeline bar anchored to the map."
+  },
+  "XNN1t0": {
+    "defaultMessage": "Gerando…",
+    "description": "Label of the download button while the PNG is being generated."
+  },
+  "XaODNr": {
+    "defaultMessage": "Baixar PNG",
+    "description": "Button that downloads the exported map as a PNG file."
+  },
+  "XzPKNh": {
+    "defaultMessage": "Prévia do mapa exportado",
+    "description": "Alternative text of the image previewing the PNG the export dialog will download."
   },
   "YQPd8E": {
     "defaultMessage": "Limpar {count, plural, one {# filtro} other {# filtros}}",
@@ -171,6 +207,10 @@
     "defaultMessage": "Nome da escala",
     "description": "Placeholder of the name field in the color-ramp editor."
   },
+  "c5T3as": {
+    "defaultMessage": "Incluir legenda",
+    "description": "Toggle in the map export dialog that draws the legend card on the image."
+  },
   "cDAeJo": {
     "defaultMessage": "This source type is not supported.",
     "description": "Warnings panel: source.type is not implemented by the engine adapter."
@@ -191,9 +231,17 @@
     "defaultMessage": "Open menu",
     "description": "Accessible label for the button that opens the left sidebar."
   },
+  "emipod": {
+    "defaultMessage": "Exportar mapa como PNG",
+    "description": "Accessible label and tooltip of the left sidebar button that opens the map export dialog."
+  },
   "j3dtho": {
     "defaultMessage": "Close details",
     "description": "Accessible label for the button that closes the right sidebar."
+  },
+  "jecbZ/": {
+    "defaultMessage": "Nome do arquivo",
+    "description": "Label of the file-name field in the map export dialog."
   },
   "n6ryYu": {
     "defaultMessage": "{message}",
@@ -206,6 +254,10 @@
   "oeivQo": {
     "defaultMessage": "Previous step",
     "description": "Accessible label for the back stepper in the compact timeline bar anchored to the map."
+  },
+  "qOPKRg": {
+    "defaultMessage": "Incluir menu",
+    "description": "Toggle in the map export dialog that draws the left sidebar menu over the map on the image, where it sits on screen."
   },
   "s0Ww26": {
     "defaultMessage": "Map type: {map_type}",

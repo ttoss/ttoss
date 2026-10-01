@@ -19,6 +19,11 @@ export * from './ui/GeoVisHoverTooltip';
 export * from './ui/GeoVisLayerControl';
 export * from './ui/GeoVisLegend';
 export { formatCompactNumber } from './ui/GeoVisLegend.formatters';
+export {
+  type LegendItem,
+  resolveLegend,
+  resolveLegendItems,
+} from './ui/GeoVisLegend.utils';
 export * from './ui/GeoVisMarker';
 // Public so consumers branch behaviour on the same width the map's own overlays
 // collapse at, instead of each package picking its own breakpoint.
