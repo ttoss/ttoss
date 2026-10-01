@@ -2,14 +2,19 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import { I18N_ID_INTERPOLATION_PATTERN } from '@ttoss/config';
+import {
+  formatjsBabelPlugin,
+  I18N_ID_INTERPOLATION_PATTERN,
+} from '@ttoss/config';
 import {
   executeI18nCli,
+  extractTranslationsFromSource,
   findDuplicateIds,
   getDependencyCatalogs,
   getI18nConfig,
   ID_INTERPOLATION_PATTERN,
   parseOptions,
+  PRESERVE_WHITESPACE,
   runCheck,
 } from 'src/index';
 
@@ -124,6 +129,76 @@ describe('parseOptions', () => {
 
 test('extracts with the canonical id pattern the build presets inject', () => {
   expect(ID_INTERPOLATION_PATTERN).toBe(I18N_ID_INTERPOLATION_PATTERN);
+  expect(PRESERVE_WHITESPACE).toBe(formatjsBabelPlugin()[1].preserveWhitespace);
+});
+
+describe('multi-line messages', () => {
+  const MULTI_LINE = 'First paragraph.\n\n  - an indented item\n  - another';
+
+  /**
+   * babel-jest compiles this file with `@ttoss/config`'s `babelConfig`, whose
+   * formatjs plugin recognizes the call by its name and injects the id the
+   * build would: the other side of the contract under test.
+   */
+  const defineMessages = <T>(messages: T) => {
+    return messages;
+  };
+
+  const built = defineMessages({
+    multiLine: {
+      // eslint-disable-next-line formatjs/no-multiple-whitespaces -- the whitespace is what this test is about
+      defaultMessage: 'First paragraph.\n\n  - an indented item\n  - another',
+      description: 'multiLine',
+    },
+  }) as unknown as { multiLine: { id: string } };
+
+  const sourceFile = `import { defineMessages } from '@ttoss/i18n-core';
+
+export const messages = defineMessages({
+  multiLine: {
+    defaultMessage: ${JSON.stringify(MULTI_LINE)},
+    description: 'multiLine',
+  },
+});
+`;
+
+  test('extraction keeps the whitespace, under the id the build injects', async () => {
+    write(cwd, { 'src/messages.ts': sourceFile });
+
+    const extracted = await extractTranslationsFromSource({
+      cwd,
+      pattern: 'src/**/*.ts',
+      ignore: [],
+    });
+
+    expect(extracted).toEqual({
+      [built.multiLine.id]: {
+        defaultMessage: MULTI_LINE,
+        description: 'multiLine',
+      },
+    });
+  });
+
+  test('compilation keeps the whitespace', async () => {
+    write(cwd, {
+      'package.json': { name: 'app' },
+      'src/messages.ts': sourceFile,
+      'i18n/lang/pt-BR.json': {
+        [built.multiLine.id]: {
+          defaultMessage: 'Primeiro parágrafo.\n\n  - um item\n  - outro',
+        },
+      },
+    });
+
+    await executeI18nCli([], cwd);
+
+    expect(read('i18n/compiled/en.json')[built.multiLine.id]).toEqual([
+      { type: 0, value: MULTI_LINE },
+    ]);
+    expect(read('i18n/compiled/pt-BR.json')[built.multiLine.id]).toEqual([
+      { type: 0, value: 'Primeiro parágrafo.\n\n  - um item\n  - outro' },
+    ]);
+  });
 });
 
 describe('getI18nConfig', () => {

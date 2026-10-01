@@ -5,7 +5,7 @@ import {
   type OnErrorFn,
 } from '@formatjs/intl';
 
-import { type FormatValue, isFormatValue } from './fmt';
+import { type FormatValue, hasDateComponents, isFormatValue } from './fmt';
 import { isMessageRef, type MessageRef, type MessageValue } from './messageRef';
 
 export type Messages = NonNullable<
@@ -33,6 +33,13 @@ const RICH_TEXT_TAGS = [
   'small',
   'code',
   'p',
+  'div',
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
   'ul',
   'ol',
   'li',
@@ -135,11 +142,24 @@ const formatValue = (intl: IntlFormatters, value: FormatValue): string => {
         maximumFractionDigits: value.maximumFractionDigits,
       });
     case 'date':
-      return intl.formatDate(value.value, {
-        timeZone: value.timeZone,
-        dateStyle: value.dateStyle ?? (value.timeStyle ? undefined : 'short'),
-        timeStyle: value.timeStyle,
-      });
+      // Intl rejects a style mixed with components, so the default style is
+      // only injected when no component was asked for.
+      return intl.formatDate(
+        value.value,
+        hasDateComponents(value)
+          ? {
+              timeZone: value.timeZone,
+              day: value.day,
+              month: value.month,
+              year: value.year,
+            }
+          : {
+              timeZone: value.timeZone,
+              dateStyle:
+                value.dateStyle ?? (value.timeStyle ? undefined : 'short'),
+              timeStyle: value.timeStyle,
+            }
+      );
     case 'relativeTime': {
       const diffSeconds = (new Date(value.value).getTime() - Date.now()) / 1000;
       const { unit, seconds } =
