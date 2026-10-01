@@ -594,6 +594,19 @@ The spec suggests checking the client's declared capability before registering U
 
 Declaring it always is also strictly more compatible — a host without Apps support ignores `_meta` and renders the tool's `content`, which is the extension's own graceful-degradation contract. Keep every tool's text result meaningful on its own and the fallback takes care of itself.
 
+### Writing the view
+
+A view is plain HTML; a raw `postMessage` client is enough, no SDK needed. Tools generated from OpenAPI link to a view through [`toolMeta` and `toStructuredContent`](https://github.com/ttoss/ttoss/tree/main/packages/http-server-mcp-openapi#mcp-apps-views). The parts that only fail inside a host:
+
+- **The view speaks first.** It sends `ui/initialize` (`appInfo`, `appCapabilities`, `protocolVersion`), then `ui/notifications/initialized`, and reads the result from `ui/notifications/tool-result` — `structuredContent` when the tool sets it, else the text.
+- **Buttons call tools through the host** with `tools/call`, and the host may ask the person to confirm. `ui/notifications/tool-input` carries the original arguments, which is what a button needs to repeat or extend the call.
+- **Fonts and scripts load only from origins in `ui.csp.resourceDomains`.** The host's default CSP is `font-src 'self'`, so a `data:` font is blocked.
+- **Report size from `document.body`**, not `document.documentElement`: the document is never shorter than the iframe, so the view would grow but never shrink.
+- **Set every value from a tool result with `textContent`.** It is data a model or a user produced.
+- **Theme from `hostContext.theme`**, updated by `ui/notifications/host-context-changed`.
+
+To see a view, render it in a host: ext-apps' `AppBridge` in a browser works, connected before the iframe's `srcdoc` is set because the view speaks first. An agent CLI such as Claude Code is an MCP client but not an Apps host, so it never renders one.
+
 ## Issuing tokens for MCP clients
 
 The `auth` option above covers the **resource-server** half of MCP authorization — it verifies tokens issued by an external authorization server (Cognito, Auth0, …). To make your own first-party server _issue_ the tokens an MCP client runs the full OAuth flow against, add the [`@ttoss/http-server-auth`](https://ttoss.dev/docs/modules/packages/http-server-auth) plugin's `oauthServer()` and pair it with `createMcpRouter({ auth: { verifyToken } })` so one deployment both issues and verifies tokens. See the [OAuth Authorization Server](https://ttoss.dev/docs/engineering/guidelines/oauth-authorization-server) guideline.
