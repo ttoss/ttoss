@@ -6,7 +6,7 @@ import type {
   AppSyncResolverHandler as AwsAppSyncResolverHandler,
   Context,
 } from 'aws-lambda';
-import { type GraphQLObjectType } from 'graphql';
+import { getNullableType, type GraphQLObjectType, isEnumType } from 'graphql';
 
 export type AppSyncResolverHandler<
   TArguments,
@@ -65,8 +65,6 @@ export const createAppSyncResolverHandler = ({
   createContext?: CreateContext;
 }): AppSyncResolverHandler<any, any, any> => {
   return async (event, appSyncHandlerContext) => {
-    const { schemaComposer } = buildSchemaInput;
-
     /**
      * https://docs.aws.amazon.com/appsync/latest/devguide/resolver-context-reference-js.html
      */
@@ -106,22 +104,30 @@ export const createAppSyncResolverHandler = ({
      * For example, if the config `sort.ID_ASC.value` is `{ order : 'ASC' }`,
      * then the value of the argument `sort` enm should be
      * `{ order : 'ASC' }` instead of `'ID_ASC'`.
+     *
+     * The enum is read from the built schema's own type, never looked up in
+     * `schemaComposer`: with `middlewares`, `buildSchema` returns a rebuilt
+     * schema whose types `schemaComposer` never registered, and a registry
+     * lookup then skipped every enum argument — the default and the value
+     * mapping were both lost.
      */
     const argsWithEnumValues = (() => {
-      const fieldsArgsIsEnumType = field.args.filter((arg) => {
-        return schemaComposer.isEnumType(arg.type);
-      });
+      const enumArgs = field.args
+        .map((arg) => {
+          const type = getNullableType(arg.type);
 
-      const enumArgs = fieldsArgsIsEnumType
-        .map((enumArg) => {
-          if (!args[enumArg.name]) {
-            return { [enumArg.name]: enumArg.defaultValue };
+          if (!isEnumType(type)) {
+            return {};
           }
 
-          const values = schemaComposer.getETC(enumArg.type).getFields();
+          if (!args[arg.name]) {
+            return { [arg.name]: arg.defaultValue };
+          }
+
+          const enumValue = type.getValue(args[arg.name]);
 
           return {
-            [enumArg.name]: values[args[enumArg.name]].value,
+            [arg.name]: enumValue ? enumValue.value : args[arg.name],
           };
         })
         .reduce((acc, curr) => {
