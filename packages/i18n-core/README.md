@@ -66,7 +66,10 @@ await db.notifications.insert({ body }); // plain JSON
 | `fmt.number({ value, options? })`                        | A number; `options` is JSON-safe     |
 | `fmt.percent({ ratio, maximumFractionDigits? })`         | `0.125` → `12.5%`                    |
 | `fmt.date({ value, timeZone?, dateStyle?, timeStyle? })` | A date and/or time in that time zone |
+| `fmt.date({ value, timeZone?, day?, month?, year? })`    | Only the date components asked for   |
 | `fmt.relativeTime({ value })`                            | `yesterday`, `in 3 hours`            |
+
+`fmt.date` takes either a style (`dateStyle` / `timeStyle`, `dateStyle: 'short'` when neither is given) or components (`day`: `numeric` | `2-digit`; `month`: `numeric` | `2-digit` | `long` | `short` | `narrow`; `year`: `numeric` | `2-digit`), never both — `Intl.DateTimeFormat` rejects the mix, so it is a type error and throws a `TypeError`. `fmt.date({ value, timeZone: 'UTC', day: '2-digit', month: '2-digit' })` renders `26/08` for a pt-BR reader and `08/26` for an English one.
 
 A value may also be a string, number, boolean, `null` or another reference, which renders in the same locale.
 
@@ -91,6 +94,8 @@ const i18n = await catalog.getI18n(
 i18n.render(body); // plain text: WhatsApp, push, logs
 i18n.renderHtml(body); // email: values escaped, <b>/<i>/<p>/<br>… kept
 ```
+
+A message may use `b`, `strong`, `i`, `em`, `u`, `s`, `small`, `code`, `p`, `div`, `h1`–`h6`, `ul`, `ol`, `li` and `br`. `renderHtml` emits them as written; `render` drops the markup and keeps the text, turning `br` into a line break. ICU tags carry no attributes, so none of them can smuggle any in.
 
 `createCatalog` loads each locale once per process and retries a load that failed. `createI18n({ locale, messages, defaultLocale })` is the same thing without the cache, and both return a full FormatJS `IntlShape`, so `formatMessage`, `formatNumber` and the rest are there too. `render` passes a plain string through unchanged, so rows written before references existed keep rendering.
 

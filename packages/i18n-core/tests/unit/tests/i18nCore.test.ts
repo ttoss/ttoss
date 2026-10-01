@@ -40,6 +40,11 @@ const messages = defineMessages({
     defaultMessage: 'First<br></br>Second',
     description: 'Two lines',
   },
+  blocks: {
+    defaultMessage:
+      '<h1>Report</h1><div>Spent {amount}</div><h2>A</h2><h3>B</h3><h4>C</h4><h5>D</h5><h6>E</h6>',
+    description: 'Block-level rich text',
+  },
   flag: {
     defaultMessage: '{enabled, select, true {On} other {Off}}',
     description: 'Toggle state',
@@ -140,6 +145,23 @@ describe('fmt', () => {
     });
   });
 
+  test('rejects a date style mixed with date components', () => {
+    expect(() => {
+      return fmt.date({
+        value: '2026-08-26T12:00:00Z',
+        day: '2-digit',
+        ...({ dateStyle: 'short' } as object),
+      });
+    }).toThrow('not both');
+    expect(() => {
+      return fmt.date({
+        value: '2026-08-26T12:00:00Z',
+        timeStyle: 'short',
+        ...({ month: 'long' } as object),
+      });
+    }).toThrow(TypeError);
+  });
+
   test('rejects an invalid date where it is created', () => {
     expect(() => {
       return fmt.date({ value: 'not a date' });
@@ -228,6 +250,30 @@ describe('createI18n', () => {
     ).toBe('September 28, 2026');
   });
 
+  test('formats day/month dates from date components', () => {
+    const dayMonth = fmt.date({
+      value: '2026-08-26T12:00:00Z',
+      timeZone: 'UTC',
+      day: '2-digit',
+      month: '2-digit',
+    });
+
+    expect(pt.formatValue(dayMonth)).toBe('26/08');
+    expect(en.formatValue(dayMonth)).toBe('08/26');
+    expect(pt.formatValue(JSON.parse(JSON.stringify(dayMonth)))).toBe('26/08');
+    expect(
+      en.formatValue(
+        fmt.date({
+          value: '2026-08-26T12:00:00Z',
+          timeZone: 'UTC',
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        })
+      )
+    ).toBe('August 26, 2026');
+  });
+
   test('formats relative time against now', () => {
     jest.setSystemTime(new Date('2026-09-28T12:00:00Z'));
 
@@ -289,6 +335,17 @@ describe('createI18n', () => {
   test('renders void tags', () => {
     expect(en.render(msg(messages.lineBreak))).toBe('First\nSecond');
     expect(en.renderHtml(msg(messages.lineBreak))).toBe('First<br>Second');
+  });
+
+  test('keeps div and heading tags in html and drops them in text', () => {
+    const ref = msg(messages.blocks, {
+      amount: fmt.currency({ value: 5, currency: 'USD' }),
+    });
+
+    expect(en.renderHtml(ref)).toBe(
+      '<h1>Report</h1><div>Spent $5.00</div><h2>A</h2><h3>B</h3><h4>C</h4><h5>D</h5><h6>E</h6>'
+    );
+    expect(en.render(ref)).toBe('ReportSpent $5.00ABCDE');
   });
 
   test('passes plain strings through, escaped for html', () => {

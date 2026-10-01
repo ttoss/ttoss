@@ -51,6 +51,10 @@
     "defaultMessage": "Scroll groups backward",
     "description": "Accessible label for the arrow that scrolls the grouped-menu carousel to earlier groups."
   },
+  "3wGIVX": {
+    "defaultMessage": "Aplicar",
+    "description": "Label of the button that applies the color chosen in the custom color picker."
+  },
   "4Kaze0": {
     "defaultMessage": "A layer references a source that does not exist.",
     "description": "Warnings panel: layer.sourceId has no matching source."
@@ -70,6 +74,10 @@
   "8Drt0l": {
     "defaultMessage": "Buscas recentes",
     "description": "Locator filter: heading above the recently picked places."
+  },
+  "8TPNSp": {
+    "defaultMessage": "Matiz",
+    "description": "Accessible label for the hue bar of the custom color picker."
   },
   "9WPqwF": {
     "defaultMessage": "Escolha a cor base",
@@ -175,6 +183,10 @@
     "defaultMessage": "{count} rec.",
     "description": "Abbreviated record count beside the current value in the compact timeline bar anchored to the map."
   },
+  "X4guJB": {
+    "defaultMessage": "Tons · clique para ajustar",
+    "description": "Heading of the row of tones in the color-ramp editor; each tone opens the custom color picker."
+  },
   "XNN1t0": {
     "defaultMessage": "Gerando…",
     "description": "Label of the download button while the PNG is being generated."
@@ -199,6 +211,10 @@
     "defaultMessage": "The visualization spec does not match the expected schema.",
     "description": "Warnings panel: spec fails JSON schema validation."
   },
+  "ZoQ4ZH": {
+    "defaultMessage": "Two layer-control entries share an id; each toggle and category needs its own.",
+    "description": "Warnings panel: an id repeats among the layer control toggles and categories."
+  },
   "b+PIz+": {
     "defaultMessage": "Remover seleção",
     "description": "Locator filter: accessible label for the button clearing the chosen place."
@@ -206,6 +222,10 @@
   "bVxrZo": {
     "defaultMessage": "Nome da escala",
     "description": "Placeholder of the name field in the color-ramp editor."
+  },
+  "c+KiO6": {
+    "defaultMessage": "Customizar estilos",
+    "description": "Tooltip (title) of the pipette button that opens the custom color picker in the color-ramp editor."
   },
   "c5T3as": {
     "defaultMessage": "Incluir legenda",
@@ -235,6 +255,10 @@
     "defaultMessage": "Exportar mapa como PNG",
     "description": "Accessible label and tooltip of the left sidebar button that opens the map export dialog."
   },
+  "iRi4zS": {
+    "defaultMessage": "Restaurar",
+    "description": "Button in the color-ramp editor that drops every tone adjustment, back to the ramp built from the base color."
+  },
   "j3dtho": {
     "defaultMessage": "Close details",
     "description": "Accessible label for the button that closes the right sidebar."
@@ -242,6 +266,18 @@
   "jecbZ/": {
     "defaultMessage": "Nome do arquivo",
     "description": "Label of the file-name field in the map export dialog."
+  },
+  "kd0jJX": {
+    "defaultMessage": "{base} personalizado",
+    "description": "Default name of a color ramp saved without one, built from the base color preset named `base`."
+  },
+  "kwKAUT": {
+    "defaultMessage": "Cancelar",
+    "description": "Label of the button that closes the custom color picker without applying the color."
+  },
+  "lfjp7g": {
+    "defaultMessage": "Tom {index} · {color}",
+    "description": "Tooltip and accessible name of one tone in the color-ramp editor: its position and hex code."
   },
   "n6ryYu": {
     "defaultMessage": "{message}",
@@ -263,13 +299,25 @@
     "defaultMessage": "Map type: {map_type}",
     "description": "Metadata panel: the spec's mapType, when set."
   },
+  "sZMdqx": {
+    "defaultMessage": "Saturação e brilho",
+    "description": "Accessible label for the square of the custom color picker that sets saturation and brightness."
+  },
   "ssMheo": {
     "defaultMessage": "Intervalo de reprodução",
     "description": "Timeline filter: label for the playback interval input."
   },
+  "tyaZ8Q": {
+    "defaultMessage": "Hexadecimal",
+    "description": "Accessible label for the hex code field of the custom color picker."
+  },
   "uzIIpa": {
     "defaultMessage": "This layer type is not supported.",
     "description": "Warnings panel: layer.geometry is not implemented by the engine adapter."
+  },
+  "w48FrG": {
+    "defaultMessage": "Hex",
+    "description": "Short caption beside the hex code field of the custom color picker."
   },
   "yb6iwx": {
     "defaultMessage": "The visualization spec targets an unsupported schema version.",

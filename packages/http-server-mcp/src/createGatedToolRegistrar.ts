@@ -1,4 +1,4 @@
-import type { McpServer } from '@modelcontextprotocol/server';
+import type { McpServer, ToolAnnotations } from '@modelcontextprotocol/server';
 import type { Catalog } from '@ttoss/i18n-core';
 
 import { getIdentity, getRequestLocale } from './context';
@@ -30,6 +30,21 @@ export type GatedToolDef = {
   name: string;
   /** Human-readable tool description. */
   description: string;
+  /** Display name shown by clients instead of `name`. */
+  title?: string;
+  /**
+   * Behaviour hints forwarded on `tools/list` (`readOnlyHint`,
+   * `destructiveHint`, `idempotentHint`, `openWorldHint`). Clients use them to
+   * decide when to ask the user for confirmation; they are hints, never
+   * enforcement — scope and gates still decide what may run.
+   */
+  annotations?: ToolAnnotations;
+  /**
+   * Zod field map or ZodObject describing the result. When set, a successful
+   * result is also returned as `structuredContent`, and the SDK validates it
+   * against this schema.
+   */
+  outputSchema?: unknown;
   /** The single scope that must be present on the caller's token. */
   requiredScope: string;
   /** Zod field map or ZodObject — passed through to `server.registerTool`. */
@@ -247,9 +262,12 @@ export const createGatedToolRegistrar = ({
     try {
       const result = await def.method({ ...ctx.args, ...extra });
       if (result == null) return toolError(notFoundMessage);
-      return {
-        content: [{ type: 'text' as const, text: JSON.stringify(result) }],
-      };
+      const content = [{ type: 'text' as const, text: JSON.stringify(result) }];
+      // TextContent stays alongside structuredContent for clients that ignore
+      // structured output (MCP spec, tools → structured content).
+      return def.outputSchema === undefined
+        ? { content }
+        : { content, structuredContent: result as Record<string, unknown> };
     } catch (error) {
       if (onError) await onError(error, ctx);
       return renderOrRethrow(error, ctx);
@@ -281,8 +299,11 @@ export const createGatedToolRegistrar = ({
     server.registerTool(
       def.name,
       {
+        title: def.title,
         description: def.description,
         inputSchema: def.inputSchema as RegisterToolArgs[1]['inputSchema'],
+        outputSchema: def.outputSchema as RegisterToolArgs[1]['outputSchema'],
+        annotations: def.annotations,
         _meta: def._meta,
       },
       handler as unknown as RegisterToolArgs[2]

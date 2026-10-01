@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.29.1](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.29.0...@ttoss/appsync-api@0.29.1) (2026-10-01)
+
+### Bug Fixes
+
+- **appsync-api:** apply enum argument defaults and values when middlewares are set ([#1286](https://github.com/ttoss/ttoss/issues/1286)) ([4a9a2f3](https://github.com/ttoss/ttoss/commit/4a9a2f3e1a0032c2695fdebfb08ba582f0390c22))
+
 # 0.29.0 (2026-09-30)
 
 ### Features

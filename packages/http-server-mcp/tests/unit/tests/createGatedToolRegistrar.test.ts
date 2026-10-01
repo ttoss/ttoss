@@ -663,3 +663,72 @@ describe('createGatedToolRegistrar', () => {
     });
   });
 });
+
+describe('createGatedToolRegistrar tool metadata', () => {
+  const registerWith = (extra: Record<string, unknown>) => {
+    const { server, call } = patchServer();
+    const { register } = createGatedToolRegistrar({
+      server,
+      resolveIdentity: () => {
+        return makeIdentity({ scopes: ['r'] });
+      },
+    });
+    register({
+      name: 'meta-tool',
+      description: 'meta',
+      requiredScope: 'r',
+      inputSchema: {},
+      method: async () => {
+        return { id: 42 };
+      },
+      ...extra,
+    });
+    const config = jest.mocked(server.registerTool).mock.calls[0][1] as Record<
+      string,
+      unknown
+    >;
+    return { config, call };
+  };
+
+  test('forwards title, annotations and outputSchema to registerTool', () => {
+    const annotations = {
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: true,
+    };
+    const outputSchema = { id: {} };
+    const { config } = registerWith({
+      title: 'Meta Tool',
+      annotations,
+      outputSchema,
+    });
+    expect(config.title).toBe('Meta Tool');
+    expect(config.annotations).toEqual(annotations);
+    expect(config.outputSchema).toBe(outputSchema);
+  });
+
+  test('without the new fields, registers them as undefined and returns only text', async () => {
+    const { config, call } = registerWith({});
+    expect(config.title).toBeUndefined();
+    expect(config.annotations).toBeUndefined();
+    expect(config.outputSchema).toBeUndefined();
+    const result = (await call({})) as Record<string, unknown>;
+    expect(result).not.toHaveProperty('structuredContent');
+    expect(result.content).toEqual([
+      { type: 'text', text: JSON.stringify({ id: 42 }) },
+    ]);
+  });
+
+  test('with outputSchema, returns structuredContent and the same JSON as text', async () => {
+    const { call } = registerWith({ outputSchema: { id: {} } });
+    const result = (await call({})) as {
+      content: Array<{ type: string; text: string }>;
+      structuredContent: unknown;
+    };
+    expect(result.structuredContent).toEqual({ id: 42 });
+    expect(JSON.parse(result.content[0].text)).toEqual(
+      result.structuredContent
+    );
+  });
+});

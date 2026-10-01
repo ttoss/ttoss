@@ -1,7 +1,11 @@
 import { extract } from '@formatjs/cli-lib';
 import fg from 'fast-glob';
 
-import { ID_INTERPOLATION_PATTERN, type TranslationData } from './config';
+import {
+  ID_INTERPOLATION_PATTERN,
+  PRESERVE_WHITESPACE,
+  type TranslationData,
+} from './config';
 
 /**
  * A marker no author would type, so a generated id can be told apart from an
@@ -25,7 +29,10 @@ export const extractTranslationsFromSource = async ({
   }
 
   return JSON.parse(
-    await extract(files, { idInterpolationPattern: ID_INTERPOLATION_PATTERN })
+    await extract(files, {
+      idInterpolationPattern: ID_INTERPOLATION_PATTERN,
+      preserveWhitespace: PRESERVE_WHITESPACE,
+    })
   );
 };
 
@@ -57,6 +64,7 @@ export const findGeneratedIds = async ({
   const extracted: TranslationData = JSON.parse(
     await extract(files, {
       idInterpolationPattern: `${GENERATED_ID_MARKER}${ID_INTERPOLATION_PATTERN}`,
+      preserveWhitespace: PRESERVE_WHITESPACE,
     })
   );
 

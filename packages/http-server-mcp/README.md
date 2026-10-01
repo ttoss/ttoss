@@ -594,6 +594,19 @@ The spec suggests checking the client's declared capability before registering U
 
 Declaring it always is also strictly more compatible — a host without Apps support ignores `_meta` and renders the tool's `content`, which is the extension's own graceful-degradation contract. Keep every tool's text result meaningful on its own and the fallback takes care of itself.
 
+### Writing the view
+
+A view is plain HTML; a raw `postMessage` client is enough, no SDK needed. Tools generated from OpenAPI link to a view through [`toolMeta` and `toStructuredContent`](https://github.com/ttoss/ttoss/tree/main/packages/http-server-mcp-openapi#mcp-apps-views). The parts that only fail inside a host:
+
+- **The view speaks first.** It sends `ui/initialize` (`appInfo`, `appCapabilities`, `protocolVersion`), then `ui/notifications/initialized`, and reads the result from `ui/notifications/tool-result` — `structuredContent` when the tool sets it, else the text.
+- **Buttons call tools through the host** with `tools/call`, and the host may ask the person to confirm. `ui/notifications/tool-input` carries the original arguments, which is what a button needs to repeat or extend the call.
+- **Fonts and scripts load only from origins in `ui.csp.resourceDomains`.** The host's default CSP is `font-src 'self'`, so a `data:` font is blocked.
+- **Report size from `document.body`**, not `document.documentElement`: the document is never shorter than the iframe, so the view would grow but never shrink.
+- **Set every value from a tool result with `textContent`.** It is data a model or a user produced.
+- **Theme from `hostContext.theme`**, updated by `ui/notifications/host-context-changed`.
+
+To see a view, render it in a host: ext-apps' `AppBridge` in a browser works, connected before the iframe's `srcdoc` is set because the view speaks first. An agent CLI such as Claude Code is an MCP client but not an Apps host, so it never renders one.
+
 ## Issuing tokens for MCP clients
 
 The `auth` option above covers the **resource-server** half of MCP authorization — it verifies tokens issued by an external authorization server (Cognito, Auth0, …). To make your own first-party server _issue_ the tokens an MCP client runs the full OAuth flow against, add the [`@ttoss/http-server-auth`](https://ttoss.dev/docs/modules/packages/http-server-auth) plugin's `oauthServer()` and pair it with `createMcpRouter({ auth: { verifyToken } })` so one deployment both issues and verifies tokens. See the [OAuth Authorization Server](https://ttoss.dev/docs/engineering/guidelines/oauth-authorization-server) guideline.
@@ -716,6 +729,9 @@ The `GatedToolDef` passed to `register` has:
 - `inputSchema` — Zod field map or `ZodObject`, forwarded to `server.registerTool`.
 - `gates` (`Array<(ctx: ToolCallContext) => void | Promise<void>>`, optional) — Per-tool guards appended after the global `gates`. Receive the full `ToolCallContext` enabling arg-conditional authorization.
 - `_meta` (`Record<string, unknown>`, optional) — Tool metadata forwarded verbatim on `tools/list`; how a gated tool links to an [MCP Apps](#mcp-apps-interactive-uis) view.
+- `title` (`string`, optional) — Display name forwarded on `tools/list`.
+- `annotations` (`ToolAnnotations`, optional) — Behaviour hints forwarded on `tools/list`: `readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`. Clients use them to decide when to ask for confirmation; they never replace `requiredScope` or `gates`.
+- `outputSchema` (Zod field map or `ZodObject`, optional) — Result schema forwarded on `tools/list`. When set, a successful result is returned as `structuredContent` **and** as the same JSON in a `TextContent` block, and the SDK validates it against the schema. Without it, the result is a single `TextContent`, as before.
 - `method` — Async handler. Receives merged call args + `buildContext` output.
 
 **`ToolCallContext`** is the object passed to gates, `buildContext`, and `onError`:

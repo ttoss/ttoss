@@ -23,19 +23,51 @@ export type FormatValue =
       ratio: number;
       maximumFractionDigits?: number;
     }
-  | {
+  | ({
       $fmt: 'date';
       /** ISO 8601, so the value survives JSON. */
       value: string;
       timeZone?: string;
-      dateStyle?: 'short' | 'medium' | 'long' | 'full';
-      timeStyle?: 'short' | 'medium';
-    }
+    } & DateFormatOptions)
   | {
       $fmt: 'relativeTime';
       /** ISO 8601, so the value survives JSON. */
       value: string;
     };
+
+/**
+ * How a date renders: a preset style, or the components to show (`day` and
+ * `month` alone give a day/month date, `26/08` in pt-BR). Never both, because
+ * `Intl.DateTimeFormat` rejects a style mixed with components; with neither,
+ * `dateStyle: 'short'` applies.
+ */
+export type DateFormatOptions =
+  | {
+      dateStyle?: 'short' | 'medium' | 'long' | 'full';
+      timeStyle?: 'short' | 'medium';
+      day?: never;
+      month?: never;
+      year?: never;
+    }
+  | {
+      day?: 'numeric' | '2-digit';
+      month?: 'numeric' | '2-digit' | 'long' | 'short' | 'narrow';
+      year?: 'numeric' | '2-digit';
+      dateStyle?: never;
+      timeStyle?: never;
+    };
+
+export const hasDateComponents = (options: {
+  day?: string;
+  month?: string;
+  year?: string;
+}) => {
+  return (
+    options.day !== undefined ||
+    options.month !== undefined ||
+    options.year !== undefined
+  );
+};
 
 /**
  * The JSON-safe subset of `Intl.NumberFormatOptions`.
@@ -94,12 +126,21 @@ export const fmt = {
   }): FormatValue => {
     return { $fmt: 'percent', ...args };
   },
-  date: (args: {
-    value: string | Date;
-    timeZone?: string;
-    dateStyle?: 'short' | 'medium' | 'long' | 'full';
-    timeStyle?: 'short' | 'medium';
-  }): FormatValue => {
+  date: (
+    args: { value: string | Date; timeZone?: string } & DateFormatOptions
+  ): FormatValue => {
+    // The type already forbids the mix; this catches untyped callers here
+    // rather than at render time, where @formatjs/intl reports Intl's error to
+    // onError and renders the raw date string instead.
+    if (
+      hasDateComponents(args) &&
+      (args.dateStyle !== undefined || args.timeStyle !== undefined)
+    ) {
+      throw new TypeError(
+        'fmt.date takes dateStyle/timeStyle or day/month/year, not both: Intl.DateTimeFormat rejects the mix.'
+      );
+    }
+
     return { $fmt: 'date', ...args, value: toIsoString(args.value) };
   },
   relativeTime: (args: { value: string | Date }): FormatValue => {

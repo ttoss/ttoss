@@ -6,7 +6,8 @@
         "import": "transform",
         "type": "config",
         "overrideIdFn": "[sha512:contenthash:base64:6]",
-        "ast": true
+        "ast": true,
+        "preserveWhitespace": true
       }
     ],
     /**

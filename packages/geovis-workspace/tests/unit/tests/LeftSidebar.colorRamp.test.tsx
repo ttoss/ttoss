@@ -138,21 +138,29 @@ describe('building a color ramp', () => {
   });
 
   /*
-   * A nameless ramp would land in the list as a blank row, so the commit is
-   * held until there is something to call it.
+   * The name is optional: a scale saved without one is called after the preset
+   * it was built from, so it never lands in the list as a blank row.
    */
-  test('holds the commit until the scale is named', async () => {
+  test('names a scale left unnamed after its base preset', async () => {
     const onCreate = jest.fn();
     renderRamp(buildConfig({ create: { baseColors: BASE_COLORS, onCreate } }));
     await open();
 
-    await click(screen.getByRole('button', { name: 'Adicionar' }));
-    expect(onCreate).not.toHaveBeenCalled();
-
-    await type(screen.getByLabelText('Nome da escala'), 'Minha escala');
+    await click(screen.getByRole('button', { name: 'Verde' }));
     await click(screen.getByRole('button', { name: 'Adicionar' }));
 
-    expect(onCreate).toHaveBeenCalledTimes(1);
+    expect(onCreate.mock.calls[0][0].option.label).toBe('Verde personalizado');
+  });
+
+  test('a typed name wins over the default one', async () => {
+    const onCreate = jest.fn();
+    renderRamp(buildConfig({ create: { baseColors: BASE_COLORS, onCreate } }));
+    await open();
+
+    await type(screen.getByLabelText('Nome da escala'), '  Minha escala  ');
+    await click(screen.getByRole('button', { name: 'Adicionar' }));
+
+    expect(onCreate.mock.calls[0][0].option.label).toBe('Minha escala');
   });
 
   test('reports a complete, removable option built from the chosen base', async () => {
@@ -246,19 +254,25 @@ describe('building a color ramp', () => {
     expect(newScale()).toBeInTheDocument();
   });
 
-  /* The presets are a shortcut, not the whole range the reader may want. */
+  /*
+   * The presets are a shortcut, not the whole range the reader may want. The
+   * picker itself is covered in LeftSidebar.colorPicker.test.tsx.
+   */
   test('builds from a color picked outside the presets', async () => {
     const onCreate = jest.fn();
     renderRamp(buildConfig({ create: { baseColors: BASE_COLORS, onCreate } }));
     await open();
 
-    fireEvent.change(screen.getByLabelText('Cor personalizada'), {
-      target: { value: '#cb181d' },
+    await click(screen.getByRole('button', { name: 'Cor personalizada' }));
+    fireEvent.change(screen.getByLabelText('Hexadecimal'), {
+      target: { value: 'cb181d' },
     });
-    await type(screen.getByLabelText('Nome da escala'), 'Minha escala');
+    await click(screen.getByRole('button', { name: 'Aplicar' }));
     await click(screen.getByRole('button', { name: 'Adicionar' }));
 
     expect(onCreate.mock.calls[0][0].baseColor).toBe('#cb181d');
+    // Named after its code, which the apply wrote into the empty name field.
+    expect(onCreate.mock.calls[0][0].option.label).toBe('#CB181D');
   });
 
   /* An app with its own color story may not want the free input at all. */

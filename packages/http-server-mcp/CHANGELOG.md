@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.33.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.33.0...@ttoss/http-server-mcp@0.33.1) (2026-10-01)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp
+
+# [0.33.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.32.0...@ttoss/http-server-mcp@0.33.0) (2026-10-01)
+
+### Features
+
+- **http-server-mcp:** gated registrar forwards title, annotations and outputSchema ([#1280](https://github.com/ttoss/ttoss/issues/1280)) ([64a8ac5](https://github.com/ttoss/ttoss/commit/64a8ac54009448c54bba85c21facf8b0e9e22bc5)), closes [#1279](https://github.com/ttoss/ttoss/issues/1279)
+
 # 0.32.0 (2026-09-30)
 
 - feat(http-server-mcp)!: require a token for tools/list by default (#1221) ([912b2bd](https://github.com/ttoss/ttoss/commit/912b2bd1cce4da3bb4add64594dda40dbdd0802c)), closes [#1221](https://github.com/ttoss/ttoss/issues/1221)

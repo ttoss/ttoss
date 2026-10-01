@@ -3,10 +3,10 @@ import { jestUnitConfig } from '@ttoss/config';
 export default jestUnitConfig({
   coverageThreshold: {
     global: {
-      statements: 99.3,
-      branches: 96.1,
-      lines: 99.3,
-      functions: 97.9,
+      statements: 99.35,
+      branches: 97.35,
+      lines: 99.35,
+      functions: 98,
     },
   },
   // @formatjs/intl and intl-messageformat ship ESM only.

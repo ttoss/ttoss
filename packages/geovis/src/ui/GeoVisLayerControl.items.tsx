@@ -1,11 +1,18 @@
 import type * as React from 'react';
 
-import type { LayerControlItem } from '../spec/types';
+import { isLayerControlGroup } from '../spec/layerControl';
+import type {
+  LayerControlEntry,
+  LayerControlGroup,
+  LayerControlItem,
+} from '../spec/types';
+import { buildGroupThumbStyle } from './GeoVisLayerControl.groupStyles';
 import {
   activeBadgeStyle,
   buildItemLabelStyle,
   buildItemStyle,
   buildItemThumbStyle,
+  moreActiveBadgeStyle,
   TRIGGER_SIZE,
 } from './GeoVisLayerControl.styles';
 
@@ -139,38 +146,123 @@ const LayerControlItemButton = ({
   );
 };
 
-/** What every item list (summary strip or full grid) needs to render. */
+/** Whether none of an item's layers exist in the current spec. */
+const isItemDisabled = (
+  item: LayerControlItem,
+  layerIds: Set<string>
+): boolean => {
+  return !item.layers.some((id) => {
+    return layerIds.has(id);
+  });
+};
+
+/**
+ * A category's card: its thumbnail, and a badge counting the items in it that
+ * are on. Clicking it opens the category's panel — it never
+ * toggles anything itself. Disabled when every item in it is.
+ */
+const LayerControlGroupButton = ({
+  group,
+  activeCount,
+  disabled,
+  hovered,
+  onOpen,
+  onHoverChange,
+}: {
+  group: LayerControlGroup;
+  activeCount: number;
+  disabled: boolean;
+  hovered: boolean;
+  onOpen: (group: LayerControlGroup) => void;
+  onHoverChange: React.Dispatch<React.SetStateAction<string | null>>;
+}) => {
+  return (
+    <button
+      type="button"
+      data-group-id={group.id}
+      // Named by its label alone: the badge's count is not part of the name.
+      aria-label={group.label}
+      aria-haspopup="dialog"
+      disabled={disabled}
+      style={buildItemStyle({ disabled, hovered })}
+      onClick={() => {
+        return onOpen(group);
+      }}
+      onMouseEnter={() => {
+        return onHoverChange(group.id);
+      }}
+      onMouseLeave={() => {
+        return onHoverChange((prev) => {
+          return prev === group.id ? null : prev;
+        });
+      }}
+    >
+      <span style={buildGroupThumbStyle(disabled)}>
+        <ItemThumbnail thumbnail={group.thumbnail} />
+        {activeCount > 0 ? (
+          <span style={moreActiveBadgeStyle}>{activeCount}</span>
+        ) : null}
+      </span>
+      <span style={buildItemLabelStyle({ active: false, disabled })}>
+        {group.label}
+      </span>
+    </button>
+  );
+};
+
+/** What every entry list (summary strip, full grid, category grid) needs. */
 export type ItemListProps = {
-  items: LayerControlItem[];
+  items: LayerControlEntry[];
   activeById: Record<string, boolean>;
   layerIds: Set<string>;
   hoveredId: string | null;
   onToggle: (item: LayerControlItem) => void;
+  onOpenGroup: (group: LayerControlGroup) => void;
   onHoverChange: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
-/** One {@link LayerControlItemButton} per item, shared by both panels. */
+/**
+ * One card per entry, shared by every panel: a toggle button per item, and a
+ * category card per group.
+ */
 export const LayerControlItemList = ({
   items,
   activeById,
   layerIds,
   hoveredId,
   onToggle,
+  onOpenGroup,
   onHoverChange,
 }: ItemListProps) => {
   return (
     <>
-      {items.map((item) => {
-        const disabled = !item.layers.some((id) => {
-          return layerIds.has(id);
-        });
+      {items.map((entry) => {
+        if (isLayerControlGroup(entry)) {
+          return (
+            <LayerControlGroupButton
+              key={entry.id}
+              group={entry}
+              activeCount={
+                entry.items.filter((item) => {
+                  return resolveItemActive(item, activeById);
+                }).length
+              }
+              disabled={entry.items.every((item) => {
+                return isItemDisabled(item, layerIds);
+              })}
+              hovered={hoveredId === entry.id}
+              onOpen={onOpenGroup}
+              onHoverChange={onHoverChange}
+            />
+          );
+        }
         return (
           <LayerControlItemButton
-            key={item.id}
-            item={item}
-            active={resolveItemActive(item, activeById)}
-            disabled={disabled}
-            hovered={hoveredId === item.id}
+            key={entry.id}
+            item={entry}
+            active={resolveItemActive(entry, activeById)}
+            disabled={isItemDisabled(entry, layerIds)}
+            hovered={hoveredId === entry.id}
             onToggle={onToggle}
             onHoverChange={onHoverChange}
           />

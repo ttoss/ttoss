@@ -32,6 +32,7 @@ export {
   getI18nConfig,
   type I18nConfig,
   ID_INTERPOLATION_PATTERN,
+  PRESERVE_WHITESPACE,
   type TranslationData,
 } from './config';
 export {

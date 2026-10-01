@@ -11,6 +11,7 @@ export * from './runtime/adapter';
 export * from './runtime/contextPacket';
 export * from './runtime/createRuntime';
 export * from './spec/boundaryGroup';
+export { isLayerControlGroup, layerControlItems } from './spec/layerControl';
 export { SEQUENTIAL_PALETTES } from './spec/mapTypeDefaults/palettes';
 export * from './spec/result';
 export * from './spec/types';

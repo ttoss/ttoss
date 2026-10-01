@@ -270,3 +270,5 @@ The CLI reads the catalogs of every in-scope dependency — direct and transitiv
 A dependency catalog that exists but cannot be parsed fails the run rather than being skipped silently.
 
 Every `@ttoss/*` build injects ids with `@ttoss/config`'s `I18N_ID_INTERPOLATION_PATTERN`, which is also what the CLI extracts with. Configure your own bundler with the same pattern — `formatjsSwcPlugin()` / `formatjsBabelPlugin()` from `@ttoss/config` — or no id will match and every message silently falls back to its `defaultMessage`.
+
+Extraction also preserves whitespace (formatjs `preserveWhitespace`), as those presets do: line breaks and indentation in a `defaultMessage` reach the catalog and the compiled messages unchanged. The id hashes the message text, so a bundler that collapses whitespace keys every multi-line message differently from the catalog. Upgrade this CLI together with `@ttoss/config`.

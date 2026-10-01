@@ -11,7 +11,7 @@ import { computeBbox } from './helpers/map-story-helpers';
 /**
  * Demonstrates the **spec-driven layer control**: declaring `spec.control`
  * makes `<GeoVisProvider>` auto-mount a floating toggle panel in the map
- * corner — there is no `<GeoVisLayerControl>` in the JSX. Hover the "Camadas"
+ * corner — there is no `<GeoVisLayerControl>` in the JSX. Click the "Camadas"
  * button (bottom-left) to reveal one toggle per layer group.
  *
  * The `mode` buttons above the map rebuild the spec from scratch (as a real app
@@ -26,8 +26,8 @@ import { computeBbox } from './helpers/map-story-helpers';
  *    while "Linhas dos estados" keeps working.
  * 3. **"Ver mais"** — `control.maxVisibleItems: 3` keeps the panel to the first
  *    three items plus a "Ver mais" card counting the rest. Clicking it opens a
- *    larger panel with every item, which stays open when the pointer leaves
- *    (close it with ✕, `Escape` or a click on the map). Turn on a layer in it
+ *    larger panel with every item, which stays open until closed (✕, `Escape`
+ *    or a click on the map). Turn on a layer in it
  *    and close it: the "Ver mais" card badges how many hidden items are on.
  */
 export default {
@@ -177,7 +177,7 @@ const control: NonNullable<VisualizationSpec['control']> = {
   id: 'layers',
   label: 'Camadas',
   position: 'bottom-left',
-  trigger: 'hover',
+  trigger: 'click',
   // Ten items: the panel shows the first three plus a "Ver mais" card (+7).
   maxVisibleItems: 3,
   items: [
@@ -259,7 +259,7 @@ const buildSpec = (mode: Mode): VisualizationSpec => {
   return {
     title: 'Spec-driven layer control',
     description:
-      'Hover "Camadas" (bottom-left) to toggle layer groups. Hide the kitchens, ' +
+      'Click "Camadas" (bottom-left) to toggle layer groups. Hide the kitchens, ' +
       'then switch mode — the choice persists. In "Coroplético" the kitchens ' +
       'item is disabled (no kitchen layer in that mode). Click "Ver mais" to ' +
       'see every layer.',

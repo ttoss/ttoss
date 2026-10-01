@@ -43,6 +43,65 @@ test.each([
   expect(skOrder).toEqual(expected);
 });
 
+/**
+ * A middleware makes `buildSchema` return a schema whose types are new
+ * instances the `schemaComposer` never registered. The enum default and the
+ * enum value mapping must survive that.
+ */
+test.each([
+  {
+    sort: undefined,
+    expected: ['Amanda', 'Bob', 'Charlie', 'David', 'Eve'],
+  },
+  {
+    sort: 'SK_ASC',
+    expected: ['Amanda', 'Bob', 'Charlie', 'David', 'Eve'],
+  },
+  {
+    sort: 'SK_DESC',
+    expected: ['Eve', 'David', 'Charlie', 'Bob', 'Amanda'],
+  },
+  {
+    sort: 'NOT_AN_ENUM_VALUE',
+    expected: ['Amanda', 'Bob', 'Charlie', 'David', 'Eve'],
+  },
+])(
+  'should return enum values as args when middlewares are applied, sort: $sort',
+  async ({ sort, expected }) => {
+    const passThrough = async (
+      resolve: any,
+      root: any,
+      args: any,
+      context: any,
+      info: any
+    ) => {
+      return resolve(root, args, context, info);
+    };
+
+    const handler = createAppSyncResolverHandler({
+      schemaComposer,
+      middlewares: [passThrough],
+    });
+
+    const event = {
+      info: {
+        parentTypeName: 'Query',
+        fieldName: 'authors',
+      },
+      arguments: { sort },
+      source: {},
+    } as any;
+
+    const response = await handler(event, {} as any, jest.fn());
+
+    const skOrder = response.edges.map((edge: any) => {
+      return edge.node.sk;
+    });
+
+    expect(skOrder).toEqual(expected);
+  }
+);
+
 test('lambda handler should call author resolver correctly', async () => {
   const handler = createAppSyncResolverHandler({ schemaComposer });
 
