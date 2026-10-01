@@ -375,7 +375,10 @@ are grouped wherever they show — the bars' tooltips, the `unitLabel` readout a
 the compact HUD — using the locale declared on `I18nProvider`, whether or not a
 message bundle was loaded for it, while the keys stay ungrouped because they are
 years),
-`chips` (`{ kind, menuId?, options, multiple?, defaultSelected? }` — with a
+`chips` (`{ kind, menuId?, options, multiple?, defaultSelected?, layout? }` — `layout`
+is `{ kind: 'wrap' }` by default, each chip as wide as its label and wrapping
+onto the next line, or `{ kind: 'grid', columns }` for equal-width columns whose
+chips cut an overlong label with an ellipsis and show it whole on hover; with a
 `menuId` the active ids reach `selection[menuId]` joined by commas, `''` when
 none are active, which is both what the one-string-per-key selection holds and
 what a permalink needs; without one the selection stays visual-only),
