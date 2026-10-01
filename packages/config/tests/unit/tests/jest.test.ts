@@ -32,3 +32,9 @@ test('should raise testTimeout above the 5s jest default', () => {
 test('should let a package override the default testTimeout', () => {
   expect(jestUnitConfig({ testTimeout: 120_000 }).testTimeout).toBe(120_000);
 });
+
+test('should transform .mjs and .cjs files, so a published build is compiled for Jest', () => {
+  const { transform } = jestUnitConfig();
+  expect(transform['^.+\\.mjs$']).toBe('babel-jest');
+  expect(transform['^.+\\.cjs$']).toBe('babel-jest');
+});

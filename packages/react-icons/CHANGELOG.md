@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.11.0 (2026-09-30)
+
+### Features
+
+- **eslint-config:** enforce the quality metrics ESLint can, drop the config that does nothing ([#1211](https://github.com/ttoss/ttoss/issues/1211)) ([5673a18](https://github.com/ttoss/ttoss/commit/5673a1817b104a403466d07ac2ecd589bc4ddd49)), closes [ttoss/i18n-cli#build-config](https://github.com/ttoss/i18n-cli/issues/build-config)
+- **geovis:** pin icon images and a "Ver mais" panel for long layer l… ([#1264](https://github.com/ttoss/ttoss/issues/1264)) ([287e879](https://github.com/ttoss/ttoss/commit/287e8796653b65469ae60e7b7f63cd42d9476f65))
+
 ## [0.10.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-icons@0.10.0...@ttoss/react-icons@0.10.1) (2026-09-28)
 
 **Note:** Version bump only for package @ttoss/react-icons

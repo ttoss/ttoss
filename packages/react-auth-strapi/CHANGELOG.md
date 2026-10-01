@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.11.0 (2026-09-30)
+
+### Bug Fixes
+
+- **components:** write the NotificationsMenu and InstallPwa sources in English ([#1268](https://github.com/ttoss/ttoss/issues/1268)) ([7bf67c6](https://github.com/ttoss/ttoss/commit/7bf67c6b2462ffcc295126e97065150cf0bd4059))
+- **react-auth-strapi:** time out the social sign-in callback exchange ([#1273](https://github.com/ttoss/ttoss/issues/1273)) ([2f9acaa](https://github.com/ttoss/ttoss/commit/2f9acaab44374e7046c862151622b0288394ec5d))
+
+### Features
+
+- **cloud-auth,react-auth:** add Google and Facebook sign-in ([#1214](https://github.com/ttoss/ttoss/issues/1214)) ([c593c06](https://github.com/ttoss/ttoss/commit/c593c063fbd6a60a66438c0f84d6ee299b0a5ed1))
+- **components:** make the date picker follow the I18nProvider locale ([#1275](https://github.com/ttoss/ttoss/issues/1275)) ([d877468](https://github.com/ttoss/ttoss/commit/d8774686b39aa7b1f45df282fbc65ced4a9c6197)), closes [#1262](https://github.com/ttoss/ttoss/issues/1262)
+- **eslint-config:** enforce the quality metrics ESLint can, drop the config that does nothing ([#1211](https://github.com/ttoss/ttoss/issues/1211)) ([5673a18](https://github.com/ttoss/ttoss/commit/5673a1817b104a403466d07ac2ecd589bc4ddd49)), closes [ttoss/i18n-cli#build-config](https://github.com/ttoss/i18n-cli/issues/build-config)
+- **forms:** render Zod errors in the current locale ([#1272](https://github.com/ttoss/ttoss/issues/1272)) ([2f7579e](https://github.com/ttoss/ttoss/commit/2f7579e67b29f57bc68a48058d8618ee61361e61)), closes [#1262](https://github.com/ttoss/ttoss/issues/1262)
+- **react-auth-strapi:** support Google/social sign-in via Strapi providers ([#1259](https://github.com/ttoss/ttoss/issues/1259)) ([25bc4d9](https://github.com/ttoss/ttoss/commit/25bc4d94bff4b989457078cb325c3449cb6ec08f))
+
+## [0.10.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.10.1...@ttoss/react-auth-strapi@0.10.2) (2026-09-29)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
 ## [0.10.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.10.0...@ttoss/react-auth-strapi@0.10.1) (2026-09-29)
 
 **Note:** Version bump only for package @ttoss/react-auth-strapi

@@ -3,6 +3,136 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.18.1](https://github.com/ttoss/ttoss/compare/@ttoss/geovis-workspace@0.18.0...@ttoss/geovis-workspace@0.18.1) (2026-10-01)
+
+**Note:** Version bump only for package @ttoss/geovis-workspace
+
+# 0.18.0 (2026-09-30)
+
+- Feat/geovis workspace layout (#1201) ([22e2501](https://github.com/ttoss/ttoss/commit/22e2501eb886c16e303f23041b6cc5fa80512850)), closes [#1201](https://github.com/ttoss/ttoss/issues/1201)
+- Feat geovis prd-001 repairable errors (#1132) ([884a417](https://github.com/ttoss/ttoss/commit/884a417bf2da1f2c50eae69df6281c2bf7c071b3)), closes [#1132](https://github.com/ttoss/ttoss/issues/1132)
+
+### Features
+
+- **eslint-config:** enforce the quality metrics ESLint can, drop the config that does nothing ([#1211](https://github.com/ttoss/ttoss/issues/1211)) ([5673a18](https://github.com/ttoss/ttoss/commit/5673a1817b104a403466d07ac2ecd589bc4ddd49)), closes [ttoss/i18n-cli#build-config](https://github.com/ttoss/i18n-cli/issues/build-config)
+- **geovis-workspace:** add a color-ramp control to the settings zone ([#1245](https://github.com/ttoss/ttoss/issues/1245)) ([87796e8](https://github.com/ttoss/ttoss/commit/87796e8d4c631c1ce6701f4effd5c285356d5698))
+- **geovis-workspace:** add a settings zone to the left sidebar ([#1243](https://github.com/ttoss/ttoss/issues/1243)) ([0d78c39](https://github.com/ttoss/ttoss/commit/0d78c396d1b17f40f0b9a2c90caddbfe351ac935))
+- **geovis-workspace:** grouped menu carousel for the left sidebar ([#1198](https://github.com/ttoss/ttoss/issues/1198)) ([3c64afd](https://github.com/ttoss/ttoss/commit/3c64afd5fc3d5fb6f908313fc67794c856b8981f))
+- **geovis-workspace:** let a filters block hold a variations menu ([#1219](https://github.com/ttoss/ttoss/issues/1219)) ([5b6f195](https://github.com/ttoss/ttoss/commit/5b6f1952547e2f0c0b6034d8df5f650cebaf7496))
+- **geovis-workspace:** sidebar tooltips, fixed block headers, async-… ([#1228](https://github.com/ttoss/ttoss/issues/1228)) ([6fe51f5](https://github.com/ttoss/ttoss/commit/6fe51f510d26602291df86558322b7be811e8d96))
+- **geovis-workspace:** tab-based preview sidebar with time-lapse tim… ([#1200](https://github.com/ttoss/ttoss/issues/1200)) ([9880b1c](https://github.com/ttoss/ttoss/commit/9880b1cd5cf80857cdc5a198415cd25e7ead4ca1))
+- **geovis, geovis-workspace:** add cursor control, shouldOpen guard,… ([#1147](https://github.com/ttoss/ttoss/issues/1147)) ([92136f8](https://github.com/ttoss/ttoss/commit/92136f8aba7928617b05921722a4691c55ba293b))
+- **geovis:** pin icon images and a "Ver mais" panel for long layer l… ([#1264](https://github.com/ttoss/ttoss/issues/1264)) ([287e879](https://github.com/ttoss/ttoss/commit/287e8796653b65469ae60e7b7f63cd42d9476f65))
+- i18n Phase 0 + Phase 1 — @ttoss/i18n-core, multi-locale ttoss-i18n, canonical id pattern ([#1265](https://github.com/ttoss/ttoss/issues/1265)) ([4533535](https://github.com/ttoss/ttoss/commit/4533535869f543724ef170929e99ae723b3efb70)), closes [#1262](https://github.com/ttoss/ttoss/issues/1262) [#1056](https://github.com/ttoss/ttoss/issues/1056) [#1056](https://github.com/ttoss/ttoss/issues/1056)
+
+### BREAKING CHANGES
+
+- **geovis-workspace:** filter blocks no longer collapse unless they declare
+  `collapsible: true`. Every `filters` block used to collapse, so consumers that
+  want the chevron back have to opt in per block.
+
+Co-authored-by: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
+- `config.controls`, `config.leftSidebar.menus`,
+  `config.leftSidebarPreview`, `LayerListControls`, `onLayerVisibilityChange`,
+  and the `GeovisWorkspaceMenu`/`GeovisWorkspaceControls` types are removed.
+  Configure the left sidebar via `config.leftSidebar.sections`.
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+- feat(geovis): crossfade transition, prototype legend/control restyle
+
+Add a `crossfade` layer transition and align the legend and layer control
+with the design prototype.
+
+- Crossfade: on a geojson `data` change a shadow layer holds the NEW data and
+  fades in while the real layer keeps the OLD data and fades out, avoiding the
+  new-source parse flash. The fade only begins once the shadow source has
+  parsed, and the shadow is painted with the layer's `mapData` feature-state so
+  new points fade in already coloured (no white-then-coloured pop).
+- Legend: prototype card styling with an optional icon chip, footer value, and
+  a `position` offset that animates so the legend can slide clear of a panel.
+- Layer control: prototype trigger button with an optional `control.icon` and a
+  count badge. New spec fields land in `schema.json` and the `types`.
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+- chore(storybook): flatten geovis story titles and add crossfade story
+
+Drop the `Basemap`/`Fixtures`/`View` subfolders so every geovis story sits at
+the top level of the sidebar, and refresh the crossfade demo story.
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+- feat(geovis-workspace): add appearance card|bare option
+
+`config.appearance` controls the workspace container framing: `'card'`
+(default) keeps the border/radius/background for standalone use (e.g.
+Storybook); `'bare'` drops the border and radius so the workspace fills its
+container edge-to-edge when embedded in an app that owns the framing. Removes
+the need for consumers to strip the card chrome with brittle CSS.
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+- to validateSpec's return shape, accepted by ADR-0001
+  (pre-1.0). @ttoss/geovis-workspace does not consume validateSpec, so
+  no dependent changes were needed.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01UPEHrtopKmL6s9RQWmdgHR
+
+- feat(geovis): complete PRD-001 phases 2-5 (repair, runtime, capabilities, versioning)
+
+Phase 2: round-trip test proving every D3 repair produces a spec that
+re-validates cleanly.
+
+Phase 3: runtime.update/applyPatch validate before mutating and return
+GeoVisResult; the adapter is never called on failure and spec/result stay
+at their last accepted value. GeoVisProvider consumes results through a
+new `result` context field, retiring PolicyViolation/policyViolations —
+policy violations now flow through the same GeoVisIssue shape as warnings
+on a resolved result.
+
+Phase 4: CapabilitySet becomes the ADR-0002 structured tree (sourceTypes,
+layerGeometries, dataFeatures.featureState, viewFeatures), grounded in
+what MapLibreAdapter actually implements and tests actually exercise.
+validateSpec accepts the active adapter's capabilities and emits
+unsupported-\* issues with repair straight from the tree; unsupported specs
+are rejected before mount.
+
+Phase 5: audited every declared capability against the test suite (one
+raster-geometry gap found and closed rather than hidden) and added spec
+schema versioning (SPEC_SCHEMA_VERSION, schemaVersion field,
+invalid-schema-version issue).
+
+Two gaps found along the way, fixed in place: layers[].sourceId had no
+referential check at all (a genuine "broken reference" hole), and wiring
+real validation into the runtime exposed that a top-level `id` field used
+throughout tests/stories was never in the schema/type (additive fix,
+matches the existing title/description convention).
+
+Split validateSpec.ts and createRuntime.ts per the monorepo's
+max-lines/max-lines-per-function rules once the new logic pushed them
+over the limit.
+
+Updated the InvalidRawCountChoropleth story to read useGeoVis().result
+instead of the retired policyViolations, and fixed a latent bug where the
+fixture's policy metadata never reached the spec the story actually
+builds — the warning banner could never have rendered before this.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01UPEHrtopKmL6s9RQWmdgHR
+
+- fix(geovis): update test to check for resolved status instead of valid
+
+- test(geovis-workspace): adjust coverage thresholds to realistic values
+
+- test(geovis): adjust coverage thresholds to realistic values
+
+## [0.17.5](https://github.com/ttoss/ttoss/compare/@ttoss/geovis-workspace@0.17.4...@ttoss/geovis-workspace@0.17.5) (2026-09-29)
+
+**Note:** Version bump only for package @ttoss/geovis-workspace
+
 ## [0.17.4](https://github.com/ttoss/ttoss/compare/@ttoss/geovis-workspace@0.17.3...@ttoss/geovis-workspace@0.17.4) (2026-09-29)
 
 **Note:** Version bump only for package @ttoss/geovis-workspace

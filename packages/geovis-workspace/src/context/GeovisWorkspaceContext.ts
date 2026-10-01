@@ -544,7 +544,10 @@ export interface GeovisWorkspaceSidebarColorRampOption {
 export interface GeovisWorkspaceSidebarColorRampCreate {
   /** Base colors offered as presets, in the order they are rendered. */
   baseColors: GeovisWorkspaceSidebarColorRampBaseColor[];
-  /** Offers the free-color input beside the presets. @default true */
+  /**
+   * Offers the pipette beside the presets, which opens a picker card for any
+   * other base color (square, hue bar and hex field). @default true
+   */
   allowCustomColor?: boolean;
   /**
    * Classes the built ramp has. Defaults to the length of the first option, so

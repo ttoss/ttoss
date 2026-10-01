@@ -18,6 +18,7 @@ import {
   validateSchemaVersion,
   validateSizeBy,
 } from './validateSpec.checks';
+import { validateLayerControlIds } from './validateSpec.controlChecks';
 import { validateReferences } from './validateSpec.referenceChecks';
 
 const ajv = new Ajv2020({ strict: false });
@@ -61,6 +62,7 @@ export const validateSpec = (
     ...validateLegendThresholdOrder(spec),
     ...validateSizeBy(spec),
     ...validateMapDataDimensions(spec),
+    ...validateLayerControlIds(spec),
     ...(capabilities ? validateEngineCapability(spec, capabilities) : []),
     ...(capabilities ? validateSourceCapabilities(spec, capabilities) : []),
     ...(capabilities ? validateLayerCapabilities(spec, capabilities) : []),

@@ -89,20 +89,91 @@ repeats array values, `spaceDelimited`/`pipeDelimited` join them, and
 
 ## `registerOpenApiTools`
 
-| Field               | Description                                                                                                   |
-| ------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `server`            | The `McpServer` to register tools on.                                                                         |
-| `spec`              | One OpenAPI document, or an array of them (tools are flattened).                                              |
-| `callApi`           | Runs the resolved `{ method, url, body, tool, headers }` request and returns the raw data.                    |
-| `toText?`           | Serialises the raw data into the tool's text payload. Defaults to pretty JSON; strings pass through verbatim. |
-| `serverParameters?` | Supplies server-managed path/query parameter values. See [Server-managed values](#server-managed-values).     |
-| `options?`          | See [Options](#options).                                                                                      |
+| Field                  | Description                                                                                                   |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `server`               | The `McpServer` to register tools on.                                                                         |
+| `spec`                 | One OpenAPI document, or an array of them (tools are flattened).                                              |
+| `callApi`              | Runs the resolved `{ method, url, body, tool, headers }` request and returns the raw data.                    |
+| `toText?`              | Serialises the raw data into the tool's text payload. Defaults to pretty JSON; strings pass through verbatim. |
+| `serverParameters?`    | Supplies server-managed path/query parameter values. See [Server-managed values](#server-managed-values).     |
+| `toStructuredContent?` | `({ data, tool })` → the result's `structuredContent`, sent beside the text. `undefined` keeps it text-only.  |
+| `toolMeta?`            | `({ tool })` → the tool's `_meta` on `tools/list`. See [MCP Apps views](#mcp-apps-views).                     |
+| `options?`             | See [Options](#options).                                                                                      |
 
 The default `toText` answers `NO_CONTENT_TEXT` (`Succeeded. The operation
 returned no content.`) when `callApi` resolves `undefined` or `''`, so a `204`
 reaches the client as a success.
 
 Returns the list of `ToolDefinition`s that were registered.
+
+### MCP Apps views
+
+A generated tool links to a view through `toolMeta`, and the view reads the
+result from `structuredContent`:
+
+```typescript
+import { registerAppResource } from '@ttoss/http-server-mcp';
+
+const agentCard = registerAppResource({
+  server,
+  name: 'agent_card',
+  uri: 'ui://agents/card',
+  html: agentCardHtml,
+});
+
+registerOpenApiTools({
+  server,
+  spec,
+  callApi,
+  toolMeta: ({ tool }) => {
+    return tool.name === 'get-agent' ? agentCard.toolMeta() : undefined;
+  },
+  toStructuredContent: ({ data, tool }) => {
+    return tool.name === 'get-agent'
+      ? (data as Record<string, unknown>)
+      : undefined;
+  },
+});
+```
+
+Keep the text payload: a host without MCP Apps support renders only that.
+
+## Calling the API In-Process
+
+When the REST API runs in the same process as the MCP server,
+`createInProcessCallApi` dispatches each tool call through the app's own
+middleware chain with no socket (see `dispatchInProcess` in
+[@ttoss/http-server](https://ttoss.dev/docs/modules/packages/http-server)), so
+validation, authorization and error handling exist once, in the routes. The MCP
+request's headers — what `createMcpRouter`'s `getApiHeaders` produced — are
+forwarded onto the dispatched request.
+
+```typescript
+import {
+  createInProcessCallApi,
+  registerOpenApiTools,
+} from '@ttoss/http-server-mcp-openapi';
+
+registerOpenApiTools({
+  server,
+  spec,
+  callApi: createInProcessCallApi({
+    app, // or () => app, when the app is built after the tools
+    headers: () => ({ 'x-via': 'mcp' }), // optional, added to every call
+  }),
+});
+
+const router = createMcpRouter(server, {
+  getApiHeaders: (ctx) => ({ authorization: ctx.headers.authorization ?? '' }),
+});
+app.use(router.routes());
+```
+
+A 2xx answers its body. Anything else throws, so the client sees a tool error
+rather than an error body rendered as a result: the message is read from a
+string body, `{ error: '…' }`, `{ error: { code, message } }` (as
+`code: message`) or `{ message: '…' }` (exported as `errorMessageOf`), falling
+back to `HTTP <status>`. Pass `toError` to build the error yourself.
 
 ## `openApiToToolDefinitions`
 
@@ -137,6 +208,8 @@ registerOpenApiTools({
     serverManagedExtension: 'x-mcp-server-managed', // or several: ['x-a', 'x-b']
     argumentNames: 'camelCase', // or 'verbatim'
     documents: { './tags.yaml': tagsDocument }, // targets of cross-file $refs
+    schemaDetail: 'full', // or 'compact' (default)
+    describe: ({ operation, method, pathTemplate }) => operation.summary ?? '',
   },
 });
 ```
@@ -152,6 +225,31 @@ registerOpenApiTools({
   `./tags.yaml#/components/schemas/Tag` the key is `./tags.yaml`; refs inside
   a sibling resolve against that sibling. A ref to a file missing from the map
   resolves to an empty schema, which accepts any value.
+
+- **`schemaDetail`** (default `compact`) — see [Schema detail](#schema-detail).
+- **`describe`** — builds each tool's description from `{ operation, method, pathTemplate }`
+  (method uppercase). The default is the operation's `description` flattened to one line.
+
+### Schema detail
+
+`compact` gives each top-level argument its `type`, `items` and `description`,
+with descriptions flattened to one line. It is the smallest surface, and the
+model learns nothing about which values are allowed.
+
+`full` gives each argument its whole schema: `enum`, `format`, `pattern`,
+`minimum`/`maximum`, `default`, nested `properties` and `required`, `oneOf`,
+`additionalProperties`, and descriptions verbatim. It changes only what JSON
+Schema cannot express:
+
+- `allOf` is merged — the properties and `required` of an object composition,
+  or a single referenced scalar with the wrapper's own `description` winning;
+- `nullable: true` adds `'null'` to the `type`, and `null` to an `enum`;
+- OpenAPI-only keywords (`example`, `discriminator`, `xml`, `externalDocs`) and
+  `x-` extensions are dropped;
+- a path or query parameter's own `description` wins over its schema's.
+
+`properties` is always present in `full`, even when empty. The same
+transformation is exported as `toToolSchema`, for a schema you derive yourself.
 
 ### Server-managed values
 

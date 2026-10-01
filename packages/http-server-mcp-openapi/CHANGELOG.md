@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp-openapi@0.6.0...@ttoss/http-server-mcp-openapi@0.7.0) (2026-10-01)
+
+### Features
+
+- **http-server-mcp-openapi:** toolMeta and toStructuredContent options for MCP Apps views ([#1285](https://github.com/ttoss/ttoss/issues/1285)) ([8d14ec4](https://github.com/ttoss/ttoss/commit/8d14ec4509ff4abcd1602b5bcac0a0fb54006fd2))
+
+# 0.6.0 (2026-09-30)
+
+### Bug Fixes
+
+- **http-server-mcp-openapi:** merge path-item-level OpenAPI parameters ([#1159](https://github.com/ttoss/ttoss/issues/1159)) ([a836125](https://github.com/ttoss/ttoss/commit/a8361251ceb60989066a16d46a5e873cd92d86a8))
+- **http-server-mcp-openapi:** resolve allOf body props instead of defaulting to string ([#1252](https://github.com/ttoss/ttoss/issues/1252)) ([ae24f59](https://github.com/ttoss/ttoss/commit/ae24f592e7d8209d67b595791ab58650c9fd3301))
+- **http-server-mcp-openapi:** resolve unresolvable $refs to an empty schema ([#1174](https://github.com/ttoss/ttoss/issues/1174)) ([f29f140](https://github.com/ttoss/ttoss/commit/f29f140a8edb50c92437deacde50533a5892e175))
+- **http-server-mcp-openapi:** serialise query params by their OpenAPI style ([#1238](https://github.com/ttoss/ttoss/issues/1238)) ([0084265](https://github.com/ttoss/ttoss/commit/0084265a3c547054613a2c247fd15c2d361b34dd))
+
+### Features
+
+- **http-server-mcp-openapi:** cover what OpenAPI → MCP consumers re-implement ([#1255](https://github.com/ttoss/ttoss/issues/1255)) ([f585de5](https://github.com/ttoss/ttoss/commit/f585de5469d0371375140c2796f38e6524aa2c77)), closes [#1254](https://github.com/ttoss/ttoss/issues/1254) [#1253](https://github.com/ttoss/ttoss/issues/1253)
+- **http-server-mcp-openapi:** generate MCP tools from OpenAPI specs ([#1157](https://github.com/ttoss/ttoss/issues/1157)) ([1de1203](https://github.com/ttoss/ttoss/commit/1de1203d19065e095a2ff10090b48465fc2c4300))
+- **http-server-mcp-openapi:** nested nullable, pinned parameters, several server-managed extensions ([#1258](https://github.com/ttoss/ttoss/issues/1258)) ([060cb3c](https://github.com/ttoss/ttoss/commit/060cb3cd3a8964d866704b714d62b3cba4f0754e)), closes [#1257](https://github.com/ttoss/ttoss/issues/1257)
+- **http-server-mcp:** serve the MCP 2026-07-28 revision alongside 2025-era traffic ([#1171](https://github.com/ttoss/ttoss/issues/1171)) ([b9fcc16](https://github.com/ttoss/ttoss/commit/b9fcc16e66c4c1df8277af956d0301e695f6ea4b))
+- **ids,postgresdb,http-server,http-server-mcp-openapi:** public ids, atomically, in-process dispatch and full tool schemas ([#1282](https://github.com/ttoss/ttoss/issues/1282)) ([274114c](https://github.com/ttoss/ttoss/commit/274114c689488d51c03f2240b932f860d7eb72ac))
+- pin server-managed body properties and add whole-body CLI flags ([#1263](https://github.com/ttoss/ttoss/issues/1263)) ([521022f](https://github.com/ttoss/ttoss/commit/521022f7beca7fc0e5c63299135a4798375e07e8))
+
+## [0.5.7](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp-openapi@0.5.6...@ttoss/http-server-mcp-openapi@0.5.7) (2026-09-29)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp-openapi
+
 ## [0.5.6](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp-openapi@0.5.5...@ttoss/http-server-mcp-openapi@0.5.6) (2026-09-29)
 
 **Note:** Version bump only for package @ttoss/http-server-mcp-openapi

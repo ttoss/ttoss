@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.6.0 (2026-09-30)
+
+### Features
+
+- **ids,postgresdb,http-server,http-server-mcp-openapi:** public ids, atomically, in-process dispatch and full tool schemas ([#1282](https://github.com/ttoss/ttoss/issues/1282)) ([274114c](https://github.com/ttoss/ttoss/commit/274114c689488d51c03f2240b932f860d7eb72ac))
+
 ## [0.5.1](https://github.com/ttoss/ttoss/compare/@ttoss/ids@0.5.0...@ttoss/ids@0.5.1) (2026-09-28)
 
 **Note:** Version bump only for package @ttoss/ids

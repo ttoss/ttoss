@@ -40,13 +40,17 @@ export const defaultConfig: Config = {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
   },
   /**
-   * Also transform .mjs files with babel-jest so that ESM-only dist outputs
-   * (e.g. @ttoss/config's chunk-*.mjs) are compiled to CJS for Jest's
-   * CommonJS test environment.
+   * Also transform .mjs and .cjs files with babel-jest. An ESM-only dist output
+   * (e.g. @ttoss/config's chunk-*.mjs) is compiled to CJS for Jest's CommonJS
+   * test environment. A published .cjs build may keep a dynamic `import()`
+   * (e.g. @ttoss/appsync-api's lazy `@ttoss/i18n-core`), which that
+   * environment cannot run without `--experimental-vm-modules`; Babel turns it
+   * into a `require`.
    */
   transform: {
     '^.+\\.[jt]sx?$': 'babel-jest',
     '^.+\\.mjs$': 'babel-jest',
+    '^.+\\.cjs$': 'babel-jest',
   },
   /**
    * Jest defaults to 5s, which is too tight for work that is deliberately

@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.17.0 (2026-09-30)
+
+### Bug Fixes
+
+- **react-dashboard:** messages shipped without ids, and a build guard in @ttoss/config ([#1270](https://github.com/ttoss/ttoss/issues/1270)) ([98fc6b7](https://github.com/ttoss/ttoss/commit/98fc6b7d5baef98b111c6e5e5551df6ee0b4a615))
+
+### Features
+
+- **components:** make the date picker follow the I18nProvider locale ([#1275](https://github.com/ttoss/ttoss/issues/1275)) ([d877468](https://github.com/ttoss/ttoss/commit/d8774686b39aa7b1f45df282fbc65ced4a9c6197)), closes [#1262](https://github.com/ttoss/ttoss/issues/1262)
+- **eslint-config:** enforce the quality metrics ESLint can, drop the config that does nothing ([#1211](https://github.com/ttoss/ttoss/issues/1211)) ([5673a18](https://github.com/ttoss/ttoss/commit/5673a1817b104a403466d07ac2ecd589bc4ddd49)), closes [ttoss/i18n-cli#build-config](https://github.com/ttoss/i18n-cli/issues/build-config)
+- **react-dashboard,react-billing:** translatable copy and locale-aware percentages ([#1274](https://github.com/ttoss/ttoss/issues/1274)) ([38f2003](https://github.com/ttoss/ttoss/commit/38f200388b07d711ff62f6acc227b27854fde9dd)), closes [#1262](https://github.com/ttoss/ttoss/issues/1262)
+- **react-dashboard:** add renderCardDetail and clickableCardFilter for in-grid card expansion ([#1139](https://github.com/ttoss/ttoss/issues/1139)) ([8c4ebf4](https://github.com/ttoss/ttoss/commit/8c4ebf4ae0bad6934473a70c3e40e13e938cf104)), closes [#1138](https://github.com/ttoss/ttoss/issues/1138)
+- **react-dashboard:** controlled selection, configurable slot height, and multi-slot mode ([#1151](https://github.com/ttoss/ttoss/issues/1151)) ([f4f0c2d](https://github.com/ttoss/ttoss/commit/f4f0c2dff94d8355c85754cf8a9a0a7965ea7891))
+
+## [0.16.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.16.1...@ttoss/react-dashboard@0.16.2) (2026-09-29)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
 ## [0.16.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.16.0...@ttoss/react-dashboard@0.16.1) (2026-09-29)
 
 **Note:** Version bump only for package @ttoss/react-dashboard

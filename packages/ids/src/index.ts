@@ -32,3 +32,12 @@ export const fromRecordId = (recordId: string): string[] => {
 export const toRecordId = (...databaseIds: string[]): string => {
   return databaseIds.join(SEPARATOR);
 };
+
+export {
+  createPublicId,
+  DEFAULT_PUBLIC_ID_LENGTH,
+  isPublicId,
+  PUBLIC_ID_ALPHABET,
+  type PublicIdOptions,
+  publicIdPattern,
+} from './publicId';

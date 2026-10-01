@@ -1,4 +1,4 @@
-import { resolveParameter } from './schema';
+import { dereferenceSchema, resolveParameter } from './schema';
 import {
   readServerManaged,
   type ServerManagedExtension,
@@ -74,6 +74,9 @@ export const extractPathParams = (
 ): Array<{
   name: string;
   argName: string;
+  description?: string;
+  /** The parameter's schema with every `$ref` inlined. */
+  schema?: Record<string, unknown>;
   serverManaged: boolean;
   pinnedValue?: string;
 }> => {
@@ -90,6 +93,8 @@ export const extractPathParams = (
       return {
         name: p.name || '',
         argName: toArgName(p.name || ''),
+        description: p.description,
+        schema: dereferenceSchema(p.schema, args.spec, args.documents),
         ...managedFields(readServerManaged({ node: p, extension: flag })),
       };
     });
@@ -104,6 +109,8 @@ export const extractQueryParams = (
   description: string;
   required: boolean;
   type: string;
+  /** The parameter's schema with every `$ref` inlined. */
+  schema?: Record<string, unknown>;
   style?: string;
   explode?: boolean;
   serverManaged: boolean;
@@ -125,6 +132,7 @@ export const extractQueryParams = (
         description: p.description || '',
         required: p.required || false,
         type: p.schema?.type || 'string',
+        schema: dereferenceSchema(p.schema, args.spec, args.documents),
         style: p.style,
         explode: p.explode,
         ...managedFields(readServerManaged({ node: p, extension: flag })),

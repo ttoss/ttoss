@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.12.0 (2026-09-30)
+
+### Bug Fixes
+
+- **components:** write the NotificationsMenu and InstallPwa sources in English ([#1268](https://github.com/ttoss/ttoss/issues/1268)) ([7bf67c6](https://github.com/ttoss/ttoss/commit/7bf67c6b2462ffcc295126e97065150cf0bd4059))
+
+### Features
+
+- **cloud-auth,react-auth:** add Google and Facebook sign-in ([#1214](https://github.com/ttoss/ttoss/issues/1214)) ([c593c06](https://github.com/ttoss/ttoss/commit/c593c063fbd6a60a66438c0f84d6ee299b0a5ed1))
+- **components:** make the date picker follow the I18nProvider locale ([#1275](https://github.com/ttoss/ttoss/issues/1275)) ([d877468](https://github.com/ttoss/ttoss/commit/d8774686b39aa7b1f45df282fbc65ced4a9c6197)), closes [#1262](https://github.com/ttoss/ttoss/issues/1262)
+- **eslint-config:** enforce the quality metrics ESLint can, drop the config that does nothing ([#1211](https://github.com/ttoss/ttoss/issues/1211)) ([5673a18](https://github.com/ttoss/ttoss/commit/5673a1817b104a403466d07ac2ecd589bc4ddd49)), closes [ttoss/i18n-cli#build-config](https://github.com/ttoss/i18n-cli/issues/build-config)
+- explicit ids in \*.persisted.messages files, and pt-BR for components, forms, react-auth-core ([#1267](https://github.com/ttoss/ttoss/issues/1267)) ([6333695](https://github.com/ttoss/ttoss/commit/63336959e3e06e8e0ba9d244291bc897440c74e3))
+- **forms:** render Zod errors in the current locale ([#1272](https://github.com/ttoss/ttoss/issues/1272)) ([2f7579e](https://github.com/ttoss/ttoss/commit/2f7579e67b29f57bc68a48058d8618ee61361e61)), closes [#1262](https://github.com/ttoss/ttoss/issues/1262)
+
+## [0.11.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.11.1...@ttoss/react-auth-core@0.11.2) (2026-09-29)
+
+**Note:** Version bump only for package @ttoss/react-auth-core
+
 ## [0.11.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.11.0...@ttoss/react-auth-core@0.11.1) (2026-09-29)
 
 **Note:** Version bump only for package @ttoss/react-auth-core

@@ -8,6 +8,11 @@ import serve from 'koa-static';
 export { App, bodyParser, cors, multer, Router, serve };
 export * from './addHealthCheck';
 export {
+  dispatchInProcess,
+  type InProcessRequest,
+  type InProcessResponse,
+} from './dispatchInProcess';
+export {
   applyHttpErrorHeaders,
   type NormalizedHttpError,
   toHttpError,

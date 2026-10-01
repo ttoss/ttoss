@@ -147,7 +147,7 @@ AuthorTC.addResolver({
     }
 
     if (args.sort.order === 'DESC') {
-      return AUTHORS.reverse();
+      return [...AUTHORS].reverse();
     }
 
     return AUTHORS;
