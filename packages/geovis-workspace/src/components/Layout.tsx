@@ -60,6 +60,7 @@ const MapColdStartEmptyState = () => {
         height: '100%',
         padding: '6',
         overflowY: 'auto',
+        overscrollBehavior: 'contain',
       }}
     >
       <Text

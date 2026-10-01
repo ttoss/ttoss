@@ -187,6 +187,8 @@ export const RightSidebar = () => {
           paddingX: '4',
           paddingY: '4',
           overflowY: 'auto',
+          // Ends at the panel, not the page — as the left sidebar's body does.
+          overscrollBehavior: 'contain',
         }}
       >
         {RIGHT_SIDEBAR_SLOTS.map((slot) => {

@@ -313,6 +313,8 @@ export const ExportMapDialog = ({
             flexDirection: 'column',
             gap: '18px',
             overflowY: 'auto',
+            // The dialog covers the map; its scroll must not leak to the page.
+            overscrollBehavior: 'contain',
             paddingX: '20px',
             paddingTop: '16px',
             paddingBottom: '20px',

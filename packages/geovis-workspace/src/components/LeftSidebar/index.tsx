@@ -319,6 +319,9 @@ const TabContent = ({
       sx={{
         flex: 1,
         overflowY: 'auto',
+        // Keeps the scroll inside the card: past its end the browser would
+        // otherwise hand the rest of the gesture to the page around the map.
+        overscrollBehavior: 'contain',
         scrollbarWidth: 'none',
         '::-webkit-scrollbar': { display: 'none' },
       }}
