@@ -1,9 +1,13 @@
 import { App, bodyParser, Router } from '@ttoss/http-server';
-import { createMcpRouter, McpServer } from '@ttoss/http-server-mcp';
+import {
+  createMcpRouter,
+  McpServer,
+  registerTools,
+} from '@ttoss/http-server-mcp';
 import {
   createInProcessCallApi,
   errorMessageOf,
-  registerOpenApiTools,
+  openApiToTools,
   type ResolvedRequest,
   type ToolDefinition,
 } from 'src/index';
@@ -169,10 +173,12 @@ describe('createInProcessCallApi', () => {
     const app = buildRestApp();
     const server = new McpServer({ name: 'test', version: '1.0.0' });
 
-    registerOpenApiTools({
+    registerTools({
       server,
-      spec,
-      callApi: createInProcessCallApi({ app }),
+      tools: openApiToTools({
+        spec,
+        callApi: createInProcessCallApi({ app }),
+      }),
     });
 
     const router = createMcpRouter(server, {

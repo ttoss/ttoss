@@ -3,7 +3,7 @@ import {
   createMcpRouter,
   McpServer,
   registerAppResource,
-  registerToolFromSchema,
+  registerTools,
   UI_EXTENSION_ID,
   UI_RESOURCE_MIME_TYPE,
   z,
@@ -342,7 +342,7 @@ describe('registerAppResource', () => {
       ).toEqual(expected);
     });
 
-    test('links a tool registered with registerToolFromSchema', async () => {
+    test('links a tool registered with registerTools', async () => {
       const server = buildServer();
       const app = registerAppResource({
         server,
@@ -350,13 +350,18 @@ describe('registerAppResource', () => {
         uri: UI_URI,
         html: HTML,
       });
-      registerToolFromSchema(server, {
-        name: 'get_weather',
-        description: 'Get the weather',
-        _meta: app.toolMeta({ visibility: ['model', 'app'] }),
-        handler: async () => {
-          return { content: [{ type: 'text', text: 'sunny' }] };
-        },
+      registerTools({
+        server,
+        tools: [
+          {
+            name: 'get_weather',
+            description: 'Get the weather',
+            _meta: app.toolMeta({ visibility: ['model', 'app'] }),
+            handler: async () => {
+              return { content: [{ type: 'text', text: 'sunny' }] };
+            },
+          },
+        ],
       });
 
       const response = await legacy(server, 'tools/list');

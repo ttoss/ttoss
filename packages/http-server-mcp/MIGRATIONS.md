@@ -1,5 +1,76 @@
 # Migrations
 
+## One `Tool` type: `registerTools` replaces `registerToolFromSchema` and `createGatedToolRegistrar`
+
+A tool is now one value, `Tool`, and registering is one call, `registerTools`,
+which also exposes tools behind a [search / describe / call
+catalog](./README.md#catalog-for-large-tool-sets). Gating became a function
+from `Tool` to `Tool`, so a gated tool joins a catalog like any other.
+
+**`registerToolFromSchema`** — wrap the params in a `tools` list:
+
+```diff
+-registerToolFromSchema(server, {
+-  name: 'get-project',
+-  description: 'Get a project',
+-  inputSchema,
+-  handler,
+-});
++registerTools({
++  server,
++  tools: [{ name: 'get-project', description: 'Get a project', inputSchema, handler }],
++});
+```
+
+`description` is now required. `validateArguments` and `_meta` keep their
+meaning, as fields of the tool.
+
+**`createGatedToolRegistrar`** — the registrar options become gate options
+(minus `server` and `notFoundMessage`), and each `register(def)` becomes a
+gated `defineTool`:
+
+```diff
+-const { register } = createGatedToolRegistrar({ server, resolveIdentity, gates });
++const gate = createToolGate({ resolveIdentity, gates });
+
+-register({
+-  name: 'list-campaigns',
+-  description: 'List campaigns.',
+-  requiredScope: 'campaigns:read',
+-  inputSchema: { limit: z.number().optional() },
+-  method: ({ limit }) => fetchCampaigns(limit),
+-});
++registerTools({
++  server,
++  tools: [
++    gate({
++      requiredScope: 'campaigns:read',
++      tool: defineTool({
++        name: 'list-campaigns',
++        description: 'List campaigns.',
++        inputSchema: z.object({ limit: z.number().optional() }),
++        method: ({ limit }) => fetchCampaigns(limit),
++      }),
++    }),
++  ],
++});
+```
+
+- **`inputSchema` and `outputSchema` take `z.object({...})`**, not a Zod field
+  map: a schema is now a JSON Schema or a Standard Schema. Wrap
+  `{ limit: z.number() }` as `z.object({ limit: z.number() })`.
+- **`notFoundMessage` moved to `defineTool`**, per tool. A registrar-wide value
+  is now a wrapper around `defineTool` that sets it.
+- **Per-tool `gates` move to the gate call**, next to `requiredScope`.
+- `GatedToolDef` and `CreateGatedToolRegistrarOptions` are gone;
+  `CreateToolGateOptions`, `ToolCallGate`, `ToolCallContext` and
+  `ToolIdentity` remain.
+
+**What you will observe if you miss this.** The build fails: every removed
+export is a missing import, and a Zod field map passed as `inputSchema` is a
+type error. Nothing changes at runtime for code that compiles — results,
+scope refusals, gate order and localized errors are byte-for-byte the same.
+
 ## The `2026-07-28` revision needs `createMcpServer`
 
 That revision is served only when `createMcpRouter` is given a

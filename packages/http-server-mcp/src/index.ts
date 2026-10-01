@@ -889,11 +889,25 @@ export {
   type UiResourcePermissions,
   type UiToolVisibility,
 } from './registerAppResource';
+export { registerTools, type RegisterToolsParams } from './registerTools';
 export {
+  defineTool,
+  type DefineToolParams,
   type JsonObjectSchema,
-  registerToolFromSchema,
-  type RegisterToolFromSchemaParams,
-} from './registerToolFromSchema';
+  type Tool,
+  type ToolSchema,
+} from './tool';
+export { type ToolCatalogOptions } from './toolCatalog';
+export {
+  createToolGate,
+  type CreateToolGateOptions,
+  type GateToolParams,
+  type ToolCallContext,
+  type ToolCallGate,
+  type ToolGate,
+  type ToolIdentity,
+} from './toolGate';
+export { rankTools, type ToolSearchArgs } from './toolSearch';
 
 /**
  * Re-export MCP SDK types and classes for convenience
@@ -909,11 +923,4 @@ export {
 /**
  * Re-export Zod for request/response schema definitions
  */
-export {
-  createGatedToolRegistrar,
-  type CreateGatedToolRegistrarOptions,
-  type GatedToolDef,
-  type ToolCallContext,
-  type ToolIdentity,
-} from './createGatedToolRegistrar';
 export { z } from 'zod';

@@ -37,7 +37,7 @@ export const getApiHeaders = (): Record<string, string> => {
 /**
  * The `Accept-Language` header of the current MCP request, or `undefined`
  * outside a request or when the client sent none. The default locale source
- * for `createGatedToolRegistrar`'s `i18n` option.
+ * for `createToolGate`'s `i18n` option.
  */
 export const getRequestLocale = (): string | undefined => {
   return requestContextStore.getStore()?.acceptLanguage;

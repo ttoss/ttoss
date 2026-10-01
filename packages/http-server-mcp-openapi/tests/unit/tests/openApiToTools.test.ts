@@ -1,6 +1,14 @@
 import { App, bodyParser } from '@ttoss/http-server';
-import { createMcpRouter, McpServer } from '@ttoss/http-server-mcp';
-import { registerOpenApiTools, type ResolvedRequest } from 'src/index';
+import {
+  createMcpRouter,
+  McpServer,
+  registerTools,
+} from '@ttoss/http-server-mcp';
+import {
+  openApiToTools,
+  type OpenApiToToolsArgs,
+  type ResolvedRequest,
+} from 'src/index';
 import request from 'supertest';
 
 import { testSpec } from '../fixtures/openApiSpec';
@@ -29,14 +37,14 @@ const parseRpc = (res: request.Response): Record<string, unknown> => {
 
 const buildApp = (calls: ResolvedRequest[]) => {
   const server = new McpServer({ name: 'test', version: '1.0.0' });
-  const tools = registerOpenApiTools({
-    server,
+  const tools = openApiToTools({
     spec: testSpec,
     callApi: (req) => {
       calls.push(req);
       return { ok: true, url: req.url };
     },
   });
+  registerTools({ server, tools });
   const app = new App();
   app.use(bodyParser());
   const router = createMcpRouter(server);
@@ -45,7 +53,7 @@ const buildApp = (calls: ResolvedRequest[]) => {
   return { app: app.callback(), tools };
 };
 
-describe('registerOpenApitools', () => {
+describe('openApiToTools', () => {
   test('returns the registered tool definitions', () => {
     const { tools } = buildApp([]);
     expect(
@@ -150,15 +158,17 @@ describe('registerOpenApitools', () => {
 
   test('custom toText controls the text payload; string data passes through', async () => {
     const server = new McpServer({ name: 'test', version: '1.0.0' });
-    registerOpenApiTools({
+    registerTools({
       server,
-      spec: testSpec,
-      callApi: () => {
-        return 'raw-string';
-      },
-      toText: (data) => {
-        return `wrapped:${String(data)}`;
-      },
+      tools: openApiToTools({
+        spec: testSpec,
+        callApi: () => {
+          return 'raw-string';
+        },
+        toText: (data) => {
+          return `wrapped:${String(data)}`;
+        },
+      }),
     });
     const app = new App();
     app.use(bodyParser());
@@ -177,12 +187,14 @@ describe('registerOpenApitools', () => {
 
   test('default toText returns a string payload verbatim', async () => {
     const server = new McpServer({ name: 'test', version: '1.0.0' });
-    registerOpenApiTools({
+    registerTools({
       server,
-      spec: testSpec,
-      callApi: () => {
-        return 'plain';
-      },
+      tools: openApiToTools({
+        spec: testSpec,
+        callApi: () => {
+          return 'plain';
+        },
+      }),
     });
     const app = new App();
     app.use(bodyParser());
@@ -199,17 +211,17 @@ describe('registerOpenApitools', () => {
     expect(content[0].text).toBe('plain');
   });
 
-  const buildAppWith = (
-    args: Partial<Parameters<typeof registerOpenApiTools>[0]>
-  ) => {
+  const buildAppWith = (args: Partial<OpenApiToToolsArgs>) => {
     const server = new McpServer({ name: 'test', version: '1.0.0' });
-    registerOpenApiTools({
+    registerTools({
       server,
-      spec: testSpec,
-      callApi: () => {
-        return { id: 'agt_1' };
-      },
-      ...args,
+      tools: openApiToTools({
+        spec: testSpec,
+        callApi: () => {
+          return { id: 'agt_1' };
+        },
+        ...args,
+      }),
     });
     const app = new App();
     app.use(bodyParser());
@@ -303,5 +315,180 @@ describe('registerOpenApitools', () => {
   test('results carry no structuredContent without toStructuredContent', async () => {
     const result = await callGetAgent(buildAppWith({}));
     expect(result).not.toHaveProperty('structuredContent');
+  });
+});
+
+const taggedSpec = {
+  paths: {
+    '/agents/{agent_id}': {
+      get: {
+        operationId: 'getAgent',
+        description: 'Get an agent.',
+        tags: ['agents', 42],
+        parameters: [
+          {
+            name: 'agent_id',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+          },
+        ],
+      },
+    },
+    '/projects': {
+      get: { operationId: 'listProjects', tags: ['projects'] },
+    },
+    '/health': {
+      get: { operationId: 'getHealth', description: 'Check health.' },
+    },
+  },
+} as unknown as OpenApiToToolsArgs['spec'];
+
+describe('openApiToTools tool fields', () => {
+  const tools = openApiToTools({
+    spec: taggedSpec,
+    callApi: () => {
+      return {};
+    },
+  });
+  const byName = (name: string) => {
+    return tools.find((tool) => {
+      return tool.name === name;
+    })!;
+  };
+
+  test("copies the operation's string tags", () => {
+    expect(byName('get-agent').tags).toEqual(['agents']);
+    expect(byName('get-agent').definition.tags).toEqual(['agents']);
+    expect(byName('get-health')).not.toHaveProperty('tags');
+    expect(byName('get-health').definition.tags).toEqual([]);
+  });
+
+  test('summarises each tool with its route and description', () => {
+    expect(byName('get-agent').summary).toBe(
+      'GET /agents/{agent_id} — Get an agent.'
+    );
+    expect(byName('list-projects').summary).toBe('GET /projects');
+  });
+
+  test('carries the definition it was derived from', () => {
+    expect(byName('get-agent').definition).toMatchObject({
+      method: 'GET',
+      pathTemplate: '/agents/{agent_id}',
+      operationId: 'getAgent',
+    });
+  });
+
+  test('sets validateArguments on every tool, off by default', () => {
+    expect(byName('get-agent').validateArguments).toBe(false);
+    const strict = openApiToTools({
+      spec: taggedSpec,
+      validateArguments: true,
+      callApi: () => {
+        return {};
+      },
+    });
+    expect(
+      strict.every((tool) => {
+        return tool.validateArguments === true;
+      })
+    ).toBe(true);
+  });
+});
+
+describe('openApiToTools behind a catalog', () => {
+  const buildCatalog = (calls: ResolvedRequest[]) => {
+    const server = new McpServer({ name: 'test', version: '1.0.0' });
+    registerTools({
+      server,
+      tools: openApiToTools({
+        spec: taggedSpec,
+        validateArguments: true,
+        callApi: (req) => {
+          calls.push(req);
+          return { id: 'agt_1' };
+        },
+      }),
+      catalog: true,
+    });
+    const app = new App();
+    app.use(bodyParser());
+    app.use(createMcpRouter(server).routes());
+    return app.callback();
+  };
+
+  const callCatalog = async ({
+    app,
+    name,
+    args,
+  }: {
+    app: ReturnType<typeof buildCatalog>;
+    name: string;
+    args: Record<string, unknown>;
+  }) => {
+    const res = await sendMcpRequest(app, {
+      jsonrpc: '2.0',
+      id: 1,
+      method: 'tools/call',
+      params: { name, arguments: args },
+    });
+    return parseRpc(res) as {
+      isError?: boolean;
+      content: Array<{ text: string }>;
+      structuredContent?: Record<string, unknown>;
+    };
+  };
+
+  test('search finds an operation by tag and shows its route', async () => {
+    const app = buildCatalog([]);
+
+    const result = await callCatalog({
+      app,
+      name: 'search',
+      args: { query: '', tag: 'agents' },
+    });
+
+    expect(result.structuredContent).toEqual({
+      tools: [
+        {
+          name: 'get-agent',
+          summary: 'GET /agents/{agent_id} — Get an agent.',
+          tags: ['agents'],
+        },
+      ],
+    });
+  });
+
+  test('call builds the same request the direct tool would', async () => {
+    const calls: ResolvedRequest[] = [];
+    const app = buildCatalog(calls);
+
+    const result = await callCatalog({
+      app,
+      name: 'call',
+      args: { name: 'get-agent', arguments: { agentId: 'agt_1' } },
+    });
+
+    expect(result.isError).toBeUndefined();
+    expect(JSON.parse(result.content[0].text)).toEqual({ id: 'agt_1' });
+    expect(calls).toHaveLength(1);
+    expect(calls[0]).toMatchObject({ method: 'GET', url: '/agents/agt_1' });
+  });
+
+  test('call rejects arguments the generated schema does not accept', async () => {
+    const calls: ResolvedRequest[] = [];
+    const app = buildCatalog(calls);
+
+    const result = await callCatalog({
+      app,
+      name: 'call',
+      args: { name: 'get-agent', arguments: {} },
+    });
+
+    expect(result.isError).toBe(true);
+    expect(result.structuredContent?.inputSchema).toMatchObject({
+      required: ['agentId'],
+    });
+    expect(calls).toHaveLength(0);
   });
 });
