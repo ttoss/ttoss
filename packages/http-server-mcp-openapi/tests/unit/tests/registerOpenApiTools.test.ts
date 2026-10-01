@@ -198,4 +198,110 @@ describe('registerOpenApitools', () => {
     const content = result.content as Array<{ text: string }>;
     expect(content[0].text).toBe('plain');
   });
+
+  const buildAppWith = (
+    args: Partial<Parameters<typeof registerOpenApiTools>[0]>
+  ) => {
+    const server = new McpServer({ name: 'test', version: '1.0.0' });
+    registerOpenApiTools({
+      server,
+      spec: testSpec,
+      callApi: () => {
+        return { id: 'agt_1' };
+      },
+      ...args,
+    });
+    const app = new App();
+    app.use(bodyParser());
+    const router = createMcpRouter(server);
+    app.use(router.routes());
+    return app.callback();
+  };
+
+  const listTools = async (app: ReturnType<typeof App.prototype.callback>) => {
+    const res = await sendMcpRequest(app, {
+      jsonrpc: '2.0',
+      id: 7,
+      method: 'tools/list',
+      params: {},
+    });
+    return parseRpc(res).tools as Array<{
+      name: string;
+      _meta?: Record<string, unknown>;
+    }>;
+  };
+
+  const callGetAgent = async (
+    app: ReturnType<typeof App.prototype.callback>
+  ) => {
+    const res = await sendMcpRequest(app, {
+      jsonrpc: '2.0',
+      id: 8,
+      method: 'tools/call',
+      params: { name: 'get-agent', arguments: { agentId: 'agt_1' } },
+    });
+    return parseRpc(res);
+  };
+
+  test('toolMeta sets _meta on the tools it returns a bag for', async () => {
+    const seen: string[] = [];
+    const app = buildAppWith({
+      toolMeta: ({ tool }) => {
+        seen.push(tool.operationId);
+        return tool.name === 'get-agent'
+          ? { ui: { resourceUri: 'ui://agents/card' } }
+          : undefined;
+      },
+    });
+    const tools = await listTools(app);
+    const byName = Object.fromEntries(
+      tools.map((t) => {
+        return [t.name, t._meta];
+      })
+    );
+    expect(byName['get-agent']).toEqual({
+      ui: { resourceUri: 'ui://agents/card' },
+    });
+    expect(byName['list-agents']).toBeUndefined();
+    expect(seen).toContain('getAgent');
+  });
+
+  test('tools carry no _meta without toolMeta', async () => {
+    const tools = await listTools(buildAppWith({}));
+    for (const tool of tools) {
+      expect(tool._meta).toBeUndefined();
+    }
+  });
+
+  test('toStructuredContent adds structuredContent beside the text payload', async () => {
+    const seen: Array<{ data: unknown; operationId: string }> = [];
+    const result = await callGetAgent(
+      buildAppWith({
+        toStructuredContent: ({ data, tool }) => {
+          seen.push({ data, operationId: tool.operationId });
+          return { agent: data };
+        },
+      })
+    );
+    expect(result.structuredContent).toEqual({ agent: { id: 'agt_1' } });
+    const content = result.content as Array<{ text: string }>;
+    expect(JSON.parse(content[0].text)).toEqual({ id: 'agt_1' });
+    expect(seen).toEqual([{ data: { id: 'agt_1' }, operationId: 'getAgent' }]);
+  });
+
+  test('toStructuredContent returning undefined leaves the result text-only', async () => {
+    const result = await callGetAgent(
+      buildAppWith({
+        toStructuredContent: () => {
+          return undefined;
+        },
+      })
+    );
+    expect(result).not.toHaveProperty('structuredContent');
+  });
+
+  test('results carry no structuredContent without toStructuredContent', async () => {
+    const result = await callGetAgent(buildAppWith({}));
+    expect(result).not.toHaveProperty('structuredContent');
+  });
 });

@@ -49,6 +49,37 @@ export interface RegisterOpenApiToolsArgs {
    */
   toText?: (data: unknown) => string;
   /**
+   * Builds the tool result's `structuredContent` from the raw API data, sent
+   * beside the text payload. Return `undefined` to keep a result text-only,
+   * which is every result when this is unset.
+   *
+   * @example
+   * ```typescript
+   * toStructuredContent: ({ data }) =>
+   *   typeof data === 'object' && data !== null && !Array.isArray(data)
+   *     ? (data as Record<string, unknown>)
+   *     : undefined,
+   * ```
+   */
+  toStructuredContent?: (args: {
+    data: unknown;
+    tool: ToolDefinition;
+  }) => Record<string, unknown> | undefined;
+  /**
+   * Builds each tool's `_meta`, advertised on `tools/list`. This is how a
+   * generated tool links to an MCP Apps view: return the bag from
+   * `registerAppResource(...).toolMeta()`. `undefined` registers no `_meta`.
+   *
+   * @example
+   * ```typescript
+   * toolMeta: ({ tool }) =>
+   *   tool.name === 'get-agent' ? agentCard.toolMeta() : undefined,
+   * ```
+   */
+  toolMeta?: (args: {
+    tool: ToolDefinition;
+  }) => Record<string, unknown> | undefined;
+  /**
    * Supplies the values of the tool's server-managed path and query
    * parameters (`tool.serverManagedParameters`), keyed by their spec name.
    * Runs on every call, after any value the model sent for those parameters
@@ -149,6 +180,7 @@ export const registerOpenApiTools = (
       name: tool.name,
       description: tool.description,
       inputSchema: tool.inputSchema,
+      _meta: args.toolMeta?.({ tool }),
       handler: async (rawArgs: Record<string, unknown>) => {
         const headers = getApiHeaders();
         const handlerArgs = await applyServerParameters({
@@ -166,7 +198,11 @@ export const registerOpenApiTools = (
           tool,
           headers,
         });
-        return { content: [{ type: 'text' as const, text: toText(data) }] };
+        const structuredContent = args.toStructuredContent?.({ data, tool });
+        return {
+          content: [{ type: 'text' as const, text: toText(data) }],
+          ...(structuredContent === undefined ? {} : { structuredContent }),
+        };
       },
     });
   }

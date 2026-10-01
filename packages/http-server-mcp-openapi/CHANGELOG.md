@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp-openapi@0.6.0...@ttoss/http-server-mcp-openapi@0.7.0) (2026-10-01)
+
+### Features
+
+- **http-server-mcp-openapi:** toolMeta and toStructuredContent options for MCP Apps views ([#1285](https://github.com/ttoss/ttoss/issues/1285)) ([8d14ec4](https://github.com/ttoss/ttoss/commit/8d14ec4509ff4abcd1602b5bcac0a0fb54006fd2))
+
 # 0.6.0 (2026-09-30)
 
 ### Bug Fixes
