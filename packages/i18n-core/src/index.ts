@@ -10,6 +10,7 @@ export {
   type RenderMode,
 } from './createI18n';
 export {
+  type DateFormatOptions,
   fmt,
   type FormatValue,
   isFormatValue,

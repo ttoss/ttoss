@@ -149,12 +149,13 @@ export default defineConfig({
 });
 ```
 
-Both presets expand to the plugin with `idInterpolationPattern: I18N_ID_INTERPOLATION_PATTERN` and `ast: true`. Use the constant directly if you configure the plugin another way.
+Both presets expand to the plugin with `idInterpolationPattern: I18N_ID_INTERPOLATION_PATTERN`, `ast: true` and `preserveWhitespace: true`. Use the same options if you configure the plugin another way.
 
 #### Configuration Options
 
 - **`idInterpolationPattern`**: Generates unique, deterministic IDs for messages using content hash
 - **`ast`**: Enables AST-based extraction for better performance and accuracy
+- **`preserveWhitespace`**: Keeps line breaks and indentation in messages. `ttoss-i18n` extracts with it too, and the id hashes the message text, so leaving it out changes the id of every message with a whitespace run
 
 For more configuration options, see:
 

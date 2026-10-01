@@ -248,8 +248,8 @@ Configure the `build` script on `package.json`:
 
 ```ts
 import {
-  formatjsBabelPlugin, // ['formatjs', { idInterpolationPattern, ast: true }]
-  formatjsSwcPlugin, // ['@swc/plugin-formatjs', { idInterpolationPattern, ast: true }]
+  formatjsBabelPlugin, // ['formatjs', { idInterpolationPattern, ast: true, preserveWhitespace: true }]
+  formatjsSwcPlugin, // ['@swc/plugin-formatjs', { idInterpolationPattern, ast: true, preserveWhitespace: true }]
   I18N_ID_INTERPOLATION_PATTERN,
 } from '@ttoss/config';
 
@@ -261,6 +261,8 @@ react({ babel: { plugins: [formatjsBabelPlugin()] } });
 ```
 
 The Jest (`babelConfig`) and build (`tsdownConfig`, `tsupConfig`) presets already use it.
+
+`preserveWhitespace` keeps a message's line breaks and indentation, so multi-line copy renders as written. It is part of the same contract: the hashed id is computed over the message text, and `ttoss-i18n` extracts with it too. Configuring the plugin yourself without it gives every message with a whitespace run a different id than the catalog's.
 
 ### TypeScript
 

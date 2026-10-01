@@ -35,6 +35,13 @@ export const DEFAULT_SCOPES = ['@ttoss'];
  */
 export const ID_INTERPOLATION_PATTERN = '[sha512:contenthash:base64:6]';
 
+/**
+ * Must equal the `preserveWhitespace` of `@ttoss/config`'s formatjs presets.
+ * The id hashes the message text, so extracting with whitespace collapsed
+ * would key every multi-line message differently from the build.
+ */
+export const PRESERVE_WHITESPACE = true;
+
 export const DEFAULT_DIR = 'i18n';
 
 export const getI18nConfig = ({
