@@ -4,7 +4,7 @@ import {
   type InProcessResponse,
 } from '@ttoss/http-server';
 
-import type { ResolvedRequest } from './registerOpenApiTools';
+import type { ResolvedRequest } from './openApiToTools';
 
 export interface CreateInProcessCallApiArgs {
   /**
@@ -71,7 +71,7 @@ const defaultToError = (response: InProcessResponse): Error => {
 };
 
 /**
- * A `callApi` for {@link registerOpenApiTools} that serves each tool call
+ * A `callApi` for {@link openApiToTools} that serves each tool call
  * against the REST app in this same process, with no socket: validation,
  * authorization and error handling run once, in the routes, for both
  * surfaces.
@@ -83,10 +83,9 @@ const defaultToError = (response: InProcessResponse): Error => {
  *
  * @example
  * ```typescript
- * registerOpenApiTools({
+ * registerTools({
  *   server,
- *   spec,
- *   callApi: createInProcessCallApi({ app }),
+ *   tools: openApiToTools({ spec, callApi: createInProcessCallApi({ app }) }),
  * });
  * ```
  */

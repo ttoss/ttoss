@@ -1,9 +1,13 @@
 import { App, bodyParser } from '@ttoss/http-server';
-import { createMcpRouter, McpServer } from '@ttoss/http-server-mcp';
+import {
+  createMcpRouter,
+  McpServer,
+  registerTools,
+} from '@ttoss/http-server-mcp';
 import {
   type OpenApiSpec,
   openApiToToolDefinitions,
-  registerOpenApiTools,
+  openApiToTools,
   type ResolvedRequest,
 } from 'src/index';
 import request from 'supertest';
@@ -126,13 +130,15 @@ describe('body properties declared through allOf or with no type', () => {
   test('forwards numbers and objects unchanged over the MCP wire', async () => {
     const calls: ResolvedRequest[] = [];
     const server = new McpServer({ name: 'test', version: '1.0.0' });
-    registerOpenApiTools({
+    registerTools({
       server,
-      spec,
-      callApi: (req) => {
-        calls.push(req);
-        return { ok: true };
-      },
+      tools: openApiToTools({
+        spec,
+        callApi: (req) => {
+          calls.push(req);
+          return { ok: true };
+        },
+      }),
     });
     const app = new App();
     app.use(bodyParser());

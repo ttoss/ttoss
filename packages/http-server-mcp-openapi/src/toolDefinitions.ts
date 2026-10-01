@@ -261,6 +261,13 @@ const extractExtensions = (
   return extensions;
 };
 
+/** The operation's tags, ignoring entries a malformed spec typed otherwise. */
+const operationTags = (operation: OperationSpec): string[] => {
+  return (operation.tags ?? []).filter((tag) => {
+    return typeof tag === 'string';
+  });
+};
+
 export const processOperation = (args: {
   pathTemplate: string;
   method: string;
@@ -337,6 +344,7 @@ export const processOperation = (args: {
     method: httpMethod,
     pathTemplate: args.pathTemplate,
     operationId: args.operation.operationId,
+    tags: operationTags(args.operation),
     path: withPinned({
       build: buildPathFn(args.pathTemplate, pathParams),
       pinned,

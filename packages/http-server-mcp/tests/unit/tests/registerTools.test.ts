@@ -2,7 +2,8 @@ import { App, bodyParser } from '@ttoss/http-server';
 import {
   createMcpRouter,
   McpServer,
-  registerToolFromSchema,
+  registerTools,
+  type Tool,
   z,
 } from 'src/index';
 import request from 'supertest';
@@ -21,28 +22,33 @@ const sendMcpRequest = async (
     .set('Accept', 'application/json, text/event-stream');
 };
 
-describe('registerToolFromSchema', () => {
+describe('registerTools', () => {
   test('should be exported from the package', () => {
-    expect(typeof registerToolFromSchema).toBe('function');
+    expect(typeof registerTools).toBe('function');
   });
 
   test('should register a tool with a plain JSON Schema without throwing', () => {
     const server = new McpServer({ name: 'test', version: '1.0.0' });
 
     expect(() => {
-      registerToolFromSchema(server, {
-        name: 'get-project',
-        description: 'Get a project by ID',
-        inputSchema: {
-          type: 'object',
-          properties: { id: { type: 'string', description: 'Project ID' } },
-          required: ['id'],
-        },
-        handler: async ({ id }) => {
-          return {
-            content: [{ type: 'text', text: String(id) }],
-          };
-        },
+      registerTools({
+        server,
+        tools: [
+          {
+            name: 'get-project',
+            description: 'Get a project by ID',
+            inputSchema: {
+              type: 'object',
+              properties: { id: { type: 'string', description: 'Project ID' } },
+              required: ['id'],
+            },
+            handler: async ({ id }) => {
+              return {
+                content: [{ type: 'text', text: String(id) }],
+              };
+            },
+          },
+        ],
       });
     }).not.toThrow();
   });
@@ -51,14 +57,19 @@ describe('registerToolFromSchema', () => {
     const server = new McpServer({ name: 'test', version: '1.0.0' });
 
     expect(() => {
-      registerToolFromSchema(server, {
-        name: 'list-items',
-        description: 'List all items',
-        handler: async () => {
-          return {
-            content: [{ type: 'text', text: '[]' }],
-          };
-        },
+      registerTools({
+        server,
+        tools: [
+          {
+            name: 'list-items',
+            description: 'List all items',
+            handler: async () => {
+              return {
+                content: [{ type: 'text', text: '[]' }],
+              };
+            },
+          },
+        ],
       });
     }).not.toThrow();
   });
@@ -67,18 +78,30 @@ describe('registerToolFromSchema', () => {
     const server = new McpServer({ name: 'test', version: '1.0.0' });
 
     expect(() => {
-      registerToolFromSchema(server, {
-        name: 'tool-a',
-        handler: async () => {
-          return { content: [{ type: 'text', text: 'a' }] };
-        },
+      registerTools({
+        server,
+        tools: [
+          {
+            name: 'tool-a',
+            description: 'tool-a',
+            handler: async () => {
+              return { content: [{ type: 'text', text: 'a' }] };
+            },
+          },
+        ],
       });
 
-      registerToolFromSchema(server, {
-        name: 'tool-b',
-        handler: async () => {
-          return { content: [{ type: 'text', text: 'b' }] };
-        },
+      registerTools({
+        server,
+        tools: [
+          {
+            name: 'tool-b',
+            description: 'tool-b',
+            handler: async () => {
+              return { content: [{ type: 'text', text: 'b' }] };
+            },
+          },
+        ],
       });
     }).not.toThrow();
   });
@@ -95,15 +118,20 @@ describe('registerToolFromSchema', () => {
       required: ['id'],
     };
 
-    registerToolFromSchema(server, {
-      name: 'get-project',
-      description: 'Get a project',
-      inputSchema: rawSchema,
-      handler: async ({ id }) => {
-        return {
-          content: [{ type: 'text', text: String(id) }],
-        };
-      },
+    registerTools({
+      server,
+      tools: [
+        {
+          name: 'get-project',
+          description: 'Get a project',
+          inputSchema: rawSchema,
+          handler: async ({ id }) => {
+            return {
+              content: [{ type: 'text', text: String(id) }],
+            };
+          },
+        },
+      ],
     });
 
     const app = new App();
@@ -135,12 +163,17 @@ describe('registerToolFromSchema', () => {
   test('tools/list should expose empty object schema when no inputSchema provided', async () => {
     const server = new McpServer({ name: 'test', version: '1.0.0' });
 
-    registerToolFromSchema(server, {
-      name: 'list-all',
-      description: 'List everything',
-      handler: async () => {
-        return { content: [{ type: 'text', text: '[]' }] };
-      },
+    registerTools({
+      server,
+      tools: [
+        {
+          name: 'list-all',
+          description: 'List everything',
+          handler: async () => {
+            return { content: [{ type: 'text', text: '[]' }] };
+          },
+        },
+      ],
     });
 
     const app = new App();
@@ -177,19 +210,24 @@ describe('registerToolFromSchema', () => {
     );
 
     // Raw JSON Schema tool
-    registerToolFromSchema(server, {
-      name: 'raw-tool',
-      description: 'Raw tool',
-      inputSchema: {
-        type: 'object',
-        properties: { q: { type: 'string' } },
-        required: ['q'],
-      },
-      handler: async ({ q }) => {
-        return {
-          content: [{ type: 'text', text: String(q) }],
-        };
-      },
+    registerTools({
+      server,
+      tools: [
+        {
+          name: 'raw-tool',
+          description: 'Raw tool',
+          inputSchema: {
+            type: 'object',
+            properties: { q: { type: 'string' } },
+            required: ['q'],
+          },
+          handler: async ({ q }) => {
+            return {
+              content: [{ type: 'text', text: String(q) }],
+            };
+          },
+        },
+      ],
     });
 
     const app = new App();
@@ -230,19 +268,24 @@ describe('registerToolFromSchema', () => {
   test('tools/call should invoke the handler and return its result', async () => {
     const server = new McpServer({ name: 'test', version: '1.0.0' });
 
-    registerToolFromSchema(server, {
-      name: 'greet',
-      description: 'Greet someone',
-      inputSchema: {
-        type: 'object',
-        properties: { name: { type: 'string' } },
-        required: ['name'],
-      },
-      handler: async ({ name }) => {
-        return {
-          content: [{ type: 'text', text: `Hello, ${name}!` }],
-        };
-      },
+    registerTools({
+      server,
+      tools: [
+        {
+          name: 'greet',
+          description: 'Greet someone',
+          inputSchema: {
+            type: 'object',
+            properties: { name: { type: 'string' } },
+            required: ['name'],
+          },
+          handler: async ({ name }) => {
+            return {
+              content: [{ type: 'text', text: `Hello, ${name}!` }],
+            };
+          },
+        },
+      ],
     });
 
     const app = new App();
@@ -266,23 +309,28 @@ describe('registerToolFromSchema', () => {
     const server = new McpServer({ name: 'test', version: '1.0.0' });
     const capturedArgs: Record<string, unknown>[] = [];
 
-    registerToolFromSchema(server, {
-      name: 'complex',
-      description: 'Complex args',
-      inputSchema: {
-        type: 'object',
-        properties: {
-          id: { type: 'string' },
-          options: {
+    registerTools({
+      server,
+      tools: [
+        {
+          name: 'complex',
+          description: 'Complex args',
+          inputSchema: {
             type: 'object',
-            properties: { limit: { type: 'number' } },
+            properties: {
+              id: { type: 'string' },
+              options: {
+                type: 'object',
+                properties: { limit: { type: 'number' } },
+              },
+            },
+          },
+          handler: async (args) => {
+            capturedArgs.push(args);
+            return { content: [{ type: 'text', text: 'ok' }] };
           },
         },
-      },
-      handler: async (args) => {
-        capturedArgs.push(args);
-        return { content: [{ type: 'text', text: 'ok' }] };
-      },
+      ],
     });
 
     const app = new App();
@@ -309,14 +357,21 @@ describe('registerToolFromSchema', () => {
       validateArguments?: boolean
     ) => {
       const server = new McpServer({ name: 'test', version: '1.0.0' });
-      registerToolFromSchema(server, {
-        name: 'validated',
-        description: 'Validated tool',
-        inputSchema: inputSchema as never,
-        validateArguments,
-        handler: async (args) => {
-          return { content: [{ type: 'text', text: JSON.stringify(args) }] };
-        },
+      registerTools({
+        server,
+        tools: [
+          {
+            name: 'validated',
+            description: 'Validated tool',
+            inputSchema: inputSchema as never,
+            validateArguments,
+            handler: async (args) => {
+              return {
+                content: [{ type: 'text', text: JSON.stringify(args) }],
+              };
+            },
+          },
+        ],
       });
       const app = new App();
       app.use(bodyParser());
@@ -463,11 +518,17 @@ describe('registerToolFromSchema', () => {
   test('works together with createMcpRouter', () => {
     const server = new McpServer({ name: 'test', version: '1.0.0' });
 
-    registerToolFromSchema(server, {
-      name: 'ping',
-      handler: async () => {
-        return { content: [{ type: 'text', text: 'pong' }] };
-      },
+    registerTools({
+      server,
+      tools: [
+        {
+          name: 'ping',
+          description: 'ping',
+          handler: async () => {
+            return { content: [{ type: 'text', text: 'pong' }] };
+          },
+        },
+      ],
     });
 
     const router = createMcpRouter(server);
@@ -477,15 +538,20 @@ describe('registerToolFromSchema', () => {
   describe('tool metadata', () => {
     test('forwards _meta verbatim on tools/list', async () => {
       const server = new McpServer({ name: 'test', version: '1.0.0' });
-      registerToolFromSchema(server, {
-        name: 'get-project',
-        description: 'Get a project by ID',
-        _meta: {
-          ui: { resourceUri: 'ui://projects/detail', visibility: ['app'] },
-        },
-        handler: async () => {
-          return { content: [{ type: 'text', text: 'ok' }] };
-        },
+      registerTools({
+        server,
+        tools: [
+          {
+            name: 'get-project',
+            description: 'Get a project by ID',
+            _meta: {
+              ui: { resourceUri: 'ui://projects/detail', visibility: ['app'] },
+            },
+            handler: async () => {
+              return { content: [{ type: 'text', text: 'ok' }] };
+            },
+          },
+        ],
       });
 
       const app = new App();
@@ -506,12 +572,17 @@ describe('registerToolFromSchema', () => {
 
     test('publishes no _meta when the tool declares none', async () => {
       const server = new McpServer({ name: 'test', version: '1.0.0' });
-      registerToolFromSchema(server, {
-        name: 'get-project',
-        description: 'Get a project by ID',
-        handler: async () => {
-          return { content: [{ type: 'text', text: 'ok' }] };
-        },
+      registerTools({
+        server,
+        tools: [
+          {
+            name: 'get-project',
+            description: 'Get a project by ID',
+            handler: async () => {
+              return { content: [{ type: 'text', text: 'ok' }] };
+            },
+          },
+        ],
       });
 
       const app = new App();
@@ -526,6 +597,135 @@ describe('registerToolFromSchema', () => {
       });
 
       expect(response.body.result.tools[0]).not.toHaveProperty('_meta');
+    });
+  });
+
+  describe('Standard Schema input', () => {
+    const buildZodApp = (handler: jest.Mock) => {
+      const server = new McpServer({ name: 'test', version: '1.0.0' });
+      registerTools({
+        server,
+        tools: [
+          {
+            name: 'list-items',
+            description: 'List items',
+            inputSchema: z.object({
+              limit: z.number().int().default(10),
+            }),
+            handler,
+          },
+        ],
+      });
+      const app = new App();
+      app.use(bodyParser());
+      app.use(createMcpRouter(server).routes());
+      return app.callback();
+    };
+
+    test('advertises the JSON Schema derived from the Zod schema', async () => {
+      const app = buildZodApp(jest.fn());
+      const res = await sendMcpRequest(app, {
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'tools/list',
+      });
+
+      expect(res.body.result.tools[0].inputSchema).toMatchObject({
+        type: 'object',
+        properties: { limit: { type: 'integer', default: 10 } },
+      });
+    });
+
+    test('always enforces it and hands the parsed output to the handler', async () => {
+      const handler = jest.fn().mockResolvedValue({
+        content: [{ type: 'text', text: 'ok' }],
+      });
+      const app = buildZodApp(handler);
+
+      const valid = await sendMcpRequest(app, {
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'tools/call',
+        params: { name: 'list-items', arguments: {} },
+      });
+      expect(valid.body.result.isError).toBeFalsy();
+      expect(handler).toHaveBeenCalledWith({ limit: 10 });
+
+      const invalid = await sendMcpRequest(app, {
+        jsonrpc: '2.0',
+        id: 2,
+        method: 'tools/call',
+        params: { name: 'list-items', arguments: { limit: 'ten' } },
+      });
+      expect(invalid.body.result.isError).toBe(true);
+      expect(handler).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('tool fields on tools/list', () => {
+    const listWith = async (tool: Partial<Tool>) => {
+      const server = new McpServer({ name: 'test', version: '1.0.0' });
+      registerTools({
+        server,
+        tools: [
+          {
+            name: 'get-item',
+            description: 'Get an item',
+            handler: async () => {
+              return {
+                content: [{ type: 'text', text: '{}' }],
+                structuredContent: { id: 1 },
+              };
+            },
+            ...tool,
+          },
+        ],
+      });
+      const app = new App();
+      app.use(bodyParser());
+      app.use(createMcpRouter(server).routes());
+      const res = await sendMcpRequest(app.callback(), {
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'tools/list',
+      });
+      return res.body.result.tools[0];
+    };
+
+    test('forwards title and annotations, never tags or summary', async () => {
+      const listed = await listWith({
+        title: 'Get Item',
+        annotations: { readOnlyHint: true },
+        tags: ['items'],
+        summary: 'Get one item',
+      });
+
+      expect(listed.title).toBe('Get Item');
+      expect(listed.annotations).toEqual({ readOnlyHint: true });
+      expect(listed).not.toHaveProperty('tags');
+      expect(listed).not.toHaveProperty('summary');
+    });
+
+    test('advertises a JSON Schema outputSchema verbatim', async () => {
+      const outputSchema = {
+        type: 'object' as const,
+        properties: { id: { type: 'number' } },
+      };
+
+      const listed = await listWith({ outputSchema });
+
+      expect(listed.outputSchema).toEqual(outputSchema);
+    });
+
+    test('advertises a Zod outputSchema as JSON Schema', async () => {
+      const listed = await listWith({
+        outputSchema: z.object({ id: z.number() }),
+      });
+
+      expect(listed.outputSchema).toMatchObject({
+        type: 'object',
+        properties: { id: { type: 'number' } },
+      });
     });
   });
 });

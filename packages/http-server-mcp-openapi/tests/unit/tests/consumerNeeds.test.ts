@@ -1,14 +1,18 @@
 import { App, bodyParser } from '@ttoss/http-server';
-import { createMcpRouter, McpServer } from '@ttoss/http-server-mcp';
+import {
+  createMcpRouter,
+  McpServer,
+  registerTools,
+} from '@ttoss/http-server-mcp';
 import {
   dereferenceSchema,
   extractBodyProps,
   NO_CONTENT_TEXT,
   type OpenApiSpec,
   openApiToToolDefinitions,
+  openApiToTools,
+  type OpenApiToToolsArgs,
   type OperationSpec,
-  registerOpenApiTools,
-  type RegisterOpenApiToolsArgs,
   type ResolvedRequest,
   resolveParameter,
   resolveSchema,
@@ -26,13 +30,13 @@ const parseRpc = (res: request.Response): Record<string, unknown> => {
 };
 
 const buildApp = (
-  args: Omit<RegisterOpenApiToolsArgs, 'server'>,
+  args: OpenApiToToolsArgs,
   getApiHeaders?: (ctx: {
     headers: Record<string, unknown>;
   }) => Record<string, string>
 ) => {
   const server = new McpServer({ name: 'test', version: '1.0.0' });
-  registerOpenApiTools({ server, ...args });
+  registerTools({ server, tools: openApiToTools(args) });
   const app = new App();
   app.use(bodyParser());
   app.use(createMcpRouter(server, { getApiHeaders }).routes());

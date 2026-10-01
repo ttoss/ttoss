@@ -10,16 +10,17 @@ export {
   errorMessageOf,
 } from './inProcessCallApi';
 export {
+  NO_CONTENT_TEXT,
+  type OpenApiTool,
+  openApiToTools,
+  type OpenApiToToolsArgs,
+  type ResolvedRequest,
+} from './openApiToTools';
+export {
   extractPathParams,
   extractQueryParams,
   snakeToCamel,
 } from './parameters';
-export {
-  NO_CONTENT_TEXT,
-  registerOpenApiTools,
-  type RegisterOpenApiToolsArgs,
-  type ResolvedRequest,
-} from './registerOpenApiTools';
 export {
   buildBodyFn,
   buildPathFn,

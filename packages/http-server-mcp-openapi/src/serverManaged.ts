@@ -41,7 +41,7 @@ export const pinnedArgs = (
 /**
  * Wraps a `path` / `query` builder so pinned values replace whatever the args
  * carry. Applied in the builder itself, so every consumer of the tool
- * definition sends them, not only `registerOpenApiTools`.
+ * definition sends them, not only `openApiToTools`.
  */
 export const withPinned = <T>(args: {
   build: ((values: Record<string, unknown>) => T) | undefined;

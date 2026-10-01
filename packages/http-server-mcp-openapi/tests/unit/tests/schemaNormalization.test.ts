@@ -1,9 +1,13 @@
 import { App, bodyParser } from '@ttoss/http-server';
-import { createMcpRouter, McpServer } from '@ttoss/http-server-mcp';
+import {
+  createMcpRouter,
+  McpServer,
+  registerTools,
+} from '@ttoss/http-server-mcp';
 import {
   type OpenApiSpec,
   openApiToToolDefinitions,
-  registerOpenApiTools,
+  openApiToTools,
   type ResolvedRequest,
 } from 'src/index';
 import request from 'supertest';
@@ -176,17 +180,19 @@ describe('server-managed parameters pinned by the spec', () => {
     expect(pinned.path({ version: 'v9' })).toBe('/v/v1/items');
   });
 
-  test('reach callApi through registerOpenApiTools without serverParameters', async () => {
+  test('reach callApi through openApiToTools without serverParameters', async () => {
     const calls: ResolvedRequest[] = [];
     const server = new McpServer({ name: 'test', version: '1.0.0' });
-    registerOpenApiTools({
+    registerTools({
       server,
-      spec,
-      options: { argumentNames: 'verbatim' },
-      callApi: (req) => {
-        calls.push(req);
-        return { ok: true };
-      },
+      tools: openApiToTools({
+        spec,
+        options: { argumentNames: 'verbatim' },
+        callApi: (req) => {
+          calls.push(req);
+          return { ok: true };
+        },
+      }),
     });
     const app = new App();
     app.use(bodyParser());
@@ -356,17 +362,19 @@ describe('server-managed body properties pinned by the spec', () => {
     expect(hidden.body!({ state: 's', wait: false })).toEqual({ state: 's' });
   });
 
-  test('reach callApi through registerOpenApiTools', async () => {
+  test('reach callApi through openApiToTools', async () => {
     const calls: ResolvedRequest[] = [];
     const server = new McpServer({ name: 'test', version: '1.0.0' });
-    registerOpenApiTools({
+    registerTools({
       server,
-      spec: decisionsSpec({ type: 'boolean' }),
-      options: { argumentNames: 'verbatim' },
-      callApi: (req) => {
-        calls.push(req);
-        return { ok: true };
-      },
+      tools: openApiToTools({
+        spec: decisionsSpec({ type: 'boolean' }),
+        options: { argumentNames: 'verbatim' },
+        callApi: (req) => {
+          calls.push(req);
+          return { ok: true };
+        },
+      }),
     });
     const app = new App();
     app.use(bodyParser());
