@@ -877,6 +877,7 @@ export const createMcpRouter = (
   return Object.assign(router, { notify: requestServer.notify, close });
 };
 
+export { type DeferToolsOptions } from './deferTools';
 export {
   registerAppResource,
   type RegisterAppResourceParams,
@@ -897,7 +898,6 @@ export {
   type Tool,
   type ToolSchema,
 } from './tool';
-export { type ToolCatalogOptions } from './toolCatalog';
 export {
   createToolGate,
   type CreateToolGateOptions,

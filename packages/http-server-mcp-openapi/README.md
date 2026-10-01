@@ -60,14 +60,14 @@ app.listen(3000);
 Each OpenAPI operation with an `operationId` and a supported HTTP method
 (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`) becomes one tool:
 
-| OpenAPI                   | MCP tool                                     |
-| ------------------------- | -------------------------------------------- |
-| `operationId: listAgents` | tool name `list-agents` (kebab-case)         |
-| path/query/body params    | a single `inputSchema` object                |
-| `$ref`, `oneOf`, `anyOf`  | dereferenced and merged into a flat schema   |
-| snake_case names          | camelCase tool inputs, mapped back on call   |
-| operation `description`   | tool description (quotes/newlines sanitised) |
-| operation `tags`          | tool `tags`, for a catalog's `search` filter |
+| OpenAPI                   | MCP tool                                      |
+| ------------------------- | --------------------------------------------- |
+| `operationId: listAgents` | tool name `list-agents` (kebab-case)          |
+| path/query/body params    | a single `inputSchema` object                 |
+| `$ref`, `oneOf`, `anyOf`  | dereferenced and merged into a flat schema    |
+| snake_case names          | camelCase tool inputs, mapped back on call    |
+| operation `description`   | tool description (quotes/newlines sanitised)  |
+| operation `tags`          | tool `tags`, for the deferred `search` filter |
 
 Path params are always required strings. Query and body params carry their
 declared type and `required` flag. Array params keep their `items` schema. A
@@ -116,16 +116,16 @@ derived from. Enable `validateArguments` only when the spec describes every
 value the API accepts: a generated schema is easily narrower than the API, and
 validating against it rejects calls the API would have taken.
 
-### A catalog for a large API
+### Deferring the tools of a large API
 
 Every tool definition ships to the model on every turn, so a large API
-overflows the client's context. Register the same tools behind a
-[search / describe / call catalog](https://github.com/ttoss/ttoss/tree/main/packages/http-server-mcp#catalog-for-large-tool-sets),
-for example on a second endpoint next to the full one:
+overflows the client's context. [Defer](https://github.com/ttoss/ttoss/tree/main/packages/http-server-mcp#deferring-tools-for-large-tool-sets)
+the same tools behind `search` / `describe` / `call`, for example on a second
+endpoint next to the full one:
 
 ```typescript
 registerTools({ server: fullServer, tools });
-registerTools({ server: catalogServer, tools, catalog: true });
+registerTools({ server: deferredServer, tools, defer: true });
 ```
 
 `search` filters by the operations' tags and shows each tool's route; tools

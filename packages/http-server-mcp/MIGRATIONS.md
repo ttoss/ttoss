@@ -3,9 +3,9 @@
 ## One `Tool` type: `registerTools` replaces `registerToolFromSchema` and `createGatedToolRegistrar`
 
 A tool is now one value, `Tool`, and registering is one call, `registerTools`,
-which also exposes tools behind a [search / describe / call
-catalog](./README.md#catalog-for-large-tool-sets). Gating became a function
-from `Tool` to `Tool`, so a gated tool joins a catalog like any other.
+which can also [defer](./README.md#deferring-tools-for-large-tool-sets) them
+behind `search` / `describe` / `call`. Gating became a function from `Tool` to
+`Tool`, so a gated tool is deferred like any other.
 
 **`registerToolFromSchema`** — wrap the params in a `tools` list:
 

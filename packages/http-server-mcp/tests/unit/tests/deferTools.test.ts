@@ -1,11 +1,11 @@
 import { App, bodyParser } from '@ttoss/http-server';
 import {
   createMcpRouter,
+  type DeferToolsOptions,
   McpServer,
   rankTools,
   registerTools,
   type Tool,
-  type ToolCatalogOptions,
   z,
 } from 'src/index';
 import request from 'supertest';
@@ -63,13 +63,13 @@ const TOOLS: Tool[] = [
 
 const buildApp = ({
   tools = TOOLS,
-  catalog = true,
+  defer = true,
 }: {
   tools?: Tool[];
-  catalog?: boolean | ToolCatalogOptions;
+  defer?: boolean | DeferToolsOptions;
 } = {}) => {
   const server = new McpServer({ name: 'test', version: '1.0.0' });
-  registerTools({ server, tools, catalog });
+  registerTools({ server, tools, defer });
   const app = new App();
   app.use(bodyParser());
   app.use(createMcpRouter(server).routes());
@@ -131,7 +131,7 @@ const namesOf = (tools: Array<{ name: string }>) => {
   });
 };
 
-describe('registerTools catalog', () => {
+describe('registerTools defer', () => {
   describe('tools/list', () => {
     test('exposes only search, describe and call', async () => {
       expect(await listedNames(buildApp())).toEqual([
@@ -169,10 +169,10 @@ describe('registerTools catalog', () => {
       ]);
     });
 
-    test('`direct` picks the standalone tools, which stay in the catalog', async () => {
+    test('`except` keeps tools standalone, still reachable through search', async () => {
       const app = buildApp({
-        catalog: {
-          direct: ({ tool: candidate }) => {
+        defer: {
+          except: ({ tool: candidate }) => {
             return candidate.name === 'get-project';
           },
         },
@@ -190,9 +190,9 @@ describe('registerTools catalog', () => {
       ]);
     });
 
-    test('`names` renames the three catalog tools', async () => {
+    test('`names` renames search, describe and call', async () => {
       const app = buildApp({
-        catalog: {
+        defer: {
           names: { search: 'find', describe: 'explain', call: 'run' },
         },
       });
@@ -274,7 +274,7 @@ describe('registerTools catalog', () => {
     });
 
     test('defaults to `searchLimit` results', async () => {
-      const app = buildApp({ catalog: { searchLimit: 1 } });
+      const app = buildApp({ defer: { searchLimit: 1 } });
 
       expect(namesOf(await search({ app, query: 'agent' }))).toEqual([
         'list-agents',
@@ -324,7 +324,7 @@ describe('registerTools catalog', () => {
       const custom = jest.fn(({ tools }: { tools: Tool[] }) => {
         return [...tools].reverse();
       });
-      const app = buildApp({ catalog: { search: custom } });
+      const app = buildApp({ defer: { search: custom } });
 
       const results = await search({ app, query: 'anything', limit: 2 });
 
@@ -623,7 +623,7 @@ describe('registerTools catalog', () => {
   describe('visible', () => {
     const app = () => {
       return buildApp({
-        catalog: {
+        defer: {
           visible: ({ tool: candidate }) => {
             return !candidate.name.startsWith('delete-');
           },

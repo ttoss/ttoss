@@ -469,9 +469,9 @@ registerTools({
 
 `inputSchema` is either a Standard Schema (Zod 4's `z.object(...)`), always enforced, with the handler receiving its parsed output; or a plain JSON Schema, forwarded verbatim and enforced only with `validateArguments` — see [Argument validation](#argument-validation). A plain JSON Schema keeps one definition shareable with an AI SDK agent, whose `tool()` helper takes the same object.
 
-### Catalog for large tool sets
+### Deferring tools for large tool sets
 
-Every tool definition ships to the model on every turn, so a few hundred tools overflow a client's context, and some providers cap the number of tools per request. `catalog` registers the same tools behind three:
+Every tool definition ships to the model on every turn, so a few hundred tools overflow a client's context, and some providers cap the number of tools per request. `defer` registers the same tools behind three that load them on demand:
 
 | Tool       | Input                     | Returns                                                                                        |
 | ---------- | ------------------------- | ---------------------------------------------------------------------------------------------- |
@@ -481,19 +481,19 @@ Every tool definition ships to the model on every turn, so a few hundred tools o
 
 ```typescript
 registerTools({ server: fullServer, tools });
-registerTools({ server: catalogServer, tools, catalog: true });
+registerTools({ server: deferredServer, tools, defer: true });
 ```
 
 A schema enters the model's context only for the tools it is about to use. `call` enforces the tool's schema as a direct call would, and its errors help the model recover: an unknown name answers suggestions, and invalid arguments, a tool's own error result, or a thrown error carry the input schema, so a `call` made without `describe` corrects itself in one retry.
 
 Pass options instead of `true` to tune it:
 
-- `direct` — tools also registered standalone. Defaults to those linked to an [MCP Apps](#mcp-apps-interactive-uis) view, since a host finds a view through the tool's own `tools/list` entry.
-- `visible` — runs on every catalog call; a tool it rejects is absent from all three. Direct tools stay listed.
+- `except` — tools kept standalone, not deferred; they stay reachable through `search` too. Defaults to those linked to an [MCP Apps](#mcp-apps-interactive-uis) view, since a host finds a view through the tool's own `tools/list` entry.
+- `visible` — runs on every `search`, `describe` and `call`; a tool it rejects is absent from all three. Standalone tools stay listed.
 - `search` — replaces the default ranking, `rankTools`, e.g. with embeddings.
 - `searchLimit` (default `10`) and `names` (default `search` / `describe` / `call`).
 
-A gate (below) sees each call with the tool's own name and arguments, so authorization stays per tool behind the catalog.
+A gate (below) sees each call with the tool's own name and arguments, so authorization stays per tool when deferred.
 
 ### Gating tools
 
@@ -635,7 +635,7 @@ registerTools({
 });
 ```
 
-`toolMeta()` is the linkage for every registration path: a `Tool`'s `_meta`, or the SDK's `registerTool`. Behind a [catalog](#catalog-for-large-tool-sets), view-linked tools stay registered standalone by default.
+`toolMeta()` is the linkage for every registration path: a `Tool`'s `_meta`, or the SDK's `registerTool`. When [deferred](#deferring-tools-for-large-tool-sets), view-linked tools stay registered standalone by default.
 
 ### Register the linkage unconditionally
 
@@ -762,7 +762,7 @@ Registers `Tool`s on an MCP server. See [Tools](#tools).
 
 - `server` (`McpServer`) — The MCP server to register on.
 - `tools` (`Tool[]`) — The tools.
-- `catalog` (`boolean | ToolCatalogOptions`, optional, default `false`) — Expose the tools behind `search` / `describe` / `call`; see [Catalog for large tool sets](#catalog-for-large-tool-sets) for the options.
+- `defer` (`boolean | DeferToolsOptions`, optional, default `false`) — Defer the tools behind `search` / `describe` / `call`; see [Deferring tools for large tool sets](#deferring-tools-for-large-tool-sets) for the options.
 
 **`Tool`:**
 
@@ -772,7 +772,7 @@ Registers `Tool`s on an MCP server. See [Tools](#tools).
 - `validateArguments` (`boolean`, optional, default `false`) — Enforce a JSON Schema `inputSchema`; see [Argument validation](#argument-validation).
 - `outputSchema` (same types as `inputSchema`, optional) — Advertised on `tools/list`; `structuredContent` is validated against it.
 - `title`, `annotations`, `_meta` (optional) — Forwarded on `tools/list`.
-- `tags`, `summary` (optional) — Read by a catalog's `search`; never sent on `tools/list`.
+- `tags`, `summary` (optional) — Read by the deferred `search`; never sent on `tools/list`.
 - `handler` (`(args) => CallToolResult | Promise<CallToolResult>`) — Answers a call.
 
 **Returns:** `void`
@@ -808,7 +808,7 @@ Returns a gate, `({ tool, requiredScope, gates? }) => Tool`, that wraps a tool i
 
 ### `rankTools(args)`
 
-The catalog's default search, exported as a fallback for a custom one: scores `tools` by the terms of `query` — weighted name > summary > tags > description, plural and singular alike, a word's prefix at half weight — filters by `tag`, and returns up to `limit`, ties in the tools' order.
+The deferred `search`'s default ranking, exported as a fallback for a custom one: scores `tools` by the terms of `query` — weighted name > summary > tags > description, plural and singular alike, a word's prefix at half weight — filters by `tag`, and returns up to `limit`, ties in the tools' order.
 
 ### `registerAppResource(params)`
 

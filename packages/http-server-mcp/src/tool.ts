@@ -28,7 +28,7 @@ export type ToolSchema = JsonObjectSchema | StandardSchemaWithJSON;
 /**
  * An MCP tool: what it is and how it answers, independent of how a server
  * exposes it. {@link registerTools} registers a list of them, either one MCP
- * tool each or behind a search / describe / call catalog.
+ * tool each or deferred behind `search` / `describe` / `call`.
  */
 export interface Tool {
   /** Unique tool name. */
@@ -72,10 +72,10 @@ export interface Tool {
    * decide when to ask the user for confirmation; they never enforce anything.
    */
   annotations?: ToolAnnotations;
-  /** Groups the tool for a catalog's `search` filter. Not sent on `tools/list`. */
+  /** Groups the tool for the deferred `search` filter. Not sent on `tools/list`. */
   tags?: string[];
   /**
-   * The line a catalog's `search` shows for the tool. Defaults to the first
+   * The line the deferred `search` shows for the tool. Defaults to the first
    * line of `description`. Not sent on `tools/list`.
    */
   summary?: string;
@@ -140,7 +140,7 @@ const fromJsonObjectSchema = ({
 export interface ResolvedToolSchemas {
   /** What `registerTool` takes: advertises the schema, runs the enforcement. */
   input: StandardSchemaWithJSON;
-  /** The input as plain JSON Schema, for a catalog's `describe`. */
+  /** The input as plain JSON Schema, for the deferred `describe`. */
   inputJson: Record<string, unknown>;
   output?: StandardSchemaWithJSON;
 }
@@ -148,7 +148,7 @@ export interface ResolvedToolSchemas {
 const resolved = new WeakMap<Tool, ResolvedToolSchemas>();
 
 /**
- * Resolves a tool's schemas once, so the direct registration and a catalog's
+ * Resolves a tool's schemas once, so the direct registration and a deferred
  * `call` enforce exactly the same thing.
  */
 export const resolveToolSchemas = (tool: Tool): ResolvedToolSchemas => {

@@ -9,20 +9,20 @@ import {
   type ToolSearchArgs,
 } from './toolSearch';
 
-/** How {@link registerTools} exposes tools as a catalog. */
-export interface ToolCatalogOptions {
+/** How {@link registerTools} defers tools behind `search` / `describe` / `call`. */
+export interface DeferToolsOptions {
   /**
-   * Tools that are also registered as standalone MCP tools, beside the
-   * catalog. They stay reachable through the catalog too.
+   * Tools that are not deferred: they are also registered as standalone MCP
+   * tools, and stay reachable through `search` / `describe` / `call` too.
    *
    * Defaults to the tools linked to an MCP Apps view: a host finds a tool's
    * view through that tool's own `tools/list` entry, so a view behind `call`
    * would never render.
    */
-  direct?: (args: { tool: Tool }) => boolean;
+  except?: (args: { tool: Tool }) => boolean;
   /**
-   * The names of the catalog's three tools, to avoid a collision with a
-   * direct tool or to serve two catalogs from one server.
+   * The names of the three tools that reach the deferred ones, to avoid a
+   * collision with a standalone tool or to defer two sets on one server.
    * @default { search: 'search', describe: 'describe', call: 'call' }
    */
   names?: { search?: string; describe?: string; call?: string };
@@ -38,9 +38,9 @@ export interface ToolCatalogOptions {
    */
   searchLimit?: number;
   /**
-   * Runs on every catalog call. A tool it rejects is absent from `search`,
-   * `describe`, and `call`, which answers it as an unknown name. Direct tools
-   * are listed on `tools/list` regardless.
+   * Runs on every `search`, `describe` and `call`. A tool it rejects is
+   * absent from all three; `call` answers it as an unknown name. Tools
+   * `except` keeps standalone are listed on `tools/list` regardless.
    *
    * @example
    * ```typescript
@@ -92,26 +92,26 @@ const linksAppView = ({ tool }: { tool: Tool }): boolean => {
   );
 };
 
-/** What the three catalog tools share. */
-interface Catalog {
+/** What `search`, `describe` and `call` share. */
+interface DeferredTools {
   names: { search: string; describe: string; call: string };
-  /** Every catalog tool, for counts and tags that never vary per request. */
+  /** Every deferred tool, for counts and tags that never vary per request. */
   tools: Tool[];
   searchLimit: number;
-  searchTools: NonNullable<ToolCatalogOptions['search']>;
+  searchTools: NonNullable<DeferToolsOptions['search']>;
   /** The tools this request may see. */
   visibleTools: () => Tool[];
   /** A tool this request may see, by name. */
   find: (name: string) => Tool | undefined;
 }
 
-const catalogOf = ({
+const deferredToolsOf = ({
   tools,
   options,
 }: {
   tools: Tool[];
-  options: ToolCatalogOptions;
-}): Catalog => {
+  options: DeferToolsOptions;
+}): DeferredTools => {
   const byName = new Map<string, Tool>();
   for (const tool of tools) {
     if (byName.has(tool.name)) {
@@ -150,7 +150,7 @@ const searchToolOf = ({
   searchLimit,
   searchTools,
   visibleTools,
-}: Catalog): Tool => {
+}: DeferredTools): Tool => {
   const tags = [
     ...new Set(
       tools.flatMap((tool) => {
@@ -211,7 +211,7 @@ const searchToolOf = ({
   };
 };
 
-const describeToolOf = ({ names, find, visibleTools }: Catalog): Tool => {
+const describeToolOf = ({ names, find, visibleTools }: DeferredTools): Tool => {
   return {
     name: names.describe,
     description: `Get the full definition of tools found with "${names.search}", including the input schema "${names.call}" expects.`,
@@ -302,7 +302,7 @@ const runTool = async ({
   }
 };
 
-const callToolOf = ({ names, find, visibleTools }: Catalog): Tool => {
+const callToolOf = ({ names, find, visibleTools }: DeferredTools): Tool => {
   return {
     name: names.call,
     description: `Run a tool found with "${names.search}". Pass its arguments as "${names.describe}" defined them.`,
@@ -336,26 +336,26 @@ const callToolOf = ({ names, find, visibleTools }: Catalog): Tool => {
 };
 
 /**
- * Registers `tools` behind three tools — `search`, `describe`, `call` — so a
+ * Defers `tools` behind three tools — `search`, `describe`, `call` — so a
  * client's context holds three small definitions instead of every schema,
  * and a schema enters it only for the tools the model is about to use.
  */
-export const registerToolCatalog = ({
+export const registerDeferredTools = ({
   server,
   tools,
   ...options
-}: ToolCatalogOptions & { server: McpServer; tools: Tool[] }): void => {
-  const catalog = catalogOf({ tools, options });
+}: DeferToolsOptions & { server: McpServer; tools: Tool[] }): void => {
+  const deferred = deferredToolsOf({ tools, options });
   for (const tool of [
-    searchToolOf(catalog),
-    describeToolOf(catalog),
-    callToolOf(catalog),
+    searchToolOf(deferred),
+    describeToolOf(deferred),
+    callToolOf(deferred),
   ]) {
     registerDirectTool({ server, tool });
   }
 
-  const direct = options.direct ?? linksAppView;
+  const except = options.except ?? linksAppView;
   for (const tool of tools) {
-    if (direct({ tool })) registerDirectTool({ server, tool });
+    if (except({ tool })) registerDirectTool({ server, tool });
   }
 };

@@ -396,8 +396,8 @@ describe('openApiToTools tool fields', () => {
   });
 });
 
-describe('openApiToTools behind a catalog', () => {
-  const buildCatalog = (calls: ResolvedRequest[]) => {
+describe('openApiToTools deferred', () => {
+  const buildDeferred = (calls: ResolvedRequest[]) => {
     const server = new McpServer({ name: 'test', version: '1.0.0' });
     registerTools({
       server,
@@ -409,7 +409,7 @@ describe('openApiToTools behind a catalog', () => {
           return { id: 'agt_1' };
         },
       }),
-      catalog: true,
+      defer: true,
     });
     const app = new App();
     app.use(bodyParser());
@@ -417,12 +417,12 @@ describe('openApiToTools behind a catalog', () => {
     return app.callback();
   };
 
-  const callCatalog = async ({
+  const callDeferred = async ({
     app,
     name,
     args,
   }: {
-    app: ReturnType<typeof buildCatalog>;
+    app: ReturnType<typeof buildDeferred>;
     name: string;
     args: Record<string, unknown>;
   }) => {
@@ -440,9 +440,9 @@ describe('openApiToTools behind a catalog', () => {
   };
 
   test('search finds an operation by tag and shows its route', async () => {
-    const app = buildCatalog([]);
+    const app = buildDeferred([]);
 
-    const result = await callCatalog({
+    const result = await callDeferred({
       app,
       name: 'search',
       args: { query: '', tag: 'agents' },
@@ -461,9 +461,9 @@ describe('openApiToTools behind a catalog', () => {
 
   test('call builds the same request the direct tool would', async () => {
     const calls: ResolvedRequest[] = [];
-    const app = buildCatalog(calls);
+    const app = buildDeferred(calls);
 
-    const result = await callCatalog({
+    const result = await callDeferred({
       app,
       name: 'call',
       args: { name: 'get-agent', arguments: { agentId: 'agt_1' } },
@@ -477,9 +477,9 @@ describe('openApiToTools behind a catalog', () => {
 
   test('call rejects arguments the generated schema does not accept', async () => {
     const calls: ResolvedRequest[] = [];
-    const app = buildCatalog(calls);
+    const app = buildDeferred(calls);
 
-    const result = await callCatalog({
+    const result = await callDeferred({
       app,
       name: 'call',
       args: { name: 'get-agent', arguments: {} },

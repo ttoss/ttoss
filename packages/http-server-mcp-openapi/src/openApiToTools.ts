@@ -153,7 +153,7 @@ const applyServerParameters = async (args: {
  * Derives MCP tools from OpenAPI document(s). Each tool's handler resolves
  * the incoming args into a concrete HTTP request and delegates execution to
  * `callApi`. Register the result with `registerTools` from
- * `@ttoss/http-server-mcp` — one MCP tool each, or behind a catalog.
+ * `@ttoss/http-server-mcp` — one MCP tool each, or deferred.
  *
  * @returns One {@link OpenApiTool} per translatable operation.
  *

@@ -1,6 +1,6 @@
 import type { Tool } from './tool';
 
-/** What a catalog's search ranks: one `search` call, already narrowed to the visible tools. */
+/** What the deferred `search` ranks: one call, already narrowed to the visible tools. */
 export interface ToolSearchArgs {
   /** Free-text query. One without words lists the tools in order. */
   query: string;
@@ -104,7 +104,7 @@ const scoreOf = ({ tool, terms }: { tool: Tool; terms: string[] }): number => {
 };
 
 /**
- * The catalog's default search: scores each tool by the query's terms,
+ * The deferred tools' default search: scores each tool by the query's terms,
  * weighted name > summary > tags > description, and breaks ties by the
  * tools' order. No index — a few hundred tools need none.
  */

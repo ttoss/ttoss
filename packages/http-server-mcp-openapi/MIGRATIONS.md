@@ -3,8 +3,9 @@
 ## `openApiToTools` replaces `registerOpenApiTools`
 
 The package now derives tools and leaves registering them to `registerTools`
-from `@ttoss/http-server-mcp`, which can also expose them behind a
-[search / describe / call catalog](./README.md#a-catalog-for-a-large-api).
+from `@ttoss/http-server-mcp`, which can also
+[defer](./README.md#deferring-the-tools-of-a-large-api) them behind
+`search` / `describe` / `call`.
 
 ```diff
 -import { registerOpenApiTools } from '@ttoss/http-server-mcp-openapi';

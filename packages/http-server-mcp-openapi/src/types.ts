@@ -51,7 +51,7 @@ export interface ToolDefinition {
   pathTemplate: string;
   /** The operation's `operationId`. */
   operationId: string;
-  /** The operation's `tags`, e.g. to filter a catalog's `search` by module. */
+  /** The operation's `tags`, e.g. to filter the deferred `search` by module. */
   tags: string[];
   /** Builds the request path, substituting path params from the args. */
   path: (args: Record<string, unknown>) => string;
