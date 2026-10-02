@@ -126,6 +126,22 @@ describe('GeoVisLayerControl', () => {
     expect(item!.disabled).toBe(false);
   });
 
+  test('tags its root, for callers that find it on the page', async () => {
+    render(
+      <GeoVisProvider spec={buildSpec('cozinhas-pts')}>
+        <div />
+      </GeoVisProvider>
+    );
+    await act(async () => {});
+
+    const root = await waitFor(() => {
+      const el = document.querySelector('[data-geovis-layer-control]');
+      expect(el).not.toBeNull();
+      return el as HTMLElement;
+    });
+    expect(root.querySelector('button[aria-expanded]')).not.toBeNull();
+  });
+
   test('renders the trigger with a spec icon when provided', async () => {
     const spec: VisualizationSpec = {
       engine: 'maplibre',

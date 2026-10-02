@@ -205,8 +205,10 @@ If the map spec declares a [`control`](https://github.com/ttoss-labs/ttoss/tree/
 `GeoVisProvider` and anchored to a map corner — by default the bottom-left,
 the same corner the left sidebar opens over. To keep an opening sidebar from
 covering it, the workspace hands the map a larger `control.offset.x` while the
-left sidebar is open, sliding the control clear along the bottom edge; it snaps
-back when the sidebar closes. The shift is purely presentational (the workspace
+left sidebar is open, sliding the control clear along the bottom edge with the
+same 12px gap the card keeps from the map's edges. A control without its own
+vertical offset also takes that 12px from the edge, lining up with the card. It
+snaps back when the sidebar closes. The shift is purely presentational (the workspace
 never mutates your spec's other fields) and only applies to a left-anchored
 control — a `bottom-right`/`top-right` control the sidebar never overlaps is
 left untouched. No configuration is needed; it follows the sidebar's open state
@@ -285,6 +287,25 @@ pluralized source count. It renders nothing — and contributes no content
 toward showing the right sidebar — when the spec has neither, so it never
 appears as an always-on placeholder.
 
+## Map export
+
+The left sidebar carries a download button beside its close control, with no
+configuration needed. It opens a dialog that exports the map as a PNG, showing a
+preview, a file name suggested from the active variation and the timeline's
+value (`taxa-cumulativa_2024`), and two toggles: **Incluir legenda** (the legend
+cards on screen, as they look and where they sit; on by default, shown only when
+a legend is on screen) and **Incluir menu** (the left sidebar, drawn where it
+sits over the map, with the layers button when the spec declares a `control`;
+off by default).
+
+The map is captured once, right after the dialog is on screen, at the canvas's
+own resolution (its on-screen size times the device pixel ratio), and the
+legends and the menu with it, rendered from the DOM by
+[`html-to-image`](https://github.com/bubkoo/html-to-image);
+the toggles only redraw what lies over that frame. Basemap tiles must be served
+with CORS headers — a cross-origin tile without them taints the canvas, and the
+dialog reports the failure instead of downloading.
+
 ## API
 
 ### `GeovisWorkspace` props
@@ -359,7 +380,10 @@ are grouped wherever they show — the bars' tooltips, the `unitLabel` readout a
 the compact HUD — using the locale declared on `I18nProvider`, whether or not a
 message bundle was loaded for it, while the keys stay ungrouped because they are
 years),
-`chips` (`{ kind, menuId?, options, multiple?, defaultSelected? }` — with a
+`chips` (`{ kind, menuId?, options, multiple?, defaultSelected?, layout? }` — `layout`
+is `{ kind: 'wrap' }` by default, each chip as wide as its label and wrapping
+onto the next line, or `{ kind: 'grid', columns }` for equal-width columns whose
+chips cut an overlong label with an ellipsis and show it whole on hover; with a
 `menuId` the active ids reach `selection[menuId]` joined by commas, `''` when
 none are active, which is both what the one-string-per-key selection holds and
 what a permalink needs; without one the selection stays visual-only),

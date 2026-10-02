@@ -5,8 +5,11 @@ import type { GeovisWorkspaceSidebarToggleSetting } from '../../context/GeovisWo
 import { COLOR, FONT_HEAD } from './theme';
 import { useSettingValue } from './useSettingValue';
 
-/** The switch itself: a track the knob slides across, tinted when on. */
-const Switch = ({ on }: { on: boolean }) => {
+/**
+ * The switch itself: a track the knob slides across, tinted when on. Shared
+ * with the export dialog's toggles, so a boolean reads the same everywhere.
+ */
+export const Switch = ({ on }: { on: boolean }) => {
   return (
     <Box
       sx={{

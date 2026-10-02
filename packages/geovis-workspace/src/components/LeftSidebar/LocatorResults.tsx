@@ -125,6 +125,8 @@ export const LocatorResults = ({
         borderRadius: '6px',
         overflow: 'hidden',
         overflowY: 'auto',
+        // Reaching the last result must not start scrolling the sidebar.
+        overscrollBehavior: 'contain',
         maxHeight: '168px',
         marginBottom: '12px',
         backgroundColor: COLOR.surface,

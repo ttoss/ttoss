@@ -4,6 +4,7 @@ import {
   applyRightSidebarLegendOffset,
   applyTimelineHudControlOffset,
   LEFT_SIDEBAR_CONTROL_CLEARANCE,
+  LEFT_SIDEBAR_INSET,
   RIGHT_SIDEBAR_LEGEND_CLEARANCE,
   TIMELINE_HUD_CONTROL_CLEARANCE,
 } from 'src/controlOffset';
@@ -78,8 +79,10 @@ describe('applyLeftSidebarControlOffset', () => {
     });
 
     expect(result).not.toBe(spec);
+    // With no vertical distance of its own, it lines up with the card's edge.
     expect(result.control?.offset).toEqual({
       x: LEFT_SIDEBAR_CONTROL_CLEARANCE,
+      y: LEFT_SIDEBAR_INSET,
     });
   });
 
@@ -113,7 +116,7 @@ describe('applyLeftSidebarControlOffset', () => {
     });
   });
 
-  test('omits y when the original object offset has no vertical distance', () => {
+  test('aligns y with the card when the original object offset has none', () => {
     const spec = withControl(
       control({ position: 'bottom-left', offset: { x: 10 } })
     );
@@ -125,6 +128,7 @@ describe('applyLeftSidebarControlOffset', () => {
 
     expect(result.control?.offset).toEqual({
       x: LEFT_SIDEBAR_CONTROL_CLEARANCE,
+      y: LEFT_SIDEBAR_INSET,
     });
   });
 });
