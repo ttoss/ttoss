@@ -249,6 +249,11 @@ export const messages = defineMessages({
     description:
       'Alternative text of the image previewing the PNG the export dialog will download.',
   },
+  exportPreviewLoading: {
+    defaultMessage: 'Gerando prévia…',
+    description:
+      'Accessible label of the spinner shown in the export preview while the map is being captured.',
+  },
   exportPreviewCaption: {
     defaultMessage: 'Prévia · visualização atual',
     description:

@@ -162,6 +162,36 @@ describe('GeoVisLegend', () => {
     expect(container.textContent).toContain('2024');
   });
 
+  test('tags its card with the legend id, for callers that find it on the page', async () => {
+    const spec: VisualizationSpec = {
+      ...baseSpec,
+      legends: [
+        {
+          id: 'farms',
+          colorBy: {
+            type: 'categorical',
+            property: 'status',
+            mapping: { open: '#16a34a' },
+          },
+        },
+      ],
+    };
+
+    const { container } = render(
+      <GeoVisProvider spec={spec}>
+        <GeoVisLegend legendId="farms" />
+      </GeoVisProvider>
+    );
+
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
+    expect(container.querySelector('[data-geovis-legend="farms"]')).toBe(
+      container.firstChild
+    );
+  });
+
   test('renders categorical swatches from explicit mapping', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,

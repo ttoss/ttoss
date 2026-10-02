@@ -2,11 +2,12 @@ import { useI18n } from '@ttoss/react-i18n';
 import { Flex, Text } from '@ttoss/ui';
 import * as React from 'react';
 
+import { findLayerControl, findLegendCards } from '../export/captureOverlay';
 import {
   canvasToPngBlob,
   composeMapImage,
   downloadBlob,
-  type ExportMenuLayer,
+  type ExportOverlay,
 } from '../export/composeMapImage';
 import { suggestFileName } from '../export/exportFileName';
 import {
@@ -27,22 +28,18 @@ import { COLOR } from './LeftSidebar/theme';
 
 /** What a composition draws: the frame, and whatever the toggles leave on. */
 interface Composition {
-  content: MapExportContent;
   includeLegend: boolean;
-  menu?: ExportMenuLayer;
+  menu?: ExportOverlay[];
 }
 
 const compose = ({
   snapshot,
-  content,
   includeLegend,
   menu,
 }: Composition & { snapshot: MapSnapshot }): HTMLCanvasElement => {
   return composeMapImage({
     snapshot: snapshot.canvas,
-    pixelRatio: snapshot.pixelRatio,
-    legend: includeLegend ? content.legend : undefined,
-    menu,
+    overlays: [...(includeLegend ? snapshot.legends : []), ...(menu ?? [])],
   });
 };
 
@@ -177,7 +174,7 @@ const useExportOptions = ({
   menuFailed,
 }: {
   content: MapExportContent;
-  menu?: ExportMenuLayer;
+  menu?: ExportOverlay[];
   menuFailed: boolean;
 }) => {
   const [includeLegend, setIncludeLegend] = React.useState(true);
@@ -192,8 +189,8 @@ const useExportOptions = ({
 
   const menuLayer = includeMenu ? menu : undefined;
   const composition = React.useMemo(() => {
-    return { content, includeLegend, menu: menuLayer };
-  }, [content, includeLegend, menuLayer]);
+    return { includeLegend, menu: menuLayer };
+  }, [includeLegend, menuLayer]);
 
   return {
     includeLegend,
@@ -221,26 +218,122 @@ const useExportOptions = ({
 /** Whether any capture, encoding or download has failed for what is asked. */
 const hasExportError = ({
   failures,
+  includeLegend,
+  legendsFailed,
   includeMenu,
   menuFailed,
 }: {
   failures: boolean[];
+  includeLegend: boolean;
+  legendsFailed: boolean;
   includeMenu: boolean;
   menuFailed: boolean;
 }): boolean => {
-  return failures.includes(true) || (includeMenu && menuFailed);
+  return (
+    failures.includes(true) ||
+    (includeLegend && legendsFailed) ||
+    (includeMenu && menuFailed)
+  );
+};
+
+/**
+ * The map's overlays on screen — the legend cards and the layer control —
+ * looked up once the dialog is in the page: it is how the dialog finds the
+ * workspace they sit in. A layout effect, so the legend toggle is settled
+ * before the first paint rather than popping in.
+ */
+const useMapOverlays = (dialogRef: React.RefObject<HTMLDivElement | null>) => {
+  const [overlays, setOverlays] = React.useState<{
+    legendCards: HTMLElement[];
+    layerControl: HTMLElement | null;
+  }>();
+
+  React.useLayoutEffect(() => {
+    setOverlays({
+      legendCards: findLegendCards(dialogRef.current),
+      layerControl: findLayerControl(dialogRef.current),
+    });
+  }, [dialogRef]);
+
+  return overlays;
+};
+
+/**
+ * What the preview frame shows: the image once composed, a spinner until then
+ * (unless a capture failed), and the size the frame will have — known before
+ * it lands, so the spinner's box is the image's and nothing moves when the
+ * preview replaces it.
+ */
+const resolvePreviewFrame = ({
+  preview,
+  failed,
+  snapshot,
+  frameSize,
+}: {
+  preview: { src?: string; failed: boolean };
+  failed: boolean;
+  snapshot?: MapSnapshot;
+  frameSize?: { width: number; height: number };
+}) => {
+  const size = snapshot?.canvas ?? frameSize;
+
+  return {
+    src: preview.src,
+    loading: !preview.src && !failed && !preview.failed,
+    width: size?.width,
+    height: size?.height,
+  };
+};
+
+/**
+ * The two toggles, each shown only when there is something on screen for it to
+ * include: a legend card, and an open sidebar.
+ */
+const ExportToggles = ({
+  hasLegend,
+  hasMenu,
+  options,
+}: {
+  hasLegend: boolean;
+  hasMenu: boolean;
+  options: ReturnType<typeof useExportOptions>;
+}) => {
+  const {
+    intl: { formatMessage },
+  } = useI18n();
+
+  return (
+    <Flex sx={{ flexDirection: 'column', gap: '6px' }}>
+      {hasLegend ? (
+        <OptionToggle
+          label={formatMessage(messages.exportIncludeLegend)}
+          on={options.includeLegend}
+          onToggle={options.toggleLegend}
+        />
+      ) : null}
+      {hasMenu ? (
+        <OptionToggle
+          label={formatMessage(messages.exportIncludeMenu)}
+          on={options.includeMenu}
+          onToggle={options.toggleMenu}
+        />
+      ) : null}
+    </Flex>
+  );
 };
 
 /**
  * The map export dialog: a preview of the PNG as it will be saved, the file
- * name, and two toggles — the legend card, and the menu (the left sidebar, as
- * it sits over the map). The menu toggle starts off and shows only when there
- * is an open sidebar to capture.
+ * name, and two toggles — the legend cards and the menu (the left sidebar, with
+ * the map's layer control when it has one), each as it sits over the map. The
+ * legend toggle starts on and shows only when there is a legend on screen; the
+ * menu toggle starts off and shows only when there is an open sidebar to
+ * capture.
  *
- * The map and the menu are captured once on open; the toggles only change what
- * is drawn over that frame, so either one is a recomposition, not a new capture.
- * The image keeps the map canvas's own resolution: what the reader sees, at the
- * screen's pixel density.
+ * The map, the legends and the menu are captured once on open; the toggles
+ * only change what is drawn over that frame, so either one is a recomposition,
+ * not a new capture. The image keeps the map canvas's own resolution: what the
+ * reader sees, at the screen's pixel density.
  *
  * Closes on Escape, on a click on the backdrop, on Cancel, and after a
  * successful download. A failure — a canvas tainted by tiles served without
@@ -258,13 +351,20 @@ export const ExportMapDialog = ({
     intl: { formatMessage },
   } = useI18n();
 
-  const content = useMapExportContent();
-  const { snapshot, failed, menu, menuFailed } = useMapSnapshot({ menuRef });
-
-  const options = useExportOptions({ content, menu, menuFailed });
-
   const dialogRef = React.useRef<HTMLDivElement>(null);
   useDialogDismiss({ dialogRef, onClose });
+  const overlays = useMapOverlays(dialogRef);
+  const legendCards = overlays?.legendCards;
+
+  const content = useMapExportContent();
+  const { snapshot, frameSize, failed, legendsFailed, menu, menuFailed } =
+    useMapSnapshot({
+      menuRef,
+      legendCards,
+      layerControl: overlays?.layerControl,
+    });
+
+  const options = useExportOptions({ content, menu, menuFailed });
 
   const preview = usePreview({ snapshot, composition: options.composition });
   const downloadState = useDownload({
@@ -321,13 +421,13 @@ export const ExportMapDialog = ({
           }}
         >
           <Preview
-            src={preview.src}
-            width={snapshot?.canvas.width}
-            height={snapshot?.canvas.height}
+            {...resolvePreviewFrame({ preview, failed, snapshot, frameSize })}
           />
 
           {hasExportError({
             failures: [failed, preview.failed, downloadState.failed],
+            includeLegend: options.includeLegend,
+            legendsFailed,
             includeMenu: options.includeMenu,
             menuFailed,
           }) ? (
@@ -341,20 +441,11 @@ export const ExportMapDialog = ({
             onChange={options.setFileName}
           />
 
-          <Flex sx={{ flexDirection: 'column', gap: '6px' }}>
-            <OptionToggle
-              label={formatMessage(messages.exportIncludeLegend)}
-              on={options.includeLegend}
-              onToggle={options.toggleLegend}
-            />
-            {menuRef ? (
-              <OptionToggle
-                label={formatMessage(messages.exportIncludeMenu)}
-                on={options.includeMenu}
-                onToggle={options.toggleMenu}
-              />
-            ) : null}
-          </Flex>
+          <ExportToggles
+            hasLegend={!!legendCards?.length}
+            hasMenu={!!menuRef}
+            options={options}
+          />
         </Flex>
 
         <Footer

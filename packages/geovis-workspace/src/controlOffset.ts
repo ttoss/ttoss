@@ -9,12 +9,20 @@ import type { LegendSpec, VisualizationSpec } from '@ttoss/geovis';
 export const LEFT_SIDEBAR_CONTROL_CLEARANCE = 332;
 
 /**
+ * The open left sidebar card's inset from the map's edges, in pixels — the
+ * overlay's `padding: [0, '3']`. A control beside the open sidebar sits this
+ * far from the edge it is anchored to, so its edge lines up with the card's.
+ */
+export const LEFT_SIDEBAR_INSET = 12;
+
+/**
  * Returns `visualizationSpec` with the map's layer control pushed clear of the
  * left sidebar while it is open, so an opening sidebar never covers the
- * control. The shift is purely horizontal: `control.offset.x` becomes
- * {@link LEFT_SIDEBAR_CONTROL_CLEARANCE} while the control's original vertical
- * distance is preserved, so a `bottom-left` control slides right along the
- * bottom edge rather than lifting off it.
+ * control. `control.offset.x` becomes {@link LEFT_SIDEBAR_CONTROL_CLEARANCE},
+ * which leaves the same gap to the card as the card leaves to the map's edge.
+ * The control's own vertical distance is kept when the spec sets one; without
+ * one it becomes {@link LEFT_SIDEBAR_INSET}, so the control lines up with the
+ * card's bottom (or top) edge instead of floating at GeoVis's default gap.
  *
  * The spec is returned untouched (same reference) when there is nothing to
  * adjust — no `control`, the sidebar is closed, or the control is anchored to a
@@ -46,7 +54,7 @@ export const applyLeftSidebarControlOffset = ({
       ...control,
       offset: {
         x: LEFT_SIDEBAR_CONTROL_CLEARANCE,
-        ...(y == null ? {} : { y }),
+        y: y ?? LEFT_SIDEBAR_INSET,
       },
     },
   };

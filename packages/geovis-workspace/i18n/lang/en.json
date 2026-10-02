@@ -103,6 +103,10 @@
     "defaultMessage": "Remover escala",
     "description": "Accessible label for the button that removes a ramp the reader built."
   },
+  "DNZbIV": {
+    "defaultMessage": "Gerando prévia…",
+    "description": "Accessible label of the spinner shown in the export preview while the map is being captured."
+  },
   "GT4LWE": {
     "defaultMessage": "Adicionar",
     "description": "Label of the button that saves the ramp built in the color-ramp editor."

@@ -19,16 +19,19 @@ import { buildSpec } from './GeovisWorkspace.fixtures';
  * The button opens a dialog with a preview of the image as it will be saved,
  * a file name and two toggles:
  *
- * - **Incluir legenda** — the active legend's color rows, in a card at the
- *   bottom-right. It is the legend the map is painted from (the layer's
- *   `activeLegendId`), resolved by `@ttoss/geovis`'s `resolveLegendItems`, so
- *   its labels match the on-screen legend exactly.
+ * - **Incluir legenda** — the legend cards on screen, captured from the page
+ *   exactly as they look and where they sit. Rendered from the DOM like the
+ *   menu, so the image never drifts from `GeoVisLegend`. The toggle only shows
+ *   when a legend is on screen; this story positions the active one at the
+ *   bottom-right for that.
  * - **Incluir menu** — the left sidebar, drawn over the map exactly where it
- *   sits on screen, with whatever tab is open. Off by default. The map is a
- *   WebGL canvas but the sidebar is DOM, so the menu is rendered to an image
- *   with `html-to-image`.
+ *   sits on screen, with whatever tab is open, and the map's layers button when
+ *   the spec declares a `control`. Off by default; one toggle for both. The map is a
+ *   WebGL canvas but the sidebar and the legends are DOM, so they are rendered
+ *   to images with `html-to-image`.
  *
- * The map and the menu are captured once, when the dialog opens. The toggles
+ * The map, the legends and the menu are captured once, when the dialog opens,
+ * right after it is on screen — a spinner holds the preview's place meanwhile. The toggles
  * only change what is drawn over that frame, so either one redraws the preview
  * at once and the download is built from the same pixels the preview shows. The
  * image keeps the map canvas's own resolution — the size of the map on screen
@@ -47,9 +50,10 @@ import { buildSpec } from './GeovisWorkspace.fixtures';
  * 1. Press the **download** button in the sidebar header. The dialog opens over
  *    the whole workspace, sidebars included, with the preview of the map.
  * 2. Toggle **Incluir legenda** off and on — the legend card leaves and returns
- *    in the preview.
+ *    in the preview, identical to the one on the map.
  * 3. Turn **Incluir menu** on — the sidebar appears over the left of the map,
- *    on the tab that was open. Close the dialog, switch tabs, reopen it, and the
+ *    on the tab that was open, and the layers button beside it; turn it off and
+ *    both leave. Close the dialog, switch tabs, reopen it, and the
  *    menu in the preview follows.
  * 4. Pick another variable in **Variável**, or move the **Ano** timeline, then
  *    reopen the dialog: the suggested file name follows.
@@ -142,10 +146,24 @@ const ExportMapDemo = ({ config }: { config: GeovisWorkspaceConfig }) => {
   );
 
   const visualizationSpec = React.useMemo(() => {
-    return buildSpec({
-      variable: selection.variable ?? 'cumulative-rate',
-      age: '65-plus',
-    });
+    const variable = selection.variable ?? 'cumulative-rate';
+    const spec = buildSpec({ variable, age: '65-plus' });
+
+    // The fixture positions no legend and has no layer control; both go on the
+    // map here, so the export has a legend and a layers button to capture.
+    return {
+      ...spec,
+      control: {
+        id: 'layers',
+        label: 'Camadas',
+        items: [{ id: 'regions', label: 'Regiões', layers: ['regions-fill'] }],
+      },
+      legends: spec.legends?.map((legend) => {
+        return legend.id === variable
+          ? { ...legend, position: 'bottom-right' as const }
+          : legend;
+      }),
+    };
   }, [selection.variable]);
 
   return (

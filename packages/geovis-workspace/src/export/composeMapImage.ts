@@ -1,166 +1,32 @@
-import { COLOR, FONT_HEAD, FONT_MONO } from '../components/LeftSidebar/theme';
-
-/** One color row of the exported legend. */
-export interface ExportLegendRow {
-  color: string;
-  label: string;
-}
-
-/** What the legend card carries. No rows, no card. */
-export interface ExportLegendContent {
-  title?: string;
-  rows: ExportLegendRow[];
-}
-
 /**
- * Draws a white rounded card with the same soft shadow the on-screen legend
- * uses, so the overlays read as the map's own chrome in the exported image.
+ * A piece of the page captured over the map — the menu, a legend card — and
+ * where it sat — in the frame's device pixels, relative to the map canvas's
+ * top-left corner.
  */
-const drawCard = ({
-  context,
-  x,
-  y,
-  width,
-  height,
-  unit,
-}: {
-  context: CanvasRenderingContext2D;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  unit: number;
-}) => {
-  context.save();
-  context.shadowColor = 'rgba(0,0,0,0.12)';
-  context.shadowBlur = 16 * unit;
-  context.shadowOffsetY = 3 * unit;
-  context.fillStyle = '#ffffff';
-  context.beginPath();
-  context.roundRect(x, y, width, height, 10 * unit);
-  context.fill();
-  context.restore();
-};
-
-const setFont = ({
-  context,
-  weight,
-  size,
-  family,
-  unit,
-}: {
-  context: CanvasRenderingContext2D;
-  weight: number;
-  size: number;
-  family: string;
-  unit: number;
-}) => {
-  context.font = `${weight} ${size * unit}px ${family}`;
-};
-
-/** The legend card, bottom-right: an optional heading over one row per color. */
-const drawLegendCard = ({
-  context,
-  content,
-  unit,
-  width,
-  height,
-}: {
-  context: CanvasRenderingContext2D;
-  content: ExportLegendContent;
-  unit: number;
-  width: number;
-  height: number;
-}) => {
-  if (content.rows.length === 0) return;
-
-  const margin = 16 * unit;
-  const padding = 14 * unit;
-  const rowHeight = 20 * unit;
-  const swatch = 12 * unit;
-  const swatchGap = 8 * unit;
-  const headingHeight = content.title ? 24 * unit : 0;
-
-  setFont({ context, weight: 400, size: 12, family: FONT_MONO, unit });
-  const rowsWidth = Math.max(
-    ...content.rows.map((row) => {
-      return context.measureText(row.label).width;
-    })
-  );
-  setFont({ context, weight: 600, size: 13, family: FONT_HEAD, unit });
-  const headingWidth = content.title
-    ? context.measureText(content.title).width
-    : 0;
-
-  const cardWidth =
-    Math.max(swatch + swatchGap + rowsWidth, headingWidth) + padding * 2;
-  const cardHeight =
-    padding * 2 + headingHeight + content.rows.length * rowHeight;
-  const x = width - margin - cardWidth;
-  const y = height - margin - cardHeight;
-
-  drawCard({ context, x, y, width: cardWidth, height: cardHeight, unit });
-
-  if (content.title) {
-    context.fillStyle = COLOR.textStrong;
-    context.fillText(
-      content.title,
-      x + padding,
-      y + padding + headingHeight / 2
-    );
-  }
-
-  setFont({ context, weight: 400, size: 12, family: FONT_MONO, unit });
-  for (const [index, row] of content.rows.entries()) {
-    const middle =
-      y + padding + headingHeight + index * rowHeight + rowHeight / 2;
-
-    context.fillStyle = row.color;
-    context.fillRect(x + padding, middle - swatch / 2, swatch, swatch);
-
-    context.fillStyle = COLOR.textMuted;
-    context.fillText(row.label, x + padding + swatch + swatchGap, middle);
-  }
-};
-
-/**
- * The menu as captured from the page, and where it sat over the map — in the
- * frame's device pixels, relative to the map canvas's top-left corner.
- */
-export interface ExportMenuLayer {
+export interface ExportOverlay {
   canvas: HTMLCanvasElement;
   x: number;
   y: number;
 }
 
 /**
- * Lays the export's overlays over a captured map frame: the legend card when
- * `legend` is given, then the menu when `menu` is given, on top, where it sat
- * on screen. Leaving either out is how the dialog's toggles switch them off —
- * the map frame itself never changes.
- *
- * Card sizes are in CSS pixels multiplied by `pixelRatio`, so the legend comes
- * out the size it would be on the screen the frame was captured from.
+ * Lays the export's overlays over a captured map frame, in order, each where it
+ * sat on screen — so the menu, passed last, lands on top. Leaving one out is how
+ * the dialog's toggles switch it off — the map frame itself never changes.
  *
  * @param params.snapshot - The captured map frame (see `captureMapCanvas`).
- * @param params.pixelRatio - Device pixels per CSS pixel of the frame.
- * @param params.legend - Legend heading and rows, or `undefined` to leave it out.
- * @param params.menu - The captured menu, or `undefined` to leave it out.
+ * @param params.overlays - The captured overlays, bottom to top.
  * @returns A new canvas at the frame's resolution.
  *
  * @example
- * composeMapImage({ snapshot, pixelRatio: 2, legend: { rows }, menu });
+ * composeMapImage({ snapshot, overlays: [...legends, menu] });
  */
 export const composeMapImage = ({
   snapshot,
-  pixelRatio,
-  legend,
-  menu,
+  overlays,
 }: {
   snapshot: HTMLCanvasElement;
-  pixelRatio: number;
-  legend?: ExportLegendContent;
-  menu?: ExportMenuLayer;
+  overlays: ExportOverlay[];
 }): HTMLCanvasElement => {
   const canvas = document.createElement('canvas');
   canvas.width = snapshot.width;
@@ -173,20 +39,9 @@ export const composeMapImage = ({
   }
 
   context.drawImage(snapshot, 0, 0);
-  context.textBaseline = 'middle';
 
-  if (legend) {
-    drawLegendCard({
-      context,
-      content: legend,
-      unit: pixelRatio,
-      width: canvas.width,
-      height: canvas.height,
-    });
-  }
-
-  if (menu) {
-    context.drawImage(menu.canvas, menu.x, menu.y);
+  for (const overlay of overlays) {
+    context.drawImage(overlay.canvas, overlay.x, overlay.y);
   }
 
   return canvas;

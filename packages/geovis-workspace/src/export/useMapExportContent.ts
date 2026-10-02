@@ -1,6 +1,5 @@
 import {
   resolveLegend,
-  resolveLegendItems,
   useGeoVis,
   type VisualizationSpec,
 } from '@ttoss/geovis';
@@ -14,8 +13,6 @@ import type {
 } from '../context/GeovisWorkspaceContext';
 import { useTimelineContext } from '../context/TimelineContext';
 import { useGeovisWorkspace } from '../hooks/useGeovisWorkspace';
-import { useNumberFormat } from '../hooks/useNumberFormat';
-import type { ExportLegendContent } from './composeMapImage';
 
 /**
  * The first variations menu in the sidebar — a `variations` section, else a
@@ -78,8 +75,8 @@ const resolveActiveVariationLabel = ({
 
 /**
  * The legend the map is painted from: the first layer's `activeLegendId` that
- * resolves, else the spec's first top-level legend. Not every positioned legend
- * — the export has room for one card, and it should be the one behind the colors.
+ * resolves, else the spec's first top-level legend. Its title names the file
+ * when no variation does.
  */
 const resolveExportLegendId = (spec: VisualizationSpec): string | undefined => {
   for (const layer of spec.layers) {
@@ -95,27 +92,23 @@ const resolveExportLegendId = (spec: VisualizationSpec): string | undefined => {
 export interface MapExportContent {
   /** Names the file: the map's title and the timeline's value, if any. */
   title: { label?: string; year?: number };
-  /** The legend card's content. */
-  legend: ExportLegendContent;
 }
 
 /**
  * Gathers what the export needs about the map, from the same places the
- * workspace already shows it: the legend rows are the active legend's,
- * formatted for the declared locale, and the title — the active variation's
- * label (else the legend's or the spec's title) with the timeline's value when
- * a timeline is declared — is what the suggested file name is built from.
+ * workspace already shows it: the title — the active variation's label (else
+ * the legend's or the spec's title) with the timeline's value when a timeline
+ * is declared — is what the suggested file name is built from.
  *
- * @returns The title and the legend content.
+ * @returns The title.
  *
  * @example
- * const { title, legend } = useMapExportContent();
+ * const { title } = useMapExportContent();
  */
 export const useMapExportContent = (): MapExportContent => {
   const { config, selection } = useGeovisWorkspace();
   const { spec } = useGeoVis();
   const timeline = useTimelineContext();
-  const formatNumber = useNumberFormat();
 
   const sections = config.leftSidebar?.sections;
   const year = timeline.filter ? timeline.value : undefined;
@@ -123,23 +116,12 @@ export const useMapExportContent = (): MapExportContent => {
   return React.useMemo(() => {
     const legendId = resolveExportLegendId(spec);
     const legendSpec = legendId ? resolveLegend(spec, legendId) : undefined;
-    const rows = legendId
-      ? resolveLegendItems({ spec, legendId, formatValue: formatNumber })
-      : [];
 
     const label =
       resolveActiveVariationLabel({ sections: sections ?? [], selection }) ??
       legendSpec?.title ??
       spec.title;
 
-    return {
-      title: { label, year },
-      legend: {
-        title: legendSpec?.title,
-        rows: rows.map((row) => {
-          return { color: row.color, label: row.label };
-        }),
-      },
-    };
-  }, [spec, sections, selection, year, formatNumber]);
+    return { title: { label, year } };
+  }, [spec, sections, selection, year]);
 };

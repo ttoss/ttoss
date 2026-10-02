@@ -47,9 +47,44 @@ const setNativeMap = (map: unknown) => {
 jest.mock('@ttoss/geovis', () => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports -- the factory is hoisted above imports
   const base = require('./geovisWorkspaceTestUtils').createGeoVisMock();
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- the factory is hoisted above imports
+  const { createElement } = require('react');
 
   return {
     ...base,
+    // Mounts a card per positioned legend, and the layer control when the spec
+    // declares one, tagged as the real components tag them, so the export
+    // finds them on screen.
+    GeoVisProvider: ({
+      spec,
+      children,
+    }: {
+      spec: { legends?: { id: string; position?: string }[]; control?: object };
+      children: React.ReactNode;
+    }) => {
+      const cards = (spec.legends ?? [])
+        .filter((legend) => {
+          return legend.position;
+        })
+        .map((legend) => {
+          return createElement('div', {
+            key: legend.id,
+            'data-geovis-legend': legend.id,
+          });
+        });
+
+      const layerControl = spec.control
+        ? createElement('div', { 'data-geovis-layer-control': '' })
+        : null;
+
+      return createElement(
+        base.GeoVisProvider,
+        { spec },
+        children,
+        cards,
+        layerControl
+      );
+    },
     useGeoVis: () => {
       return {
         ...base.useGeoVis(),
@@ -64,38 +99,11 @@ jest.mock('@ttoss/geovis', () => {
         return legend.id === id;
       });
     },
-    resolveLegendItems: ({
-      legendId,
-      formatValue,
-    }: {
-      legendId: string;
-      formatValue: (value: number) => string;
-    }) => {
-      return [
-        {
-          binIndex: 0,
-          label: `${legendId} < ${formatValue(5000)}`,
-          color: '#eee',
-        },
-      ];
-    },
   };
 });
 
 const createContext = () => {
-  return {
-    drawImage: jest.fn(),
-    fillRect: jest.fn(),
-    fillText: jest.fn(),
-    measureText: jest.fn(() => {
-      return { width: 40 };
-    }),
-    beginPath: jest.fn(),
-    roundRect: jest.fn(),
-    fill: jest.fn(),
-    save: jest.fn(),
-    restore: jest.fn(),
-  };
+  return { drawImage: jest.fn() };
 };
 
 let contexts: ReturnType<typeof createContext>[];
@@ -128,9 +136,51 @@ const createMap = ({
 };
 
 const menuCanvas = document.createElement('canvas');
+const legendCanvas = document.createElement('canvas');
+const layerControlCanvas = document.createElement('canvas');
+
+const isLegendCard = (node: HTMLElement) => {
+  return node.dataset.geovisLegend !== undefined;
+};
+
+const isLayerControl = (node: HTMLElement) => {
+  return node.dataset.geovisLayerControl !== undefined;
+};
+
+/**
+ * Renders the legend cards and the layer control at once and the menu through
+ * `capture`, so a test can hold or fail the menu alone.
+ */
+const captureMenuWith = (capture: () => Promise<HTMLCanvasElement>) => {
+  jest.mocked(toCanvas).mockImplementation((node) => {
+    if (isLegendCard(node)) return Promise.resolve(legendCanvas);
+    if (isLayerControl(node)) return Promise.resolve(layerControlCanvas);
+    return capture();
+  });
+};
+
+/**
+ * Animation frames requested and not yet run. Held rather than run on jsdom's
+ * timer, so a test decides when the dialog has been painted.
+ */
+let frames: FrameRequestCallback[];
+
+/** Runs every pending frame, and the frames they request in turn. */
+const paint = async () => {
+  await act(async () => {
+    while (frames.length > 0) {
+      frames.shift()?.(performance.now());
+    }
+  });
+};
 
 beforeEach(() => {
   contexts = [];
+  frames = [];
+  jest.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
+    frames.push(callback);
+    return frames.length;
+  });
   setNativeMap(createMap());
   jest
     .spyOn(HTMLCanvasElement.prototype, 'getContext')
@@ -147,7 +197,9 @@ beforeEach(() => {
     .mockImplementation((callback: BlobCallback) => {
       callback(new Blob(['png'], { type: 'image/png' }));
     });
-  jest.mocked(toCanvas).mockResolvedValue(menuCanvas);
+  captureMenuWith(() => {
+    return Promise.resolve(menuCanvas);
+  });
   Object.assign(URL, {
     createObjectURL: jest.fn(() => {
       return 'blob:mapa';
@@ -213,7 +265,7 @@ const spec = {
   title: 'Mapa de teste',
   sources: [],
   layers: [{ id: 'fill', activeLegendId: 'rate' }],
-  legends: [{ id: 'rate', title: 'Taxa cumulativa' }],
+  legends: [{ id: 'rate', title: 'Taxa cumulativa', position: 'bottom-right' }],
 };
 
 const renderWorkspace = ({
@@ -233,12 +285,18 @@ const renderWorkspace = ({
   );
 };
 
-const openExport = async () => {
+/**
+ * Clicks the sidebar's export button and, unless `painted: false`, lets the
+ * dialog paint so the capture it waits for runs.
+ */
+const openExport = async ({ painted = true }: { painted?: boolean } = {}) => {
   await act(async () => {
     // By title rather than role: a closed sidebar is `aria-hidden`, which
     // leaves its button without an accessible name to match.
     fireEvent.click(screen.getAllByTitle('Exportar mapa como PNG')[0]);
   });
+
+  if (painted) await paint();
 };
 
 const fileNameInput = () => {
@@ -249,10 +307,10 @@ const toggle = (name: string) => {
   return screen.getByRole('switch', { name });
 };
 
-/** Every string drawn by the most recent composition. */
-const lastDrawnText = () => {
+/** Every image drawn by the most recent composition, the frame first. */
+const lastDrawn = () => {
   const context = contexts[contexts.length - 1];
-  return context.fillText.mock.calls.map((call) => {
+  return context.drawImage.mock.calls.map((call) => {
     return call[0];
   });
 };
@@ -275,9 +333,50 @@ test('the sidebar button opens the dialog with a preview of the current map', as
   expect(fileNameInput().value).toBe('taxa-cumulativa_2024');
   expect(toggle('Incluir legenda')).toHaveAttribute('aria-checked', 'true');
   expect(toggle('Incluir menu')).toHaveAttribute('aria-checked', 'false');
-  // The legend rows are formatted for the locale, and the legend's heading
-  // goes along with them.
-  expect(lastDrawnText()).toEqual(['Taxa cumulativa', 'rate < 5.000']);
+  // The legend card on screen, captured from the page, over the frame.
+  expect(lastDrawn()).toEqual([expect.any(HTMLCanvasElement), legendCanvas]);
+});
+
+test('the dialog opens before the capture, with a spinner where the preview goes', async () => {
+  const map = createMap();
+  const triggerRepaint = jest.spyOn(map, 'triggerRepaint');
+  setNativeMap(map);
+
+  renderWorkspace();
+  await openExport({ painted: false });
+
+  expect(screen.getByRole('dialog')).toBeInTheDocument();
+  expect(screen.getByRole('status', { name: 'Gerando prévia…' })).toBeVisible();
+  // Held at the map canvas's size already, so the box does not resize when the
+  // image replaces the spinner.
+  expect(screen.getByText('400 × 200 px')).toBeInTheDocument();
+  expect(triggerRepaint).not.toHaveBeenCalled();
+
+  await paint();
+
+  expect(triggerRepaint).toHaveBeenCalled();
+  expect(screen.queryByRole('status', { name: 'Gerando prévia…' })).toBeNull();
+  expect(
+    screen.getByRole('img', { name: 'Prévia do mapa exportado' })
+  ).toBeInTheDocument();
+});
+
+test('closing before the dialog paints never starts the capture', async () => {
+  const map = createMap();
+  const triggerRepaint = jest.spyOn(map, 'triggerRepaint');
+  setNativeMap(map);
+
+  renderWorkspace();
+  await openExport({ painted: false });
+
+  await act(async () => {
+    fireEvent.keyDown(document, { key: 'Escape' });
+  });
+  await paint();
+
+  expect(screen.queryByRole('dialog')).toBeNull();
+  expect(triggerRepaint).not.toHaveBeenCalled();
+  expect(toCanvas).not.toHaveBeenCalled();
 });
 
 test('toggling the legend recomposes the preview without it', async () => {
@@ -289,16 +388,41 @@ test('toggling the legend recomposes the preview without it', async () => {
   });
 
   expect(toggle('Incluir legenda')).toHaveAttribute('aria-checked', 'false');
-  expect(lastDrawnText()).toEqual([]);
+  expect(lastDrawn()).not.toContain(legendCanvas);
+});
+
+test('a legend that cannot be rendered only matters while it is included', async () => {
+  jest.mocked(toCanvas).mockImplementation((node) => {
+    return isLegendCard(node)
+      ? Promise.reject(new Error('fonts'))
+      : Promise.resolve(menuCanvas);
+  });
+
+  renderWorkspace();
+  await openExport();
+
+  // The frame still lands, without the legend.
+  expect(
+    screen.getByRole('img', { name: 'Prévia do mapa exportado' })
+  ).toBeInTheDocument();
+  expect(lastDrawn()).not.toContain(legendCanvas);
+  expect(screen.getByRole('alert')).toBeInTheDocument();
+
+  await act(async () => {
+    fireEvent.click(toggle('Incluir legenda'));
+  });
+
+  expect(screen.queryByRole('alert')).toBeNull();
 });
 
 test('including the menu draws the captured sidebar over the frame', async () => {
   renderWorkspace();
   await openExport();
 
-  expect(toCanvas).toHaveBeenCalledWith(expect.any(HTMLElement), {
-    pixelRatio: 2,
-  });
+  expect(toCanvas).toHaveBeenCalledWith(
+    expect.any(HTMLElement),
+    expect.objectContaining({ pixelRatio: 2 })
+  );
 
   await act(async () => {
     fireEvent.click(toggle('Incluir menu'));
@@ -313,13 +437,58 @@ test('including the menu draws the captured sidebar over the frame', async () =>
   );
 });
 
+test('the menu carries the layer control, on top, when the map has one', async () => {
+  renderWorkspace({ visualizationSpec: { ...spec, control: { items: [] } } });
+  await openExport();
+
+  // Captured with the menu, but drawn only once the menu is asked for.
+  expect(lastDrawn()).not.toContain(layerControlCanvas);
+
+  await act(async () => {
+    fireEvent.click(toggle('Incluir menu'));
+  });
+
+  expect(lastDrawn()).toEqual([
+    expect.any(HTMLCanvasElement),
+    legendCanvas,
+    menuCanvas,
+    layerControlCanvas,
+  ]);
+
+  await act(async () => {
+    fireEvent.click(toggle('Incluir menu'));
+  });
+
+  expect(lastDrawn()).not.toContain(menuCanvas);
+  expect(lastDrawn()).not.toContain(layerControlCanvas);
+});
+
+test('a layer control that cannot be rendered fails the menu', async () => {
+  jest.mocked(toCanvas).mockImplementation((node) => {
+    if (isLegendCard(node)) return Promise.resolve(legendCanvas);
+    if (isLayerControl(node)) return Promise.reject(new Error('fonts'));
+    return Promise.resolve(menuCanvas);
+  });
+
+  renderWorkspace({ visualizationSpec: { ...spec, control: { items: [] } } });
+  await openExport();
+
+  expect(screen.queryByRole('alert')).toBeNull();
+
+  await act(async () => {
+    fireEvent.click(toggle('Incluir menu'));
+  });
+
+  expect(screen.getByRole('alert')).toBeInTheDocument();
+});
+
 test('the download waits for a menu still being rendered', async () => {
   let finish: (canvas: HTMLCanvasElement) => void = () => {};
-  jest.mocked(toCanvas).mockReturnValue(
-    new Promise((resolve) => {
+  captureMenuWith(() => {
+    return new Promise((resolve) => {
       finish = resolve;
-    })
-  );
+    });
+  });
 
   renderWorkspace();
   await openExport();
@@ -339,7 +508,9 @@ test('the download waits for a menu still being rendered', async () => {
 });
 
 test('a menu that cannot be rendered only matters once it is asked for', async () => {
-  jest.mocked(toCanvas).mockRejectedValue(new Error('fonts'));
+  captureMenuWith(() => {
+    return Promise.reject(new Error('fonts'));
+  });
 
   renderWorkspace();
   await openExport();
@@ -468,6 +639,8 @@ test('a failed capture reports the error', async () => {
   await openExport();
 
   expect(screen.getByRole('alert')).toBeInTheDocument();
+  // A failure is an answer: the spinner gives way to the error.
+  expect(screen.queryByRole('status')).toBeNull();
   expect(screen.getByRole('button', { name: 'Baixar PNG' })).toBeDisabled();
 });
 
@@ -556,21 +729,63 @@ test('closing before a failed capture settles reports nothing', async () => {
   expect(screen.queryByRole('dialog')).toBeNull();
 });
 
+test('closing while the legends render discards them', async () => {
+  let finish: (canvas: HTMLCanvasElement) => void = () => {};
+  let fail: (error: Error) => void = () => {};
+  const pending = [
+    new Promise<HTMLCanvasElement>((resolve) => {
+      finish = resolve;
+    }),
+    new Promise<HTMLCanvasElement>((_resolve, reject) => {
+      fail = reject;
+    }),
+  ];
+  jest.mocked(toCanvas).mockImplementation((node) => {
+    return isLegendCard(node) ? pending.shift()! : Promise.resolve(menuCanvas);
+  });
+
+  renderWorkspace();
+
+  for (const settle of [
+    () => {
+      finish(legendCanvas);
+    },
+    () => {
+      fail(new Error('fonts'));
+    },
+  ]) {
+    await openExport();
+    await act(async () => {
+      fireEvent.keyDown(document, { key: 'Escape' });
+    });
+    await act(async () => {
+      settle();
+    });
+    expect(screen.queryByRole('dialog')).toBeNull();
+  }
+
+  // Never got as far as the menu.
+  expect(
+    jest.mocked(toCanvas).mock.calls.every(([node]) => {
+      return isLegendCard(node);
+    })
+  ).toBe(true);
+});
+
 test('closing while the menu renders discards it', async () => {
   let finish: (canvas: HTMLCanvasElement) => void = () => {};
   let fail: (error: Error) => void = () => {};
-  jest
-    .mocked(toCanvas)
-    .mockReturnValueOnce(
-      new Promise((resolve) => {
-        finish = resolve;
-      })
-    )
-    .mockReturnValueOnce(
-      new Promise((_resolve, reject) => {
-        fail = reject;
-      })
-    );
+  const pending = [
+    new Promise<HTMLCanvasElement>((resolve) => {
+      finish = resolve;
+    }),
+    new Promise<HTMLCanvasElement>((_resolve, reject) => {
+      fail = reject;
+    }),
+  ];
+  captureMenuWith(() => {
+    return pending.shift()!;
+  });
 
   renderWorkspace();
 
@@ -603,7 +818,12 @@ test('a closed sidebar is not offered as the menu', async () => {
   await openExport();
 
   expect(screen.queryByRole('switch', { name: 'Incluir menu' })).toBeNull();
-  expect(toCanvas).not.toHaveBeenCalled();
+  // Only the legend card is rendered: there is no menu to capture.
+  expect(
+    jest.mocked(toCanvas).mock.calls.every(([node]) => {
+      return isLegendCard(node);
+    })
+  ).toBe(true);
 });
 
 test('a canvas with no layout width is read at one pixel per CSS pixel', async () => {
@@ -612,9 +832,10 @@ test('a canvas with no layout width is read at one pixel per CSS pixel', async (
   renderWorkspace();
   await openExport();
 
-  expect(toCanvas).toHaveBeenCalledWith(expect.any(HTMLElement), {
-    pixelRatio: 1,
-  });
+  expect(toCanvas).toHaveBeenCalledWith(
+    expect.any(HTMLElement),
+    expect.objectContaining({ pixelRatio: 1 })
+  );
 });
 
 describe('what names the file', () => {
@@ -674,7 +895,18 @@ describe('what names the file', () => {
 
   test('the first top-level legend, when no layer names a resolvable one', async () => {
     renderWorkspace({
-      workspaceConfig: variationsBlock,
+      workspaceConfig: {
+        leftSidebar: {
+          initialState: 'open',
+          sections: [
+            {
+              id: 'filters',
+              header: { title: 'Filtros' },
+              body: { kind: 'filters', blocks: [] },
+            },
+          ],
+        },
+      },
       visualizationSpec: {
         ...spec,
         layers: [{ id: 'a' }, { id: 'b', activeLegendId: 'missing' }],
@@ -683,7 +915,7 @@ describe('what names the file', () => {
     });
     await openExport();
 
-    expect(lastDrawnText()).toEqual(['Outra', 'other < 5.000']);
+    expect(fileNameInput().value).toBe('outra');
   });
 
   test('the spec title, with no legend at all', async () => {
@@ -705,7 +937,11 @@ describe('what names the file', () => {
     await openExport();
 
     expect(fileNameInput().value).toBe('mapa-de-teste');
-    expect(lastDrawnText()).toEqual([]);
+    // No legend on screen, so nothing to include.
+    expect(
+      screen.queryByRole('switch', { name: 'Incluir legenda' })
+    ).toBeNull();
+    expect(lastDrawn()).toEqual([expect.any(HTMLCanvasElement)]);
   });
 
   test('a variations block found past other tabs and other blocks', async () => {

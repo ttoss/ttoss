@@ -294,6 +294,9 @@ export const GeoVisLayerControl = ({
   return (
     <div
       ref={containerRef}
+      // Public hook: lets a caller find the control on the page — the
+      // workspace's map export captures it with the menu.
+      data-geovis-layer-control=""
       style={buildOuterStyle({
         position,
         offset: control.offset,

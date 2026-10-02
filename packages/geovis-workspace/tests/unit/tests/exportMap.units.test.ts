@@ -1,11 +1,17 @@
 /**
  * The export's pure pieces: file naming, the map capture, the image
- * composition, encoding and download, and the menu capture.
+ * composition, encoding and download, and the overlay capture.
  */
 
 import { toCanvas } from 'html-to-image';
 import { captureMapCanvas, isCapturableMap } from 'src/export/captureMapCanvas';
-import { captureMenu } from 'src/export/captureMenu';
+import {
+  captureOverlay,
+  findLayerControl,
+  findLegendCards,
+  OVERLAY_BLEED,
+  WORKSPACE_ROOT_ATTRIBUTE,
+} from 'src/export/captureOverlay';
 import {
   canvasToPngBlob,
   composeMapImage,
@@ -21,27 +27,9 @@ jest.mock('html-to-image', () => {
   return { toCanvas: jest.fn() };
 });
 
-/** A 2D context recording what is drawn, enough for every drawing call used. */
+/** A 2D context recording what is drawn: the frame and overlays are images. */
 const createContext = () => {
-  return {
-    drawImage: jest.fn(),
-    fillRect: jest.fn(),
-    fillText: jest.fn(),
-    measureText: jest.fn((text: string) => {
-      return { width: text.length * 6 };
-    }),
-    beginPath: jest.fn(),
-    roundRect: jest.fn(),
-    fill: jest.fn(),
-    save: jest.fn(),
-    restore: jest.fn(),
-    fillStyle: '',
-    font: '',
-    textBaseline: '',
-    shadowColor: '',
-    shadowBlur: 0,
-    shadowOffsetY: 0,
-  };
+  return { drawImage: jest.fn() };
 };
 
 let contexts: ReturnType<typeof createContext>[] = [];
@@ -145,92 +133,40 @@ describe('captureMapCanvas', () => {
 describe('composeMapImage', () => {
   const snapshot = createCanvas({ width: 800, height: 600 });
 
-  test('draws only the frame when nothing is asked for', () => {
-    const canvas = composeMapImage({ snapshot, pixelRatio: 1 });
+  test('draws only the frame when there are no overlays', () => {
+    const canvas = composeMapImage({ snapshot, overlays: [] });
     const [context] = contexts;
 
     expect(canvas.width).toBe(800);
     expect(canvas.height).toBe(600);
     expect(context.drawImage).toHaveBeenCalledTimes(1);
     expect(context.drawImage).toHaveBeenCalledWith(snapshot, 0, 0);
-    expect(context.fillText).not.toHaveBeenCalled();
   });
 
-  test('draws the legend card bottom-right, heading first', () => {
-    composeMapImage({
-      snapshot,
-      pixelRatio: 2,
-      legend: {
-        title: 'Taxa',
-        rows: [
-          { color: '#eee', label: '< 5' },
-          { color: '#333', label: '5 – 10' },
-        ],
-      },
-    });
-    const [context] = contexts;
-
-    expect(context.roundRect).toHaveBeenCalledTimes(1);
-    expect(
-      context.fillText.mock.calls.map((call) => {
-        return call[0];
-      })
-    ).toEqual(['Taxa', '< 5', '5 – 10']);
-    expect(context.fillRect).toHaveBeenCalledTimes(2);
-
-    // The card hugs the bottom-right corner, 16px (× 2) in from both edges.
-    const [x, y, width, height] = context.roundRect.mock.calls[0];
-    expect(x + width).toBe(800 - 32);
-    expect(y + height).toBe(600 - 32);
-  });
-
-  test('draws a legend without a heading', () => {
-    composeMapImage({
-      snapshot,
-      pixelRatio: 1,
-      legend: { rows: [{ color: '#eee', label: 'Todos' }] },
-    });
-
-    expect(
-      contexts[0].fillText.mock.calls.map((call) => {
-        return call[0];
-      })
-    ).toEqual(['Todos']);
-  });
-
-  test('draws no card for a legend without rows', () => {
-    composeMapImage({
-      snapshot,
-      pixelRatio: 1,
-      legend: { title: 'Vazia', rows: [] },
-    });
-
-    expect(contexts[0].roundRect).not.toHaveBeenCalled();
-    expect(contexts[0].fillText).not.toHaveBeenCalled();
-  });
-
-  test('draws the menu last, at its offset', () => {
+  test('draws the overlays over the frame in order, each at its offset', () => {
+    const legend = createCanvas({ width: 276, height: 200 });
     const menu = createCanvas({ width: 300, height: 600 });
 
     composeMapImage({
       snapshot,
-      pixelRatio: 1,
-      legend: { rows: [{ color: '#eee', label: 'Todos' }] },
-      menu: { canvas: menu, x: 12, y: 0 },
+      overlays: [
+        { canvas: legend, x: 500, y: 380 },
+        { canvas: menu, x: 12, y: 0 },
+      ],
     });
-    const { drawImage, fillText } = contexts[0];
 
-    expect(drawImage).toHaveBeenLastCalledWith(menu, 12, 0);
-    expect(drawImage.mock.invocationCallOrder[1]).toBeGreaterThan(
-      fillText.mock.invocationCallOrder[0]
-    );
+    expect(contexts[0].drawImage.mock.calls).toEqual([
+      [snapshot, 0, 0],
+      [legend, 500, 380],
+      [menu, 12, 0],
+    ]);
   });
 
   test('throws when no 2D context is available', () => {
     jest.mocked(HTMLCanvasElement.prototype.getContext).mockReturnValue(null);
 
     expect(() => {
-      return composeMapImage({ snapshot, pixelRatio: 1 });
+      return composeMapImage({ snapshot, overlays: [] });
     }).toThrow('2D canvas context unavailable');
   });
 });
@@ -287,7 +223,7 @@ describe('encoding and download', () => {
   });
 });
 
-describe('captureMenu', () => {
+describe('captureOverlay', () => {
   test('renders the node and places it relative to the map canvas', async () => {
     const rendered = createCanvas({ width: 600, height: 1200 });
     jest.mocked(toCanvas).mockResolvedValue(rendered);
@@ -297,15 +233,106 @@ describe('captureMenu', () => {
     jest.spyOn(node, 'getBoundingClientRect').mockReturnValue({
       left: 30,
       top: 20,
+      width: 276,
+      height: 180,
     } as DOMRect);
     jest.spyOn(mapCanvas, 'getBoundingClientRect').mockReturnValue({
       left: 10,
       top: 10,
     } as DOMRect);
 
-    const layer = await captureMenu({ node, mapCanvas, pixelRatio: 2 });
+    const layer = await captureOverlay({ node, mapCanvas, pixelRatio: 2 });
 
-    expect(toCanvas).toHaveBeenCalledWith(node, { pixelRatio: 2 });
-    expect(layer).toEqual({ canvas: rendered, x: 40, y: 20 });
+    // The image is the box grown by the bleed on every side, the clone pinned
+    // that far in at its measured size: a badge or shadow past the box is kept,
+    // and the node's own `right`/`bottom` anchoring cannot push it out.
+    expect(toCanvas).toHaveBeenCalledWith(node, {
+      pixelRatio: 2,
+      width: 276 + OVERLAY_BLEED * 2,
+      height: 180 + OVERLAY_BLEED * 2,
+      style: expect.objectContaining({
+        position: 'absolute',
+        top: `${OVERLAY_BLEED}px`,
+        left: `${OVERLAY_BLEED}px`,
+        right: 'auto',
+        bottom: 'auto',
+        width: '276px',
+        height: '180px',
+      }),
+    });
+    // Placed back by the bleed, so the node itself lands where it sat.
+    expect(layer).toEqual({
+      canvas: rendered,
+      x: (20 - OVERLAY_BLEED) * 2,
+      y: (10 - OVERLAY_BLEED) * 2,
+    });
+  });
+});
+
+describe('findLegendCards', () => {
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
+
+  test('finds the legend cards in the workspace around the node', () => {
+    document.body.innerHTML = `
+      <div ${WORKSPACE_ROOT_ATTRIBUTE}>
+        <div data-geovis-legend="rate"></div>
+        <div data-geovis-legend="age"></div>
+        <div id="dialog"></div>
+      </div>
+      <div ${WORKSPACE_ROOT_ATTRIBUTE}>
+        <div data-geovis-legend="other"></div>
+      </div>
+    `;
+
+    const cards = findLegendCards(document.getElementById('dialog')!);
+
+    expect(
+      cards.map((card) => {
+        return card.dataset.geovisLegend;
+      })
+    ).toEqual(['rate', 'age']);
+  });
+
+  test('finds nothing outside a workspace', () => {
+    document.body.innerHTML = `
+      <div data-geovis-legend="rate"></div>
+      <div id="dialog"></div>
+    `;
+
+    expect(findLegendCards(document.getElementById('dialog')!)).toEqual([]);
+    expect(findLegendCards(null)).toEqual([]);
+  });
+});
+
+describe('findLayerControl', () => {
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
+
+  test('finds the layer control in the workspace around the node', () => {
+    document.body.innerHTML = `
+      <div ${WORKSPACE_ROOT_ATTRIBUTE}>
+        <div id="control" data-geovis-layer-control></div>
+        <div id="dialog"></div>
+      </div>
+    `;
+
+    expect(findLayerControl(document.getElementById('dialog')!)).toBe(
+      document.getElementById('control')
+    );
+  });
+
+  test('finds nothing without a control, or outside a workspace', () => {
+    document.body.innerHTML = `
+      <div ${WORKSPACE_ROOT_ATTRIBUTE}><div id="inside"></div></div>
+      <div data-geovis-layer-control></div>
+      <div id="outside"></div>
+    `;
+
+    expect(findLayerControl(document.getElementById('inside')!)).toBeNull();
+    expect(findLayerControl(document.getElementById('outside')!)).toBeNull();
+    expect(findLayerControl(null)).toBeNull();
   });
 });

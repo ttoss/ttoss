@@ -155,9 +155,7 @@ Each entry in `spec.legends` (or `layer.legends`) defines one choropleth legend.
 | `noDataLabel`   | `string`               |          | Label for the "no data" swatch at the bottom of the legend. When omitted, no "no data" entry is shown.                                                            |
 | `reference`     | `string`               |          | Bibliographic attribution below the swatches. Supports `{link:visible text\|https://example.com}` inline link syntax.                                             |
 
-To draw a legend outside the DOM (an exported image, say), `resolveLegend(spec, legendId)`
-returns its `LegendSpec` and `resolveLegendItems({ spec, legendId, formatValue? })`
-returns the `{ color, label }` rows `GeoVisLegend` would render.
+`resolveLegend(spec, legendId)` returns a legend's `LegendSpec`, top-level or per-layer. Every rendered legend card carries `data-geovis-legend="<legendId>"`, and the layer control's root carries `data-geovis-layer-control`, so a caller can find them on the page — to capture them into an exported image, say.
 
 ### `LabelFormatSpec`
 

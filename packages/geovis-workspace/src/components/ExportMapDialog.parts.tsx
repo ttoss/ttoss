@@ -6,6 +6,7 @@ import type * as React from 'react';
 import { sanitizeFileName } from '../export/exportFileName';
 import { useNumberFormat } from '../hooks/useNumberFormat';
 import { messages } from '../messages';
+import { Spinner } from './LeftSidebar/Spinner';
 import { COLOR, FONT_HEAD, FONT_MONO } from './LeftSidebar/theme';
 import { Switch } from './LeftSidebar/ToggleSettingControl';
 
@@ -194,13 +195,18 @@ export const OptionToggle = ({
   );
 };
 
-/** The preview frame and, under it, its caption and the output size. */
+/**
+ * The preview frame and, under it, its caption and the output size. While
+ * `loading`, the frame holds a spinner where the image will land.
+ */
 export const Preview = ({
   src,
+  loading,
   width,
   height,
 }: {
   src?: string;
+  loading: boolean;
   width?: number;
   height?: number;
 }) => {
@@ -228,6 +234,20 @@ export const Preview = ({
             alt={formatMessage(messages.exportPreviewAlt)}
             style={{ display: 'block', width: '100%', height: '100%' }}
           />
+        ) : loading ? (
+          <Flex
+            sx={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '100%',
+              height: '100%',
+            }}
+          >
+            <Spinner
+              size="20px"
+              label={formatMessage(messages.exportPreviewLoading)}
+            />
+          </Flex>
         ) : null}
       </Box>
 

@@ -7,7 +7,10 @@
 import { useGeoVis } from '@ttoss/geovis';
 import { act, fireEvent, render, screen } from '@ttoss/test-utils/react';
 import { GeovisWorkspace, useGeovisWorkspace } from 'src';
-import { LEFT_SIDEBAR_CONTROL_CLEARANCE } from 'src/controlOffset';
+import {
+  LEFT_SIDEBAR_CONTROL_CLEARANCE,
+  LEFT_SIDEBAR_INSET,
+} from 'src/controlOffset';
 
 import {
   config,
@@ -133,7 +136,7 @@ test("shifts the map's layer control clear of the left sidebar while open", asyn
   await openLeftSidebar();
 
   expect(screen.getByTestId('control-offset')).toHaveTextContent(
-    JSON.stringify({ x: LEFT_SIDEBAR_CONTROL_CLEARANCE })
+    JSON.stringify({ x: LEFT_SIDEBAR_CONTROL_CLEARANCE, y: LEFT_SIDEBAR_INSET })
   );
 
   await act(async () => {
