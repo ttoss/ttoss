@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.34.2](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.34.1...@ttoss/http-server-mcp@0.34.2) (2026-10-02)
+
+### Bug Fixes
+
+- **http-server-mcp:** rank suggestions by strength, keep prefix matches ([#1293](https://github.com/ttoss/ttoss/issues/1293)) ([217fb47](https://github.com/ttoss/ttoss/commit/217fb4725c6dc964569b69dd93759a1aeb4b1b33))
+
 ## [0.34.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.34.0...@ttoss/http-server-mcp@0.34.1) (2026-10-02)
 
 ### Bug Fixes
