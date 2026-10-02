@@ -484,7 +484,7 @@ registerTools({ server: fullServer, tools });
 registerTools({ server: deferredServer, tools, defer: true });
 ```
 
-A schema enters the model's context only for the tools it is about to use. `call` enforces the tool's schema as a direct call would, and its errors help the model recover: an unknown name answers suggestions (near-miss names, then tools the name's words match; a lone prefix in a description is not enough), and invalid arguments, a tool's own error result, or a thrown error carry the input schema, so a `call` made without `describe` corrects itself in one retry.
+A schema enters the model's context only for the tools it is about to use. `call` enforces the tool's schema as a direct call would, and its errors help the model recover: an unknown name answers suggestions (close typos first, then near-misses and tools sharing the name's words, by how much they share), and invalid arguments, a tool's own error result, or a thrown error carry the input schema, so a `call` made without `describe` corrects itself in one retry.
 
 Pass options instead of `true` to tune it:
 

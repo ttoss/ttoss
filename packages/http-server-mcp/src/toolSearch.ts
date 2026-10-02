@@ -14,7 +14,6 @@ export interface ToolSearchArgs {
 
 const SUMMARY_MAX_LENGTH = 160;
 const SUGGESTION_COUNT = 3;
-const MIN_RELATED_SCORE = 1;
 
 /** Plural and singular forms rank alike: `agents` finds `get-agent`. */
 const stem = (term: string): string => {
@@ -183,7 +182,14 @@ const editDistance = (a: string, b: string): number => {
   return row[b.length];
 };
 
-/** Names a model probably meant: near-misses first, then related tools. */
+/** A typo this close outranks any word match: `get-agen` → `get-agent`. */
+const CLOSE_TYPO_DISTANCE = 2;
+
+/**
+ * Names a model probably meant: close typos first, nearest first; then the
+ * near-misses and the tools sharing the name's words, by word score, so a tool
+ * holding every word outranks a distant near-miss.
+ */
 export const suggestionsFor = ({
   name,
   tools,
@@ -192,27 +198,37 @@ export const suggestionsFor = ({
   tools: Tool[];
 }): string[] => {
   const tolerance = Math.max(2, Math.floor(name.length / 3));
-  const nearMisses = tools
-    .map((tool) => {
-      return { name: tool.name, distance: editDistance(name, tool.name) };
+  const scores = new Map(
+    (scoreTools({ query: name, tools }) ?? []).map(({ tool, score }) => {
+      return [tool, score];
     })
-    .filter(({ distance }) => {
-      return distance <= tolerance;
+  );
+  const rankOf = (distance: number): number => {
+    return Math.min(distance, CLOSE_TYPO_DISTANCE + 1);
+  };
+
+  return tools
+    .map((tool, index) => {
+      return {
+        tool,
+        index,
+        distance: editDistance(name, tool.name),
+        score: scores.get(tool) ?? 0,
+      };
+    })
+    .filter(({ distance, score }) => {
+      return distance <= tolerance || score > 0;
     })
     .sort((a, b) => {
-      return a.distance - b.distance;
-    })
-    .map((candidate) => {
-      return candidate.name;
-    });
-  // Below 1 is a lone prefix in a description, too weak a link to suggest.
-  const related = (scoreTools({ query: name, tools }) ?? [])
-    .filter(({ score }) => {
-      return score >= MIN_RELATED_SCORE;
+      return (
+        rankOf(a.distance) - rankOf(b.distance) ||
+        b.score - a.score ||
+        a.distance - b.distance ||
+        a.index - b.index
+      );
     })
     .slice(0, SUGGESTION_COUNT)
     .map(({ tool }) => {
       return tool.name;
     });
-  return [...new Set([...nearMisses, ...related])].slice(0, SUGGESTION_COUNT);
 };
