@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/i18n-core@0.6.0...@ttoss/i18n-core@0.7.0) (2026-10-01)
+
+### Features
+
+- **config,i18n-cli,i18n-core:** preserve message whitespace, render div/h1–h6, day/month dates ([#1288](https://github.com/ttoss/ttoss/issues/1288)) ([6a2cb28](https://github.com/ttoss/ttoss/commit/6a2cb28dcd41f25d800fb9cf4025a0a1c7ef3c3d))
+
 # 0.6.0 (2026-09-30)
 
 ### Features
