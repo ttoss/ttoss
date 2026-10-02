@@ -262,6 +262,11 @@
     "defaultMessage": "Remover escala",
     "description": "Accessible label for the button that removes a ramp the reader built."
   },
+  "DNZbIV": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Gerando prévia…",
+    "description": "Accessible label of the spinner shown in the export preview while the map is being captured."
+  },
   "GT4LWE": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Adicionar",
