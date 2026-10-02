@@ -475,6 +475,35 @@ describe('openApiToTools deferred', () => {
     expect(calls[0]).toMatchObject({ method: 'GET', url: '/agents/agt_1' });
   });
 
+  test('call refuses a missing path argument without validateArguments', async () => {
+    const calls: ResolvedRequest[] = [];
+    const server = new McpServer({ name: 'test', version: '1.0.0' });
+    registerTools({
+      server,
+      tools: openApiToTools({
+        spec: taggedSpec,
+        callApi: (req) => {
+          calls.push(req);
+          return {};
+        },
+      }),
+      defer: true,
+    });
+    const app = new App();
+    app.use(bodyParser());
+    app.use(createMcpRouter(server).routes());
+
+    const result = await callDeferred({
+      app: app.callback(),
+      name: 'call',
+      args: { name: 'get-agent', arguments: {} },
+    });
+
+    expect(result.isError).toBe(true);
+    expect(result.content[0].text).toBe('Missing required argument "agentId".');
+    expect(calls).toEqual([]);
+  });
+
   test('call rejects arguments the generated schema does not accept', async () => {
     const calls: ResolvedRequest[] = [];
     const app = buildDeferred(calls);

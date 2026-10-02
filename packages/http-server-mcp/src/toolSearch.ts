@@ -14,6 +14,7 @@ export interface ToolSearchArgs {
 
 const SUMMARY_MAX_LENGTH = 160;
 const SUGGESTION_COUNT = 3;
+const MIN_RELATED_SCORE = 1;
 
 /** Plural and singular forms rank alike: `agents` finds `get-agent`. */
 const stem = (term: string): string => {
@@ -103,6 +104,39 @@ const scoreOf = ({ tool, terms }: { tool: Tool; terms: string[] }): number => {
   return score;
 };
 
+const withTag = ({ tag, tools }: { tag?: string; tools: Tool[] }): Tool[] => {
+  return tag === undefined
+    ? tools
+    : tools.filter((tool) => {
+        return tool.tags?.includes(tag) ?? false;
+      });
+};
+
+/**
+ * The tools `query` matches, best first, ties in the tools' order; `undefined`
+ * when the query has no words.
+ */
+const scoreTools = ({
+  query,
+  tag,
+  tools,
+}: Omit<ToolSearchArgs, 'limit'>):
+  Array<{ tool: Tool; score: number }> | undefined => {
+  const terms = [...new Set(termsOf(query))];
+  if (terms.length === 0) return undefined;
+
+  return withTag({ tag, tools })
+    .map((tool, index) => {
+      return { tool, index, score: scoreOf({ tool, terms }) };
+    })
+    .filter(({ score }) => {
+      return score > 0;
+    })
+    .sort((a, b) => {
+      return b.score - a.score || a.index - b.index;
+    });
+};
+
 /**
  * The deferred tools' default search: scores each tool by the query's terms,
  * weighted name > summary > tags > description, and breaks ties by the
@@ -114,29 +148,12 @@ export const rankTools = ({
   limit,
   tools,
 }: ToolSearchArgs): Tool[] => {
-  const candidates =
-    tag === undefined
-      ? tools
-      : tools.filter((tool) => {
-          return tool.tags?.includes(tag) ?? false;
-        });
-  const terms = [...new Set(termsOf(query))];
-  if (terms.length === 0) return candidates.slice(0, limit);
+  const scored = scoreTools({ query, tag, tools });
+  if (!scored) return withTag({ tag, tools }).slice(0, limit);
 
-  return candidates
-    .map((tool, index) => {
-      return { tool, index, score: scoreOf({ tool, terms }) };
-    })
-    .filter(({ score }) => {
-      return score > 0;
-    })
-    .sort((a, b) => {
-      return b.score - a.score || a.index - b.index;
-    })
-    .slice(0, limit)
-    .map(({ tool }) => {
-      return tool;
-    });
+  return scored.slice(0, limit).map(({ tool }) => {
+    return tool;
+  });
 };
 
 export const summaryOf = (tool: Tool): string => {
@@ -188,12 +205,14 @@ export const suggestionsFor = ({
     .map((candidate) => {
       return candidate.name;
     });
-  const related = rankTools({
-    query: name,
-    limit: SUGGESTION_COUNT,
-    tools,
-  }).map((tool) => {
-    return tool.name;
-  });
+  // Below 1 is a lone prefix in a description, too weak a link to suggest.
+  const related = (scoreTools({ query: name, tools }) ?? [])
+    .filter(({ score }) => {
+      return score >= MIN_RELATED_SCORE;
+    })
+    .slice(0, SUGGESTION_COUNT)
+    .map(({ tool }) => {
+      return tool.name;
+    });
   return [...new Set([...nearMisses, ...related])].slice(0, SUGGESTION_COUNT);
 };

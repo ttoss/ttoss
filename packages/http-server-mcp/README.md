@@ -484,14 +484,14 @@ registerTools({ server: fullServer, tools });
 registerTools({ server: deferredServer, tools, defer: true });
 ```
 
-A schema enters the model's context only for the tools it is about to use. `call` enforces the tool's schema as a direct call would, and its errors help the model recover: an unknown name answers suggestions, and invalid arguments, a tool's own error result, or a thrown error carry the input schema, so a `call` made without `describe` corrects itself in one retry.
+A schema enters the model's context only for the tools it is about to use. `call` enforces the tool's schema as a direct call would, and its errors help the model recover: an unknown name answers suggestions (near-miss names, then tools the name's words match; a lone prefix in a description is not enough), and invalid arguments, a tool's own error result, or a thrown error carry the input schema, so a `call` made without `describe` corrects itself in one retry.
 
 Pass options instead of `true` to tune it:
 
 - `except` — tools kept standalone, not deferred; they stay reachable through `search` too. Defaults to those linked to an [MCP Apps](#mcp-apps-interactive-uis) view, since a host finds a view through the tool's own `tools/list` entry.
 - `visible` — runs on every `search`, `describe` and `call`; a tool it rejects is absent from all three. Standalone tools stay listed.
 - `search` — replaces the default ranking, `rankTools`, e.g. with embeddings.
-- `searchLimit` (default `10`) and `names` (default `search` / `describe` / `call`).
+- `searchLimit` (default `10`), `searchMaxLimit` — the largest `limit` accepted (default `50`, or `searchLimit` when higher) — and `names` (default `search` / `describe` / `call`).
 
 A gate (below) sees each call with the tool's own name and arguments, so authorization stays per tool when deferred.
 
