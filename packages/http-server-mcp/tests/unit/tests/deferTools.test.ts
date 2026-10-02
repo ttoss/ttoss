@@ -772,6 +772,25 @@ describe('rankTools', () => {
     expect(result.structuredContent?.suggestions).toEqual([]);
   });
 
+  test('suggests no tool that only a prefix in its summary matches', async () => {
+    const app = buildApp({
+      tools: [
+        tool({
+          name: 'request-sign-in-code',
+          summary: 'POST /v1/auth/code — Does not reveal account existence.',
+        }),
+      ],
+    });
+
+    const result = await callTool({
+      app,
+      name: 'call',
+      args: { name: 'nao-existe' },
+    });
+
+    expect(result.structuredContent?.suggestions).toEqual([]);
+  });
+
   test('suggests nothing for a name without words', async () => {
     const result = await callTool({
       app: buildApp(),

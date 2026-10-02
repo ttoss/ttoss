@@ -14,7 +14,6 @@ export interface ToolSearchArgs {
 
 const SUMMARY_MAX_LENGTH = 160;
 const SUGGESTION_COUNT = 3;
-const MIN_RELATED_SCORE = 1;
 
 /** Plural and singular forms rank alike: `agents` finds `get-agent`. */
 const stem = (term: string): string => {
@@ -79,9 +78,17 @@ const termsByField = (tool: Tool): Array<Set<string>> => {
 
 /**
  * A term scores the weight of the best field holding it, half that when it
- * is only a prefix of a word there (`proj` → `project`).
+ * is only a prefix of a word there (`proj` → `project`) and `prefixes` is on.
  */
-const scoreOf = ({ tool, terms }: { tool: Tool; terms: string[] }): number => {
+const scoreOf = ({
+  tool,
+  terms,
+  prefixes,
+}: {
+  tool: Tool;
+  terms: string[];
+  prefixes: boolean;
+}): number => {
   const fields = termsByField(tool);
   let score = 0;
   for (const term of terms) {
@@ -91,6 +98,7 @@ const scoreOf = ({ tool, terms }: { tool: Tool; terms: string[] }): number => {
       if (words.has(term)) {
         best = Math.max(best, weight);
       } else if (
+        prefixes &&
         term.length >= 3 &&
         [...words].some((word) => {
           return word.startsWith(term);
@@ -120,14 +128,15 @@ const scoreTools = ({
   query,
   tag,
   tools,
-}: Omit<ToolSearchArgs, 'limit'>):
+  prefixes = true,
+}: Omit<ToolSearchArgs, 'limit'> & { prefixes?: boolean }):
   Array<{ tool: Tool; score: number }> | undefined => {
   const terms = [...new Set(termsOf(query))];
   if (terms.length === 0) return undefined;
 
   return withTag({ tag, tools })
     .map((tool, index) => {
-      return { tool, index, score: scoreOf({ tool, terms }) };
+      return { tool, index, score: scoreOf({ tool, terms, prefixes }) };
     })
     .filter(({ score }) => {
       return score > 0;
@@ -205,11 +214,9 @@ export const suggestionsFor = ({
     .map((candidate) => {
       return candidate.name;
     });
-  // Below 1 is a lone prefix in a description, too weak a link to suggest.
-  const related = (scoreTools({ query: name, tools }) ?? [])
-    .filter(({ score }) => {
-      return score >= MIN_RELATED_SCORE;
-    })
+  // A made-up name shares prefixes with prose by chance (`existe` →
+  // `existence`); only a whole word in common is a link worth suggesting.
+  const related = (scoreTools({ query: name, tools, prefixes: false }) ?? [])
     .slice(0, SUGGESTION_COUNT)
     .map(({ tool }) => {
       return tool.name;

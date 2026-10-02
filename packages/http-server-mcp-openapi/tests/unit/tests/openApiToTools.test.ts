@@ -504,6 +504,40 @@ describe('openApiToTools deferred', () => {
     expect(calls).toEqual([]);
   });
 
+  test('call suggests no tool that only a prefix in its description matches', async () => {
+    const server = new McpServer({ name: 'test', version: '1.0.0' });
+    registerTools({
+      server,
+      tools: openApiToTools({
+        spec: {
+          paths: {
+            '/auth/code': {
+              post: {
+                operationId: 'requestSignInCode',
+                description: 'Does not reveal account existence.',
+              },
+            },
+          },
+        },
+        callApi: () => {
+          return {};
+        },
+      }),
+      defer: true,
+    });
+    const app = new App();
+    app.use(bodyParser());
+    app.use(createMcpRouter(server).routes());
+
+    const result = await callDeferred({
+      app: app.callback(),
+      name: 'call',
+      args: { name: 'nao-existe' },
+    });
+
+    expect(result.structuredContent?.suggestions).toEqual([]);
+  });
+
   test('call rejects arguments the generated schema does not accept', async () => {
     const calls: ResolvedRequest[] = [];
     const app = buildDeferred(calls);
