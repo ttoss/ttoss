@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.34.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.34.0...@ttoss/http-server-mcp@0.34.1) (2026-10-02)
+
+### Bug Fixes
+
+- **http-server-mcp,http-server-mcp-openapi:** refuse missing path args, cap search, fix hints ([#1292](https://github.com/ttoss/ttoss/issues/1292)) ([d14c075](https://github.com/ttoss/ttoss/commit/d14c0756b814b6ce2431b17bee1d16fae63aa116))
+
 # [0.34.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.33.2...@ttoss/http-server-mcp@0.34.0) (2026-10-01)
 
 - feat(http-server-mcp,http-server-mcp-openapi)!: one Tool type, registered directly or deferred (#1291) ([b0a6d6a](https://github.com/ttoss/ttoss/commit/b0a6d6addadaede03101a86c4a35ffa4e0ce3c8b)), closes [#1291](https://github.com/ttoss/ttoss/issues/1291) [#1290](https://github.com/ttoss/ttoss/issues/1290)
