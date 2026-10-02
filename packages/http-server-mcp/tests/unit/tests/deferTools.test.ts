@@ -753,42 +753,39 @@ describe('rankTools', () => {
     ]);
   });
 
-  test('suggests no tool that only a prefix in its description matches', async () => {
+  test('suggests a tool only a prefix of the name matches', async () => {
     const app = buildApp({
-      tools: [
-        tool({
-          name: 'request-sign-in-code',
-          description: 'Does not reveal account existence.',
-        }),
-      ],
+      tools: [tool({ name: 'list-agents' }), tool({ name: 'get-memory' })],
     });
 
     const result = await callTool({
       app,
       name: 'call',
-      args: { name: 'nao-existe' },
+      args: { name: 'memo' },
     });
 
-    expect(result.structuredContent?.suggestions).toEqual([]);
+    expect(result.structuredContent?.suggestions).toEqual(['get-memory']);
   });
 
-  test('suggests no tool that only a prefix in its summary matches', async () => {
+  test('ranks a tool holding every word above a distant near-miss', async () => {
     const app = buildApp({
       tools: [
-        tool({
-          name: 'request-sign-in-code',
-          summary: 'POST /v1/auth/code — Does not reveal account existence.',
-        }),
+        tool({ name: 'list-users' }),
+        tool({ name: 'list-deciders' }),
+        tool({ name: 'list-memories' }),
+        tool({ name: 'list-project-members' }),
       ],
     });
 
     const result = await callTool({
       app,
       name: 'call',
-      args: { name: 'nao-existe' },
+      args: { name: 'list-members' },
     });
 
-    expect(result.structuredContent?.suggestions).toEqual([]);
+    expect(result.structuredContent?.suggestions?.[0]).toBe(
+      'list-project-members'
+    );
   });
 
   test('suggests nothing for a name without words', async () => {

@@ -78,17 +78,9 @@ const termsByField = (tool: Tool): Array<Set<string>> => {
 
 /**
  * A term scores the weight of the best field holding it, half that when it
- * is only a prefix of a word there (`proj` → `project`) and `prefixes` is on.
+ * is only a prefix of a word there (`proj` → `project`).
  */
-const scoreOf = ({
-  tool,
-  terms,
-  prefixes,
-}: {
-  tool: Tool;
-  terms: string[];
-  prefixes: boolean;
-}): number => {
+const scoreOf = ({ tool, terms }: { tool: Tool; terms: string[] }): number => {
   const fields = termsByField(tool);
   let score = 0;
   for (const term of terms) {
@@ -98,7 +90,6 @@ const scoreOf = ({
       if (words.has(term)) {
         best = Math.max(best, weight);
       } else if (
-        prefixes &&
         term.length >= 3 &&
         [...words].some((word) => {
           return word.startsWith(term);
@@ -128,15 +119,14 @@ const scoreTools = ({
   query,
   tag,
   tools,
-  prefixes = true,
-}: Omit<ToolSearchArgs, 'limit'> & { prefixes?: boolean }):
+}: Omit<ToolSearchArgs, 'limit'>):
   Array<{ tool: Tool; score: number }> | undefined => {
   const terms = [...new Set(termsOf(query))];
   if (terms.length === 0) return undefined;
 
   return withTag({ tag, tools })
     .map((tool, index) => {
-      return { tool, index, score: scoreOf({ tool, terms, prefixes }) };
+      return { tool, index, score: scoreOf({ tool, terms }) };
     })
     .filter(({ score }) => {
       return score > 0;
@@ -192,7 +182,14 @@ const editDistance = (a: string, b: string): number => {
   return row[b.length];
 };
 
-/** Names a model probably meant: near-misses first, then related tools. */
+/** A typo this close outranks any word match: `get-agen` → `get-agent`. */
+const CLOSE_TYPO_DISTANCE = 2;
+
+/**
+ * Names a model probably meant: close typos first, nearest first; then the
+ * near-misses and the tools sharing the name's words, by word score, so a tool
+ * holding every word outranks a distant near-miss.
+ */
 export const suggestionsFor = ({
   name,
   tools,
@@ -201,25 +198,37 @@ export const suggestionsFor = ({
   tools: Tool[];
 }): string[] => {
   const tolerance = Math.max(2, Math.floor(name.length / 3));
-  const nearMisses = tools
-    .map((tool) => {
-      return { name: tool.name, distance: editDistance(name, tool.name) };
+  const scores = new Map(
+    (scoreTools({ query: name, tools }) ?? []).map(({ tool, score }) => {
+      return [tool, score];
     })
-    .filter(({ distance }) => {
-      return distance <= tolerance;
+  );
+  const rankOf = (distance: number): number => {
+    return Math.min(distance, CLOSE_TYPO_DISTANCE + 1);
+  };
+
+  return tools
+    .map((tool, index) => {
+      return {
+        tool,
+        index,
+        distance: editDistance(name, tool.name),
+        score: scores.get(tool) ?? 0,
+      };
+    })
+    .filter(({ distance, score }) => {
+      return distance <= tolerance || score > 0;
     })
     .sort((a, b) => {
-      return a.distance - b.distance;
+      return (
+        rankOf(a.distance) - rankOf(b.distance) ||
+        b.score - a.score ||
+        a.distance - b.distance ||
+        a.index - b.index
+      );
     })
-    .map((candidate) => {
-      return candidate.name;
-    });
-  // A made-up name shares prefixes with prose by chance (`existe` →
-  // `existence`); only a whole word in common is a link worth suggesting.
-  const related = (scoreTools({ query: name, tools, prefixes: false }) ?? [])
     .slice(0, SUGGESTION_COUNT)
     .map(({ tool }) => {
       return tool.name;
     });
-  return [...new Set([...nearMisses, ...related])].slice(0, SUGGESTION_COUNT);
 };
