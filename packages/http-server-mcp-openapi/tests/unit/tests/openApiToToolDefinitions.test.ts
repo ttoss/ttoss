@@ -63,11 +63,9 @@ describe('openApiToToolDefinitions', () => {
     expect(tool.operationId).toBe('listAgents');
   });
 
-  test('sanitises description: escapes quotes and flattens newlines', () => {
+  test('flattens newlines in the description and keeps quotes as they are', () => {
     const tool = byName(tools, 'list-agents');
-    expect(tool.description).toBe(
-      "List all agents. Supports filters.\\'quoted\\'"
-    );
+    expect(tool.description).toBe("List all agents. Supports filters.'quoted'");
   });
 
   test('exposes operation extensions verbatim', () => {
@@ -87,6 +85,39 @@ describe('openApiToToolDefinitions', () => {
     test('builds a path with the param URL-encoded', () => {
       const tool = byName(tools, 'get-agent');
       expect(tool.path({ agentId: 'agt/1' })).toBe('/agents/agt%2F1');
+    });
+
+    test('refuses to build a path without one of its params', () => {
+      const tool = byName(tools, 'get-agent');
+      expect(() => {
+        return tool.path({});
+      }).toThrow('Missing required argument "agentId".');
+    });
+
+    test("keeps the param's own description", () => {
+      const [tool] = openApiToToolDefinitions({
+        spec: {
+          paths: {
+            '/projects/{project_id}': {
+              get: {
+                operationId: 'getProject',
+                parameters: [
+                  {
+                    name: 'project_id',
+                    in: 'path',
+                    required: true,
+                    description: "The project's public ID.",
+                    schema: { type: 'string' },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      });
+      expect(tool.inputSchema.properties).toEqual({
+        projectId: { type: 'string', description: "The project's public ID." },
+      });
     });
 
     test('has no query or body builder', () => {

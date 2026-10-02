@@ -53,7 +53,10 @@ export interface ToolDefinition {
   operationId: string;
   /** The operation's `tags`, e.g. to filter the deferred `search` by module. */
   tags: string[];
-  /** Builds the request path, substituting path params from the args. */
+  /**
+   * Builds the request path, substituting path params from the args. Throws
+   * when an argument a path param needs is missing.
+   */
   path: (args: Record<string, unknown>) => string;
   /** Builds the query string (including leading `?`), or `undefined` if none. */
   query?: (args: Record<string, unknown>) => string;

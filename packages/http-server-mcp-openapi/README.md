@@ -66,10 +66,12 @@ Each OpenAPI operation with an `operationId` and a supported HTTP method
 | path/query/body params    | a single `inputSchema` object                 |
 | `$ref`, `oneOf`, `anyOf`  | dereferenced and merged into a flat schema    |
 | snake_case names          | camelCase tool inputs, mapped back on call    |
-| operation `description`   | tool description (quotes/newlines sanitised)  |
+| operation `description`   | tool description, newlines flattened          |
 | operation `tags`          | tool `tags`, for the deferred `search` filter |
 
-Path params are always required strings. Query and body params carry their
+Path params are always required strings, carrying their own `description`; a
+call missing one is refused before `callApi` runs, whatever
+`validateArguments` says. Query and body params carry their
 declared type and `required` flag. Array params keep their `items` schema. A
 body property declared as a single-entry `allOf` (usually `allOf: [{ $ref }]`
 beside its own `description`) takes `type`, `nullable` and `items` from the

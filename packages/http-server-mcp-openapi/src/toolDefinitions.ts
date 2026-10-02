@@ -49,7 +49,7 @@ export const getJsonSchemaType = (
 };
 
 const sanitizeDescription = (description: string | undefined): string => {
-  return (description || '').replace(/'/g, "\\'").replace(/\n/g, ' ').trim();
+  return (description || '').replace(/\n/g, ' ').trim();
 };
 
 const defaultDescribe: NonNullable<OpenApiToToolsOptions['describe']> = ({
@@ -129,7 +129,12 @@ const buildTypedProperty = (param: {
 };
 
 export const buildInputSchema = (
-  pathParams: Array<{ name: string; argName: string; serverManaged?: boolean }>,
+  pathParams: Array<{
+    name: string;
+    argName: string;
+    description?: string;
+    serverManaged?: boolean;
+  }>,
   queryParams: Array<{
     name: string;
     argName: string;
@@ -189,7 +194,10 @@ export const buildInputSchema = (
   // Path params first and body props last, so a later one wins a name clash.
   const properties: Record<string, JsonSchemaProperty> = {};
   for (const param of modelPathParams) {
-    properties[param.argName] = { type: 'string', description: '' };
+    properties[param.argName] = {
+      type: 'string',
+      description: sanitizeDescription(param.description),
+    };
   }
   for (const param of [...modelQueryParams, ...bodyProps]) {
     properties[param.argName] = normalizeNullable(
@@ -206,6 +214,29 @@ export const buildInputSchema = (
     properties,
     ...(requiredFields.length > 0 ? { required: requiredFields } : {}),
   };
+};
+
+/**
+ * Builds the request path. A path without one of its params is another route —
+ * `/projects/{id}/members` reaches the API as a `404` naming the resource, not
+ * the missing argument — so the call is refused instead.
+ */
+const pathFn = (args: {
+  pathTemplate: string;
+  pathParams: Array<{ name: string; argName: string; serverManaged: boolean }>;
+  pinned: Record<string, string>;
+}): ((values: Record<string, unknown>) => string) => {
+  const build = buildPathFn(args.pathTemplate, args.pathParams);
+  const required = (values: Record<string, unknown>) => {
+    const missing = args.pathParams.find((param) => {
+      return !param.serverManaged && values[param.argName] === undefined;
+    });
+    if (missing) {
+      throw new Error(`Missing required argument "${missing.argName}".`);
+    }
+    return build(values);
+  };
+  return withPinned({ build: required, pinned: args.pinned })!;
 };
 
 const SUPPORTED_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
@@ -345,10 +376,7 @@ export const processOperation = (args: {
     pathTemplate: args.pathTemplate,
     operationId: args.operation.operationId,
     tags: operationTags(args.operation),
-    path: withPinned({
-      build: buildPathFn(args.pathTemplate, pathParams),
-      pinned,
-    })!,
+    path: pathFn({ pathTemplate: args.pathTemplate, pathParams, pinned }),
     query: withPinned({ build: buildQueryFn(queryParams), pinned }),
     body: withPinnedBody({
       build: buildBodyFn(bodyProps),

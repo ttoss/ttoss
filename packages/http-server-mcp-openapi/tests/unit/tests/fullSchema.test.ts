@@ -390,7 +390,7 @@ describe('describe', () => {
 
   test('defaults to the sanitised operation description', () => {
     expect(openApiToToolDefinitions({ spec })[0].description).toBe(
-      "The item\\'s fields. Only what is sent changes."
+      "The item's fields. Only what is sent changes."
     );
   });
 });

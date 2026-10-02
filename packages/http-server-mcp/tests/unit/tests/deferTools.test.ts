@@ -310,6 +310,42 @@ describe('registerTools defer', () => {
       expect(result.summary.endsWith('…')).toBe(true);
     });
 
+    test('rejects a limit above 50', async () => {
+      const result = await callTool({
+        app: buildApp(),
+        name: 'search',
+        args: { query: '', limit: 51 },
+      });
+
+      expect(result.isError).toBe(true);
+    });
+
+    test('`searchMaxLimit` sets the ceiling', async () => {
+      const app = buildApp({ defer: { searchMaxLimit: 2 } });
+
+      expect(namesOf(await search({ app, query: '', limit: 2 }))).toHaveLength(
+        2
+      );
+      expect(
+        (await callTool({ app, name: 'search', args: { query: '', limit: 3 } }))
+          .isError
+      ).toBe(true);
+    });
+
+    test('a higher `searchLimit` raises the default ceiling', async () => {
+      const app = buildApp({ defer: { searchLimit: 80 } });
+
+      expect(
+        (
+          await callTool({
+            app,
+            name: 'search',
+            args: { query: '', limit: 80 },
+          })
+        ).isError
+      ).toBeUndefined();
+    });
+
     test('rejects a call without a query', async () => {
       const result = await callTool({
         app: buildApp(),
@@ -715,6 +751,35 @@ describe('rankTools', () => {
       'get-agent',
       'get-agents',
     ]);
+  });
+
+  test('suggests no tool that only a prefix in its description matches', async () => {
+    const app = buildApp({
+      tools: [
+        tool({
+          name: 'request-sign-in-code',
+          description: 'Does not reveal account existence.',
+        }),
+      ],
+    });
+
+    const result = await callTool({
+      app,
+      name: 'call',
+      args: { name: 'nao-existe' },
+    });
+
+    expect(result.structuredContent?.suggestions).toEqual([]);
+  });
+
+  test('suggests nothing for a name without words', async () => {
+    const result = await callTool({
+      app: buildApp(),
+      name: 'call',
+      args: { name: '???' },
+    });
+
+    expect(result.structuredContent?.suggestions).toEqual([]);
   });
 
   test('ignores a prefix shorter than three letters', () => {

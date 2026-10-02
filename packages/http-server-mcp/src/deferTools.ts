@@ -38,6 +38,12 @@ export interface DeferToolsOptions {
    */
   searchLimit?: number;
   /**
+   * The largest `limit` `search` accepts. With no ceiling, an empty query
+   * lists every tool, more than a client's context holds.
+   * @default 50, or `searchLimit` when that is higher
+   */
+  searchMaxLimit?: number;
+  /**
    * Runs on every `search`, `describe` and `call`. A tool it rejects is
    * absent from all three; `call` answers it as an unknown name. Tools
    * `except` keeps standalone are listed on `tools/list` regardless.
@@ -51,6 +57,7 @@ export interface DeferToolsOptions {
 }
 
 const DEFAULT_SEARCH_LIMIT = 10;
+const DEFAULT_SEARCH_MAX_LIMIT = 50;
 
 const jsonResult = ({
   data,
@@ -98,6 +105,7 @@ interface DeferredTools {
   /** Every deferred tool, for counts and tags that never vary per request. */
   tools: Tool[];
   searchLimit: number;
+  searchMaxLimit: number;
   searchTools: NonNullable<DeferToolsOptions['search']>;
   /** The tools this request may see. */
   visibleTools: () => Tool[];
@@ -124,6 +132,8 @@ const deferredToolsOf = ({
     return options.visible ? options.visible({ tool }) : true;
   };
 
+  const searchLimit = options.searchLimit ?? DEFAULT_SEARCH_LIMIT;
+
   return {
     names: {
       search: 'search',
@@ -132,7 +142,9 @@ const deferredToolsOf = ({
       ...options.names,
     },
     tools,
-    searchLimit: options.searchLimit ?? DEFAULT_SEARCH_LIMIT,
+    searchLimit,
+    searchMaxLimit:
+      options.searchMaxLimit ?? Math.max(DEFAULT_SEARCH_MAX_LIMIT, searchLimit),
     searchTools: options.search ?? rankTools,
     visibleTools: () => {
       return tools.filter(isVisible);
@@ -148,6 +160,7 @@ const searchToolOf = ({
   names,
   tools,
   searchLimit,
+  searchMaxLimit,
   searchTools,
   visibleTools,
 }: DeferredTools): Tool => {
@@ -171,7 +184,7 @@ const searchToolOf = ({
         query: {
           type: 'string',
           description:
-            'Words describing the action, e.g. "create agent". Empty lists every tool.',
+            'Words describing the action, e.g. "create agent". Empty lists the tools in order.',
         },
         tag: {
           type: 'string',
@@ -181,6 +194,7 @@ const searchToolOf = ({
         limit: {
           type: 'integer',
           minimum: 1,
+          maximum: searchMaxLimit,
           description: `Maximum number of results. Defaults to ${searchLimit}.`,
         },
       },
