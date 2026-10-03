@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.0.2](https://github.com/ttoss/ttoss/compare/@docs/website@10.0.1...@docs/website@10.0.2) (2026-10-03)
+
+### Bug Fixes
+
+- **carlin:** compress and cache static app responses at the edge ([#1296](https://github.com/ttoss/ttoss/issues/1296)) ([565c16d](https://github.com/ttoss/ttoss/commit/565c16da12b6fdd0054e06c45a76a9fe7ac0c31e))
+
 ## [10.0.1](https://github.com/ttoss/ttoss/compare/@docs/website@10.0.0...@docs/website@10.0.1) (2026-10-01)
 
 **Note:** Version bump only for package @docs/website
