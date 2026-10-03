@@ -61,12 +61,38 @@ export const BUCKET_CORS_CONFIGURATION = {
   ],
 } as const;
 
+export const CLOUDFRONT_CACHE_POLICY_LOGICAL_ID = 'CachePolicy';
+
 /**
- * Name: Managed-CachingDisabled
- * ID: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
- * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html
+ * CloudFront compresses only when the cache policy accepts gzip/brotli, which
+ * `Managed-CachingDisabled` cannot. Each deploy invalidates `/*`.
+ *
+ * `Managed-CachingOptimized` would leave `Origin` and the
+ * `Access-Control-Request-*` headers out of the cache key, so a response cached
+ * for a same-origin request would answer a CORS one without CORS headers when
+ * they come from the bucket (`vary` in `responseHeaders`).
+ *
+ * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/ServingCompressedFiles.html
  */
-const CACHE_POLICY_ID = '4135ea2d-6df8-44a3-9df3-4b5a84be39ad';
+export const CACHE_POLICY_CONFIG = {
+  DefaultTTL: 60 * 60 * 24,
+  MaxTTL: 60 * 60 * 24 * 365,
+  MinTTL: 0,
+  ParametersInCacheKeyAndForwardedToOrigin: {
+    CookiesConfig: { CookieBehavior: 'none' },
+    EnableAcceptEncodingBrotli: true,
+    EnableAcceptEncodingGzip: true,
+    HeadersConfig: {
+      HeaderBehavior: 'whitelist',
+      Headers: [
+        'Access-Control-Request-Headers',
+        'Access-Control-Request-Method',
+        'Origin',
+      ],
+    },
+    QueryStringsConfig: { QueryStringBehavior: 'none' },
+  },
+} as const;
 
 /**
  * Name: Managed-CORS-S3Origin
@@ -309,7 +335,7 @@ const getCloudFrontTemplate = ({
              * CachePolicyId property:
              * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-defaultcachebehavior.html#cfn-cloudfront-distribution-defaultcachebehavior-cachepolicyid
              */
-            CachePolicyId: CACHE_POLICY_ID,
+            CachePolicyId: { Ref: CLOUDFRONT_CACHE_POLICY_LOGICAL_ID },
             ResponseHeadersPolicyId: getResponseHeadersPolicyId({
               responseHeaders,
               responseHeadersPolicy,
@@ -340,6 +366,25 @@ const getCloudFrontTemplate = ({
               },
             },
           ],
+        },
+      },
+    },
+    [CLOUDFRONT_CACHE_POLICY_LOGICAL_ID]: {
+      Type: 'AWS::CloudFront::CachePolicy',
+      Properties: {
+        CachePolicyConfig: {
+          ...CACHE_POLICY_CONFIG,
+          Comment: {
+            'Fn::Sub': [
+              'Cache policy for ${Project} project.',
+              { Project: { Ref: 'Project' } },
+            ],
+          },
+          /**
+           * Cache policy names must be unique per AWS account, like the
+           * response headers policy's.
+           */
+          Name: { Ref: 'AWS::StackName' },
         },
       },
     },
