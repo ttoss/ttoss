@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { fireEvent, render, screen } from '@ttoss/test-utils/react';
 
-import {
-  NavList,
+import type {
   NavListGroup,
   NavListItem,
 } from '../../../src/components/NavList';
+import { NavList } from '../../../src/components/NavList';
 
 const mockItems: NavListItem[] = [
   { id: '1', label: 'Home', href: '/home', icon: 'mdi:home' },
@@ -113,6 +113,12 @@ describe('NavList component', () => {
 
       expect(withDefault.querySelector('nav')).toBeInTheDocument();
       expect(withExplicit.querySelector('nav')).toBeInTheDocument();
+    });
+
+    test('falls back to the menu variant for an unknown variant', () => {
+      render(<NavList items={mockItems} variant={'unknown' as any} />);
+
+      expect(screen.getByRole('navigation')).toBeInTheDocument();
     });
   });
 
