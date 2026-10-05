@@ -9,11 +9,16 @@ import type {
   GeovisWorkspaceSelection,
   GeovisWorkspaceSidebarSection,
 } from '../context/GeovisWorkspaceContext';
+import {
+  MapExportContext,
+  useMapExportState,
+} from '../context/MapExportContext';
 import { TimelineContext } from '../context/TimelineContext';
 import { useGeovisWorkspace } from '../hooks/useGeovisWorkspace';
 import { messages } from '../messages';
 import { RIGHT_SIDEBAR_SLOTS, slotHasContent } from '../slots';
 import { isColdStart } from '../warnings';
+import { ExportMapOverlay } from './ExportMapDialog';
 import { IssueList } from './IssueList';
 import { LeftSidebar } from './LeftSidebar';
 import { COLOR } from './LeftSidebar/theme';
@@ -55,6 +60,7 @@ const MapColdStartEmptyState = () => {
         height: '100%',
         padding: '6',
         overflowY: 'auto',
+        overscrollBehavior: 'contain',
       }}
     >
       <Text
@@ -447,73 +453,88 @@ export const Layout = () => {
   // spec above this tree. Two conditions are added here — with no sidebar there
   // is no timeline to drive, and a closed gate must take the HUD with it, or it
   // would keep offering the very control the disabled tab just withdrew.
+  const isLeftOpen = hasLeftSidebar && isLeftSidebarOpen;
+
   const mapInset = useMapInset({
     container: containerRef,
     left: leftSidebarRef,
     right: rightSidebarRef,
-    leftOpen: hasLeftSidebar && isLeftSidebarOpen,
+    leftOpen: isLeftOpen,
     rightOpen: hasRightSidebar && isRightSidebarOpen,
   });
 
   const loading = resolveLoadingOverlay({ config, pendingSelection });
+
+  // Held here, not in the sidebar that opens it: the dialog covers the whole
+  // workspace, which a node inside the sliding sidebar overlay cannot do.
+  const mapExport = useMapExportState();
 
   const hudVisible =
     isTimelineHudVisible && hasLeftSidebar && isTimelineEnabled;
 
   return (
     <TimelineContext.Provider value={{ ...timelineState, filter: timeline }}>
-      <Flex
-        ref={containerRef}
-        sx={{
-          position: 'relative',
-          overflow: 'hidden',
-          minHeight: '440px',
-          backgroundColor: 'display.background.primary.default',
-          ...(isBare
-            ? {}
-            : {
-                border: 'sm',
-                borderColor: 'display.border.muted.default',
-                borderRadius: 'lg',
-              }),
-        }}
-      >
-        <Flex sx={{ flex: 1 }}>
-          <MapSlot />
-        </Flex>
+      <MapExportContext.Provider value={mapExport.value}>
+        <Flex
+          ref={containerRef}
+          sx={{
+            position: 'relative',
+            overflow: 'hidden',
+            minHeight: '440px',
+            backgroundColor: 'display.background.primary.default',
+            ...(isBare
+              ? {}
+              : {
+                  border: 'sm',
+                  borderColor: 'display.border.muted.default',
+                  borderRadius: 'lg',
+                }),
+          }}
+        >
+          <Flex sx={{ flex: 1 }}>
+            <MapSlot />
+          </Flex>
 
-        {/* Both overlays stay mounted; visibility is gated through `open`, not by
+          {/* Both overlays stay mounted; visibility is gated through `open`, not by
           conditionally rendering the overlay. Unmounting on `has*Sidebar` would
           remove the node the instant its slots lose content (e.g. the inspector
           clearing on an outside click), skipping the slide-out transition and
           making the sidebar vanish abruptly. Keeping it mounted lets `open` fall
           to `false` and the overlay animate closed. The reopen buttons stay
           gated on content — an empty sidebar has nothing to reopen. */}
-        <SidebarOverlay
-          side="left"
-          open={hasLeftSidebar && isLeftSidebarOpen}
-          innerRef={leftSidebarRef}
-        >
-          <LeftSidebar />
-        </SidebarOverlay>
+          <SidebarOverlay
+            side="left"
+            open={isLeftOpen}
+            innerRef={leftSidebarRef}
+          >
+            <LeftSidebar />
+          </SidebarOverlay>
 
-        <SidebarOverlay
-          side="right"
-          open={hasRightSidebar && isRightSidebarOpen}
-          innerRef={rightSidebarRef}
-        >
-          <RightSidebar />
-        </SidebarOverlay>
+          <SidebarOverlay
+            side="right"
+            open={hasRightSidebar && isRightSidebarOpen}
+            innerRef={rightSidebarRef}
+          >
+            <RightSidebar />
+          </SidebarOverlay>
 
-        <MapOverlays
-          hasLeftSidebar={hasLeftSidebar}
-          hasRightSidebar={hasRightSidebar}
-          hudVisible={hudVisible}
-          onDismissHud={dismissTimelineHud}
-        />
+          <MapOverlays
+            hasLeftSidebar={hasLeftSidebar}
+            hasRightSidebar={hasRightSidebar}
+            hudVisible={hudVisible}
+            onDismissHud={dismissTimelineHud}
+          />
 
-        <LoadingOverlay inset={mapInset}>{loading}</LoadingOverlay>
-      </Flex>
+          <LoadingOverlay inset={mapInset}>{loading}</LoadingOverlay>
+
+          <ExportMapOverlay
+            open={mapExport.isOpen}
+            menuOpen={isLeftOpen}
+            menuRef={leftSidebarRef}
+            onClose={mapExport.close}
+          />
+        </Flex>
+      </MapExportContext.Provider>
     </TimelineContext.Provider>
   );
 };

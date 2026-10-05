@@ -348,6 +348,9 @@ const GeoVisLegendBody = ({
   return (
     <div
       className={className}
+      // Public hook: lets a caller find the rendered cards — the workspace's
+      // map export captures them into the image.
+      data-geovis-legend={legend.id}
       style={{
         ...buildContainerStyle(legend.position, legend.offset),
         ...extraStyle,

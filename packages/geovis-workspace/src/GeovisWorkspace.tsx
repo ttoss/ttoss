@@ -13,6 +13,7 @@ import {
   applyRightSidebarLegendOffset,
   applyTimelineHudControlOffset,
 } from './controlOffset';
+import { WORKSPACE_ROOT_ATTRIBUTE } from './export/captureOverlay';
 import {
   GeovisWorkspaceProvider,
   type GeovisWorkspaceProviderProps,
@@ -130,8 +131,12 @@ export const GeovisWorkspace = ({
     // inside it — so it becomes that ancestor: the overlays stay confined to
     // the workspace (aligned to the map area, e.g. the layer control at the
     // map's bottom-left) instead of escaping to whatever container the host
-    // application renders it in.
-    <Box sx={{ position: 'relative' }}>
+    // application renders it in. It is also the scope the map export looks
+    // for those legend cards in, to capture them into the image.
+    <Box
+      {...({ [WORKSPACE_ROOT_ATTRIBUTE]: '' } as object)}
+      sx={{ position: 'relative' }}
+    >
       <GeoVisProvider spec={spec}>
         <GeovisWorkspaceProviderWithRuntime
           config={config}

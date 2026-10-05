@@ -8,6 +8,7 @@ import {
   resolveItemActive,
 } from './GeoVisLayerControl.items';
 import {
+  badgeCountStyle,
   buildFullPanelGridStyle,
   buildFullPanelStyle,
   buildItemLabelStyle,
@@ -96,7 +97,9 @@ const LayerControlMoreButton = ({
       <span style={moreThumbStyle}>
         {countText}
         {hiddenActiveCount > 0 ? (
-          <span style={moreActiveBadgeStyle}>{hiddenActiveCount}</span>
+          <span style={moreActiveBadgeStyle}>
+            <span style={badgeCountStyle}>{hiddenActiveCount}</span>
+          </span>
         ) : null}
       </span>
       <span style={buildItemLabelStyle({ active: false, disabled: false })}>

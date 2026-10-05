@@ -9,6 +9,7 @@ export {
   type GeovisWorkspaceSidebarBody,
   type GeovisWorkspaceSidebarChipOption,
   type GeovisWorkspaceSidebarChipsFilter,
+  type GeovisWorkspaceSidebarChipsLayout,
   type GeovisWorkspaceSidebarColorRampOption,
   type GeovisWorkspaceSidebarColorRampSetting,
   type GeovisWorkspaceSidebarEnabledWhen,

@@ -1,8 +1,8 @@
-import { Icon } from '@ttoss/react-icons';
 import { Box, Text } from '@ttoss/ui';
 
 import type { GeovisWorkspaceSidebarVariation } from '../../context/GeovisWorkspaceContext';
 import { IconChip } from './IconChip';
+import { Spinner } from './Spinner';
 import { COLOR } from './theme';
 
 const ACCENT = COLOR.primary;
@@ -46,26 +46,6 @@ const rowAppearance = ({
           '&:hover': { backgroundColor: COLOR.fill },
         },
   };
-};
-
-/** The trailing spinner marking the row whose request is in flight. */
-const PendingMark = () => {
-  return (
-    <Box
-      sx={{
-        flexShrink: 0,
-        display: 'flex',
-        color: ACCENT,
-        '@keyframes geovisWorkspaceSpin': {
-          from: { transform: 'rotate(0deg)' },
-          to: { transform: 'rotate(360deg)' },
-        },
-        animation: 'geovisWorkspaceSpin 0.7s linear infinite',
-      }}
-    >
-      <Icon icon="lucide:loader-circle" style={{ fontSize: '12px' }} />
-    </Box>
-  );
 };
 
 /** The trailing dot marking the row that is the menu's current value. */
@@ -167,7 +147,7 @@ export const VariationRow = ({
         {variation.label}
       </Text>
 
-      {pending ? <PendingMark /> : null}
+      {pending ? <Spinner size="12px" /> : null}
       {!pending && on ? <ActiveMark /> : null}
     </Box>
   );

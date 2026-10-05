@@ -12,6 +12,7 @@ import type {
   GeovisWorkspaceSelection,
   GeovisWorkspaceSidebarSection,
 } from '../../context/GeovisWorkspaceContext';
+import { useMapExportContext } from '../../context/MapExportContext';
 import type { TimelineContextValue } from '../../context/TimelineContext';
 import { useTimelineContext } from '../../context/TimelineContext';
 import { useGeovisWorkspace } from '../../hooks/useGeovisWorkspace';
@@ -31,10 +32,8 @@ import { VariationsTab } from './VariationsTab';
  */
 const CloseButton = ({
   onClose,
-  sx,
 }: {
   onClose: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  sx?: ThemeUIStyleObject;
 }) => {
   const {
     intl: { formatMessage },
@@ -54,13 +53,65 @@ const CloseButton = ({
         boxShadow: 'none',
         borderRadius: 'md',
         '&:hover': { color: COLOR.textMuted, backgroundColor: COLOR.fill },
-        ...sx,
       }}
     />
   );
 };
 
-/** The header band: the active section's icon chip, title, and close button. */
+/**
+ * Opens the map export dialog. Sits beside the close control wherever that is
+ * drawn — the header band, or the tab row when there is no band.
+ */
+const ExportButton = () => {
+  const {
+    intl: { formatMessage },
+  } = useI18n();
+  const { openExport } = useMapExportContext();
+  const label = formatMessage(messages.exportMap);
+
+  return (
+    <IconButton
+      icon="lucide:download"
+      aria-label={label}
+      title={label}
+      onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+        event.currentTarget.blur();
+        openExport();
+      }}
+      sx={{
+        width: '28px',
+        height: '28px',
+        minWidth: 'auto',
+        color: COLOR.textGhost,
+        backgroundColor: 'transparent',
+        boxShadow: 'none',
+        borderRadius: 'md',
+        '&:hover': { color: COLOR.textMuted, backgroundColor: COLOR.fill },
+      }}
+    />
+  );
+};
+
+/**
+ * The card's top-right actions: export, then close. Grouped so the row that
+ * carries them keeps pushing a single block to its far edge.
+ */
+const HeaderActions = ({
+  onClose,
+  sx,
+}: {
+  onClose: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  sx?: ThemeUIStyleObject;
+}) => {
+  return (
+    <Flex sx={{ alignItems: 'center', gap: '2px', ...sx }}>
+      <ExportButton />
+      <CloseButton onClose={onClose} />
+    </Flex>
+  );
+};
+
+/** The header band: the active section's icon chip, title, and actions. */
 const Header = ({
   section,
   onClose,
@@ -113,7 +164,7 @@ const Header = ({
         ) : null}
       </Flex>
 
-      <CloseButton onClose={onClose} />
+      <HeaderActions onClose={onClose} />
     </Flex>
   );
 };
@@ -123,7 +174,7 @@ const Header = ({
  * that actually holds the chips — not on every `filters` tab, since a config
  * may split its filters across several of them.
  *
- * Takes the close button in with it (`onClose`) when no header band is drawn,
+ * Takes the export and close buttons in with it (`onClose`) when no header band is drawn,
  * so the tabs sit at the top of the card instead of under an empty strip.
  */
 const TabBar = ({
@@ -186,7 +237,7 @@ const TabBar = ({
 
       {/* Centered against the 40px tabs rather than sitting on the rule. */}
       {onClose ? (
-        <CloseButton onClose={onClose} sx={{ alignSelf: 'center' }} />
+        <HeaderActions onClose={onClose} sx={{ alignSelf: 'center' }} />
       ) : null}
     </Flex>
   );
@@ -268,6 +319,9 @@ const TabContent = ({
       sx={{
         flex: 1,
         overflowY: 'auto',
+        // Keeps the scroll inside the card: past its end the browser would
+        // otherwise hand the rest of the gesture to the page around the map.
+        overscrollBehavior: 'contain',
         scrollbarWidth: 'none',
         '::-webkit-scrollbar': { display: 'none' },
       }}

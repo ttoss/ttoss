@@ -196,23 +196,43 @@ export const buildLegendPanelStyle = ({
 };
 
 // Count of active items, pinned to the trigger's top-right corner.
+//
+// Flex centres the line box, not the digits: the box carries the page's
+// line-height and the font's descender space, which digits never use, so they
+// sat visibly high. `lineHeight: 1` shrinks the line box to the font size, and
+// the count's own element (`badgeCountStyle`) trims it to the digits.
+// `boxSizing` pins the 16px circle whatever the host page's reset, and tabular
+// figures keep every count the same width.
 export const triggerBadgeStyle: React.CSSProperties = {
   alignItems: 'center',
   backgroundColor: TEXT_MUTED,
   border: '1px solid #ffffff',
   borderRadius: 999,
+  boxSizing: 'border-box',
   color: '#ffffff',
   display: 'flex',
   fontFamily: FONT,
   fontSize: 9,
+  fontVariantNumeric: 'tabular-nums',
   fontWeight: 600,
   height: 16,
   justifyContent: 'center',
+  lineHeight: 1,
   minWidth: 16,
   padding: '0 4px',
   position: 'absolute',
   right: -5,
   top: -5,
+};
+
+// The count inside a count badge — the trigger's, the "Ver mais" card's, a
+// group card's — trimmed to cap height and baseline so the badge's flex
+// centring lands on the digits themselves. On its own element because `textBox`
+// applies to block containers: a badge is a flex container, and its bare text
+// would sit in an anonymous box the property never reaches. Browsers without
+// `text-box` ignore it and keep the badge's `lineHeight: 1` centring.
+export const badgeCountStyle: React.CSSProperties = {
+  textBox: 'trim-both cap alphabetic',
 };
 
 // The expanded panel is a horizontal strip of item "cards", each mirroring the
@@ -380,13 +400,19 @@ export const moreThumbStyle: React.CSSProperties = {
 
 // Count of active items hidden behind the "Ver mais" card, in the accent the
 // active-item check badge uses, so it reads as "this many are on in there".
+//
+// Centred on its digits the same way as `triggerBadgeStyle`: `lineHeight: 1`
+// here, the trim on its count's element (`badgeCountStyle`).
 export const moreActiveBadgeStyle: React.CSSProperties = {
   ...activeBadgeStyle,
   borderRadius: 999,
+  boxSizing: 'border-box',
   color: '#ffffff',
   fontFamily: FONT,
   fontSize: 10,
+  fontVariantNumeric: 'tabular-nums',
   fontWeight: 600,
+  lineHeight: 1,
   minWidth: 18,
   padding: '0 4px',
   width: 'auto',

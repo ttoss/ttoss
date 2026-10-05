@@ -14,6 +14,7 @@ import {
   useLayerVisibilitySync,
 } from './GeoVisLayerControl.state';
 import {
+  badgeCountStyle,
   buildOuterStyle,
   buildTriggerStyle,
   compactBarStyle,
@@ -112,7 +113,11 @@ const LayerControlTrigger = ({
       onClick={onToggle}
     >
       <TriggerIcon icon={icon} />
-      {activeCount > 0 && <span style={triggerBadgeStyle}>{activeCount}</span>}
+      {activeCount > 0 && (
+        <span style={triggerBadgeStyle}>
+          <span style={badgeCountStyle}>{activeCount}</span>
+        </span>
+      )}
     </button>
   );
 };
@@ -294,6 +299,9 @@ export const GeoVisLayerControl = ({
   return (
     <div
       ref={containerRef}
+      // Public hook: lets a caller find the control on the page — the
+      // workspace's map export captures it with the menu.
+      data-geovis-layer-control=""
       style={buildOuterStyle({
         position,
         offset: control.offset,

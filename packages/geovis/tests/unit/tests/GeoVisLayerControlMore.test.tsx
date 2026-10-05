@@ -217,8 +217,13 @@ describe('GeoVisLayerControl — maxVisibleItems', () => {
     expect(renderedItemIds()).toEqual(['a', 'b']);
     const badge = (moreButton() as HTMLButtonElement).querySelector(
       'span > span'
+    ) as HTMLElement;
+    expect(badge.textContent).toBe('1');
+    // Centred on its digits, as the trigger's count badge is.
+    expect(badge.style.lineHeight).toBe('1');
+    expect(badge.firstElementChild?.getAttribute('style')).toContain(
+      'text-box: trim-both cap alphabetic'
     );
-    expect(badge?.textContent).toBe('1');
   });
 
   test('closes the full panel on Escape', async () => {

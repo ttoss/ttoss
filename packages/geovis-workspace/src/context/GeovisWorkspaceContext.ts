@@ -235,6 +235,31 @@ export interface GeovisWorkspaceSidebarChipOption {
 }
 
 /**
+ * How a {@link GeovisWorkspaceSidebarChipsFilter} lays its chips out.
+ *
+ * - `wrap` — each chip as wide as its content, flowing onto the next line when
+ *   the row runs out of room. Rows come out ragged, which suits short labels.
+ * - `grid` — `columns` equal-width columns, each chip filling its cell. Labels
+ *   that do not fit end in an ellipsis and read in full on hover, so every row
+ *   keeps the same height and the columns stay aligned.
+ *
+ * A union rather than a `layout` string beside a loose `columns`: `columns`
+ * only means something to a grid, so a wrap that declares it, or a grid that
+ * leaves it out, does not type-check instead of being silently ignored.
+ */
+export type GeovisWorkspaceSidebarChipsLayout =
+  | { kind: 'wrap' }
+  | {
+      kind: 'grid';
+      /**
+       * Number of columns. Read as a whole number of at least 1 — `0`, a
+       * negative, `NaN` or a fraction is floored and clamped rather than left
+       * to break the layout.
+       */
+      columns: number;
+    };
+
+/**
  * A chips filter: a wrapping row of toggle chips with a "clear" action.
  * Visual-only in the preview — the selection is held locally.
  */
@@ -256,6 +281,8 @@ export interface GeovisWorkspaceSidebarChipsFilter {
   multiple?: boolean;
   /** Ids of the chips active on first render. */
   defaultSelected?: string[];
+  /** How the chips are arranged. Defaults to `{ kind: 'wrap' }`. */
+  layout?: GeovisWorkspaceSidebarChipsLayout;
 }
 
 /** One selectable entry in a {@link GeovisWorkspaceSidebarLocatorFilter}. */

@@ -629,8 +629,10 @@ test('untitled sections hand the top of the card to the tab bar', async () => {
 
   // The close button moved into the tab row, so the tabs are its neighbours
   // rather than sitting under a strip of their own.
+  // The close button shares a group with the export button; the row is the
+  // group's parent.
   const close = screen.getByRole('button', { name: 'Close menu' });
-  const topRow = close.parentElement as HTMLElement;
+  const topRow = close.parentElement?.parentElement as HTMLElement;
   expect(within(topRow).getByRole('button', { name: 'vars' })).toHaveAttribute(
     'aria-current',
     'true'
@@ -657,7 +659,7 @@ test('one titled section keeps the band for all of them', async () => {
   // button rides with it — outside the tab row.
   expect(screen.getByText('Variações')).toBeInTheDocument();
   const close = screen.getByRole('button', { name: 'Close menu' });
-  const band = close.parentElement as HTMLElement;
+  const band = close.parentElement?.parentElement as HTMLElement;
   expect(within(band).queryByRole('button', { name: 'filtros' })).toBeNull();
 
   // Switching to a section that names nothing keeps the band in place, empty:
