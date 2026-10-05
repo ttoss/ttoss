@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.17.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.16.1...@ttoss/react-auth-cognito@2.17.0) (2026-10-02)
+
+### Features
+
+- **react-auth-cognito:** initialScreen, onAuthEvent and auto sign-in after sign-up ([#1295](https://github.com/ttoss/ttoss/issues/1295)) ([22d9711](https://github.com/ttoss/ttoss/commit/22d9711a85b63c5bbc8a83c5a78520995ac78a7d))
+
 ## [2.16.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.16.0...@ttoss/react-auth-cognito@2.16.1) (2026-10-01)
 
 **Note:** Version bump only for package @ttoss/react-auth-cognito

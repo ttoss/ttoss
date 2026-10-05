@@ -51,7 +51,12 @@ export interface ToolDefinition {
   pathTemplate: string;
   /** The operation's `operationId`. */
   operationId: string;
-  /** Builds the request path, substituting path params from the args. */
+  /** The operation's `tags`, e.g. to filter the deferred `search` by module. */
+  tags: string[];
+  /**
+   * Builds the request path, substituting path params from the args. Throws
+   * when an argument a path param needs is missing.
+   */
   path: (args: Record<string, unknown>) => string;
   /** Builds the query string (including leading `?`), or `undefined` if none. */
   query?: (args: Record<string, unknown>) => string;
@@ -75,7 +80,7 @@ export interface ToolDefinition {
    * Path and query parameters flagged with the server-managed extension. They
    * are absent from `inputSchema`, but `path` / `query` still read them from
    * the args under `argName`, so the consumer fills them before building the
-   * request — `registerOpenApiTools` does it through `serverParameters`.
+   * request — `openApiToTools` does it through `serverParameters`.
    */
   serverManagedParameters: ServerManagedParameter[];
 }
@@ -129,6 +134,7 @@ export type RequestBodySpec = {
 
 export interface OperationSpec {
   operationId?: string;
+  tags?: string[];
   summary?: string;
   description?: string;
   parameters?: Array<{

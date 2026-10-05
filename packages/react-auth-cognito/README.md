@@ -114,6 +114,9 @@ The main authentication component that renders sign-in, sign-up, and password re
 - `layout?: 'default' | 'centered'` - Layout style for the authentication form
 - `onError?: (error: Error) => void` - Callback function invoked when authentication errors occur. Receives the error object from failed authentication operations (sign-in, sign-up, password reset, etc.)
 - `socialProviders?: ('Google' | 'Facebook')[]` - Federated identity providers to offer alongside email/password (see [Social sign-in](#social-sign-in))
+- `initialScreen?: AuthScreen` - The screen shown first, e.g. `{ value: 'signUp' }` for a sign-up link. Read on mount only. Defaults to `signIn`.
+- `autoSignInAfterSignUp?: boolean` - Sign the user in right after they confirm the sign-up code, instead of sending them back to the sign-in screen (see [Auto sign-in after sign-up](#auto-sign-in-after-sign-up)). Defaults to `false`.
+- `onAuthEvent?: (event: AuthEvent) => void` - Called on every screen shown and on the outcome of every action, including the user mistakes `onError` skips (see [Tracking the auth flow](#tracking-the-auth-flow))
 
 **Example:**
 
@@ -124,6 +127,42 @@ The main authentication component that renders sign-in, sign-up, and password re
   onError={(error) => {
     console.error('Auth error:', error);
     // Send to error tracking service
+  }}
+/>
+```
+
+### Opening on a given screen
+
+`useAuthScreen` from `@ttoss/react-auth-core` is local state, not a context: calling it outside `<Auth />` creates a separate screen that `<Auth />` never reads. To open on sign-up (for example from a `?authScreen=signUp` link), pass `initialScreen`:
+
+```tsx
+<Auth initialScreen={{ value: 'signUp' }} />
+```
+
+### Auto sign-in after sign-up
+
+By default, confirming the sign-up code returns the user to the sign-in screen to type the password again. With `autoSignInAfterSignUp`, `signUp` runs with Amplify's `autoSignIn` option and the confirmed user is signed in directly:
+
+```tsx
+<Auth autoSignInAfterSignUp />
+```
+
+Amplify only offers this within the browser session that ran `signUp`. A user who confirms later (after a reload, or by signing in with an unconfirmed account) still lands on the sign-in screen, as does one whose auto sign-in fails (that error also reaches `onError`).
+
+### Tracking the auth flow
+
+`onAuthEvent` reports where users get stuck. It receives an `AuthEvent`:
+
+- `{ type: 'screenViewed', screen }` - on mount and on every screen change
+- `{ type: 'actionSucceeded', action, nextStep? }` - `nextStep` is Amplify's, e.g. `CONFIRM_SIGN_UP`
+- `{ type: 'actionFailed', action, errorName }` - the Cognito error name, e.g. `NotAuthorizedException`
+
+`action` is one of `signIn`, `signUp`, `confirmSignUp`, `autoSignIn`, `forgotPassword`, `confirmResetPassword` or `socialSignIn`. Events never hold the email, password or code the user typed, so they can go straight to analytics:
+
+```tsx
+<Auth
+  onAuthEvent={(event) => {
+    posthog.capture(`auth_${event.type}`, event);
   }}
 />
 ```

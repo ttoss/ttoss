@@ -1,9 +1,9 @@
 # @ttoss/http-server-mcp-openapi
 
 Generate [Model Context Protocol (MCP)](https://modelcontextprotocol.io) tools
-from an [OpenAPI](https://www.openapis.org/) specification and register them on
-a [@ttoss/http-server-mcp](https://ttoss.dev/docs/modules/packages/http-server-mcp)
-server.
+from an [OpenAPI](https://www.openapis.org/) specification, ready for
+[@ttoss/http-server-mcp](https://ttoss.dev/docs/modules/packages/http-server-mcp)'s
+`registerTools`.
 
 Point it at your existing OpenAPI document and every operation becomes an MCP
 tool whose handler resolves the incoming arguments into an HTTP request against
@@ -20,15 +20,18 @@ pnpm add @ttoss/http-server-mcp-openapi @ttoss/http-server-mcp
 
 ```typescript
 import { App, bodyParser } from '@ttoss/http-server';
-import { createMcpRouter, McpServer } from '@ttoss/http-server-mcp';
-import { registerOpenApiTools } from '@ttoss/http-server-mcp-openapi';
+import {
+  createMcpRouter,
+  McpServer,
+  registerTools,
+} from '@ttoss/http-server-mcp';
+import { openApiToTools } from '@ttoss/http-server-mcp-openapi';
 
 import openApiDocument from './openapi.json' with { type: 'json' };
 
 const server = new McpServer({ name: 'my-api', version: '1.0.0' });
 
-registerOpenApiTools({
-  server,
+const tools = openApiToTools({
   spec: openApiDocument,
   // You own how the request is executed — base URL, auth, fetch impl.
   // `headers` is what createMcpRouter's `getApiHeaders` produced for this
@@ -44,6 +47,8 @@ registerOpenApiTools({
   },
 });
 
+registerTools({ server, tools });
+
 const app = new App();
 app.use(bodyParser());
 app.use(createMcpRouter(server).routes());
@@ -55,15 +60,18 @@ app.listen(3000);
 Each OpenAPI operation with an `operationId` and a supported HTTP method
 (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`) becomes one tool:
 
-| OpenAPI                   | MCP tool                                     |
-| ------------------------- | -------------------------------------------- |
-| `operationId: listAgents` | tool name `list-agents` (kebab-case)         |
-| path/query/body params    | a single `inputSchema` object                |
-| `$ref`, `oneOf`, `anyOf`  | dereferenced and merged into a flat schema   |
-| snake_case names          | camelCase tool inputs, mapped back on call   |
-| operation `description`   | tool description (quotes/newlines sanitised) |
+| OpenAPI                   | MCP tool                                      |
+| ------------------------- | --------------------------------------------- |
+| `operationId: listAgents` | tool name `list-agents` (kebab-case)          |
+| path/query/body params    | a single `inputSchema` object                 |
+| `$ref`, `oneOf`, `anyOf`  | dereferenced and merged into a flat schema    |
+| snake_case names          | camelCase tool inputs, mapped back on call    |
+| operation `description`   | tool description, newlines flattened          |
+| operation `tags`          | tool `tags`, for the deferred `search` filter |
 
-Path params are always required strings. Query and body params carry their
+Path params are always required strings, carrying their own `description`; a
+call missing one is refused before `callApi` runs, whatever
+`validateArguments` says. Query and body params carry their
 declared type and `required` flag. Array params keep their `items` schema. A
 body property declared as a single-entry `allOf` (usually `allOf: [{ $ref }]`
 beside its own `description`) takes `type`, `nullable` and `items` from the
@@ -87,24 +95,63 @@ repeats array values, `spaceDelimited`/`pipeDelimited` join them, and
 `deepObject` emits bracketed keys — including nested objects and arrays, so
 `{ documentId: { $eq: 'doc_1' } }` becomes `filters[documentId][$eq]=doc_1`.
 
-## `registerOpenApiTools`
+## `openApiToTools`
 
 | Field                  | Description                                                                                                   |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `server`               | The `McpServer` to register tools on.                                                                         |
 | `spec`                 | One OpenAPI document, or an array of them (tools are flattened).                                              |
 | `callApi`              | Runs the resolved `{ method, url, body, tool, headers }` request and returns the raw data.                    |
 | `toText?`              | Serialises the raw data into the tool's text payload. Defaults to pretty JSON; strings pass through verbatim. |
 | `serverParameters?`    | Supplies server-managed path/query parameter values. See [Server-managed values](#server-managed-values).     |
 | `toStructuredContent?` | `({ data, tool })` → the result's `structuredContent`, sent beside the text. `undefined` keeps it text-only.  |
 | `toolMeta?`            | `({ tool })` → the tool's `_meta` on `tools/list`. See [MCP Apps views](#mcp-apps-views).                     |
+| `validateArguments?`   | Enforce each generated `inputSchema` before `callApi` runs. Default `false`; see the caveat below.            |
 | `options?`             | See [Options](#options).                                                                                      |
 
 The default `toText` answers `NO_CONTENT_TEXT` (`Succeeded. The operation
 returned no content.`) when `callApi` resolves `undefined` or `''`, so a `204`
 reaches the client as a success.
 
-Returns the list of `ToolDefinition`s that were registered.
+Returns one `OpenApiTool` per operation: a `Tool` with the operation's `tags`,
+a `summary` of `METHOD /path — description`, and the `definition` it was
+derived from. Enable `validateArguments` only when the spec describes every
+value the API accepts: a generated schema is easily narrower than the API, and
+validating against it rejects calls the API would have taken.
+
+### Deferring the tools of a large API
+
+Every tool definition ships to the model on every turn, so a large API
+overflows the client's context. [Defer](https://github.com/ttoss/ttoss/tree/main/packages/http-server-mcp#deferring-tools-for-large-tool-sets)
+the same tools behind `search` / `describe` / `call`, for example on a second
+endpoint next to the full one:
+
+```typescript
+registerTools({ server: fullServer, tools });
+registerTools({ server: deferredServer, tools, defer: true });
+```
+
+`search` filters by the operations' tags and shows each tool's route; tools
+linked to an MCP Apps view stay registered directly.
+
+### Gating generated tools
+
+A generated tool is an ordinary `Tool`, so a gate wraps it like any other.
+`definition` carries what the operation declares, such as a custom extension
+naming the scope:
+
+```typescript
+const gate = createToolGate({ gates: [subscriptionGate] });
+
+registerTools({
+  server,
+  tools: tools.map((tool) => {
+    return gate({
+      tool,
+      requiredScope: tool.definition.extensions['x-required-scope'] as string,
+    });
+  }),
+});
+```
 
 ### MCP Apps views
 
@@ -112,7 +159,7 @@ A generated tool links to a view through `toolMeta`, and the view reads the
 result from `structuredContent`:
 
 ```typescript
-import { registerAppResource } from '@ttoss/http-server-mcp';
+import { registerAppResource, registerTools } from '@ttoss/http-server-mcp';
 
 const agentCard = registerAppResource({
   server,
@@ -121,8 +168,7 @@ const agentCard = registerAppResource({
   html: agentCardHtml,
 });
 
-registerOpenApiTools({
-  server,
+const tools = openApiToTools({
   spec,
   callApi,
   toolMeta: ({ tool }) => {
@@ -134,6 +180,8 @@ registerOpenApiTools({
       : undefined;
   },
 });
+
+registerTools({ server, tools });
 ```
 
 Keep the text payload: a host without MCP Apps support renders only that.
@@ -151,17 +199,18 @@ forwarded onto the dispatched request.
 ```typescript
 import {
   createInProcessCallApi,
-  registerOpenApiTools,
+  openApiToTools,
 } from '@ttoss/http-server-mcp-openapi';
 
-registerOpenApiTools({
-  server,
+const tools = openApiToTools({
   spec,
   callApi: createInProcessCallApi({
     app, // or () => app, when the app is built after the tools
     headers: () => ({ 'x-via': 'mcp' }), // optional, added to every call
   }),
 });
+
+registerTools({ server, tools });
 
 const router = createMcpRouter(server, {
   getApiHeaders: (ctx) => ({ authorization: ctx.headers.authorization ?? '' }),
@@ -178,7 +227,7 @@ back to `HTTP <status>`. Pass `toError` to build the error yourself.
 ## `openApiToToolDefinitions`
 
 Use the lower-level function when you want the tool definitions without
-registering them — to inspect, filter, or wire handlers yourself:
+handlers — to inspect, filter, or wire handlers yourself:
 
 ```typescript
 import { openApiToToolDefinitions } from '@ttoss/http-server-mcp-openapi';
@@ -193,14 +242,13 @@ for (const tool of tools) {
 ```
 
 Each `ToolDefinition` exposes `name`, `description`, `inputSchema`, `method`,
-`pathTemplate`, `operationId`, the `path`/`query`/`body` builders,
+`pathTemplate`, `operationId`, `tags`, the `path`/`query`/`body` builders,
 `acceptedBodyFields`, `extensions`, and `serverManagedParameters`.
 
 ## Options
 
 ```typescript
-registerOpenApiTools({
-  server,
+openApiToTools({
   spec,
   callApi,
   options: {
@@ -259,12 +307,11 @@ A value flagged with `serverManagedExtension` is never offered to the model:
   never sent (the API sets it itself). It still appears in
   `acceptedBodyFields`.
 - A **path or query parameter** is hidden from `inputSchema` and listed in
-  `tool.serverManagedParameters`. `registerOpenApiTools` discards anything the
+  `tool.serverManagedParameters`. `openApiToTools` discards anything the
   model sent for it and fills it from `serverParameters`, keyed by spec name:
 
 ```typescript
-registerOpenApiTools({
-  server,
+openApiToTools({
   spec,
   callApi,
   serverParameters: ({ tool, headers }) => ({
@@ -298,6 +345,12 @@ package needing to know about it:
 const tools = openApiToToolDefinitions({ spec: openApiDocument });
 const iamAction = tools[0].extensions['x-iam-action'];
 ```
+
+## Migrations
+
+Breaking changes and what they require of consumers are listed in
+[MIGRATIONS.md](https://github.com/ttoss/ttoss/blob/main/packages/http-server-mcp-openapi/MIGRATIONS.md),
+newest first.
 
 ## Related Packages
 

@@ -12,7 +12,12 @@ pnpm add @ttoss/http-server-mcp
 
 ```typescript
 import { App, bodyParser, cors } from '@ttoss/http-server';
-import { createMcpRouter, McpServer, z } from '@ttoss/http-server-mcp';
+import {
+  createMcpRouter,
+  McpServer,
+  registerTools,
+  z,
+} from '@ttoss/http-server-mcp';
 
 // Create MCP server
 const mcpServer = new McpServer({
@@ -21,23 +26,21 @@ const mcpServer = new McpServer({
 });
 
 // Register tools
-mcpServer.registerTool(
-  'get-weather',
-  {
-    description: 'Get weather information for a location',
-    inputSchema: {
-      location: z.string().describe('City name'),
+registerTools({
+  server: mcpServer,
+  tools: [
+    {
+      name: 'get-weather',
+      description: 'Get weather information for a location',
+      inputSchema: z.object({ location: z.string().describe('City name') }),
+      handler: async ({ location }) => ({
+        content: [
+          { type: 'text', text: `Weather in ${location}: Sunny, 72°F` },
+        ],
+      }),
     },
-  },
-  async ({ location }) => ({
-    content: [
-      {
-        type: 'text',
-        text: `Weather in ${location}: Sunny, 72°F`,
-      },
-    ],
-  })
-);
+  ],
+});
 
 // Create HTTP server
 const app = new App();
@@ -435,29 +438,83 @@ createMcpRouter(mcpServer, {
 
 The discovery endpoints (both locations above) remain publicly accessible even when `aliases` includes `'/'`. Aliases themselves get no derived location — the metadata `resource` always names the primary `path`.
 
-## Gated Tool Registrar
+## Tools
 
-`createGatedToolRegistrar` wraps `server.registerTool` with a consistent authentication and authorization pipeline so you don't repeat the same boilerplate in every handler.
+A `Tool` is what a tool is and how it answers, independent of how a server exposes it: `name`, `description`, `inputSchema`, `handler`, and optionally `title`, `outputSchema`, `annotations`, `tags`, `summary` and `_meta`. `registerTools` registers a list of them.
 
-Every registered tool automatically:
+```typescript
+import { defineTool, registerTools, z } from '@ttoss/http-server-mcp';
+
+registerTools({
+  server,
+  tools: [
+    {
+      name: 'get-project',
+      description: 'Get a project by ID',
+      inputSchema: z.object({ id: z.string() }),
+      handler: async ({ id }) => ({
+        content: [{ type: 'text', text: `Project: ${id}` }],
+      }),
+    },
+    // defineTool: answer with data; null answers "Not found" as an error.
+    defineTool({
+      name: 'list-campaigns',
+      description: 'List the caller campaigns.',
+      inputSchema: z.object({ limit: z.number().optional() }),
+      method: ({ limit }) => fetchCampaigns(limit),
+    }),
+  ],
+});
+```
+
+`inputSchema` is either a Standard Schema (Zod 4's `z.object(...)`), always enforced, with the handler receiving its parsed output; or a plain JSON Schema, forwarded verbatim and enforced only with `validateArguments` — see [Argument validation](#argument-validation). A plain JSON Schema keeps one definition shareable with an AI SDK agent, whose `tool()` helper takes the same object.
+
+### Deferring tools for large tool sets
+
+Every tool definition ships to the model on every turn, so a few hundred tools overflow a client's context, and some providers cap the number of tools per request. `defer` registers the same tools behind three that load them on demand:
+
+| Tool       | Input                     | Returns                                                                                        |
+| ---------- | ------------------------- | ---------------------------------------------------------------------------------------------- |
+| `search`   | `query`, `tag?`, `limit?` | Name, one-line `summary` and `tags` of the best matches                                        |
+| `describe` | `names`                   | Each tool's full definition, including `inputSchema`; unknown names come back with suggestions |
+| `call`     | `name`, `arguments`       | Exactly what the tool answers                                                                  |
+
+```typescript
+registerTools({ server: fullServer, tools });
+registerTools({ server: deferredServer, tools, defer: true });
+```
+
+A schema enters the model's context only for the tools it is about to use. `call` enforces the tool's schema as a direct call would, and its errors help the model recover: an unknown name answers suggestions (close typos first, then near-misses and tools sharing the name's words, by how much they share), and invalid arguments, a tool's own error result, or a thrown error carry the input schema, so a `call` made without `describe` corrects itself in one retry.
+
+Pass options instead of `true` to tune it:
+
+- `except` — tools kept standalone, not deferred; they stay reachable through `search` too. Defaults to those linked to an [MCP Apps](#mcp-apps-interactive-uis) view, since a host finds a view through the tool's own `tools/list` entry.
+- `visible` — runs on every `search`, `describe` and `call`; a tool it rejects is absent from all three. Standalone tools stay listed.
+- `search` — replaces the default ranking, `rankTools`, e.g. with embeddings.
+- `searchLimit` (default `10`), `searchMaxLimit` — the largest `limit` accepted (default `50`, or `searchLimit` when higher) — and `names` (default `search` / `describe` / `call`).
+
+A gate (below) sees each call with the tool's own name and arguments, so authorization stays per tool when deferred.
+
+### Gating tools
+
+`createToolGate` returns a gate: a function that wraps a `Tool` so every call passes the same authentication and authorization pipeline before its handler runs. The gated tool is an ordinary `Tool`.
 
 1. Resolves the caller's identity (defaults to `getIdentity()` from the request context).
-2. Checks that the caller holds a required OAuth scope — returns an `isError` result (not a throw) when the scope is absent.
-3. Runs global `gates` then per-tool `def.gates` in order; a throwing gate rejects the call. Both receive `ToolCallContext` (identity **and** the validated call args).
+2. Checks that the caller holds the tool's `requiredScope` — returns an `isError` result (not a throw) when the scope is absent.
+3. Runs global `gates` then the tool's `gates` in order; a throwing gate rejects the call. Both receive `ToolCallContext` (identity **and** the validated call args).
 4. Merges `buildContext` output into the handler args.
-5. Wraps `null`/`undefined` results in a configurable "Not found" error result.
-6. Calls `onError` on handler throw before rethrowing, for telemetry. Gate/scope failures do **not** trigger `onError`.
+5. Calls `onError` on handler throw before rethrowing, for telemetry. Gate/scope failures do **not** trigger `onError`.
 
 ```typescript
 import {
-  createGatedToolRegistrar,
+  createToolGate,
+  defineTool,
   getIdentity,
-  McpServer,
+  registerTools,
+  z,
 } from '@ttoss/http-server-mcp';
-import { z } from 'zod';
 
-const { register } = createGatedToolRegistrar({
-  server,
+const gate = createToolGate({
   resolveIdentity: () => {
     const jwt = getIdentity<{ sub: string; scope: string }>();
     const scopes = jwt?.scope?.split(' ') ?? [];
@@ -469,47 +526,39 @@ const { register } = createGatedToolRegistrar({
   },
 });
 
-register({
-  name: 'list-campaigns',
-  description: 'List all ad campaigns for the caller.',
-  requiredScope: 'campaigns:read',
-  inputSchema: { limit: z.number().optional() },
-  method: async ({ userId, tenantId, limit }) =>
-    fetchCampaigns(tenantId, limit),
-});
-```
-
-**`resolveIdentity`** is called once per invocation. Omit it to use the default `getIdentity()` from the MCP request context.
-
-**`gates`** (global and per-tool) are async functions that receive a `ToolCallContext` — both the resolved identity and the validated call args — and throw to reject. The full context lets gates vary their predicate based on what the caller is asking for, not just who they are.
-
-```typescript
-register({
-  name: 'activate-ad-account',
-  description: 'Activate or deactivate an ad account.',
-  requiredScope: 'accounts:write',
-  inputSchema: { accountId: z.number(), isActive: z.boolean() },
-  // arg-conditional gate: activating requires more checks than deactivating
-  gates: [
-    ({ args }) =>
-      args.isActive
-        ? checkSubscriptionGates(['mustNotExceedMaxActive', 'mustHaveBudget'])
-        : checkSubscriptionGates(['mustIncludeService']),
+registerTools({
+  server,
+  tools: [
+    gate({
+      requiredScope: 'accounts:write',
+      // arg-conditional gate: activating requires more checks than deactivating
+      gates: [
+        ({ args }) =>
+          args.isActive
+            ? checkSubscriptionGates([
+                'mustNotExceedMaxActive',
+                'mustHaveBudget',
+              ])
+            : checkSubscriptionGates(['mustIncludeService']),
+      ],
+      tool: defineTool({
+        name: 'activate-ad-account',
+        description: 'Activate or deactivate an ad account.',
+        inputSchema: z.object({ accountId: z.number(), isActive: z.boolean() }),
+        method: ({ tenantId, accountId, isActive }) =>
+          toggleAdAccount(tenantId, accountId, isActive),
+      }),
+    }),
   ],
-  method: async ({ userId, accountId, isActive }) =>
-    toggleAdAccount(userId, accountId, isActive),
 });
 ```
-
-**`buildContext`** injects request-scoped values (DB clients, tenant IDs) into every handler call without threading them through each individual tool. It receives the full `ToolCallContext` so context can vary by identity or by call args.
 
 ### Localized refusals and errors
 
-Pass `i18n` to render a [`LocalizedError`](https://ttoss.dev/docs/modules/packages/i18n-core/) thrown by a **gate** or by the **handler** as an `isError` result `{ "error": "<message>", "code": "<CODE>" }` in the caller's locale. Gates run outside the handler, so the registrar is the one place that covers both.
+Pass `i18n` to render a [`LocalizedError`](https://ttoss.dev/docs/modules/packages/i18n-core/) thrown by a **gate** or by the **handler** as an `isError` result `{ "error": "<message>", "code": "<CODE>" }` in the caller's locale. Gates run outside the handler, so the gate is the one place that covers both.
 
 ```ts
-const { register } = createGatedToolRegistrar({
-  server,
+const gate = createToolGate({
   gates: [subscriptionGate],
   i18n: {
     catalog,
@@ -558,35 +607,35 @@ const dashboard = registerAppResource({
   },
 });
 
-server.registerTool(
-  'get-weather',
-  {
-    description: 'Get the weather for a location',
-    inputSchema: { location: z.string() },
-    _meta: dashboard.toolMeta(),
-  },
-  async ({ location }) => {
-    const forecast = await fetchForecast(location);
-    return {
-      // Text stays meaningful: it is what a host without Apps renders.
-      content: [{ type: 'text', text: summarise(forecast) }],
-      structuredContent: forecast,
-    };
-  }
-);
-```
-
-`toolMeta()` is the linkage for **every** registration path — `registerTool`, [`registerToolFromSchema`](#registertoolfromschemaserver-params), and a [`GatedToolDef`](#creategatedtoolregistraroptions) all take `_meta`:
-
-```typescript
-registerToolFromSchema(server, {
-  name: 'refresh-dashboard',
-  description: 'Refresh dashboard data',
-  // Callable by the view, hidden from the model.
-  _meta: dashboard.toolMeta({ visibility: ['app'] }),
-  handler: async () => ({ content: [{ type: 'text', text: 'refreshed' }] }),
+registerTools({
+  server,
+  tools: [
+    {
+      name: 'get-weather',
+      description: 'Get the weather for a location',
+      inputSchema: z.object({ location: z.string() }),
+      _meta: dashboard.toolMeta(),
+      handler: async ({ location }) => {
+        const forecast = await fetchForecast(location);
+        return {
+          // Text stays meaningful: it is what a host without Apps renders.
+          content: [{ type: 'text', text: summarise(forecast) }],
+          structuredContent: forecast,
+        };
+      },
+    },
+    {
+      name: 'refresh-dashboard',
+      description: 'Refresh dashboard data',
+      // Callable by the view, hidden from the model.
+      _meta: dashboard.toolMeta({ visibility: ['app'] }),
+      handler: async () => ({ content: [{ type: 'text', text: 'refreshed' }] }),
+    },
+  ],
 });
 ```
+
+`toolMeta()` is the linkage for every registration path: a `Tool`'s `_meta`, or the SDK's `registerTool`. When [deferred](#deferring-tools-for-large-tool-sets), view-linked tools stay registered standalone by default.
 
 ### Register the linkage unconditionally
 
@@ -705,40 +754,61 @@ Returns the `WWW-Authenticate` header value for a 401 response, formatted per th
 
 **Returns:** `string` — The full `WWW-Authenticate` header value
 
-### `createGatedToolRegistrar(options)`
+### `registerTools(params)`
 
-Factory that returns a `register` helper for tools that require authentication and a specific OAuth scope.
+Registers `Tool`s on an MCP server. See [Tools](#tools).
+
+**Parameters (`params`):**
+
+- `server` (`McpServer`) — The MCP server to register on.
+- `tools` (`Tool[]`) — The tools.
+- `defer` (`boolean | DeferToolsOptions`, optional, default `false`) — Defer the tools behind `search` / `describe` / `call`; see [Deferring tools for large tool sets](#deferring-tools-for-large-tool-sets) for the options.
+
+**`Tool`:**
+
+- `name` (`string`) — Unique tool name.
+- `description` (`string`) — What the tool does, written for the model.
+- `inputSchema` (`JsonObjectSchema | StandardSchemaWithJSON`, optional) — Defaults to `{ type: 'object', properties: {} }`.
+- `validateArguments` (`boolean`, optional, default `false`) — Enforce a JSON Schema `inputSchema`; see [Argument validation](#argument-validation).
+- `outputSchema` (same types as `inputSchema`, optional) — Advertised on `tools/list`; `structuredContent` is validated against it.
+- `title`, `annotations`, `_meta` (optional) — Forwarded on `tools/list`.
+- `tags`, `summary` (optional) — Read by the deferred `search`; never sent on `tools/list`.
+- `handler` (`(args) => CallToolResult | Promise<CallToolResult>`) — Answers a call.
+
+**Returns:** `void`
+
+#### Argument validation
+
+By default, a JSON Schema `inputSchema` is **advertised but not enforced**: it round-trips verbatim over `tools/list` so clients know what to send, while arguments reach your handler unchecked. Set `validateArguments: true` to reject mismatched calls before the handler runs.
+
+Enable it once you're confident `inputSchema` describes every value the tool genuinely accepts. Schemas derived from an OpenAPI document are a common source of _incomplete_ ones — a field a client may send as `null` to clear it, or one that accepts several shapes, is easily emitted as a bare `{ type: 'string' }`. Validating against a schema like that rejects calls the underlying API would have accepted. To describe those cases accurately, use `{ type: ['string', 'null'] }` for a nullable field and forward `oneOf`/`anyOf` verbatim rather than collapsing to one type.
+
+### `defineTool(params)`
+
+Builds a `Tool` from a `method` that returns data: JSON text, plus `structuredContent` when `outputSchema` is set. `null`/`undefined` answers `notFoundMessage` (default `"Not found"`) as an `isError` result. Takes every `Tool` field but `handler`.
+
+### `createToolGate(options?)`
+
+Returns a gate, `({ tool, requiredScope, gates? }) => Tool`, that wraps a tool in the pipeline described in [Gating tools](#gating-tools).
 
 **Parameters (`options`):**
 
-- `server` (`McpServer`) — The MCP server to register tools on.
 - `resolveIdentity` (`() => ToolIdentity`, optional) — Called once per invocation to resolve `{ userId, scopes? }`. Defaults to `getIdentity()` from the request context.
-- `gates` (`Array<(ctx: ToolCallContext) => void | Promise<void>>`, optional) — Global guards run after the scope check, in order, before any per-tool gates. Each receives `{ identity, args, handler }`. Throw to reject the call.
-- `enforceScope` (`boolean`, optional, default `true`) — When `true`, checks `def.requiredScope` against `identity.scopes` and returns an `isError` result on mismatch. Set to `false` when all authorization is handled by `gates`.
-- `buildContext` (`(ctx: ToolCallContext) => Record<string, unknown>`, optional) — Produces extra key-value pairs merged into every handler's args. Receives the full `ToolCallContext` so context can vary by identity or by call args.
+- `gates` (`ToolCallGate[]`, optional) — Global guards run after the scope check, in order, before any per-tool gates. Each receives `{ identity, args, handler }`. Throw to reject the call.
+- `enforceScope` (`boolean`, optional, default `true`) — When `true`, checks `requiredScope` against `identity.scopes` and returns an `isError` result on mismatch. Set to `false` when all authorization is handled by `gates`.
+- `buildContext` (`(ctx: ToolCallContext) => Record<string, unknown>`, optional) — Produces extra key-value pairs merged into every handler's args.
 - `onError` (`(error, ctx: ToolCallContext) => void | Promise<void>`, optional) — Called when the handler throws, before the error is rethrown. Gate/scope failures do **not** trigger this hook.
-- `notFoundMessage` (`string`, optional, default `"Not found"`) — `isError` message returned when the handler resolves to `null`/`undefined`.
-
-**Returns:** `{ register: (def: GatedToolDef) => void }`
-
-The `GatedToolDef` passed to `register` has:
-
-- `name` — Tool name.
-- `description` — Human-readable description.
-- `requiredScope` — Single scope that must appear in `identity.scopes`.
-- `inputSchema` — Zod field map or `ZodObject`, forwarded to `server.registerTool`.
-- `gates` (`Array<(ctx: ToolCallContext) => void | Promise<void>>`, optional) — Per-tool guards appended after the global `gates`. Receive the full `ToolCallContext` enabling arg-conditional authorization.
-- `_meta` (`Record<string, unknown>`, optional) — Tool metadata forwarded verbatim on `tools/list`; how a gated tool links to an [MCP Apps](#mcp-apps-interactive-uis) view.
-- `title` (`string`, optional) — Display name forwarded on `tools/list`.
-- `annotations` (`ToolAnnotations`, optional) — Behaviour hints forwarded on `tools/list`: `readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`. Clients use them to decide when to ask for confirmation; they never replace `requiredScope` or `gates`.
-- `outputSchema` (Zod field map or `ZodObject`, optional) — Result schema forwarded on `tools/list`. When set, a successful result is returned as `structuredContent` **and** as the same JSON in a `TextContent` block, and the SDK validates it against the schema. Without it, the result is a single `TextContent`, as before.
-- `method` — Async handler. Receives merged call args + `buildContext` output.
+- `i18n` (optional) — See [Localized refusals and errors](#localized-refusals-and-errors).
 
 **`ToolCallContext`** is the object passed to gates, `buildContext`, and `onError`:
 
 - `identity` (`ToolIdentity`) — The resolved caller identity (`{ userId, scopes? }`).
-- `args` (`Record<string, unknown>`) — The validated tool input (post SDK parse).
+- `args` (`Record<string, unknown>`) — The validated tool input.
 - `handler` (`string`) — The tool name, for error attribution.
+
+### `rankTools(args)`
+
+The deferred `search`'s default ranking, exported as a fallback for a custom one: scores `tools` by the terms of `query` — weighted name > summary > tags > description, plural and singular alike, a word's prefix at half weight — filters by `tag`, and returns up to `limit`, ties in the tools' order.
 
 ### `registerAppResource(params)`
 
@@ -767,65 +837,11 @@ Registers an [MCP Apps](#mcp-apps-interactive-uis) view: a `ui://` resource whos
 
 `'io.modelcontextprotocol/ui'` and `'text/html;profile=mcp-app'`. Use the first as the `capabilities.extensions` key when advertising Apps support on the `McpServer`, and the second as the MIME type a host negotiates.
 
-### `registerToolFromSchema(server, params)`
-
-Registers a tool using a **plain JSON Schema** object for `inputSchema` instead of a Zod shape.
-
-Use this when tool definitions are shared between the MCP server and an AI SDK agent (e.g. Vercel AI SDK's `tool()` helper). Both consumers accept plain JSON Schema at runtime, so a single definition can feed both without any lossy conversion.
-
-**Parameters:**
-
-- `server` (`McpServer`) — The MCP server instance
-- `params.name` (`string`) — Unique tool name
-- `params.description` (`string`, optional) — Human-readable description
-- `params.inputSchema` (`JsonObjectSchema`, optional) — Plain JSON Schema object (defaults to `{ type: 'object', properties: {} }`)
-- `params.validateArguments` (`boolean`, optional) — Enforce `inputSchema` on `tools/call` (default: `false`); see [Argument validation](#argument-validation)
-- `params._meta` (`Record<string, unknown>`, optional) — Tool metadata forwarded verbatim on `tools/list`; how a tool links to an [MCP Apps](#mcp-apps-interactive-uis) view
-- `params.handler` (`(args: Record<string, unknown>) => CallToolResult | Promise<CallToolResult>`) — Tool handler receiving the raw request arguments
-
-**Returns:** `void`
-
-#### Argument validation
-
-By default, `inputSchema` is **advertised but not enforced**: it round-trips verbatim over `tools/list` so clients know what to send, while arguments reach your handler unchecked. Pass `validateArguments: true` to reject mismatched calls with an MCP error before the handler runs.
-
-Enable it once you're confident `inputSchema` describes every value the tool genuinely accepts. Schemas derived from an OpenAPI document are a common source of _incomplete_ ones — a field a client may send as `null` to clear it, or one that accepts several shapes, is easily emitted as a bare `{ type: 'string' }`. Validating against a schema like that rejects calls the underlying API would have accepted. To describe those cases accurately, use `{ type: ['string', 'null'] }` for a nullable field and forward `oneOf`/`anyOf` verbatim rather than collapsing to one type.
-
 ## Examples
 
-### Plain JSON Schema Tool (`registerToolFromSchema`)
+### Single source of truth across MCP and AI SDK
 
-Use `registerToolFromSchema` when you share tool definitions across the MCP server **and** an AI SDK agent. The plain JSON Schema is forwarded verbatim over the MCP wire protocol — `anyOf`, `$ref`, `pattern`, and other features not supported by Zod v3 are preserved without loss.
-
-```typescript
-import {
-  createMcpRouter,
-  McpServer,
-  registerToolFromSchema,
-} from '@ttoss/http-server-mcp';
-
-const server = new McpServer({ name: 'my-server', version: '1.0.0' });
-
-registerToolFromSchema(server, {
-  name: 'get-project',
-  description: 'Get a project by ID',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      id: { type: 'string', description: 'Project public ID' },
-      // anyOf is preserved — Zod v3 has no direct equivalent
-      status: { anyOf: [{ type: 'string' }, { type: 'null' }] },
-    },
-    required: ['id'],
-  },
-  handler: async ({ id }) => {
-    const data = await apiCall('GET', `/projects/${id}`);
-    return { content: [{ type: 'text', text: JSON.stringify(data) }] };
-  },
-});
-```
-
-**Single source of truth across MCP and AI SDK:**
+A JSON Schema `inputSchema` is forwarded verbatim — `anyOf`, `$ref`, `pattern` survive — so one definition feeds both:
 
 ```typescript
 // lib/tools.ts — shared tool definition
@@ -834,23 +850,29 @@ export const getProjectTool = {
   description: 'Get a project by ID',
   inputSchema: {
     type: 'object' as const,
-    properties: { id: { type: 'string' } },
+    properties: {
+      id: { type: 'string' },
+      status: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+    },
     required: ['id'],
   },
 };
 
 // MCP server
-import { registerToolFromSchema } from '@ttoss/http-server-mcp';
-registerToolFromSchema(mcpServer, {
-  ...getProjectTool,
-  handler: async ({ id }) => {
-    /* ... */
-  },
+registerTools({
+  server: mcpServer,
+  tools: [
+    {
+      ...getProjectTool,
+      handler: async ({ id }) => {
+        /* ... */
+      },
+    },
+  ],
 });
 
 // AI SDK agent
-import { tool } from 'ai';
-import { jsonSchema } from 'ai';
+import { jsonSchema, tool } from 'ai';
 const agentTool = tool({
   description: getProjectTool.description,
   parameters: jsonSchema(getProjectTool.inputSchema),

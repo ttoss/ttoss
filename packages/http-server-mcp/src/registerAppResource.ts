@@ -33,7 +33,7 @@ export const UI_RESOURCE_MIME_TYPE = 'text/html;profile=mcp-app';
  * alongside `_meta.ui.resourceUri` because both forms are legal until the
  * extension reaches GA, at which point this key is removed from the spec.
  */
-const LEGACY_RESOURCE_URI_KEY = 'ui/resourceUri';
+export const LEGACY_RESOURCE_URI_KEY = 'ui/resourceUri';
 
 /**
  * Origins an app's view is allowed to reach, mapped by the host onto the
@@ -123,9 +123,8 @@ export interface RegisteredAppResource {
   /** The SDK's registration handle, for `update`/`disable`/`remove`. */
   resource: RegisteredResource;
   /**
-   * Builds the `_meta` bag that links a tool to this view. Pass it to
-   * `registerTool`, {@link registerToolFromSchema}, or a `GatedToolDef` —
-   * whichever registration path the tool uses.
+   * Builds the `_meta` bag that links a tool to this view. Pass it as a
+   * `Tool`'s `_meta`, or to the SDK's `registerTool`.
    */
   toolMeta: (params?: ToolMetaParams) => Record<string, unknown>;
 }

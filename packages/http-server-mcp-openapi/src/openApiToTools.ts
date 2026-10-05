@@ -1,8 +1,4 @@
-import {
-  getApiHeaders,
-  type McpServer,
-  registerToolFromSchema,
-} from '@ttoss/http-server-mcp';
+import { getApiHeaders, type Tool } from '@ttoss/http-server-mcp';
 
 import { openApiToToolDefinitions } from './toolDefinitions';
 import type {
@@ -29,9 +25,7 @@ export interface ResolvedRequest {
   headers: Record<string, string>;
 }
 
-export interface RegisterOpenApiToolsArgs {
-  /** The MCP server the generated tools are registered on. */
-  server: McpServer;
+export interface OpenApiToToolsArgs {
   /** One or more OpenAPI documents to derive tools from. */
   spec: OpenApiSpec | OpenApiSpec[];
   /** Tuning options forwarded to {@link openApiToToolDefinitions}. */
@@ -68,7 +62,7 @@ export interface RegisterOpenApiToolsArgs {
   /**
    * Builds each tool's `_meta`, advertised on `tools/list`. This is how a
    * generated tool links to an MCP Apps view: return the bag from
-   * `registerAppResource(...).toolMeta()`. `undefined` registers no `_meta`.
+   * `registerAppResource(...).toolMeta()`. `undefined` sets no `_meta`.
    *
    * @example
    * ```typescript
@@ -96,6 +90,23 @@ export interface RegisterOpenApiToolsArgs {
     tool: ToolDefinition;
     headers: Record<string, string>;
   }) => Record<string, unknown> | Promise<Record<string, unknown>>;
+  /**
+   * Sets every tool's `validateArguments`: enforce the generated
+   * `inputSchema` before `callApi` runs. Leave it off unless the spec
+   * describes every value the API accepts — see `Tool.validateArguments`.
+   * @default false
+   */
+  validateArguments?: boolean;
+}
+
+/** A {@link Tool} derived from one OpenAPI operation. */
+export interface OpenApiTool extends Tool {
+  /**
+   * The operation it was derived from — method, path, extensions — for
+   * decisions that key on the API rather than the tool name, such as which
+   * scope a gate requires.
+   */
+  definition: ToolDefinition;
 }
 
 /** The text the default `toText` answers when the API returned no body. */
@@ -117,7 +128,7 @@ const applyServerParameters = async (args: {
   tool: ToolDefinition;
   handlerArgs: Record<string, unknown>;
   headers: Record<string, string>;
-  serverParameters: RegisterOpenApiToolsArgs['serverParameters'];
+  serverParameters: OpenApiToToolsArgs['serverParameters'];
 }): Promise<Record<string, unknown>> => {
   const managed = args.tool.serverManagedParameters;
   if (managed.length === 0) return args.handlerArgs;
@@ -139,21 +150,21 @@ const applyServerParameters = async (args: {
 };
 
 /**
- * Derives MCP tools from OpenAPI document(s) and registers each on the given
- * MCP server. Every tool's handler resolves the incoming args into a concrete
- * HTTP request and delegates execution to `callApi`.
+ * Derives MCP tools from OpenAPI document(s). Each tool's handler resolves
+ * the incoming args into a concrete HTTP request and delegates execution to
+ * `callApi`. Register the result with `registerTools` from
+ * `@ttoss/http-server-mcp` — one MCP tool each, or deferred.
  *
- * @returns The list of {@link ToolDefinition} that were registered.
+ * @returns One {@link OpenApiTool} per translatable operation.
  *
  * @example
  * ```typescript
- * import { McpServer } from '@ttoss/http-server-mcp';
- * import { registerOpenApiTools } from '@ttoss/http-server-mcp-openapi';
+ * import { McpServer, registerTools } from '@ttoss/http-server-mcp';
+ * import { openApiToTools } from '@ttoss/http-server-mcp-openapi';
  *
  * const server = new McpServer({ name: 'my-api', version: '1.0.0' });
  *
- * registerOpenApiTools({
- *   server,
+ * const tools = openApiToTools({
  *   spec: myOpenApiDocument,
  *   callApi: async ({ method, url, body, headers }) => {
  *     const res = await fetch(`https://api.example.com${url}`, {
@@ -164,48 +175,57 @@ const applyServerParameters = async (args: {
  *     return res.json();
  *   },
  * });
+ *
+ * registerTools({ server, tools });
  * ```
  */
-export const registerOpenApiTools = (
-  args: RegisterOpenApiToolsArgs
-): ToolDefinition[] => {
+export const openApiToTools = (args: OpenApiToToolsArgs): OpenApiTool[] => {
   const toText = args.toText ?? defaultToText;
-  const tools = openApiToToolDefinitions({
+  const definitions = openApiToToolDefinitions({
     spec: args.spec,
     options: args.options,
   });
 
-  for (const tool of tools) {
-    registerToolFromSchema(args.server, {
-      name: tool.name,
-      description: tool.description,
-      inputSchema: tool.inputSchema,
-      _meta: args.toolMeta?.({ tool }),
-      handler: async (rawArgs: Record<string, unknown>) => {
+  return definitions.map((definition) => {
+    const route = `${definition.method} ${definition.pathTemplate}`;
+    return {
+      name: definition.name,
+      description: definition.description,
+      inputSchema: definition.inputSchema,
+      validateArguments: args.validateArguments ?? false,
+      ...(definition.tags.length > 0 ? { tags: definition.tags } : {}),
+      summary: definition.description
+        ? `${route} — ${definition.description}`
+        : route,
+      _meta: args.toolMeta?.({ tool: definition }),
+      definition,
+      handler: async (rawArgs) => {
         const headers = getApiHeaders();
         const handlerArgs = await applyServerParameters({
-          tool,
+          tool: definition,
           handlerArgs: rawArgs,
           headers,
           serverParameters: args.serverParameters,
         });
         const url =
-          tool.path(handlerArgs) + (tool.query ? tool.query(handlerArgs) : '');
+          definition.path(handlerArgs) +
+          (definition.query ? definition.query(handlerArgs) : '');
         const data = await args.callApi({
-          method: tool.method,
+          method: definition.method,
           url,
-          body: tool.body ? tool.body(handlerArgs) : undefined,
-          tool,
+          body: definition.body ? definition.body(handlerArgs) : undefined,
+          tool: definition,
           headers,
         });
-        const structuredContent = args.toStructuredContent?.({ data, tool });
+        const structuredContent = args.toStructuredContent?.({
+          data,
+          tool: definition,
+        });
         return {
           content: [{ type: 'text' as const, text: toText(data) }],
           ...(structuredContent === undefined ? {} : { structuredContent }),
         };
       },
-    });
-  }
-
-  return tools;
+    };
+  });
 };

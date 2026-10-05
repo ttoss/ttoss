@@ -5,7 +5,12 @@ import {
   msg,
 } from '@ttoss/i18n-core';
 import { requestContextStore } from 'src/context';
-import { createGatedToolRegistrar, getRequestLocale } from 'src/index';
+import {
+  createToolGate,
+  type CreateToolGateOptions,
+  defineTool,
+  getRequestLocale,
+} from 'src/index';
 
 type ToolCallResult = {
   isError?: true;
@@ -42,40 +47,26 @@ const setup = ({
   method = jest.fn().mockResolvedValue({ ok: true }),
   onError,
 }: {
-  i18n?: Parameters<typeof createGatedToolRegistrar>[0]['i18n'];
+  i18n?: CreateToolGateOptions['i18n'];
   gate?: () => void;
   method?: jest.Mock;
   onError?: jest.Mock;
 }) => {
-  let callback:
-    ((args: Record<string, unknown>) => Promise<unknown>) | undefined;
-  const server = {
-    registerTool: jest.fn((_name, _config, cb) => {
-      callback = cb;
-    }),
-  } as unknown as Parameters<typeof createGatedToolRegistrar>[0]['server'];
-
-  const { register } = createGatedToolRegistrar({
-    server,
+  const tool = createToolGate({
     resolveIdentity: () => {
       return { userId: 'u1', scopes: ['read'] };
     },
     gates: gate ? [gate] : [],
     onError,
     i18n,
-  });
-
-  register({
-    name: 'tool',
-    description: 'tool',
+  })({
+    tool: defineTool({ name: 'tool', description: 'tool', method }),
     requiredScope: 'read',
-    inputSchema: {},
-    method,
   });
 
   const call = (acceptLanguage?: string) => {
     return requestContextStore.run({ apiHeaders: {}, acceptLanguage }, () => {
-      return callback!({}) as Promise<ToolCallResult>;
+      return tool.handler({}) as Promise<ToolCallResult>;
     });
   };
 
@@ -95,7 +86,7 @@ describe('getRequestLocale', () => {
   });
 });
 
-describe('createGatedToolRegistrar i18n', () => {
+describe('createToolGate i18n', () => {
   test('renders a gate refusal in the request locale; the handler never runs', async () => {
     const { call, method } = setup({
       i18n: { catalog },

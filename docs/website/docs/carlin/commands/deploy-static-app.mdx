@@ -530,12 +530,16 @@ carlin deploy static-app \
 
 ## Caching Strategy
 
-CloudFront caches files based on file type:
+The distribution caches every object at the edge for a day by default and
+serves it compressed with Brotli or gzip, whichever the browser accepts. A
+`Cache-Control` set on the object overrides the day, up to a year. The cache key
+includes `Origin` and the `Access-Control-Request-*` headers, so a CORS response
+is never served to a request that did not ask for one.
 
-- **HTML files**: No cache (always fetch latest)
-- **JS/CSS/Images**: Long cache (1 year) with content hash in filename
-
-**Recommended build setup** (Vite example):
+Every deploy to an existing stack invalidates `/*`, so new HTML is served at
+once. Old files stay in the bucket for seven days, so a page cached before the
+deploy still finds its assets. Hash asset filenames so a browser never mixes
+versions:
 
 ```typescript
 // vite.config.ts

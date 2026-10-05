@@ -6,6 +6,8 @@ import {
 } from 'src/deploy/staticApp/responseHeaders';
 import {
   BUCKET_CORS_CONFIGURATION,
+  CACHE_POLICY_CONFIG,
+  CLOUDFRONT_CACHE_POLICY_LOGICAL_ID,
   CLOUDFRONT_DISTRIBUTION_LOGICAL_ID,
   CLOUDFRONT_ORIGIN_ACCESS_CONTROL_LOGICAL_ID,
   CLOUDFRONT_RESPONSE_HEADERS_POLICY_LOGICAL_ID,
@@ -124,6 +126,62 @@ test.each([
     template.Resources[STATIC_APP_BUCKET_LOGICAL_ID].Properties
       .PublicAccessBlockConfiguration.BlockPublicPolicy
   ).toEqual(false);
+});
+
+describe('cache policy', () => {
+  test('should create a policy and attach it to the default behavior', () => {
+    const template = getStaticAppTemplate({ region, cloudfront: true });
+
+    expect(
+      template.Resources[CLOUDFRONT_CACHE_POLICY_LOGICAL_ID].Properties
+        .CachePolicyConfig
+    ).toMatchObject({
+      ...CACHE_POLICY_CONFIG,
+      Name: { Ref: 'AWS::StackName' },
+    });
+
+    expect(
+      template.Resources[CLOUDFRONT_DISTRIBUTION_LOGICAL_ID].Properties
+        .DistributionConfig.DefaultCacheBehavior.CachePolicyId
+    ).toEqual({ Ref: CLOUDFRONT_CACHE_POLICY_LOGICAL_ID });
+  });
+
+  /**
+   * CloudFront compresses only when the cache policy accepts the encodings.
+   */
+  test('should accept gzip and brotli', () => {
+    expect(
+      CACHE_POLICY_CONFIG.ParametersInCacheKeyAndForwardedToOrigin
+    ).toMatchObject({
+      EnableAcceptEncodingBrotli: true,
+      EnableAcceptEncodingGzip: true,
+    });
+  });
+
+  /**
+   * The bucket answers CORS when the policy defines `vary`, so its responses
+   * differ by these headers and must be cached apart.
+   */
+  test('should key the cache on the CORS request headers', () => {
+    expect(
+      CACHE_POLICY_CONFIG.ParametersInCacheKeyAndForwardedToOrigin.HeadersConfig
+        .Headers
+    ).toEqual(
+      expect.arrayContaining([
+        'Origin',
+        'Access-Control-Request-Headers',
+        'Access-Control-Request-Method',
+      ])
+    );
+  });
+
+  test('should not create a policy without cloudfront', () => {
+    const template = getStaticAppTemplate({ region, cloudfront: false });
+
+    expect(
+      template.Resources[CLOUDFRONT_CACHE_POLICY_LOGICAL_ID]
+    ).toBeUndefined();
+  });
 });
 
 test('should not add CloudFront distribution', () => {
