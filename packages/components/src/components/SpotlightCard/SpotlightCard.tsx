@@ -133,6 +133,7 @@ const SpotlightButton = ({
         fontWeight: 'bold',
         whiteSpace: 'nowrap',
         transition: 'all 0.2s',
+        flex: ['1 1 auto', '0 1 auto'],
         color: textColor,
         ...styles,
         ...sx,
@@ -291,7 +292,16 @@ export const SpotlightCard = ({
 
       {hasButtons && (
         <Flex
-          sx={{ gap: '4', alignItems: 'center', flexShrink: 0, ml: 'auto' }}
+          sx={{
+            gap: ['3', '4'],
+            alignItems: 'center',
+            flexShrink: 0,
+            // On a phone the pair takes the card's width and wraps, rather
+            // than running past the edge the card clips.
+            flexWrap: ['wrap', 'nowrap'],
+            width: ['100%', 'auto'],
+            ml: 'auto',
+          }}
         >
           <SpotlightButton
             prop={firstButton}
