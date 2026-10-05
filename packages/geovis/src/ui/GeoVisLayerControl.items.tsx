@@ -9,6 +9,7 @@ import type {
 import { buildGroupThumbStyle } from './GeoVisLayerControl.groupStyles';
 import {
   activeBadgeStyle,
+  badgeCountStyle,
   buildItemLabelStyle,
   buildItemStyle,
   buildItemThumbStyle,
@@ -200,7 +201,9 @@ const LayerControlGroupButton = ({
       <span style={buildGroupThumbStyle(disabled)}>
         <ItemThumbnail thumbnail={group.thumbnail} />
         {activeCount > 0 ? (
-          <span style={moreActiveBadgeStyle}>{activeCount}</span>
+          <span style={moreActiveBadgeStyle}>
+            <span style={badgeCountStyle}>{activeCount}</span>
+          </span>
         ) : null}
       </span>
       <span style={buildItemLabelStyle({ active: false, disabled })}>

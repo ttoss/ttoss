@@ -142,6 +142,34 @@ describe('GeoVisLayerControl', () => {
     expect(root.querySelector('button[aria-expanded]')).not.toBeNull();
   });
 
+  test('centres the active count on its digits, in a page-independent circle', async () => {
+    render(
+      <GeoVisProvider spec={buildSpec('cozinhas-pts')}>
+        <div />
+      </GeoVisProvider>
+    );
+    await act(async () => {});
+
+    const trigger = await waitFor(() => {
+      const el = document.querySelector('button[aria-expanded]');
+      expect(el).not.toBeNull();
+      return el as HTMLButtonElement;
+    });
+    // The one item is active by default, so the badge counts 1.
+    const count = Array.from(trigger.querySelectorAll('span')).find((el) => {
+      return el.children.length === 0 && el.textContent === '1';
+    })!;
+    const badge = count.parentElement!;
+
+    expect(badge.style.boxSizing).toBe('border-box');
+    expect(badge.style.lineHeight).toBe('1');
+    // Trimmed on its own element: `text-box` reaches block containers, which
+    // the flex badge's bare text would not be.
+    expect(count.getAttribute('style')).toContain(
+      'text-box: trim-both cap alphabetic'
+    );
+  });
+
   test('renders the trigger with a spec icon when provided', async () => {
     const spec: VisualizationSpec = {
       engine: 'maplibre',
