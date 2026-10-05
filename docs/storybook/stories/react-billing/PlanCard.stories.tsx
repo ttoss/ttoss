@@ -186,3 +186,36 @@ export const EnterpriseExample: Story = {
     );
   },
 };
+
+/**
+ * A plan name that wraps on a phone stays centred, like the one-line titles.
+ */
+export const LongTitleOnPhone: Story = {
+  globals: {
+    viewport: { value: 'mobile2', isRotated: false },
+  },
+  render: () => {
+    return (
+      <Box sx={{ padding: '4' }}>
+        <PlanCard
+          title="Plano Professional"
+          subtitle={starterSubtitle}
+          price={{
+            value: (997).toLocaleString('pt-BR', {
+              style: 'currency',
+              currency: 'BRL',
+            }),
+            interval: `/conta de anúncios/mês`,
+          }}
+          features={features}
+          buttonProps={{
+            label: ctaSubscribeNow,
+            onClick: () => {
+              // story action placeholder
+            },
+          }}
+        />
+      </Box>
+    );
+  },
+};
