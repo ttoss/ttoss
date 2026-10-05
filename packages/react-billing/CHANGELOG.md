@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-billing@0.10.1...@ttoss/react-billing@0.10.2) (2026-10-05)
+
+### Bug Fixes
+
+- **components,react-billing:** spotlight card and plan card title fit a phone ([#1302](https://github.com/ttoss/ttoss/issues/1302)) ([8733e60](https://github.com/ttoss/ttoss/commit/8733e601e13a82894470e7e287daeb5f6cc978a3))
+
 ## [0.10.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-billing@0.10.0...@ttoss/react-billing@0.10.1) (2026-10-01)
 
 **Note:** Version bump only for package @ttoss/react-billing

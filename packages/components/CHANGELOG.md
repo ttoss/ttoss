@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.23.2](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.23.1...@ttoss/components@2.23.2) (2026-10-05)
+
+### Bug Fixes
+
+- **components,react-billing:** spotlight card and plan card title fit a phone ([#1302](https://github.com/ttoss/ttoss/issues/1302)) ([8733e60](https://github.com/ttoss/ttoss/commit/8733e601e13a82894470e7e287daeb5f6cc978a3))
+
 ## [2.23.1](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.23.0...@ttoss/components@2.23.1) (2026-10-01)
 
 **Note:** Version bump only for package @ttoss/components

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.4](https://github.com/ttoss/ttoss/compare/@docs/storybook@8.0.3...@docs/storybook@8.0.4) (2026-10-05)
+
+### Bug Fixes
+
+- **components,react-billing:** spotlight card and plan card title fit a phone ([#1302](https://github.com/ttoss/ttoss/issues/1302)) ([8733e60](https://github.com/ttoss/ttoss/commit/8733e601e13a82894470e7e287daeb5f6cc978a3))
+
 ## [8.0.3](https://github.com/ttoss/ttoss/compare/@docs/storybook@8.0.2...@docs/storybook@8.0.3) (2026-10-05)
 
 **Note:** Version bump only for package @docs/storybook
