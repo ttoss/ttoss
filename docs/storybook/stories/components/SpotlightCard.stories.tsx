@@ -151,3 +151,14 @@ export const FinanceDashboardContext: Story = {
     },
   },
 };
+
+/**
+ * On a phone the card tightens its padding, icon and title, shows up to four
+ * lines of description, and moves the buttons below the text.
+ */
+export const OnPhone: Story = {
+  ...Default,
+  globals: {
+    viewport: { value: 'mobile2', isRotated: false },
+  },
+};

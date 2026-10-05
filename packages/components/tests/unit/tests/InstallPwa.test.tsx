@@ -45,4 +45,20 @@ describe('InstallPwa', () => {
       screen.getByRole('button', { name: /^install$/i })
     ).toBeInTheDocument();
   });
+
+  test('prompts the browser install when the button is clicked', () => {
+    const prompt = jest.fn();
+    render(<InstallPwa />);
+
+    act(() => {
+      const event = new Event('beforeinstallprompt');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (event as any).prompt = prompt;
+      window.dispatchEvent(event);
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /^install$/i }));
+
+    expect(prompt).toHaveBeenCalledTimes(1);
+  });
 });

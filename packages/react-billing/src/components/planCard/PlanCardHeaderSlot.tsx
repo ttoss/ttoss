@@ -34,7 +34,15 @@ export const PlanCardHeaderSlot = ({
           alignItems: 'center',
         }}
       >
-        <Heading sx={{ fontSize: '3xl', color: variantStyles.color }}>
+        <Heading
+          sx={{
+            fontSize: '3xl',
+            color: variantStyles.color,
+            // A title that wraps (a long plan name on a phone) stays centred
+            // like the one-line titles beside it.
+            textAlign: 'center',
+          }}
+        >
           {title}
         </Heading>
         {subtitle && (
