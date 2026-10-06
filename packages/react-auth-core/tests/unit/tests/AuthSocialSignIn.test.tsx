@@ -31,6 +31,32 @@ test('should render one button per provider, in order', () => {
   expect(buttons[1]).toHaveTextContent('Continue with Facebook');
 });
 
+test('should style the Google button per Google branding guidelines', () => {
+  render(
+    <AuthSocialSignIn providers={['Google']} onSocialSignIn={onSocialSignIn} />
+  );
+
+  expect(screen.getByRole('button')).toHaveStyle({
+    backgroundColor: '#FFFFFF',
+    color: '#1F1F1F',
+    border: '1px solid #747775',
+  });
+});
+
+test('should style the Facebook button with the Facebook brand blue', () => {
+  render(
+    <AuthSocialSignIn
+      providers={['Facebook']}
+      onSocialSignIn={onSocialSignIn}
+    />
+  );
+
+  expect(screen.getByRole('button')).toHaveStyle({
+    backgroundColor: '#1877F2',
+    color: '#FFFFFF',
+  });
+});
+
 test('should call onSocialSignIn with the clicked provider', async () => {
   const user = userEvent.setup({ delay: null });
 

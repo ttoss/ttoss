@@ -108,7 +108,7 @@
     "description": "New Password"
   },
   "ehCEm+": {
-    "defaultMessage": "Continuar com {provider}",
+    "defaultMessage": "Continuar com o {provider}",
     "description": "Label of the button that signs in with a social provider."
   },
   "kdFYba": {
