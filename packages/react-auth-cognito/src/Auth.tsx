@@ -310,6 +310,7 @@ export const Auth = (props: AuthProps) => {
       maxForgotPasswordCodeLength={6}
       socialProviders={props.socialProviders}
       onSocialSignIn={onSocialSignIn}
+      onError={onError as (error: unknown) => void}
     />
   );
 };
