@@ -1,5 +1,7 @@
 import crypto from 'node:crypto';
 
+import { ExpectedError } from '@ttoss/errors';
+
 // ---------------------------------------------------------------------------
 // PKCE (RFC 7636) — S256 only; `plain` is rejected
 // ---------------------------------------------------------------------------
@@ -161,20 +163,24 @@ export const oauthErrorCodes = [
 
 export type OAuthErrorCode = (typeof oauthErrorCodes)[number];
 
-/** Structured OAuth 2.x error with an RFC 6749 error code. */
-export class OAuthError extends Error {
-  /** RFC 6749 error code. */
-  readonly code: OAuthErrorCode;
+/**
+ * Structured OAuth 2.x error with an RFC 6749 error code.
+ *
+ * Expected (`@ttoss/errors`): it is a protocol response the server chose to
+ * send, so it is kept out of error tracking. That holds for `server_error`
+ * too — the fault behind it is the error you caught and should report there,
+ * before answering with this.
+ */
+export class OAuthError extends ExpectedError<OAuthErrorCode> {
+  override name = 'OAuthError';
 
   constructor(args: {
-    /** RFC 6749 `error` value. */
+    /** RFC 6749 `error` value, exposed as `code`. */
     code: OAuthErrorCode;
     /** Human-readable `error_description`. */
     description: string;
   }) {
-    super(args.description);
-    this.name = 'OAuthError';
-    this.code = args.code;
+    super(args.description, { code: args.code });
   }
 }
 

@@ -188,7 +188,7 @@ export const handler = createAppSyncResolverHandler({
 });
 ```
 
-The error object is kept, so markers such as an `expected` flag still reach your reporting. If the catalog cannot be loaded, the error is rethrown unrendered.
+The error object is kept, so markers such as the `expected` flag of [`@ttoss/errors`](https://www.npmjs.com/package/@ttoss/errors) still reach your reporting. If the catalog cannot be loaded, the error is rethrown unrendered.
 
 ### Custom domain name
 

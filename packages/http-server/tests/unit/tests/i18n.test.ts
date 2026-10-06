@@ -1,3 +1,4 @@
+import { ValidationError } from '@ttoss/errors';
 import {
   createCatalog,
   defineMessages,
@@ -112,6 +113,27 @@ test('renders an expected LocalizedError as { error: { code, message } } with 40
   const { app, caught } = buildApp({
     thrown: () => {
       return quotaError({ expected: true });
+    },
+  });
+
+  const response = await request(app.callback())
+    .get('/')
+    .set('Accept-Language', 'pt-BR');
+
+  expect(response.status).toBe(400);
+  expect(response.body).toEqual({
+    error: { code: 'PLAN_LIMIT', message: 'Você atingiu o limite do plano.' },
+  });
+  expect(caught).toHaveLength(0);
+});
+
+test('renders an @ttoss/errors ExpectedError carrying a messageRef as a 400', async () => {
+  const { app, caught } = buildApp({
+    thrown: () => {
+      return new ValidationError('plan limit', {
+        code: 'PLAN_LIMIT',
+        messageRef: msg(messages.quota),
+      });
     },
   });
 

@@ -33,6 +33,7 @@
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
+    "@ttoss/errors": "workspace:^",
     "aws-jwt-verify": "^4.0.1",
     "jose": "^6.0.0"
   },

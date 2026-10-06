@@ -1,15 +1,16 @@
 {
-  "name": "@ttoss/http-server",
-  "version": "0.11.1",
-  "description": "HTTP Server for ttoss environment",
+  "name": "@ttoss/errors",
+  "version": "0.0.0",
+  "description": "Zero-dependency expected-error contract: errors an operation anticipates and handles, kept out of error tracking",
   "keywords": [
-    "koa",
-    "server"
+    "error-tracking",
+    "errors",
+    "expected-errors"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
-    "directory": "packages/http-server"
+    "directory": "packages/errors"
   },
   "license": "MIT",
   "author": "ttoss",
@@ -28,25 +29,10 @@
     "build": "tsdown",
     "test": "jest --projects tests/unit"
   },
-  "dependencies": {
-    "@koa/bodyparser": "^6.1.0",
-    "@koa/cors": "^5.0.0",
-    "@koa/multer": "^4.0.0",
-    "@koa/router": "^15.6.0",
-    "@ttoss/errors": "workspace:^",
-    "@ttoss/i18n-core": "workspace:^",
-    "koa": "^3.2.1",
-    "koa-static": "^5.0.0",
-    "multer": "2.1.1"
-  },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "@types/koa": "^3.0.3",
-    "@types/koa-static": "^4.0.4",
-    "@types/koa__cors": "^5.0.1",
-    "@types/koa__multer": "^2.0.8",
+    "@ttoss/i18n-core": "workspace:^",
     "jest": "^30.4.2",
-    "supertest": "^7.2.2",
     "tsdown": "^0.22.2"
   },
   "publishConfig": {
