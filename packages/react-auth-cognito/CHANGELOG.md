@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.17.3](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.17.2...@ttoss/react-auth-cognito@2.17.3) (2026-10-06)
+
+### Bug Fixes
+
+- **react-auth-cognito:** sign out a stored session Cognito rejects ([#1304](https://github.com/ttoss/ttoss/issues/1304)) ([e5f409d](https://github.com/ttoss/ttoss/commit/e5f409daf0f1e64c13556f80103ac119415db812))
+
 ## [2.17.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.17.1...@ttoss/react-auth-cognito@2.17.2) (2026-10-06)
 
 **Note:** Version bump only for package @ttoss/react-auth-cognito
