@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.18.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.17.5...@ttoss/react-auth-cognito@2.18.0) (2026-10-06)
+
+### Features
+
+- **react-auth-core:** ErrorBoundary reports through onError; auth packages and geovis drop @ttoss/logger ([#1309](https://github.com/ttoss/ttoss/issues/1309)) ([5eca2c7](https://github.com/ttoss/ttoss/commit/5eca2c725d04e261d97589549a4d28dd816fdf8a))
+
 ## [2.17.5](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.17.4...@ttoss/react-auth-cognito@2.17.5) (2026-10-06)
 
 ### Bug Fixes
