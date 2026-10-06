@@ -8,6 +8,15 @@ import * as React from 'react';
 
 import { getAuthData } from './getAuthData';
 
+const STALE_SESSION_ERRORS = [
+  'NotAuthorizedException',
+  'UserNotFoundException',
+];
+
+const isStaleSessionError = (error: unknown) => {
+  return error instanceof Error && STALE_SESSION_ERRORS.includes(error.name);
+};
+
 export const AuthProvider = (props: { children: React.ReactNode }) => {
   const [authListenerCount, setAuthListenerCount] = React.useState(0);
 
@@ -32,8 +41,14 @@ export const AuthProvider = (props: { children: React.ReactNode }) => {
 
   const getAuthDataCallback = React.useCallback(async () => {
     try {
-      return getAuthData();
-    } catch {
+      return await getAuthData();
+    } catch (error) {
+      if (isStaleSessionError(error)) {
+        // Amplify still holds tokens Cognito rejects (revoked, or missing a
+        // scope `GetUser` needs). Left in place, the app reads as signed out
+        // while every new sign-in fails with UserAlreadyAuthenticatedException.
+        await signOut().catch(() => {});
+      }
       return null;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
