@@ -1,3 +1,4 @@
+import { isExpectedError } from '@ttoss/errors';
 import type { Catalog, I18n } from '@ttoss/i18n-core';
 import type { Context, Middleware } from 'koa';
 
@@ -34,7 +35,7 @@ const isClientError = (error: object) => {
   const status = readStatus(error);
   return (
     (status !== undefined && status >= 400 && status < 500) ||
-    (error as { expected?: unknown }).expected === true
+    isExpectedError(error)
   );
 };
 

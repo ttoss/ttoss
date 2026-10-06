@@ -209,7 +209,7 @@ router.get('/summary', (ctx) => {
 ```
 
 - `ctx.state.locale` and `ctx.state.i18n` come from `getUserLocale`, then `Accept-Language`, then the catalog's fallback.
-- A client-facing `LocalizedError` (a 4xx `status`, or `expected: true`) answers `{ error: { code, message } }` with that status (400 by default).
+- A client-facing `LocalizedError` (a 4xx `status`, or an expected error per [`@ttoss/errors`](https://www.npmjs.com/package/@ttoss/errors)) answers `{ error: { code, message } }` with that status (400 by default).
 - Any other `LocalizedError` has its `message` rendered in place and is rethrown to your error handling; every other error passes through untouched.
 
 ### Serving a Request In-Process
