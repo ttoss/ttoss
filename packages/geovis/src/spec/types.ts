@@ -104,6 +104,14 @@ export interface ViewState {
   maxZoomOut?: number;
   pitch?: number;
   bearing?: number;
+  /**
+   * Eases the camera, over this many milliseconds, when `pitch` or `bearing`
+   * changes from one spec to the next — tilting into a 3D view rather than
+   * snapping to it. Omit it (or `0`) to jump, as before. Centre and zoom
+   * changes still jump. A viewer's reduced-motion setting turns the ease into a
+   * jump.
+   */
+  cameraAngleTransitionMs?: number;
   projection?: 'mercator' | 'vertical-perspective';
 }
 
@@ -336,6 +344,42 @@ export type LayerPaint =
   | SymbolPaint;
 
 /**
+ * 3D extrusion of a polygon layer: each feature rises into a prism whose
+ * height follows the same `mapData` value its colour does, so darker classes
+ * stand taller. The geometry is the source's own 2D polygons — no height in
+ * the GeoJSON; MapLibre lifts them at render time (`fill-extrusion`).
+ *
+ * In `'class'` mode (default) every class of the active threshold legend gets
+ * its own height — evenly stepped up to `maxHeight`, or the explicit `heights`
+ * — so a prism's height and colour always tell the same class. In
+ * `'continuous'` mode the height is proportional to the value: `0` stands flat,
+ * the dataset's largest value stands `maxHeight` tall. A `'class'` layer whose
+ * active legend has no thresholds falls back to `'continuous'`.
+ *
+ * Features without a value stay flat (height `0`). Heights are in metres. The
+ * effect reads best with a pitched camera (`view.pitch`).
+ */
+export interface PolygonExtrusion {
+  /** Height mapping. Default: `'class'`. */
+  mode?: 'class' | 'continuous';
+  /** Height, in metres, of the top class or the largest value. Default: `3000`. */
+  maxHeight?: number;
+  /**
+   * `'class'` mode only: explicit height of each class, lowest class first —
+   * one more entry than the legend has thresholds. Overrides `maxHeight`; a
+   * shorter list repeats its last height for the remaining classes.
+   */
+  heights?: number[];
+  /**
+   * Duration, in milliseconds, of the prisms' rise and fall: when the layer
+   * gains or loses `extrusion`, and whenever its heights change (a new
+   * `maxHeight`, new data). `0` snaps. Default: `600`. A viewer's
+   * reduced-motion setting snaps too.
+   */
+  transitionMs?: number;
+}
+
+/**
  * Proportional symbol configuration that maps the numeric `mapData` value
  * to `circle-radius` via MapLibre expressions.
  *
@@ -461,6 +505,23 @@ export interface VisualizationLayer {
    * Ignored on non-point geometries.
    */
   sizeBy?: SizeBy;
+  /**
+   * Renders a polygon layer in 3D, its features extruded by value — see
+   * {@link PolygonExtrusion}. Ignored on non-polygon geometries.
+   *
+   * @example
+   * ```ts
+   * const layer: VisualizationLayer = {
+   *   id: 'districts',
+   *   sourceId: 'districts-src',
+   *   geometry: 'polygon',
+   *   mapDataId: 'rates',
+   *   activeLegendId: 'rates-legend',
+   *   extrusion: { maxHeight: 4000 },
+   * };
+   * ```
+   */
+  extrusion?: PolygonExtrusion;
   /**
    * GeoJSON feature property name for direct data access without `mapData`.
    *

@@ -1,10 +1,13 @@
 import type {
   GeovisWorkspaceSelection,
   GeovisWorkspaceSidebarChipsFilter,
+  GeovisWorkspaceSidebarEnabledWhen,
   GeovisWorkspaceSidebarFilterBlock,
   GeovisWorkspaceSidebarSection,
+  GeovisWorkspaceSidebarSettingsControl,
   GeovisWorkspaceSidebarTimelineFilter,
 } from '../../context/GeovisWorkspaceContext';
+import { useGeovisWorkspace } from '../../hooks/useGeovisWorkspace';
 
 /**
  * Every filter block in the sidebar, paired with the section holding it.
@@ -68,9 +71,44 @@ const findChips = (
 };
 
 /**
+ * The value a settings control starts at, serialized the way it publishes it —
+ * a `choice` with no `defaultValue` starts at its first option.
+ */
+const settingDefault = (
+  control: GeovisWorkspaceSidebarSettingsControl
+): string | undefined => {
+  if (control.kind === 'choice') {
+    return control.defaultValue ?? control.options[0]?.value;
+  }
+  if (control.kind === 'colorRamp') {
+    return control.defaultValue ?? control.options[0]?.id;
+  }
+  return String(control.defaultValue);
+};
+
+/** The default of the settings control publishing `menuId`, if one does. */
+const findSettingDefault = ({
+  sections,
+  menuId,
+}: {
+  sections: GeovisWorkspaceSidebarSection[];
+  menuId: string;
+}): string | undefined => {
+  for (const section of sections) {
+    if (section.body.kind !== 'settings') continue;
+    for (const block of section.body.blocks) {
+      if (block.control.menuId === menuId) {
+        return settingDefault(block.control);
+      }
+    }
+  }
+  return undefined;
+};
+
+/**
  * Resolves a menu's effective value: the shared selection, falling back to the
  * `defaultValue` of whichever declaration drives that menu — a variations body,
- * or a variations control inside a `filters` body.
+ * a variations control inside a `filters` body, or a settings control.
  *
  * The fallback is what keeps a gate stable on first paint — a consumer that
  * does not seed through `getInitialSelection` would otherwise read `undefined`
@@ -116,7 +154,43 @@ export const resolveMenuValue = ({
     }
   }
 
-  return undefined;
+  return findSettingDefault({ sections, menuId });
+};
+
+/**
+ * Whether a gate is open: `true` when there is no gate, or when the menu it
+ * names currently holds one of its `values`. Shared by every gated surface —
+ * a section's `enabledWhen`, a choice option's `enabledWhen`, a settings
+ * block's `shownWhen` — so they all read a menu's value the same way.
+ *
+ * @param params.gate - The gate to test; absent means open.
+ * @param params.sections - Every section, used to resolve the gated menu's default.
+ * @param params.selection - The shared selection.
+ * @returns `true` when the gate is open.
+ *
+ * @example
+ * isGateOpen({ gate: { menuId: 'view', values: ['3d'] }, sections, selection }); // false while 2D
+ */
+export const isGateOpen = ({
+  gate,
+  sections,
+  selection,
+}: {
+  gate?: GeovisWorkspaceSidebarEnabledWhen;
+  sections: GeovisWorkspaceSidebarSection[];
+  selection: GeovisWorkspaceSelection;
+}): boolean => {
+  if (!gate) {
+    return true;
+  }
+
+  const value = resolveMenuValue({
+    sections,
+    selection,
+    menuId: gate.menuId,
+  });
+
+  return value !== undefined && gate.values.includes(value);
 };
 
 /**
@@ -140,19 +214,7 @@ export const isSectionEnabled = ({
   sections: GeovisWorkspaceSidebarSection[];
   selection: GeovisWorkspaceSelection;
 }): boolean => {
-  const gate = section.enabledWhen;
-
-  if (!gate) {
-    return true;
-  }
-
-  const value = resolveMenuValue({
-    sections,
-    selection,
-    menuId: gate.menuId,
-  });
-
-  return value !== undefined && gate.values.includes(value);
+  return isGateOpen({ gate: section.enabledWhen, sections, selection });
 };
 
 /**
@@ -175,4 +237,19 @@ export const useSections = (sections: GeovisWorkspaceSidebarSection[]) => {
   const { chips, chipsSection } = findChips(sections);
 
   return { timeline, timelineSection, chips, chipsSection };
+};
+
+/**
+ * The sidebar's sections, from `config.leftSidebar` — none when the config
+ * declares no left sidebar. One reader for the sidebar and the controls inside
+ * it, so they resolve gates against the same list.
+ *
+ * @returns The sections, top to bottom.
+ *
+ * @example
+ * const sections = useSidebarSections();
+ */
+export const useSidebarSections = (): GeovisWorkspaceSidebarSection[] => {
+  const { config } = useGeovisWorkspace();
+  return config.leftSidebar?.sections ?? [];
 };

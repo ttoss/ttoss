@@ -6,6 +6,7 @@ import type {
   VisualizationLayer,
   VisualizationSpec,
 } from '../../spec/types';
+import { forgetExtrusionLayer } from './extrusionLifecycle';
 import { layerFilterToExpression } from './layerFilter';
 import { stripUndefinedPaint, toMaplibreLayer } from './layerTranslation';
 import {
@@ -66,6 +67,7 @@ const applyLayerRemove = (
   layerId: string
 ): void => {
   cancelPendingStyleListenersForLayer(map, layerId);
+  forgetExtrusionLayer(map, layerId);
   if (map.getLayer(layerId)) map.removeLayer(layerId);
   viewState.spec = {
     ...viewState.spec,
@@ -228,7 +230,7 @@ const applyLayerPaintReplace = (
   });
   if (layerIndex === -1) return;
   const layer = viewState.spec.layers[layerIndex];
-  const maplibreKey = specPaintKeyToMaplibre(specKey, layer.geometry);
+  const maplibreKey = specPaintKeyToMaplibre(specKey, layer);
   if (!maplibreKey) return;
   setPaintWhenReady(map, layerId, maplibreKey, value);
   viewState.spec = {

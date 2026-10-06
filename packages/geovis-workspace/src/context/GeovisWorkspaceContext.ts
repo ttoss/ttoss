@@ -124,6 +124,12 @@ export interface GeovisWorkspaceSidebarVariation {
    * label cannot hold: what the variation measures, or the unit it is read in.
    */
   description?: string;
+  /**
+   * Short tag rendered at the row's end, e.g. `'3D'` on the variations a
+   * `choice` setting can extrude. Names a capability the row has, so the reader
+   * finds where an option elsewhere in the sidebar becomes available.
+   */
+  badge?: string;
 }
 
 /**
@@ -270,6 +276,11 @@ export interface GeovisWorkspaceSidebarChipsFilter {
    * commas (`'ativo,reduzido'`) — `''` while nothing is selected. Omit to keep
    * the selection local (visual-only).
    *
+   * With a `menuId` the chips show what the shared selection holds, as a
+   * variations menu does: an app that rewrites the value — fitting it to new
+   * options, restoring a permalink — sees the chips follow, rather than having
+   * them publish their own copy back over it.
+   *
    * A delimited string rather than an array because
    * {@link GeovisWorkspaceSelection} holds one string per key, and because that
    * is already the shape a permalink needs.
@@ -283,6 +294,19 @@ export interface GeovisWorkspaceSidebarChipsFilter {
   defaultSelected?: string[];
   /** How the chips are arranged. Defaults to `{ kind: 'wrap' }`. */
   layout?: GeovisWorkspaceSidebarChipsLayout;
+  /**
+   * Keeps at least one chip active: the last active chip cannot be toggled
+   * off, and the "clear" action is not offered. When nothing is active — no
+   * `defaultSelected`, or a value naming no current option — the first option
+   * is. Defaults to `false`.
+   *
+   * With `multiple: false` this makes the chips a required single choice, like
+   * a variations menu: picking a chip moves the selection, picking the active
+   * one does nothing. With `multiple: true` several stay selectable, but never
+   * none. Either way the tab carries no count badge — a count that can never
+   * reach zero says nothing.
+   */
+  required?: boolean;
 }
 
 /** One selectable entry in a {@link GeovisWorkspaceSidebarLocatorFilter}. */
@@ -634,11 +658,63 @@ export interface GeovisWorkspaceSidebarColorRampSetting {
   onRemove?: (params: { id: string }) => void;
 }
 
+/** One selectable option in a {@link GeovisWorkspaceSidebarChoiceSetting}. */
+export interface GeovisWorkspaceSidebarChoiceOption {
+  /** Value reported through `selection[menuId]` when this option is chosen. */
+  value: string;
+  /** Main text of the option, e.g. `'3D'`. */
+  label: string;
+  /** Secondary line under the label, e.g. `'Extrudado'`. */
+  sublabel?: string;
+  /**
+   * Built-in drawing on top of the option: a strip of flat cells, or the same
+   * cells extruded. Drawn in {@link GeovisWorkspaceSidebarChoiceSetting.glyphColors}.
+   */
+  glyph?: 'flat' | 'extruded';
+  /**
+   * Keeps the option available only while another menu's value is one of the
+   * gate's `values` — the same gate a section's `enabledWhen` takes.
+   *
+   * While the gate is closed the option is inert, and if it was the chosen one
+   * the control publishes the first available option instead. The reader's
+   * choice is remembered, not overwritten: once the gate reopens the control
+   * publishes it again. That way the app reads one value and never repeats the
+   * gate's rule to decide what to draw.
+   */
+  enabledWhen?: GeovisWorkspaceSidebarEnabledWhen;
+  /** Line shown under the options while this option is unavailable. */
+  disabledHint?: string;
+}
+
+/**
+ * A choice among a few named alternatives, laid out side by side as cards —
+ * `2D` / `3D`, or a camera pitch of `30°` / `45°` / `60°`.
+ *
+ * Its own control rather than a slider with stops: the options are read at a
+ * glance, all of them on screen at once, and each can carry its own drawing and
+ * its own availability gate.
+ */
+export interface GeovisWorkspaceSidebarChoiceSetting {
+  kind: 'choice';
+  /** Menu id the chosen option's `value` is reported under. */
+  menuId: string;
+  /** The options, in the order they are rendered, left to right. */
+  options: GeovisWorkspaceSidebarChoiceOption[];
+  /** Option chosen on first render. Defaults to the first option. */
+  defaultValue?: string;
+  /**
+   * Colors of the option glyphs' cells, lightest first — typically the active
+   * color ramp, so the drawing previews the map. Defaults to the primary tint.
+   */
+  glyphColors?: string[];
+}
+
 /** A settings control, discriminated by `kind`. */
 export type GeovisWorkspaceSidebarSettingsControl =
   | GeovisWorkspaceSidebarSliderSetting
   | GeovisWorkspaceSidebarToggleSetting
-  | GeovisWorkspaceSidebarColorRampSetting;
+  | GeovisWorkspaceSidebarColorRampSetting
+  | GeovisWorkspaceSidebarChoiceSetting;
 
 /** A headed block wrapping one settings control. */
 export interface GeovisWorkspaceSidebarSettingsBlock {
@@ -654,6 +730,16 @@ export interface GeovisWorkspaceSidebarSettingsBlock {
   defaultOpen?: boolean;
   /** Explanatory line under the header, above the control. */
   hint?: string;
+  /**
+   * Renders the block only while another menu's value is one of the gate's
+   * `values` — e.g. the extrusion height, shown only while the view is `3d`.
+   * Omit to always render it.
+   *
+   * Hidden rather than disabled, unlike a section's `enabledWhen`: these are
+   * controls *of* another choice, and while it is off they have nothing to
+   * adjust. A hidden block keeps its value, so it returns as it was left.
+   */
+  shownWhen?: GeovisWorkspaceSidebarEnabledWhen;
   /** The control rendered inside the block. */
   control: GeovisWorkspaceSidebarSettingsControl;
 }
