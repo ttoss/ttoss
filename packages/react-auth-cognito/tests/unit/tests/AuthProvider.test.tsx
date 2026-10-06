@@ -1,4 +1,10 @@
 import { renderHook, waitFor } from '@ttoss/test-utils/react';
+import {
+  fetchAuthSession,
+  fetchUserAttributes,
+  getCurrentUser,
+  signOut,
+} from 'aws-amplify/auth';
 import { AuthProvider, useAuth } from 'src/index';
 
 jest.mock('aws-amplify/auth', () => {
@@ -17,12 +23,6 @@ jest.mock('aws-amplify/utils', () => {
     },
   };
 });
-
-import {
-  fetchAuthSession,
-  fetchUserAttributes,
-  getCurrentUser,
-} from 'aws-amplify/auth';
 
 const mockUserSub = '35bc053d-23b5-458d-9b36-94614ed0c117';
 
@@ -79,5 +79,54 @@ test('useAuth should return the correct values', async () => {
       accessToken: '',
       refreshToken: '',
     });
+  });
+});
+
+describe('a session Cognito no longer accepts', () => {
+  const rejectUserAttributes = (name: string) => {
+    const error = new Error('rejected');
+    error.name = name;
+    jest.mocked(fetchUserAttributes).mockRejectedValue(error);
+  };
+
+  afterEach(() => {
+    jest.mocked(fetchUserAttributes).mockResolvedValue(mockUser as never);
+    jest.mocked(signOut).mockClear();
+  });
+
+  test.each(['NotAuthorizedException', 'UserNotFoundException'])(
+    'is signed out when Cognito answers %s',
+    async (name) => {
+      rejectUserAttributes(name);
+
+      const { result } = renderHook(useAuth, { wrapper: AuthProvider });
+
+      await waitFor(() => {
+        expect(result.current.isAuthenticated).toBe(false);
+      });
+      expect(signOut).toHaveBeenCalled();
+    }
+  );
+
+  test('still reads as signed out when clearing it fails', async () => {
+    rejectUserAttributes('NotAuthorizedException');
+    jest.mocked(signOut).mockRejectedValueOnce(new Error('offline'));
+
+    const { result } = renderHook(useAuth, { wrapper: AuthProvider });
+
+    await waitFor(() => {
+      expect(result.current.isAuthenticated).toBe(false);
+    });
+  });
+
+  test('is kept when the failure is not a rejection of the session', async () => {
+    rejectUserAttributes('NetworkError');
+
+    const { result } = renderHook(useAuth, { wrapper: AuthProvider });
+
+    await waitFor(() => {
+      expect(result.current.isAuthenticated).toBe(false);
+    });
+    expect(signOut).not.toHaveBeenCalled();
   });
 });
