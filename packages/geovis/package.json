@@ -35,7 +35,6 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@ttoss/logger": "workspace:^",
     "ajv": "^8.18.0"
   },
   "devDependencies": {

@@ -135,6 +135,7 @@ Main authentication flow component.
   onForgotPassword={handleForgotPassword} // Forgot password handler (optional)
   passwordMinimumLength={8} // Password validation (optional)
   logo={<MyLogo />} // Custom logo (optional)
+  onError={captureException} // Errors thrown while rendering the flow (optional)
   layout={{
     // Layout configuration (optional)
     fullScreen: true,

@@ -250,6 +250,8 @@ type AuthLayout = {
 export type AuthProps = LogoContextProps &
   (AuthPropsWithScreen | AuthPropsWithInitialScreen) & {
     layout?: AuthLayout;
+    /** Receives an error thrown while rendering the auth flow. */
+    onError?: (error: unknown) => void;
   };
 
 export const Auth = (props: AuthProps) => {
@@ -263,7 +265,7 @@ export const Auth = (props: AuthProps) => {
   const withLogoNode = React.useMemo(() => {
     return (
       <LogoProvider logo={props.logo}>
-        <ErrorBoundary>
+        <ErrorBoundary onError={props.onError}>
           <AuthLogic
             screen={screen}
             setScreen={setScreen}
