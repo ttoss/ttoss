@@ -17,8 +17,25 @@ const isStaleSessionError = (error: unknown) => {
   return error instanceof Error && STALE_SESSION_ERRORS.includes(error.name);
 };
 
-export const AuthProvider = (props: { children: React.ReactNode }) => {
+export type AuthProviderProps = {
+  children: React.ReactNode;
+  /**
+   * Called when loading the stored session fails. The provider still renders
+   * the user as signed out, so without this the failure is invisible — pass
+   * your error tracker here.
+   */
+  onError?: (error: unknown) => void;
+};
+
+export const AuthProvider = (props: AuthProviderProps) => {
   const [authListenerCount, setAuthListenerCount] = React.useState(0);
+
+  // A ref, so an inline `onError` does not recreate `getAuthDataCallback` on
+  // every render and reload the session each time.
+  const onErrorRef = React.useRef(props.onError);
+  React.useEffect(() => {
+    onErrorRef.current = props.onError;
+  }, [props.onError]);
 
   /**
    * Listen to auth events to update the auth data.
@@ -43,6 +60,7 @@ export const AuthProvider = (props: { children: React.ReactNode }) => {
     try {
       return await getAuthData();
     } catch (error) {
+      onErrorRef.current?.(error);
       if (isStaleSessionError(error)) {
         // Amplify still holds tokens Cognito rejects (revoked, or missing a
         // scope `GetUser` needs). Left in place, the app reads as signed out

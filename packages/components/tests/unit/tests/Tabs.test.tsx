@@ -86,3 +86,29 @@ describe('Tabs Component', () => {
     expect(queryByText('Dataloggers content')).not.toBeInTheDocument();
   });
 });
+
+test('controlled Tabs: onSelect receives only tab indexes, not native select events from a panel input', async () => {
+  const onSelect = jest.fn();
+
+  const { getByRole, getByText } = render(
+    <Tabs selectedIndex={0} onSelect={onSelect}>
+      <Tabs.TabList>
+        <Tabs.Tab>First</Tabs.Tab>
+        <Tabs.Tab>Second</Tabs.Tab>
+      </Tabs.TabList>
+      <Tabs.TabPanel>
+        <input aria-label="name" />
+      </Tabs.TabPanel>
+      <Tabs.TabPanel>Second content</Tabs.TabPanel>
+    </Tabs>
+  );
+
+  await userEvent.type(getByRole('textbox', { name: 'name' }), 'abc');
+
+  expect(onSelect).not.toHaveBeenCalled();
+
+  await userEvent.click(getByText('Second'));
+
+  expect(onSelect).toHaveBeenCalledTimes(1);
+  expect(onSelect.mock.calls[0][0]).toBe(1);
+});

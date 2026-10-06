@@ -130,3 +130,42 @@ describe('a session Cognito no longer accepts', () => {
     expect(signOut).not.toHaveBeenCalled();
   });
 });
+
+describe('onError', () => {
+  afterEach(() => {
+    jest.mocked(fetchUserAttributes).mockResolvedValue(mockUser as never);
+  });
+
+  test('receives the error when loading the session fails', async () => {
+    const error = new Error('network down');
+    error.name = 'NetworkError';
+    jest.mocked(fetchUserAttributes).mockRejectedValue(error);
+    const onError = jest.fn();
+
+    const { result } = renderHook(useAuth, {
+      wrapper: ({ children }) => {
+        return <AuthProvider onError={onError}>{children}</AuthProvider>;
+      },
+    });
+
+    await waitFor(() => {
+      expect(onError).toHaveBeenCalledWith(error);
+    });
+    expect(result.current.isAuthenticated).toBe(false);
+  });
+
+  test('is not called when the session loads', async () => {
+    const onError = jest.fn();
+
+    const { result } = renderHook(useAuth, {
+      wrapper: ({ children }) => {
+        return <AuthProvider onError={onError}>{children}</AuthProvider>;
+      },
+    });
+
+    await waitFor(() => {
+      expect(result.current.isAuthenticated).toBe(true);
+    });
+    expect(onError).not.toHaveBeenCalled();
+  });
+});

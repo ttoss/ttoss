@@ -58,6 +58,12 @@ function App() {
 
 `AuthProvider` signs out a stored session that Cognito rejects (`NotAuthorizedException` or `UserNotFoundException` while loading the user), so a revoked token, or one missing a scope `GetUser` needs, cannot leave the app looking signed out while Amplify refuses new sign-ins. Other failures, such as a network error, keep the session.
 
+A failed session load still renders the user as signed out, so pass `onError` to report it — otherwise it is invisible:
+
+```tsx
+<AuthProvider onError={(error) => captureException(error)}>
+```
+
 ### 3. Use Authentication in Components
 
 ```tsx
