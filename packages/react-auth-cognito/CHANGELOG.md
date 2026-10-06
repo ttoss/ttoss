@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.17.5](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.17.4...@ttoss/react-auth-cognito@2.17.5) (2026-10-06)
+
+### Bug Fixes
+
+- **react-auth-cognito:** do not call onError for a signed-out visitor ([#1307](https://github.com/ttoss/ttoss/issues/1307)) ([824ff71](https://github.com/ttoss/ttoss/commit/824ff7172bc2ed4a5ed91f74df7e9c1445c6f103))
+
 ## [2.17.4](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.17.3...@ttoss/react-auth-cognito@2.17.4) (2026-10-06)
 
 ### Bug Fixes
