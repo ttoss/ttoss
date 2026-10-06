@@ -1,4 +1,3 @@
-import { log } from '@ttoss/logger';
 import { buildIcon, loadIcon } from '@ttoss/react-icons';
 import type maplibregl from 'maplibre-gl';
 import { buildPinSvg, syncImages } from 'src/adapters/maplibre/pinImages';
@@ -9,10 +8,6 @@ jest.mock('@ttoss/react-icons', () => {
     loadIcon: jest.fn(),
     buildIcon: jest.fn(),
   };
-});
-
-jest.mock('@ttoss/logger', () => {
-  return { log: { warn: jest.fn() } };
 });
 
 const HOSPITAL: PinImage = {
@@ -219,6 +214,7 @@ describe('syncImages', () => {
   });
 
   test('logs a pin that cannot be built and leaves the placeholder', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
     const { map, images } = createMap();
     jest.mocked(buildIcon).mockReturnValue({
       attributes: { width: '15', height: '15', viewBox: '0 0 15 15' },
@@ -228,10 +224,11 @@ describe('syncImages', () => {
     syncImages(map, specWith([HOSPITAL]), null);
     await settle();
 
-    expect(log.warn).toHaveBeenCalledWith(
+    expect(warnSpy).toHaveBeenCalledWith(
       expect.stringContaining('"hospital-pin" (maki:hospital)'),
       expect.any(Error)
     );
     expect(images.get('hospital-pin')).toMatchObject({ width: 1, height: 1 });
+    warnSpy.mockRestore();
   });
 });

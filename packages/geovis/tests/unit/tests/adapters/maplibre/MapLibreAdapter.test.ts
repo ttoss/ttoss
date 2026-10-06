@@ -6,7 +6,6 @@
  * feature-state handling in MapLibreAdapter.mapData.test.ts.
  */
 
-import { log } from '@ttoss/logger';
 import maplibregl from 'maplibre-gl';
 import createMapLibreAdapter from 'src/adapters/maplibre/MapLibreAdapter';
 import type { VisualizationLayer } from 'src/spec/types';
@@ -575,7 +574,7 @@ describe('applyPatch — unknown target', () => {
     jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
       return map as never;
     });
-    const warnSpy = jest.spyOn(log, 'warn').mockImplementation(() => {});
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
     const adapter = createMapLibreAdapter();
     adapter.mount(makeContainer(), makeSpec(), 'v');
