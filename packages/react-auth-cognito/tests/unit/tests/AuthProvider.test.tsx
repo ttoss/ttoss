@@ -154,6 +154,25 @@ describe('onError', () => {
     expect(result.current.isAuthenticated).toBe(false);
   });
 
+  test('is not called when nobody is signed in', async () => {
+    const signedOut = new Error('User needs to be authenticated');
+    signedOut.name = 'UserUnAuthenticatedException';
+    jest.mocked(getCurrentUser).mockRejectedValueOnce(signedOut);
+    const onError = jest.fn();
+
+    const { result } = renderHook(useAuth, {
+      wrapper: ({ children }) => {
+        return <AuthProvider onError={onError}>{children}</AuthProvider>;
+      },
+    });
+
+    await waitFor(() => {
+      expect(result.current.isAuthenticated).toBe(false);
+    });
+    expect(getCurrentUser).toHaveBeenCalled();
+    expect(onError).not.toHaveBeenCalled();
+  });
+
   test('is not called when the session loads', async () => {
     const onError = jest.fn();
 

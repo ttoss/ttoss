@@ -17,12 +17,20 @@ const isStaleSessionError = (error: unknown) => {
   return error instanceof Error && STALE_SESSION_ERRORS.includes(error.name);
 };
 
+// What `getCurrentUser` throws when nobody is signed in — the normal state of
+// every visitor, not a failure.
+const isSignedOutError = (error: unknown) => {
+  return (
+    error instanceof Error && error.name === 'UserUnAuthenticatedException'
+  );
+};
+
 export type AuthProviderProps = {
   children: React.ReactNode;
   /**
    * Called when loading the stored session fails. The provider still renders
    * the user as signed out, so without this the failure is invisible — pass
-   * your error tracker here.
+   * your error tracker here. Not called when nobody is signed in.
    */
   onError?: (error: unknown) => void;
 };
@@ -60,7 +68,9 @@ export const AuthProvider = (props: AuthProviderProps) => {
     try {
       return await getAuthData();
     } catch (error) {
-      onErrorRef.current?.(error);
+      if (!isSignedOutError(error)) {
+        onErrorRef.current?.(error);
+      }
       if (isStaleSessionError(error)) {
         // Amplify still holds tokens Cognito rejects (revoked, or missing a
         // scope `GetUser` needs). Left in place, the app reads as signed out
