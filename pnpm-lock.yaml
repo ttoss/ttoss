@@ -406,6 +406,9 @@ importers:
 
   packages/auth-core:
     dependencies:
+      '@ttoss/errors':
+        specifier: workspace:^
+        version: link:../errors
       aws-jwt-verify:
         specifier: ^4.0.1
         version: 4.0.1
