@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.8.2 (2026-10-06)
+
+**Note:** Version bump only for package @ttoss/http-server-auth
+
 ## [0.8.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-auth@0.8.0...@ttoss/http-server-auth@0.8.1) (2026-10-01)
 
 **Note:** Version bump only for package @ttoss/http-server-auth
