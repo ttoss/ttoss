@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.13.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.12.2...@ttoss/react-auth-core@0.13.0) (2026-10-06)
+
+### Features
+
+- **react-auth-core:** style social sign-in buttons per provider branding ([#1303](https://github.com/ttoss/ttoss/issues/1303)) ([6b497da](https://github.com/ttoss/ttoss/commit/6b497da43e02dafb8e30f9fc8c11f1009014fac8)), closes [#747775](https://github.com/ttoss/ttoss/issues/747775) [#1F1F1F](https://github.com/ttoss/ttoss/issues/1F1F1F)
+
 ## [0.12.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.12.1...@ttoss/react-auth-core@0.12.2) (2026-10-05)
 
 **Note:** Version bump only for package @ttoss/react-auth-core
