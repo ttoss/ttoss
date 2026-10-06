@@ -1,5 +1,4 @@
 import { NotificationCard } from '@ttoss/components';
-import { notify } from '@ttoss/logger';
 import { useI18n } from '@ttoss/react-i18n';
 import type * as React from 'react';
 import {
@@ -24,18 +23,14 @@ const ErrorFallback = ({ resetErrorBoundary }: FallbackProps) => {
   );
 };
 
-export const ErrorBoundary = ({ children }: React.PropsWithChildren) => {
+export type ErrorBoundaryProps = React.PropsWithChildren<{
+  /** Receives an error thrown while rendering the auth flow. */
+  onError?: (error: unknown) => void;
+}>;
+
+export const ErrorBoundary = ({ children, onError }: ErrorBoundaryProps) => {
   return (
-    <ReactErrorBoundary
-      FallbackComponent={ErrorFallback}
-      onError={(error: unknown) => {
-        notify({
-          type: 'error',
-          title: 'Authentication Error',
-          message: error instanceof Error ? error.message : String(error),
-        });
-      }}
-    >
+    <ReactErrorBoundary FallbackComponent={ErrorFallback} onError={onError}>
       {children}
     </ReactErrorBoundary>
   );

@@ -1200,9 +1200,6 @@ importers:
 
   packages/geovis:
     dependencies:
-      '@ttoss/logger':
-        specifier: workspace:^
-        version: link:../logger
       ajv:
         specifier: ^8.18.0
         version: 8.20.0
@@ -1941,9 +1938,6 @@ importers:
       '@ttoss/i18n-cli':
         specifier: workspace:^
         version: link:../i18n-cli
-      '@ttoss/logger':
-        specifier: workspace:^
-        version: link:../logger
       '@ttoss/react-i18n':
         specifier: workspace:^
         version: link:../react-i18n
@@ -1993,9 +1987,6 @@ importers:
       '@ttoss/i18n-cli':
         specifier: workspace:^
         version: link:../i18n-cli
-      '@ttoss/logger':
-        specifier: workspace:^
-        version: link:../logger
       '@ttoss/react-i18n':
         specifier: workspace:^
         version: link:../react-i18n
