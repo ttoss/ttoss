@@ -55,6 +55,14 @@ class PaymentDeclinedError extends ExpectedError {}
 throw new PaymentDeclinedError('card declined', { code: 'PAYMENT_DECLINED' });
 ```
 
+Narrow `code` to the values your error can carry with the type parameter:
+
+```ts
+class CardError extends ExpectedError<'CARD_DECLINED' | 'CARD_EXPIRED'> {}
+
+new CardError('declined', { code: 'CARD_DECLINED' }).code; // 'CARD_DECLINED' | 'CARD_EXPIRED'
+```
+
 A minifier that renames classes renames `name` too. When something downstream matches on it (an error type a client branches on), pin it:
 
 ```ts

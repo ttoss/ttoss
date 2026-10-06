@@ -13,12 +13,14 @@ export type MessageRef = {
   values?: Record<string, unknown>;
 };
 
-export type ExpectedErrorOptions = {
+export type ExpectedErrorOptions<
+  Code extends string | undefined = string | undefined,
+> = {
   /**
-   * Stable `SCREAMING_SNAKE` identifier clients branch on. Never rename one
-   * once published — change the copy instead.
+   * Stable identifier clients branch on. Never rename one once published —
+   * change the copy instead.
    */
-  code?: string;
+  code?: Code;
   /** Localized message a boundary renders in the request locale. */
   messageRef?: MessageRef;
   cause?: unknown;
@@ -54,7 +56,10 @@ export type ExpectedErrorLike = Error & {
  * classes changes it too, so a subclass whose name is matched downstream (an
  * error type a client branches on) pins it with `override name = '…'`.
  */
-export class ExpectedError extends Error implements ExpectedErrorLike {
+export class ExpectedError<Code extends string | undefined = string | undefined>
+  extends Error
+  implements ExpectedErrorLike
+{
   /**
    * The discriminant {@link isExpectedError} reads. A marker rather than
    * `instanceof` because a bundler may inline its own copy of this class, and
@@ -62,17 +67,19 @@ export class ExpectedError extends Error implements ExpectedErrorLike {
    */
   readonly expected = true as const;
 
-  readonly code?: string;
+  /**
+   * A subclass narrows it through the type parameter, e.g.
+   * `extends ExpectedError<'CARD_DECLINED' | 'CARD_EXPIRED'>`.
+   */
+  readonly code: Code;
 
   /** Mutable: a boundary may attach it before rendering. */
   messageRef?: MessageRef;
 
-  constructor(message: string, options: ExpectedErrorOptions = {}) {
+  constructor(message: string, options: ExpectedErrorOptions<Code> = {}) {
     super(message, 'cause' in options ? { cause: options.cause } : undefined);
     this.name = new.target.name;
-    if (options.code !== undefined) {
-      this.code = options.code;
-    }
+    this.code = options.code as Code;
     if (options.messageRef !== undefined) {
       this.messageRef = options.messageRef;
     }
