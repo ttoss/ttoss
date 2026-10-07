@@ -1,3 +1,4 @@
+import * as i18nCore from 'src/index';
 import {
   createCatalog,
   createI18n,
@@ -120,6 +121,18 @@ describe('msg', () => {
     expect(() => {
       return msg({ id: 'only.id' });
     }).toThrow('only.id');
+  });
+});
+
+describe('defineMessages', () => {
+  test('returns its argument unchanged', () => {
+    // Called through the namespace so the formatjs build plugin, which matches
+    // the bare call by name, leaves these calls alone.
+    const messages = { a: { id: 'a', defaultMessage: 'A' } };
+    const message = { id: 'b', defaultMessage: 'B' };
+
+    expect(i18nCore.defineMessages(messages)).toBe(messages);
+    expect(i18nCore.defineMessage(message)).toBe(message);
   });
 });
 

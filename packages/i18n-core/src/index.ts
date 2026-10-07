@@ -9,6 +9,7 @@ export {
   renderMessageRef,
   type RenderMode,
 } from './createI18n';
+export { defineMessage, defineMessages } from './defineMessages';
 export {
   type DateFormatOptions,
   fmt,
@@ -29,8 +30,6 @@ export {
 export { negotiateLocale } from './negotiateLocale';
 export { renderLocalizedError } from './renderLocalizedError';
 export {
-  defineMessage,
-  defineMessages,
   type IntlShape,
   type MessageDescriptor,
   type OnErrorFn,
