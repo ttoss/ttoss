@@ -185,6 +185,15 @@ export interface GeovisWorkspaceSidebarVariationsBody {
    * auto-advance tick and must not close anything.
    */
   closeOnSelect?: boolean;
+  /**
+   * Flies the map back to the spec's own `view` (centre, zoom, pitch and
+   * bearing) whenever a different variation is picked, so each variation is
+   * read from the same starting frame rather than wherever the reader had
+   * panned to. Defaults to `true`; set `false` for a menu whose picks are meant
+   * to keep the reader's place. A spec without `view.center` and `view.zoom`
+   * has no fixed starting frame, and the camera stays put.
+   */
+  resetViewOnChange?: boolean;
 }
 
 /**
@@ -463,6 +472,15 @@ export interface GeovisWorkspaceSidebarVariationsFilter {
    * take the sibling menus away mid-decision.
    */
   closeOnSelect?: boolean;
+  /**
+   * Flies the map back to the spec's own `view` (centre, zoom, pitch and
+   * bearing) whenever a different variation is picked, so each variation is
+   * read from the same starting frame rather than wherever the reader had
+   * panned to. Defaults to `true`; set `false` for a menu whose picks are meant
+   * to keep the reader's place. A spec without `view.center` and `view.zoom`
+   * has no fixed starting frame, and the camera stays put.
+   */
+  resetViewOnChange?: boolean;
 }
 
 /** A filter control, discriminated by `kind`. */

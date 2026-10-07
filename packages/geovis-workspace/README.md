@@ -360,7 +360,7 @@ breaking.
 A **`variations`** body (`kind: 'variations'`) has a `menuId` (the selection
 key it drives), an optional `title` and `icon` heading the list with the same
 label a filter block draws, an optional `defaultValue`, an optional
-`closeOnSelect`, and
+`closeOnSelect`, an optional `resetViewOnChange`, and
 `groups` — each group
 `{ id, label, icon?, color?, variations: [{ value, label, icon?, description?, badge? }] }`;
 the groups are flattened into one ordered list. A variation's `badge` is a short
@@ -371,7 +371,12 @@ renders no tooltip rather than one repeating the label. `closeOnSelect` closes t
 as soon as a variation is picked, so the map it just recolored is visible
 without a second tap; it lives on the body, not on `leftSidebar`, because a
 `filters` section's timeline writes to the selection on every auto-advance tick
-and must not close anything. A **`filters`** body
+and must not close anything. Picking a different variation flies the map back to
+the spec's own `view` — centre, zoom, pitch and bearing — so every variation is
+read from the same starting frame rather than wherever the reader had panned;
+`resetViewOnChange: false` keeps the reader's place for a menu whose picks should
+not move the camera. A spec without `view.center` and `view.zoom` has no fixed
+starting frame, and the camera stays put. A **`filters`** body
 (`kind: 'filters'`) has `blocks` — each block
 `{ id, title, icon?, collapsible?, defaultOpen?, control }`, where `control` is
 a `timeline`
@@ -400,7 +405,8 @@ selectable but never none),
 `{ id, label, sublabel?, value?, feature?, view?, animation?, viewPresetId? }` —
 `value` is an already-formatted readout shown after the label in the results
 and, larger, on the selected card), or
-`variations` (`{ kind, menuId, variations, defaultValue?, closeOnSelect? }`).
+`variations` (`{ kind, menuId, variations, defaultValue?, closeOnSelect?, resetViewOnChange? }`,
+resetting the camera the same way a body does).
 
 A **`settings`** body (`kind: 'settings'`) has `blocks` — each block
 `{ id, title, icon?, collapsible?, defaultOpen?, hint?, shownWhen?, control }`, where

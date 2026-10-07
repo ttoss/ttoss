@@ -3,6 +3,7 @@ import { Box } from '@ttoss/ui';
 import type { GeovisWorkspaceSidebarVariationsBody } from '../../context/GeovisWorkspaceContext';
 import { useGeovisWorkspace } from '../../hooks/useGeovisWorkspace';
 import { BlockLabel } from './FilterBlockSection';
+import { useResetMapView } from './useResetMapView';
 import { VariationRow } from './VariationRow';
 import { variationRowState } from './variationRowState';
 
@@ -30,6 +31,7 @@ export const VariationsTab = ({
   const { selection, setSelection, setLeftSidebarOpen, pendingSelection } =
     useGeovisWorkspace();
   const { menuId } = body;
+  const resetMapView = useResetMapView();
 
   const selectedValue = selection[menuId] ?? body.defaultValue;
 
@@ -69,6 +71,12 @@ export const VariationsTab = ({
               pending={pending}
               disabled={disabled}
               onSelect={() => {
+                if (
+                  body.resetViewOnChange !== false &&
+                  variation.value !== selectedValue
+                ) {
+                  resetMapView();
+                }
                 setSelection({
                   menuId,
                   value: variation.value,

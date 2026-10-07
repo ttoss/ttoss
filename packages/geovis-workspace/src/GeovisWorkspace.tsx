@@ -8,6 +8,7 @@ import {
   type GeovisWorkspaceConfig,
   type GeovisWorkspaceSelection,
 } from './context/GeovisWorkspaceContext';
+import { HomeViewContext } from './context/HomeViewContext';
 import {
   applyLeftSidebarControlOffset,
   applyRightSidebarLegendOffset,
@@ -158,7 +159,10 @@ export const GeovisWorkspace = ({
             setHudDismissed(true);
           }}
         >
-          <Layout />
+          {/* The app's own `view`, not the runtime's: see HomeViewContext. */}
+          <HomeViewContext.Provider value={visualizationSpec.view}>
+            <Layout />
+          </HomeViewContext.Provider>
         </GeovisWorkspaceProviderWithRuntime>
       </GeoVisProvider>
     </Box>
