@@ -312,6 +312,7 @@ const buildPoint: Builder = (base, layer, paint, ctx) => {
       ),
       'circle-opacity': cp.circleOpacity ?? 1,
       'circle-stroke-color': cp.circleStrokeColor ?? '#ffffff',
+      'circle-stroke-opacity': cp.circleStrokeOpacity ?? 1,
       'circle-stroke-width': cp.circleStrokeWidth ?? 1,
     },
   } as maplibregl.LayerSpecification;

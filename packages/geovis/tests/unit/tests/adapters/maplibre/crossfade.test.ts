@@ -252,6 +252,47 @@ describe('runCrossfades — crossfade point layer with changed data', () => {
   });
 });
 
+describe('runCrossfades — stroke opacity', () => {
+  /** The same spec, with the point layer's stroke declared at `opacity`. */
+  const withStroke = (data: GeoJSONData, opacity: number) => {
+    const spec = buildSpec(data);
+    const [layer] = spec.layers;
+    return {
+      ...spec,
+      layers: [
+        {
+          ...layer,
+          paint: { ...layer.paint, circleStrokeOpacity: opacity },
+        },
+      ],
+    } as VisualizationSpec;
+  };
+
+  test('fades from and rests at the declared circleStrokeOpacity, not 1', () => {
+    const { map } = makeMapMock();
+    const { scheduler, advance } = makeScheduler();
+
+    runCrossfades(
+      map as unknown as Parameters<typeof runCrossfades>[0],
+      withStroke(dataB, 0.4),
+      withStroke(dataA, 0.4),
+      scheduler
+    );
+
+    expect(lastPaintValue(map, 'stores', 'circle-stroke-opacity')).toBe(0.4);
+
+    advance(0);
+    advance(200);
+    // Half-way, eased out (0.75 of the way): the shadow's stroke is 0.4 × 0.75.
+    expect(
+      lastPaintValue(map, '__xf-stores', 'circle-stroke-opacity')
+    ).toBeCloseTo(0.3);
+    advance(200);
+
+    expect(lastPaintValue(map, 'stores', 'circle-stroke-opacity')).toBe(0.4);
+  });
+});
+
 // ---------------------------------------------------------------------------
 // runCrossfades — settle (wait for the real source to parse the new data)
 // ---------------------------------------------------------------------------

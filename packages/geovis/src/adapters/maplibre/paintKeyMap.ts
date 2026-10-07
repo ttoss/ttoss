@@ -21,6 +21,7 @@ const SPEC_PAINT_KEY_MAP: Record<
   circleRadius: 'circle-radius',
   circleOpacity: 'circle-opacity',
   circleStrokeColor: 'circle-stroke-color',
+  circleStrokeOpacity: 'circle-stroke-opacity',
   circleStrokeWidth: 'circle-stroke-width',
   rasterOpacity: 'raster-opacity',
   heatmapRadius: 'heatmap-radius',

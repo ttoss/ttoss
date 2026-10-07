@@ -818,14 +818,16 @@
     "CategoricalColorBy": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["type", "property"],
+      "required": ["type"],
       "properties": {
         "type": {
           "const": "categorical"
         },
         "property": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "deprecated": true,
+          "description": "Ignored: the colour reads the layer's mapData through feature-state. Accepted for compatibility."
         },
         "palette": {
           "type": "string"
@@ -850,14 +852,16 @@
     "QuantitativeColorBy": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["type", "property", "scale"],
+      "required": ["type", "scale"],
       "properties": {
         "type": {
           "const": "quantitative"
         },
         "property": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "deprecated": true,
+          "description": "Ignored: the colour reads the layer's mapData through feature-state. Accepted for compatibility."
         },
         "scale": {
           "const": "threshold"

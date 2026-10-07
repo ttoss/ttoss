@@ -25,6 +25,7 @@ export type GeoVisIssueCode =
   | 'invalid-size-mode'
   | 'duplicate-map-data-id'
   | 'unknown-map-data-id'
+  | 'unknown-legend-id'
   | 'unknown-source'
   | 'unknown-layer-id'
   | 'unknown-feature-id'
@@ -60,6 +61,7 @@ export const ISSUE_CODE_STATUS: Record<
   'invalid-size-mode': 'invalid',
   'duplicate-map-data-id': 'mismatch',
   'unknown-map-data-id': 'mismatch',
+  'unknown-legend-id': 'mismatch',
   'unknown-source': 'mismatch',
   'unknown-layer-id': 'mismatch',
   'unknown-feature-id': 'mismatch',

@@ -98,7 +98,6 @@ const buildSpec = (
           fillColor: '#bfdbfe',
           fillOpacity: 0.7,
           lineColor: '#1d4ed8',
-          lineWidth: 1,
         },
         // Spec-driven visual feedback on click (companion outline layer).
         selectedPaint: { lineColor: '#dc2626', lineWidth: 3 },
