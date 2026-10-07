@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/auth-core",
-  "version": "0.16.1",
+  "version": "0.17.0",
   "description": "Core authentication library for ttoss",
   "keywords": [
     "auth",
@@ -33,6 +33,7 @@
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
+    "@ttoss/errors": "workspace:^",
     "aws-jwt-verify": "^4.0.1",
     "jose": "^6.0.0"
   },

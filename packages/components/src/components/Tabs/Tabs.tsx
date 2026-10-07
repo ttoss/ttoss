@@ -1,23 +1,50 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Box, BoxProps } from '@ttoss/ui';
-import {
-  Tab,
-  TabList,
+import type { BoxProps } from '@ttoss/ui';
+import { Box } from '@ttoss/ui';
+import type {
   TabListProps,
-  TabPanel,
   TabPanelProps,
   TabProps,
-  Tabs as ReactTabs,
   TabsProps,
 } from 'react-tabs';
+import { Tab, TabList, TabPanel, Tabs as ReactTabs } from 'react-tabs';
 
 export type { TabListProps, TabPanelProps, TabProps, TabsProps };
+
+// Props only react-tabs understands. They must not reach the outer `Box`: it
+// renders a DOM element, where `onSelect` is the native `select` event, which
+// React also delivers to ancestors when text selection changes in a
+// descendant `<input>` — so a controlled `Tabs` received a `SyntheticEvent`
+// instead of a tab index whenever the user typed inside a panel.
+const REACT_TABS_ONLY_PROPS = new Set<string>([
+  'defaultFocus',
+  'defaultIndex',
+  'direction',
+  'disabledTabClassName',
+  'disableUpDownKeys',
+  'disableLeftRightKeys',
+  'domRef',
+  'environment',
+  'focusTabOnClick',
+  'forceRenderTabPanel',
+  'onSelect',
+  'selectedIndex',
+  'selectedTabClassName',
+  'selectedTabPanelClassName',
+] satisfies (keyof TabsProps)[]);
 
 export const Tabs = (props: BoxProps & TabsProps) => {
   const { sx: customSx, ...restProps } = props;
 
+  const boxProps = Object.fromEntries(
+    Object.entries(restProps).filter(([key]) => {
+      return !REACT_TABS_ONLY_PROPS.has(key);
+    })
+  ) as BoxProps;
+
   return (
     <Box
+      // eslint-disable-next-line complexity -- pre-existing optional theme-color lookups, unchanged by the prop split
       sx={({ colors }) => {
         const themeColors = colors as Record<string, any>;
 
@@ -75,7 +102,7 @@ export const Tabs = (props: BoxProps & TabsProps) => {
           ...customSx,
         };
       }}
-      {...restProps}
+      {...boxProps}
     >
       <ReactTabs {...restProps}>{props.children}</ReactTabs>
     </Box>

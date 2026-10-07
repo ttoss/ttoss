@@ -1,6 +1,5 @@
 import 'maplibre-gl/dist/maplibre-gl.css';
 
-import { log } from '@ttoss/logger';
 import maplibregl from 'maplibre-gl';
 
 import type { GeoVisSelection } from '../../runtime/action';
@@ -173,7 +172,8 @@ const dispatchPatch = (viewState: ViewState, patch: SpecPatch): void => {
     viewState.spec = applyMapDataPatchToSpec(viewState.spec, patch);
     reapplyLegendDrivenFillPaint(map, viewState.spec);
   } else {
-    log.warn(
+    // eslint-disable-next-line no-console
+    console.warn(
       `[geovis] MapLibreAdapter: unknown patch target "${
         (patch as { target: unknown }).target
       }" — patch was ignored.`

@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.26.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.25.4...@ttoss/geovis@0.26.0) (2026-10-06)
+
+### Features
+
+- **react-auth-core:** ErrorBoundary reports through onError; auth packages and geovis drop @ttoss/logger ([#1309](https://github.com/ttoss/ttoss/issues/1309)) ([5eca2c7](https://github.com/ttoss/ttoss/commit/5eca2c725d04e261d97589549a4d28dd816fdf8a))
+
+## [0.25.4](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.25.3...@ttoss/geovis@0.25.4) (2026-10-06)
+
+**Note:** Version bump only for package @ttoss/geovis
+
 ## [0.25.3](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.25.2...@ttoss/geovis@0.25.3) (2026-10-05)
 
 **Note:** Version bump only for package @ttoss/geovis

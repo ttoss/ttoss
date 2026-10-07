@@ -1,4 +1,3 @@
-import { log } from '@ttoss/logger';
 import { buildIcon, loadIcon } from '@ttoss/react-icons';
 import type maplibregl from 'maplibre-gl';
 
@@ -178,7 +177,8 @@ const loadPin = async ({
     if (map.hasImage(image.id)) map.removeImage(image.id);
     map.addImage(image.id, element, { pixelRatio });
   } catch (error) {
-    log.warn(
+    // eslint-disable-next-line no-console
+    console.warn(
       `[geovis] pin "${image.id}" (${image.icon}) could not be built; its layer draws nothing for it`,
       error
     );

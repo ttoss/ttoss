@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.14.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.13.1...@ttoss/react-auth-core@0.14.0) (2026-10-06)
+
+### Features
+
+- **react-auth-core:** ErrorBoundary reports through onError; auth packages and geovis drop @ttoss/logger ([#1309](https://github.com/ttoss/ttoss/issues/1309)) ([5eca2c7](https://github.com/ttoss/ttoss/commit/5eca2c725d04e261d97589549a4d28dd816fdf8a))
+
+## [0.13.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.13.0...@ttoss/react-auth-core@0.13.1) (2026-10-06)
+
+**Note:** Version bump only for package @ttoss/react-auth-core
+
 # [0.13.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.12.2...@ttoss/react-auth-core@0.13.0) (2026-10-06)
 
 ### Features

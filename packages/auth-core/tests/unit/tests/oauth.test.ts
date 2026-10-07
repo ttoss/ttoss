@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 
+import { ExpectedError, isExpectedError } from '@ttoss/errors';
 import {
   buildAuthorizationServerMetadata,
   buildProtectedResourceMetadata,
@@ -218,6 +219,18 @@ describe('OAuthError', () => {
     expect(err.name).toBe('OAuthError');
     expect(err instanceof Error).toBe(true);
   });
+
+  test.each(oauthErrorCodes)(
+    'is an expected error for %s, kept out of error tracking',
+    (code) => {
+      const err = new OAuthError({ code, description: 'x' });
+
+      expect(err).toBeInstanceOf(ExpectedError);
+      expect(isExpectedError(err)).toBe(true);
+      expect(err.name).toBe('OAuthError');
+      expect(err.code).toBe(code);
+    }
+  );
 
   test('oauthErrorCodes covers expected values', () => {
     expect(oauthErrorCodes).toContain('invalid_request');

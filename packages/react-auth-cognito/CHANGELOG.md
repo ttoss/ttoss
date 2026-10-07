@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.18.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.17.5...@ttoss/react-auth-cognito@2.18.0) (2026-10-06)
+
+### Features
+
+- **react-auth-core:** ErrorBoundary reports through onError; auth packages and geovis drop @ttoss/logger ([#1309](https://github.com/ttoss/ttoss/issues/1309)) ([5eca2c7](https://github.com/ttoss/ttoss/commit/5eca2c725d04e261d97589549a4d28dd816fdf8a))
+
+## [2.17.5](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.17.4...@ttoss/react-auth-cognito@2.17.5) (2026-10-06)
+
+### Bug Fixes
+
+- **react-auth-cognito:** do not call onError for a signed-out visitor ([#1307](https://github.com/ttoss/ttoss/issues/1307)) ([824ff71](https://github.com/ttoss/ttoss/commit/824ff7172bc2ed4a5ed91f74df7e9c1445c6f103))
+
+## [2.17.4](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.17.3...@ttoss/react-auth-cognito@2.17.4) (2026-10-06)
+
+### Bug Fixes
+
+- Tabs onSelect leak, AuthProvider onError, TagVariant export ([#1305](https://github.com/ttoss/ttoss/issues/1305)) ([529d1c9](https://github.com/ttoss/ttoss/commit/529d1c9ad1a92318974c984c1c010ac749e89496))
+
+## [2.17.3](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.17.2...@ttoss/react-auth-cognito@2.17.3) (2026-10-06)
+
+### Bug Fixes
+
+- **react-auth-cognito:** sign out a stored session Cognito rejects ([#1304](https://github.com/ttoss/ttoss/issues/1304)) ([e5f409d](https://github.com/ttoss/ttoss/commit/e5f409daf0f1e64c13556f80103ac119415db812))
+
 ## [2.17.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.17.1...@ttoss/react-auth-cognito@2.17.2) (2026-10-06)
 
 **Note:** Version bump only for package @ttoss/react-auth-cognito

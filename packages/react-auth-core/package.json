@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-auth-core",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "Core authentication components and abstractions for React apps.",
   "keywords": [
     "React",
@@ -41,7 +41,6 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/forms": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
-    "@ttoss/logger": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
@@ -54,7 +53,6 @@
   "peerDependencies": {
     "@ttoss/components": "workspace:^",
     "@ttoss/forms": "workspace:^",
-    "@ttoss/logger": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/ui": "workspace:^",

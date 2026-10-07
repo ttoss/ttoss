@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/geovis",
-  "version": "0.25.3",
+  "version": "0.26.0",
   "description": "Geovisualization components for React applications.",
   "keywords": [
     "Geovis",
@@ -35,7 +35,6 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@ttoss/logger": "workspace:^",
     "ajv": "^8.18.0"
   },
   "devDependencies": {
