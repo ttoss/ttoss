@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.23.4](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.23.3...@ttoss/components@2.23.4) (2026-10-07)
+
+**Note:** Version bump only for package @ttoss/components
+
 ## [2.23.3](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.23.2...@ttoss/components@2.23.3) (2026-10-06)
 
 ### Bug Fixes
