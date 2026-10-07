@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.1](https://github.com/ttoss/ttoss/compare/@ttoss/errors@0.2.0...@ttoss/errors@0.2.1) (2026-10-07)
+
+**Note:** Version bump only for package @ttoss/errors
+
 # [0.2.0](https://github.com/ttoss/ttoss/compare/@ttoss/errors@0.1.0...@ttoss/errors@0.2.0) (2026-10-07)
 
 ### Features
