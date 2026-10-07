@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.23.5](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.23.4...@ttoss/components@2.23.5) (2026-10-07)
+
+### Bug Fixes
+
+- **components:** SpotlightCard title wraps on a phone instead of being cut ([#1312](https://github.com/ttoss/ttoss/issues/1312)) ([99364d8](https://github.com/ttoss/ttoss/commit/99364d80f5b1ee34aab030fe10b62bcbe5dd41ac))
+
 ## [2.23.4](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.23.3...@ttoss/components@2.23.4) (2026-10-07)
 
 **Note:** Version bump only for package @ttoss/components

@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-auth-cognito",
-  "version": "2.18.1",
+  "version": "2.18.2",
   "description": "React authentication components using AWS Cognito",
   "keywords": [
     "React",
