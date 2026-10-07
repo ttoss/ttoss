@@ -111,6 +111,38 @@ export const fictitiousRates = ({
   });
 };
 
+/** A deterministic pseudo-random number in [0, 1) per cell and series. */
+const noiseFor = ({ id, seed }: { id: number; seed: number }): number => {
+  const noise = Math.sin((id + seed * 101) * 12.9898) * 43758.5453;
+  return noise - Math.floor(noise);
+};
+
+/**
+ * Fictitious Índice de Vulnerabilidade Social per cell, in [0.15, 0.65]: random
+ * rather than spatial, so neighbouring cells land in different faixas.
+ *
+ * @returns One `mapData` row per cell.
+ */
+export const fictitiousIvs = (): MapDataRow[] => {
+  return CELLS.map(({ id }) => {
+    return { geometryId: id, value: 0.15 + 0.5 * noiseFor({ id, seed: 3 }) };
+  });
+};
+
+/**
+ * Fictitious population per cell, between 3 000 and 150 000 inhabitants,
+ * skewed towards the small end as real districts are. Independent of
+ * {@link fictitiousIvs}, so the two indicators disagree from cell to cell.
+ *
+ * @returns One `mapData` row per cell, whole inhabitants.
+ */
+export const fictitiousPopulation = (): MapDataRow[] => {
+  return CELLS.map(({ id }) => {
+    const share = noiseFor({ id, seed: 11 }) ** 2;
+    return { geometryId: id, value: Math.round(3000 + 147_000 * share) };
+  });
+};
+
 /** The breaks a "% of total" choropleth uses: six thresholds, seven classes. */
 export const THRESHOLDS = [0.05, 0.1, 0.15, 0.2, 0.25, 0.3];
 

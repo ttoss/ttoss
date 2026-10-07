@@ -129,9 +129,18 @@ export const polygonFillColorProperty = (layer: VisualizationLayer): string => {
   return isExtrudedLayer(layer) ? 'fill-extrusion-color' : 'fill-color';
 };
 
+/** Breaks as a `step` needs them: finite, unique and ascending. */
+const normalizeBreaks = (breaks: ReadonlyArray<number>): number[] => {
+  return [...new Set(breaks.filter(Number.isFinite))].sort((a, b) => {
+    return a - b;
+  });
+};
+
 /**
  * Resolves the `fill-extrusion-height` expression of an extruded polygon
- * layer, reading the value its colour reads.
+ * layer: from the dataset `extrusion.mapDataId` names, or the one its colour
+ * reads, stepped over `extrusion.thresholds` or — reading the colour's
+ * dataset — the active legend's breaks.
  *
  * @remarks
  * Exported for the same reason as {@link resolveLegendFillColorExpression}:
@@ -149,17 +158,31 @@ export const resolveExtrusionHeightExpression = (
   specMapData?: MapData[]
 ): unknown[] | number | undefined => {
   if (!isExtrudedLayer(layer)) return undefined;
+  const extrusion = layer.extrusion!;
   const colorMapData = resolveDimensionMapData(
     'color',
     layer.sourceId,
     layer.mapDataId,
     specMapData
   );
+  // A dataset of its own when the extrusion names one that exists; an unknown
+  // id (a validation error) falls back to the colour's rather than going flat.
+  const ownMapData = extrusion.mapDataId
+    ? specMapData?.find((entry) => {
+        return entry.mapDataId === extrusion.mapDataId;
+      })
+    : undefined;
+  const heightMapData = ownMapData ?? colorMapData;
+  // The colour legend's breaks describe the colour's indicator, so they only
+  // carry over when the height reads that same dataset.
+  const breaks =
+    extrusion.thresholds ??
+    (ownMapData ? [] : resolveThresholdBreaks(layer, specLegends));
   return buildExtrusionHeightExpression({
-    extrusion: layer.extrusion!,
-    breaks: resolveThresholdBreaks(layer, specLegends),
-    stateKey: colorMapData?.stateKey ?? 'value',
-    mapData: colorMapData,
+    extrusion,
+    breaks: normalizeBreaks(breaks),
+    stateKey: heightMapData?.stateKey ?? 'value',
+    mapData: heightMapData,
   });
 };
 

@@ -16,6 +16,7 @@ import {
   THRESHOLDS,
 } from '../geovis/helpers/extrusion-helpers';
 import { withPtBr } from './GeovisWorkspace.decorators';
+import { IvsPopulationDemo } from './GeovisWorkspace.ivsPopulation';
 
 /**
  * A **Visualização** block: a `choice` setting switching the map between a
@@ -40,15 +41,31 @@ import { withPtBr } from './GeovisWorkspace.decorators';
  * ## What to check
  *
  * 1. Pick **3D** under **Visualização**. The hexagons rise from flat, darker
- *    classes taller, while the camera tilts to 45°. **Altura das extrusões**
- *    and **Inclinação da câmera** appear below.
+ *    classes taller, while the camera tilts to 45° and turns 25° to the left,
+ *    so the prisms show a side face. **Altura das extrusões** and
+ *    **Inclinação da câmera** appear below.
  * 2. Step the height through `1×`–`5×` and pick another pitch: the prisms and
  *    the camera ease to it. Pan first: the camera stays where you left it.
  * 3. Switch the variation to **Equipamentos de saúde**, points with no `3D`
  *    tag. The 3D card dims, the hint explains why, the map is flat and the 3D
  *    controls are gone. Switch back to a rate: it is 3D again, at the same
  *    height and pitch.
- * 4. Pick **2D**: the prisms lie down and the camera levels out together.
+ * 4. Pick **2D**: the prisms lie down and the camera levels out, north up again.
+ *
+ * ## Comparing two indicators
+ *
+ * **CompareIndicators** paints each hexagon by its Índice de Vulnerabilidade
+ * Social — green, yellow, orange or red by faixa — and, in 3D, lifts it by its
+ * population: `extrusion.mapDataId` names a second `mapData` entry, with a
+ * `stateKey` of its own, read `'continuous'` so the height is proportional to
+ * the head count. Both are fictitious and random, so they disagree from
+ * hexagon to hexagon.
+ *
+ * 1. It opens in 3D: red hexagons stand tall and short alike — vulnerability
+ *    and population are independent. Hover one for both values.
+ * 2. Pick **IVS** under **Indicador da altura**: the height reads the colour's
+ *    own indicator, one step per faixa, and the red hexagons now stand tallest.
+ * 3. The legend's subtitle names what the height reads.
  */
 
 const RATES_TOTAL = fictitiousRates();
@@ -83,6 +100,9 @@ const BASE_HEIGHT = 1000;
 const DEFAULT_SCALE = 3;
 const DEFAULT_PITCH = 45;
 
+/** How far the camera turns from north in 3D, in degrees (negative: left). */
+const BEARING_3D = -25;
+
 const buildSpec = ({
   variation,
   view,
@@ -101,12 +121,14 @@ const buildSpec = ({
 
   return {
     engine: 'maplibre',
-    // Centre and zoom never change, so the view sync only ever moves the
-    // pitch — eased, so the camera tilts as the prisms rise.
+    // Centre and zoom never change, so the view sync only moves the angles:
+    // in 3D the camera tilts and turns a little, so the prisms show a side
+    // face, and both ease back together in 2D.
     view: {
       center: CENTER,
       zoom: 9.3,
       pitch: extruded ? pitch : 0,
+      bearing: extruded ? BEARING_3D : 0,
       cameraAngleTransitionMs: 600,
     },
     attributionControlEnabled: false,
@@ -288,7 +310,6 @@ const ViewModeDemo = () => {
   const view = selection.view ?? '2d';
   const scale = Number(selection.extrusionScale) || DEFAULT_SCALE;
   const pitch = Number(selection.pitch) || DEFAULT_PITCH;
-
   const activeLabel =
     VARIATIONS.find((item) => {
       return item.value === variation;
@@ -327,3 +348,10 @@ type Story = StoryObj<typeof meta>;
 
 /** Steps 1–4: the 2D/3D choice, its 3D-only controls, and the gate. */
 export const Default: Story = {};
+
+/** Colour by IVS faixa, height by population — two indicators at once. */
+export const CompareIndicators: Story = {
+  render: () => {
+    return <IvsPopulationDemo />;
+  },
+};

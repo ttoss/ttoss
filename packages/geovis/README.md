@@ -1707,10 +1707,31 @@ const spec: VisualizationSpec = {
 | `maxHeight`    | `number`                    | `3000`    | Height, in metres, of the top class or of the dataset's largest value.                                                                           |
 | `heights`      | `number[]`                  |           | `'class'` only: explicit height per class, lowest first. Overrides `maxHeight`; a shorter list repeats its last entry for the remaining classes. |
 | `transitionMs` | `number`                    | `600`     | Duration of the prisms' rise and fall, in milliseconds. `0` snaps.                                                                               |
+| `mapDataId`    | `string`                    |           | The `mapData` entry the height reads, to compare a second indicator with the colour's. Omit it to read the colour's dataset.                     |
+| `thresholds`   | `number[]`                  |           | `'class'` breaks for the height. Default: the legend's when the height reads the colour's dataset; none otherwise (read `'continuous'`).         |
 
 In `'class'` mode the heights step evenly — with six thresholds and `maxHeight: 4000`, the seven classes stand at `4000 × 1/7, 2/7, … 7/7` — so a prism's height and its colour always name the same class. The lowest class is one step tall, never flat: only features **without** a value lie flat, which keeps "no data" distinguishable from "lowest class". A `'class'` layer whose active legend has no thresholds (a categorical legend, or none) falls back to `'continuous'`.
 
-In `'continuous'` mode the height interpolates linearly from `0` (flat) to the largest value in the layer's colour dataset (`maxHeight`); negative values lie flat. The scale follows the data, so a `mapData` update re-tops it.
+In `'continuous'` mode the height interpolates linearly from `0` (flat) to the largest value in the height's dataset (`maxHeight`); negative values lie flat. The scale follows the data, so a `mapData` update re-tops it.
+
+To compare two indicators, let the height read a dataset of its own: the colour keeps one indicator on the ground and the height lifts the other, so a district dark and tall is high in both and one dark but low only in the colour's. The second dataset sits on the same source with a `stateKey` apart from the colour's — both write the same features' state, and validation reports a shared key as `state-key-collision` — and brings its own `thresholds`, since the legend's describe the colour's indicator.
+
+```ts
+layers: [{
+  id: 'districts-fill',
+  sourceId: 'districts',
+  geometry: 'polygon',
+  mapDataId: 'total',           // colour
+  activeLegendId: 'total-legend',
+  extrusion: { mapDataId: 'elderly', thresholds: [0.05, 0.1, 0.2] }, // height
+}],
+mapData: [
+  { mapDataId: 'total', mapId: 'districts', data: totalRows },
+  { mapDataId: 'elderly', mapId: 'districts', stateKey: 'height', data: elderlyRows },
+],
+```
+
+The legend explains the colour only; name what the height reads in its `subtitle` or beside the map.
 
 Height changes are animated: adding `extrusion` to a mounted layer makes the prisms rise from flat, removing it lays them down before the layer returns to a flat `fill`, and a new `maxHeight` or new data eases each prism to its new height — interrupted mid-way, the motion picks up from where it was. MapLibre does not transition data-driven paint, so the adapter blends the old and new height expressions frame by frame over `transitionMs`; a viewer's reduced-motion setting snaps instead. Pair it with `view.cameraAngleTransitionMs` so the camera tilts as the prisms rise. The swap between layer types keeps the layer's data and paint order. Paint keys follow the layer: `fillColor` and `fillOpacity` drive `fill-extrusion-color` and `fill-extrusion-opacity` (opacity is layer-wide, not per feature), and `lineColor` has no counterpart — a prism has no outline. `hoverPaint` and `selectedPaint` outlines still draw at ground level.
 

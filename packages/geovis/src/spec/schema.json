@@ -391,6 +391,14 @@
                     "type": "string",
                     "enum": ["class", "continuous"]
                   },
+                  "mapDataId": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "thresholds": {
+                    "type": "array",
+                    "items": { "type": "number" }
+                  },
                   "maxHeight": {
                     "type": "number",
                     "minimum": 0

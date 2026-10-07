@@ -358,10 +358,28 @@ export type LayerPaint =
  *
  * Features without a value stay flat (height `0`). Heights are in metres. The
  * effect reads best with a pitched camera (`view.pitch`).
+ *
+ * The height can read a dataset of its own, so colour and height compare two
+ * indicators on the same features — darker and taller where both are high,
+ * darker but low where only the colour's is. Point `mapDataId` at a `mapData`
+ * entry on the layer's source, with a `stateKey` apart from the colour's (both
+ * land in the same features' state), and give it `thresholds` for `'class'`
+ * mode: the colour legend's breaks belong to the other indicator.
  */
 export interface PolygonExtrusion {
   /** Height mapping. Default: `'class'`. */
   mode?: 'class' | 'continuous';
+  /**
+   * The `mapData` entry the height reads. Omit it to read the colour's — the
+   * same indicator in both. Must sit on the layer's source.
+   */
+  mapDataId?: string;
+  /**
+   * `'class'` mode breaks for the height, ascending. Default: the active
+   * legend's when the height reads the colour's dataset; none otherwise — a
+   * dataset of its own without them is read `'continuous'`.
+   */
+  thresholds?: number[];
   /** Height, in metres, of the top class or the largest value. Default: `3000`. */
   maxHeight?: number;
   /**
