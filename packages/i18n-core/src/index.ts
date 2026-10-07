@@ -14,6 +14,8 @@ export {
   fmt,
   type FormatValue,
   isFormatValue,
+  type ListFormatOptions,
+  type ListItem,
   type NumberFormatOptions,
 } from './fmt';
 export { isLocalizedError, LocalizedError } from './LocalizedError';

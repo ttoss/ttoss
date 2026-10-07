@@ -190,6 +190,34 @@ export const handler = createAppSyncResolverHandler({
 
 The error object is kept, so markers such as the `expected` flag of [`@ttoss/errors`](https://www.npmjs.com/package/@ttoss/errors) still reach your reporting. If the catalog cannot be loaded, the error is rethrown unrendered.
 
+#### Errors that carry only a code
+
+A domain package that holds no copy throws a `code` and the `values` its message needs ([`@ttoss/errors`](https://www.npmjs.com/package/@ttoss/errors)), with no `messageRef`. `resolveMessageRef` maps such an error to a reference, which is then attached and rendered like any other:
+
+```ts
+import { fmt, msg } from '@ttoss/i18n-core';
+
+const errorCopy = {
+  MESSAGE_TOO_LONG: (values: { limit: number }) => {
+    return msg(messages.messageTooLong, { limit: values.limit });
+  },
+  INPUT_INVALID: (values: { failures: { label: string }[] }) => {
+    return msg(messages.inputInvalid, {
+      fields: fmt.list({ items: values.failures.map((f) => f.label) }),
+    });
+  },
+} satisfies Record<DomainErrorCode, (values: never) => MessageRef>;
+
+createAppSyncI18nMiddleware({
+  catalog,
+  resolveMessageRef: ({ error }) => {
+    return errorCopy[error.code]?.(error.values);
+  },
+});
+```
+
+It is called only for an `Error` with a string `code` and no `messageRef`, thrown or returned. Return `undefined` for a code you do not map, and the error passes through with its own message. A reference already attached, such as a resolver's override, is never replaced. If the hook throws or returns something that is not a reference, the error passes through unchanged.
+
 ### Custom domain name
 
 You can add a custom domain name to your API using the `customDomain` option.

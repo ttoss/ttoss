@@ -10,6 +10,7 @@ export {
   type CreateContext,
 } from './createAppSyncResolverHandler';
 export {
+  type CodedError,
   createAppSyncI18nMiddleware,
   type ErrorTypeArgs,
   getRequestLocale,

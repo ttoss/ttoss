@@ -57,6 +57,18 @@ const messages = defineMessages({
     defaultMessage: 'We lost access to ad account {account}.',
     description: 'Access lost error',
   },
+  invalidFields: {
+    defaultMessage: 'Invalid input: {failures}',
+    description: 'Every field that failed validation',
+  },
+  required: {
+    defaultMessage: '{field} is required.',
+    description: 'A required field is missing',
+  },
+  campaignList: {
+    defaultMessage: 'Blocked by {campaigns}.',
+    description: 'Campaigns blocking a change',
+  },
   explicit: {
     // `@ttoss/eslint-config` enables `formatjs/no-id`, whose autofix deletes
     // explicit ids; a persisted reference needs one.
@@ -73,6 +85,9 @@ const ptBR = {
   [messages.paused.id]:
     'A campanha {campaign} foi <b>pausada</b> porque {reason}.',
   [messages.reason.id]: 'o orçamento acabou',
+  [messages.invalidFields.id]: 'Entrada inválida: {failures}',
+  [messages.required.id]: '{field} é obrigatório.',
+  [messages.campaignList.id]: 'Bloqueado por {campaigns}.',
 };
 
 describe('msg', () => {
@@ -168,8 +183,25 @@ describe('fmt', () => {
     }).toThrow(RangeError);
   });
 
+  test('copies list items and rejects anything but an array', () => {
+    const items = ['a', 'b'];
+    const value = fmt.list({ items, type: 'disjunction' });
+
+    items.push('c');
+
+    expect(value).toEqual({
+      $fmt: 'list',
+      items: ['a', 'b'],
+      type: 'disjunction',
+    });
+    expect(() => {
+      return fmt.list({ items: 'a, b' as unknown as string[] });
+    }).toThrow(TypeError);
+  });
+
   test('isFormatValue recognizes every kind and nothing else', () => {
     expect(isFormatValue(fmt.percent({ ratio: 0.5 }))).toBe(true);
+    expect(isFormatValue(fmt.list({ items: [] }))).toBe(true);
     expect(isFormatValue({ $fmt: 'unknown' })).toBe(false);
     expect(isFormatValue(msg(messages.reason))).toBe(false);
   });
@@ -318,6 +350,71 @@ describe('createI18n', () => {
     );
   });
 
+  test('joins a list with the reader locale conjunction', () => {
+    const ref = msg(messages.campaignList, {
+      campaigns: fmt.list({ items: ['A', 'B', 'C'] }),
+    });
+
+    expect(en.render(ref)).toBe('Blocked by A, B, and C.');
+    expect(pt.render(ref)).toBe('Bloqueado por A, B e C.');
+  });
+
+  test('renders each list item in the same locale, nested references and deferred values included', () => {
+    const failures = fmt.list({
+      items: [
+        msg(messages.required, { field: 'Budget' }),
+        msg(messages.required, { field: 'Target' }),
+      ],
+      type: 'unit',
+      style: 'narrow',
+    });
+    const ref = msg(messages.invalidFields, { failures });
+
+    expect(en.render(ref)).toBe(
+      'Invalid input: Budget is required. Target is required.'
+    );
+    expect(pt.render(ref)).toBe(
+      'Entrada inválida: Budget é obrigatório. Target é obrigatório.'
+    );
+    expect(
+      pt.formatValue(
+        fmt.list({
+          items: [1500, fmt.currency({ value: 10, currency: 'BRL' })],
+        })
+      )
+    ).toBe('1.500 e R$\u00a010,00');
+    expect(
+      pt.formatValue(fmt.list({ items: [msg(messages.reason), 'B'] }))
+    ).toBe('o orçamento acabou e B');
+  });
+
+  test('renderHtml escapes each list item but not the separators', () => {
+    const ref = msg(messages.campaignList, {
+      campaigns: fmt.list({
+        items: [
+          '<b>A</b>',
+          msg(messages.paused, { campaign: 'B', reason: 'x' }),
+        ],
+      }),
+    });
+
+    expect(en.renderHtml(ref)).toBe(
+      'Blocked by &lt;b&gt;A&lt;/b&gt; and Campaign B was <b>paused</b> because x..'
+    );
+  });
+
+  test('a list survives JSON', () => {
+    const ref = JSON.parse(
+      JSON.stringify(
+        msg(messages.campaignList, {
+          campaigns: fmt.list({ items: [msg(messages.reason), 'B'] }),
+        })
+      )
+    );
+
+    expect(pt.render(ref)).toBe('Bloqueado por o orçamento acabou e B.');
+  });
+
   test('renderHtml escapes values but not the message markup', () => {
     const ref = msg(messages.paused, {
       campaign: '<script>alert("x")</script>',
@@ -393,6 +490,22 @@ describe('isTranslated', () => {
     const untranslated = msg(messages.paused, {
       campaign: 'Black Friday',
       reason: msg(messages.optional, { note: 'x' }),
+    });
+
+    expect(pt.isTranslated(translated)).toBe(true);
+    expect(pt.isTranslated(untranslated)).toBe(false);
+  });
+
+  test('checks references inside a list', () => {
+    const translated = msg(messages.invalidFields, {
+      failures: fmt.list({
+        items: [msg(messages.required, { field: 'A' }), 'plain'],
+      }),
+    });
+    const untranslated = msg(messages.invalidFields, {
+      failures: fmt.list({
+        items: [fmt.list({ items: [msg(messages.optional, { note: 'x' })] })],
+      }),
     });
 
     expect(pt.isTranslated(translated)).toBe(true);
@@ -644,12 +757,23 @@ describe('renderLocalizedError', () => {
 
 describe('renderMessageRef', () => {
   test('renders with a bare IntlShape, as react-intl provides', () => {
-    const { formatMessage, formatNumber, formatDate, formatRelativeTime } =
-      createI18n({ locale: 'en', messages: {} });
+    const {
+      formatMessage,
+      formatNumber,
+      formatDate,
+      formatRelativeTime,
+      formatList,
+    } = createI18n({ locale: 'en', messages: {} });
 
     expect(
       renderMessageRef({
-        intl: { formatMessage, formatNumber, formatDate, formatRelativeTime },
+        intl: {
+          formatMessage,
+          formatNumber,
+          formatDate,
+          formatRelativeTime,
+          formatList,
+        },
         ref: msg(messages.greeting, { name: 'Ana' }),
         mode: 'text',
       })
