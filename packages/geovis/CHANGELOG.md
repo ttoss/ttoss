@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.27.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.26.0...@ttoss/geovis@0.27.0) (2026-10-08)
+
+### Features
+
+- **geovis,geovis-workspace:** 3D polygon extrusion, a view-mode choi… ([#1308](https://github.com/ttoss/ttoss/issues/1308)) ([8ecea5c](https://github.com/ttoss/ttoss/commit/8ecea5c8167762c009c8c62c9d0dc004519e021e))
+
 # [0.26.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.25.4...@ttoss/geovis@0.26.0) (2026-10-06)
 
 ### Features
