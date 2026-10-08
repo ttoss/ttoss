@@ -5,7 +5,12 @@ import {
   type OnErrorFn,
 } from '@formatjs/intl';
 
-import { type FormatValue, hasDateComponents, isFormatValue } from './fmt';
+import {
+  type FormatValue,
+  hasDateComponents,
+  isFormatValue,
+  type ListItem,
+} from './fmt';
 import { isMessageRef, type MessageRef, type MessageValue } from './messageRef';
 
 export type Messages = NonNullable<
@@ -55,7 +60,11 @@ export type RenderMode = 'text' | 'html';
  */
 export type IntlFormatters = Pick<
   IntlShape,
-  'formatMessage' | 'formatNumber' | 'formatDate' | 'formatRelativeTime'
+  | 'formatMessage'
+  | 'formatNumber'
+  | 'formatDate'
+  | 'formatRelativeTime'
+  | 'formatList'
 >;
 
 type Mode = RenderMode;
@@ -125,7 +134,12 @@ export type I18n = IntlShape & {
   isTranslated: (ref: MessageRef | string) => boolean;
 };
 
-const formatValue = (intl: IntlFormatters, value: FormatValue): string => {
+type ListValue = Extract<FormatValue, { $fmt: 'list' }>;
+
+const formatScalarValue = (
+  intl: IntlFormatters,
+  value: Exclude<FormatValue, ListValue>
+): string => {
   switch (value.$fmt) {
     case 'currency':
       return intl.formatNumber(value.value, {
@@ -174,6 +188,46 @@ const formatValue = (intl: IntlFormatters, value: FormatValue): string => {
 };
 
 /**
+ * A list's items are rendered one by one — each escaped on its own in html
+ * mode — and only then joined, so the locale's separators are never escaped
+ * and a nested reference keeps its markup.
+ */
+const formatValue = ({
+  intl,
+  value,
+  mode,
+  render,
+}: {
+  intl: IntlFormatters;
+  value: FormatValue;
+  mode: Mode;
+  render: (ref: MessageRef) => string;
+}): string => {
+  if (value.$fmt !== 'list') {
+    const formatted = formatScalarValue(intl, value);
+    return mode === 'html' ? escapeHtml(formatted) : formatted;
+  }
+
+  const items = value.items.map((item: ListItem) => {
+    if (isMessageRef(item)) {
+      return render(item);
+    }
+
+    if (isFormatValue(item)) {
+      return formatValue({ intl, value: item, mode, render });
+    }
+
+    if (typeof item === 'number') {
+      return intl.formatNumber(item);
+    }
+
+    return mode === 'html' ? escapeHtml(item) : item;
+  });
+
+  return intl.formatList(items, { type: value.type, style: value.style });
+};
+
+/**
  * A value as `formatMessage` takes it. Nested references are rendered — and,
  * in html mode, escaped — by the recursive call, so they are not escaped again.
  */
@@ -193,8 +247,7 @@ const resolveValue = ({
   }
 
   if (isFormatValue(value)) {
-    const formatted = formatValue(intl, value);
-    return mode === 'html' ? escapeHtml(formatted) : formatted;
+    return formatValue({ intl, value, mode, render });
   }
 
   if (typeof value === 'string') {
@@ -258,6 +311,21 @@ const sameLocale = (a: string, b: string) => {
 };
 
 /**
+ * The references a value renders, a list's items included.
+ */
+const nestedRefs = (value: MessageValue): MessageRef[] => {
+  if (isMessageRef(value)) {
+    return [value];
+  }
+
+  if (isFormatValue(value) && value.$fmt === 'list') {
+    return value.items.flatMap(nestedRefs);
+  }
+
+  return [];
+};
+
+/**
  * Whether a reference renders entirely in `intl.locale`: every message it
  * holds, nested references included, has an entry in `intl.messages`. In the
  * source locale (`intl.defaultLocale`) every reference is translated, since
@@ -286,9 +354,11 @@ export const isMessageRefTranslated = ({
     return false;
   }
 
-  return Object.values(ref.values ?? {}).every((value) => {
-    return !isMessageRef(value) || isMessageRefTranslated({ intl, ref: value });
-  });
+  return Object.values(ref.values ?? {})
+    .flatMap(nestedRefs)
+    .every((nested) => {
+      return isMessageRefTranslated({ intl, ref: nested });
+    });
 };
 
 export const createI18n = ({
@@ -320,7 +390,14 @@ export const createI18n = ({
       return renderMessageRef({ intl, ref, mode: 'html' });
     },
     formatValue: (value: FormatValue) => {
-      return formatValue(intl, value);
+      return formatValue({
+        intl,
+        value,
+        mode: 'text',
+        render: (ref) => {
+          return renderMessageRef({ intl, ref, mode: 'text' });
+        },
+      });
     },
     isTranslated: (ref: MessageRef | string) => {
       return isMessageRefTranslated({ intl, ref });

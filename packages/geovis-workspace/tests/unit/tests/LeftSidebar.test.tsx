@@ -381,7 +381,7 @@ test('chips seed from a controlled selection, over defaultSelected', async () =>
   await openFiltros();
 
   // The badge counts two — the selection's `y,z`, not `defaultSelected`'s
-  // single `x`. It is the count the chips expose; they carry no pressed state.
+  // single `x`.
   const filtros = screen.getByRole('button', { name: 'Filtros' });
   expect(within(filtros).getByText('2')).toBeInTheDocument();
 

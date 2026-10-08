@@ -1,4 +1,4 @@
-import type { GeoVisGeometryType } from '../../spec/types';
+import type { GeoVisGeometryType, VisualizationLayer } from '../../spec/types';
 
 // Maps spec-level camelCase paint keys to MapLibre kebab-case paint properties.
 // `lineColor` is geometry-dependent: polygon uses `fill-outline-color`,
@@ -36,16 +36,34 @@ const SPEC_PAINT_KEY_MAP: Record<
   iconOpacity: 'icon-opacity',
 };
 
+// An extruded polygon (`layer.extrusion`) is a `fill-extrusion` layer: its
+// fill keys move to the extrusion's, and its outline has no counterpart.
+const EXTRUDED_PAINT_KEY_MAP: Record<string, string | undefined> = {
+  'fill-color': 'fill-extrusion-color',
+  'fill-opacity': 'fill-extrusion-opacity',
+  'fill-outline-color': undefined,
+};
+
 /**
  * Translates a GeoVis camelCase paint key to the MapLibre kebab-case property
- * name for the given geometry type. Returns `undefined` when the key has no
- * MapLibre counterpart for that geometry (e.g. `lineWidth` on a polygon).
+ * name for the given layer. Returns `undefined` when the key has no MapLibre
+ * counterpart for that layer (e.g. `lineWidth` on a polygon, `lineColor` on an
+ * extruded one).
  */
 export const specPaintKeyToMaplibre = (
   key: string,
-  geometry: GeoVisGeometryType
+  layer: Pick<VisualizationLayer, 'geometry' | 'extrusion'>
 ): string | undefined => {
   const entry = SPEC_PAINT_KEY_MAP[key];
   if (!entry) return undefined;
-  return typeof entry === 'function' ? entry(geometry) : entry;
+  const property = typeof entry === 'function' ? entry(layer.geometry) : entry;
+  if (
+    property !== undefined &&
+    layer.geometry === 'polygon' &&
+    layer.extrusion !== undefined &&
+    property in EXTRUDED_PAINT_KEY_MAP
+  ) {
+    return EXTRUDED_PAINT_KEY_MAP[property];
+  }
+  return property;
 };

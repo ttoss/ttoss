@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.19.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis-workspace@0.18.7...@ttoss/geovis-workspace@0.19.0) (2026-10-08)
+
+### Features
+
+- **geovis,geovis-workspace:** 3D polygon extrusion, a view-mode choi… ([#1308](https://github.com/ttoss/ttoss/issues/1308)) ([8ecea5c](https://github.com/ttoss/ttoss/commit/8ecea5c8167762c009c8c62c9d0dc004519e021e))
+
+## [0.18.7](https://github.com/ttoss/ttoss/compare/@ttoss/geovis-workspace@0.18.6...@ttoss/geovis-workspace@0.18.7) (2026-10-07)
+
+**Note:** Version bump only for package @ttoss/geovis-workspace
+
+## [0.18.6](https://github.com/ttoss/ttoss/compare/@ttoss/geovis-workspace@0.18.5...@ttoss/geovis-workspace@0.18.6) (2026-10-07)
+
+**Note:** Version bump only for package @ttoss/geovis-workspace
+
 ## [0.18.5](https://github.com/ttoss/ttoss/compare/@ttoss/geovis-workspace@0.18.4...@ttoss/geovis-workspace@0.18.5) (2026-10-06)
 
 **Note:** Version bump only for package @ttoss/geovis-workspace

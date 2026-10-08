@@ -10,10 +10,10 @@ export default jestUnitConfig({
   },
   coverageThreshold: {
     global: {
-      statements: 95.7,
-      branches: 87.8,
-      functions: 98.4,
-      lines: 97.9,
+      statements: 96.0,
+      branches: 88.75,
+      functions: 98.55,
+      lines: 98.0,
     },
   },
 });

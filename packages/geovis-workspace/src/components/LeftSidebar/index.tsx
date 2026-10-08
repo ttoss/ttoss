@@ -23,7 +23,12 @@ import { SettingsTab } from './SettingsTab';
 import { SidebarTab } from './SidebarTab';
 import { COLOR, FONT_HEAD } from './theme';
 import { useChipSelection } from './useChipSelection';
-import { isSectionEnabled, useSections } from './useSections';
+import { ChoiceSettingsContext, useChoiceSettings } from './useChoiceSettings';
+import {
+  isSectionEnabled,
+  useSections,
+  useSidebarSections,
+} from './useSections';
 import { VariationsTab } from './VariationsTab';
 
 /**
@@ -360,8 +365,8 @@ const TabContent = ({
  *
  * Sections carrying filters may be several — the timeline in a tab of its own,
  * beside a tab holding the remaining controls. Each renders its own blocks; only
- * the timeline and the chips are resolved across the whole sidebar, because
- * their state is lifted out of the tab that shows them.
+ * the timeline, the chips and the choice settings are resolved across the whole
+ * sidebar, because their state is lifted out of the tab that shows them.
  *
  * Reads its sections from `config.leftSidebar.sections`. A `controls` slot
  * override (`config.slots.controls.component`) replaces this panel entirely.
@@ -370,7 +375,7 @@ const TabContent = ({
 export const LeftSidebar = () => {
   const { config, selection, setLeftSidebarOpen } = useGeovisWorkspace();
 
-  const sections = config.leftSidebar?.sections ?? [];
+  const sections = useSidebarSections();
   const { chips, chipsSection } = useSections(sections);
 
   const disabledIds = resolveDisabledIds({ sections, selection });
@@ -379,6 +384,7 @@ export const LeftSidebar = () => {
   // playback while this card is closed (see TimelineContext).
   const timelineState = useTimelineContext();
   const chipsState = useChipSelection(chips);
+  const choiceSettings = useChoiceSettings(sections);
 
   const [activeSectionId, setActiveSectionId] = React.useState<string>(() => {
     return sections[0]?.id ?? '';
@@ -429,18 +435,22 @@ export const LeftSidebar = () => {
       <TabBar
         sections={sections}
         activeId={activeSection?.id}
-        chipCount={chipsState.selected.length}
+        // A required set is never empty, so a count on its tab would only ever
+        // repeat the obvious; it goes, the way a gated section's does.
+        chipCount={chips?.required ? 0 : chipsState.selected.length}
         chipsSectionId={chipsSection?.id}
         disabledIds={disabledIds}
         onSelect={setActiveSectionId}
         onClose={hasHeaderBand ? undefined : closeSidebar}
       />
 
-      <TabContent
-        section={activeSection}
-        timeline={timelineState}
-        chips={chipsState}
-      />
+      <ChoiceSettingsContext.Provider value={choiceSettings}>
+        <TabContent
+          section={activeSection}
+          timeline={timelineState}
+          chips={chipsState}
+        />
+      </ChoiceSettingsContext.Provider>
     </Flex>
   );
 };

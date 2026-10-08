@@ -13,14 +13,38 @@ export type MessageRef = {
   values?: Record<string, unknown>;
 };
 
+/**
+ * A value an expected error carries for whoever renders its message. JSON-safe,
+ * so the error can cross a process or wire boundary intact, and a
+ * {@link MessageRef} so a value can point at copy its owner already defines.
+ */
+export type ExpectedErrorValue =
+  | string
+  | number
+  | boolean
+  | null
+  | MessageRef
+  | ExpectedErrorValue[]
+  | { [key: string]: ExpectedErrorValue };
+
+export type ExpectedErrorValues = Record<string, ExpectedErrorValue>;
+
 export type ExpectedErrorOptions<
   Code extends string | undefined = string | undefined,
+  Values extends ExpectedErrorValues | undefined =
+    ExpectedErrorValues | undefined,
 > = {
   /**
    * Stable identifier clients branch on. Never rename one once published —
    * change the copy instead.
    */
   code?: Code;
+  /**
+   * The data the message is about — a limit, an id, the fields that failed —
+   * kept apart from any sentence, so the code that owns the copy builds the
+   * `messageRef` from `code` and `values` in the reader's locale.
+   */
+  values?: Values;
   /** Localized message a boundary renders in the request locale. */
   messageRef?: MessageRef;
   cause?: unknown;
@@ -35,6 +59,7 @@ export type ExpectedErrorOptions<
 export type ExpectedErrorLike = Error & {
   readonly expected: true;
   readonly code?: string;
+  readonly values?: ExpectedErrorValues;
   messageRef?: MessageRef;
 };
 
@@ -56,7 +81,11 @@ export type ExpectedErrorLike = Error & {
  * classes changes it too, so a subclass whose name is matched downstream (an
  * error type a client branches on) pins it with `override name = '…'`.
  */
-export class ExpectedError<Code extends string | undefined = string | undefined>
+export class ExpectedError<
+  Code extends string | undefined = string | undefined,
+  Values extends ExpectedErrorValues | undefined =
+    ExpectedErrorValues | undefined,
+>
   extends Error
   implements ExpectedErrorLike
 {
@@ -73,13 +102,23 @@ export class ExpectedError<Code extends string | undefined = string | undefined>
    */
   readonly code: Code;
 
+  /**
+   * A subclass narrows it per code through the type parameter, so the
+   * placeholders its copy interpolates are a checked contract.
+   */
+  readonly values: Values;
+
   /** Mutable: a boundary may attach it before rendering. */
   messageRef?: MessageRef;
 
-  constructor(message: string, options: ExpectedErrorOptions<Code> = {}) {
+  constructor(
+    message: string,
+    options: ExpectedErrorOptions<Code, Values> = {}
+  ) {
     super(message, 'cause' in options ? { cause: options.cause } : undefined);
     this.name = new.target.name;
     this.code = options.code as Code;
+    this.values = options.values as Values;
     if (options.messageRef !== undefined) {
       this.messageRef = options.messageRef;
     }
@@ -87,14 +126,22 @@ export class ExpectedError<Code extends string | undefined = string | undefined>
 }
 
 /** The caller supplied invalid input. */
-export class ValidationError extends ExpectedError {}
+export class ValidationError<
+  Code extends string | undefined = string | undefined,
+  Values extends ExpectedErrorValues | undefined =
+    ExpectedErrorValues | undefined,
+> extends ExpectedError<Code, Values> {}
 
 /**
  * A referenced resource is missing, or the caller may not access it. Use it
  * for both so a response never reveals whether a resource the caller cannot
  * see exists.
  */
-export class NotFoundError extends ExpectedError {}
+export class NotFoundError<
+  Code extends string | undefined = string | undefined,
+  Values extends ExpectedErrorValues | undefined =
+    ExpectedErrorValues | undefined,
+> extends ExpectedError<Code, Values> {}
 
 /**
  * Whether `error` is expected — handled, and to be kept out of error tracking.

@@ -121,7 +121,8 @@ way and falls back to the section `id` for its accessible name. Each section's `
 - **`filters`** — a stack of headed blocks, each wrapping one control:
   a **timeline** (numeric range with an optional histogram and play/pause; drives
   `selection[menuId]` when it declares one, otherwise visual-only), **chips**
-  (visual-only toggle chips whose active count shows as a tab badge), or a
+  (toggle chips, driving `selection[menuId]` when they declare one, whose active
+  count shows as a tab badge), or a
   **locator** (a combobox over the options it declares, with keyboard-walkable
   results, recent picks and a card for the current one; a pick can move the
   camera and reach `selection[menuId]`).
@@ -359,17 +360,23 @@ breaking.
 A **`variations`** body (`kind: 'variations'`) has a `menuId` (the selection
 key it drives), an optional `title` and `icon` heading the list with the same
 label a filter block draws, an optional `defaultValue`, an optional
-`closeOnSelect`, and
+`closeOnSelect`, an optional `resetViewOnChange`, and
 `groups` — each group
-`{ id, label, icon?, color?, variations: [{ value, label, icon?, description? }] }`;
-the groups are flattened into one ordered list. A variation's `description` is
+`{ id, label, icon?, color?, variations: [{ value, label, icon?, description?, badge? }] }`;
+the groups are flattened into one ordered list. A variation's `badge` is a short
+tag after its label — `'3D'` on the variations a `choice` setting can extrude. A variation's `description` is
 its hover tooltip, so give it what the label cannot hold — what the variation
 measures, or the unit it is read in — and omit it otherwise: a row without one
 renders no tooltip rather than one repeating the label. `closeOnSelect` closes the sidebar
 as soon as a variation is picked, so the map it just recolored is visible
 without a second tap; it lives on the body, not on `leftSidebar`, because a
 `filters` section's timeline writes to the selection on every auto-advance tick
-and must not close anything. A **`filters`** body
+and must not close anything. Picking a different variation flies the map back to
+the spec's own `view` — centre, zoom, pitch and bearing — so every variation is
+read from the same starting frame rather than wherever the reader had panned;
+`resetViewOnChange: false` keeps the reader's place for a menu whose picks should
+not move the camera. A spec without `view.center` and `view.zoom` has no fixed
+starting frame, and the camera stays put. A **`filters`** body
 (`kind: 'filters'`) has `blocks` — each block
 `{ id, title, icon?, collapsible?, defaultOpen?, control }`, where `control` is
 a `timeline`
@@ -380,28 +387,58 @@ are grouped wherever they show — the bars' tooltips, the `unitLabel` readout a
 the compact HUD — using the locale declared on `I18nProvider`, whether or not a
 message bundle was loaded for it, while the keys stay ungrouped because they are
 years),
-`chips` (`{ kind, menuId?, options, multiple?, defaultSelected?, layout? }` — `layout`
+`chips` (`{ kind, menuId?, options, multiple?, defaultSelected?, layout?, required? }` — `layout`
 is `{ kind: 'wrap' }` by default, each chip as wide as its label and wrapping
 onto the next line, or `{ kind: 'grid', columns }` for equal-width columns whose
 chips cut an overlong label with an ellipsis and show it whole on hover; with a
 `menuId` the active ids reach `selection[menuId]` joined by commas, `''` when
 none are active, which is both what the one-string-per-key selection holds and
-what a permalink needs; without one the selection stays visual-only),
+what a permalink needs, and the chips show whatever that key holds — an app that
+rewrites it, fitting it to new options or restoring a permalink, sees them
+follow; without one the selection stays visual-only. `required: true` keeps at
+least one chip active: the last one cannot be toggled off, no "clear" action or
+tab badge is offered, and the first option lights when nothing else does. With
+`multiple: false` that makes the chips a required single choice — a variations
+menu in chip form, as for an age band — while `multiple: true` keeps several
+selectable but never none),
 `locator` (`{ kind, menuId?, placeholder?, minChars?, options }`, each option
 `{ id, label, sublabel?, value?, feature?, view?, animation?, viewPresetId? }` —
 `value` is an already-formatted readout shown after the label in the results
 and, larger, on the selected card), or
-`variations` (`{ kind, menuId, variations, defaultValue?, closeOnSelect? }`).
+`variations` (`{ kind, menuId, variations, defaultValue?, closeOnSelect?, resetViewOnChange? }`,
+resetting the camera the same way a body does).
 
 A **`settings`** body (`kind: 'settings'`) has `blocks` — each block
-`{ id, title, icon?, collapsible?, defaultOpen?, hint?, control }`, where
+`{ id, title, icon?, collapsible?, defaultOpen?, hint?, shownWhen?, control }`, where
 `control` is a `slider`
 (`{ kind, menuId, stops?, min?, max?, step?, defaultValue, unit?, endLabels?, stepButtons? }`),
-a `colorRamp` (`{ kind, menuId, options, defaultValue? }`), or a `toggle`
-(`{ kind, menuId, icon?, defaultValue }`). All publish to `selection[menuId]` as
-strings — a slider its number, a ramp the chosen option's `id`, a toggle
-`'true'`/`'false'` — seeded from the selection on first render, so a controlled
-value wins over the control's own default.
+a `colorRamp` (`{ kind, menuId, options, defaultValue? }`), a `toggle`
+(`{ kind, menuId, icon?, defaultValue }`), or a `choice`
+(`{ kind, menuId, options, defaultValue?, glyphColors? }`). All publish to
+`selection[menuId]` as strings — a slider its number, a ramp the chosen option's
+`id`, a toggle `'true'`/`'false'`, a choice the chosen option's `value` — seeded
+from the selection on first render, so a controlled value wins over the
+control's own default.
+
+A block's `shownWhen` (`{ menuId, values }`, the gate a section's `enabledWhen`
+takes) renders it only while that menu holds one of `values` — controls that
+belong to another choice, like an extrusion height shown only in 3D. Hidden
+rather than disabled, because while the choice is off they have nothing to
+adjust; the value stays in the selection, so the block returns as it was left.
+
+A `choice` lays its `options` — each
+`{ value, label, sublabel?, glyph?, enabledWhen?, disabledHint? }` — side by side
+as cards. `glyph: 'flat' | 'extruded'` draws a strip of map cells lying flat or
+standing as prisms, in `glyphColors` (pass the active ramp to preview the map);
+a card with neither glyph nor sublabel is a compact button, as for a camera
+pitch. An option's `enabledWhen` keeps it available only while another menu holds
+one of the gate's values. While closed the card is inert, `disabledHint` explains
+why under the cards, and if it was the chosen option the control publishes the
+first available one instead — remembering the pick, and publishing it again once
+the gate reopens. The app therefore reads one value and never repeats the rule:
+a 2D/3D choice gated on the variations drawn as polygons publishes `'2d'` while a
+point variation is active, and `'3d'` again when the reader returns. See
+[Storybook](https://storybook.ttoss.dev/) → _Geovis Workspace / View Mode_.
 
 A slider with `stops` is a **ladder**: the handle snaps between the rungs and
 reads each one's `label` (and `hint` beside it), while `min`/`max`/`step` are

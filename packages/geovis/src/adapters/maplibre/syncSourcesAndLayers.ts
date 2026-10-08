@@ -3,6 +3,13 @@ import type maplibregl from 'maplibre-gl';
 import type { VisualizationSpec } from '../../spec/types';
 import { planCrossfades, runCrossfades } from './crossfade';
 import {
+  extrusionTransitionMs,
+  forgetExtrusionLayer,
+  upsertExtrusionAwareLayer,
+} from './extrusionLifecycle';
+import { transitionExtrusionHeight } from './extrusionTransition';
+import {
+  polygonFillColorProperty,
   resolveLegendFillColorExpression,
   stripUndefinedPaint,
   toMaplibreLayer,
@@ -34,6 +41,7 @@ const removeStaleLayers = (
       return nextLayer.id === layer.id;
     });
     if (!stillExists && map.getLayer(layer.id)) {
+      forgetExtrusionLayer(map, layer.id);
       map.removeLayer(layer.id);
       const hoverCompanionId = `${layer.id}-hover-outline`;
       const selectedCompanionId = `${layer.id}-selected-outline`;
@@ -107,6 +115,7 @@ const upsertSources = (
  * behaviour only when the layer has no active legend expression of its own.
  * When an active legend resolves, the adapter owns the choropleth colour and
  * must update `fill-color` on spec changes so the declared legend colours win.
+ * An extruded layer carries the same colour as `fill-extrusion-color`.
  */
 const writePaintProperty = (
   map: maplibregl.Map,
@@ -115,7 +124,11 @@ const writePaintProperty = (
   property: string,
   value: unknown
 ): void => {
-  if (property === 'fill-color' && layer.mapDataId) {
+  if (
+    layer.geometry === 'polygon' &&
+    property === polygonFillColorProperty(layer) &&
+    layer.mapDataId
+  ) {
     const hasExplicitFillColor = !!(
       layer.paint as { fillColor?: string } | undefined
     )?.fillColor;
@@ -297,45 +310,25 @@ export const reapplyLayerPaint = (
     spec.scaleMaxValue
   );
   stripUndefinedPaint(desiredLayer);
+  // A layer mid-swap between `fill` and `fill-extrusion` rejects the other
+  // type's paint; the extrusion lifecycle writes it once the swap lands.
+  const mountedType = map.getLayer(layer.id)?.type;
+  if (mountedType !== undefined && mountedType !== desiredLayer.type) return;
   const paint = (desiredLayer as { paint?: Record<string, unknown> }).paint;
   if (!paint) return;
   for (const [property, value] of Object.entries(paint)) {
-    writePaintProperty(map, spec, layer, property, value);
-  }
-};
-
-/** Adds new layers and updates visibility/paint in-place (avoids remove-and-re-add flicker). */
-const upsertLayers = (map: maplibregl.Map, spec: VisualizationSpec): void => {
-  for (const layer of spec.layers) {
-    const sourceLayer = resolveSourceLayerFor(spec, layer);
-    const desiredLayer = toMaplibreLayer(
-      layer,
-      sourceLayer,
-      spec.legends,
-      spec.mapData,
-      spec.scaleMaxValue
-    );
-    stripUndefinedPaint(desiredLayer);
-
-    if (!map.getLayer(layer.id)) {
-      map.addLayer(desiredLayer);
-    } else {
-      map.setLayoutProperty(
-        layer.id,
-        'visibility',
-        layer.visible === false ? 'none' : 'visible'
-      );
-      map.setFilter(
-        layer.id,
-        (desiredLayer as { filter?: maplibregl.FilterSpecification }).filter ??
-          null
-      );
-      reapplyLayerPaint(map, spec, layer);
+    if (property === 'fill-extrusion-height') {
+      // Eased, not written: MapLibre would land a new height expression at once.
+      transitionExtrusionHeight({
+        map,
+        layerId: layer.id,
+        to: value as unknown[] | number,
+        durationMs:
+          layer.visible === false ? 0 : extrusionTransitionMs({ map, layer }),
+      });
+      continue;
     }
-
-    const effectiveSourceLayer = layer.sourceLayer ?? sourceLayer;
-    upsertOutlineCompanions(map, layer, effectiveSourceLayer);
-    upsertClickAnchorCompanion(map, layer, effectiveSourceLayer);
+    writePaintProperty(map, spec, layer, property, value);
   }
 };
 
@@ -417,6 +410,65 @@ export const enforceManagedLayerOrder = (
   for (let index = desired.length - 1; index >= 0; index--) {
     map.moveLayer(desired[index], aboveId);
     aboveId = desired[index];
+  }
+};
+
+/** Writes visibility, filter and paint onto a mounted layer of the right type. */
+const updateMountedLayer = (
+  map: maplibregl.Map,
+  spec: VisualizationSpec,
+  layer: VisualizationSpec['layers'][number],
+  desiredLayer: maplibregl.LayerSpecification
+): void => {
+  map.setLayoutProperty(
+    layer.id,
+    'visibility',
+    layer.visible === false ? 'none' : 'visible'
+  );
+  map.setFilter(
+    layer.id,
+    (desiredLayer as { filter?: maplibregl.FilterSpecification }).filter ?? null
+  );
+  reapplyLayerPaint(map, spec, layer);
+};
+
+/** Adds new layers and updates visibility/paint in-place (avoids remove-and-re-add flicker). */
+const upsertLayers = (map: maplibregl.Map, spec: VisualizationSpec): void => {
+  for (const layer of spec.layers) {
+    const sourceLayer = resolveSourceLayerFor(spec, layer);
+    const desiredLayer = toMaplibreLayer(
+      layer,
+      sourceLayer,
+      spec.legends,
+      spec.mapData,
+      spec.scaleMaxValue
+    );
+    stripUndefinedPaint(desiredLayer);
+
+    // A polygon layer gaining or losing `extrusion` changes MapLibre type,
+    // which no layer can do in place; the lifecycle swaps it with the prisms
+    // rising or lying down first, instead of the snap a re-add would be.
+    const handled = upsertExtrusionAwareLayer({
+      map,
+      layer,
+      desiredLayer,
+      updateMounted: () => {
+        updateMountedLayer(map, spec, layer, desiredLayer);
+      },
+      afterSwap: () => {
+        enforceManagedLayerOrder(map, spec);
+      },
+    });
+
+    if (!handled && !map.getLayer(layer.id)) {
+      map.addLayer(desiredLayer);
+    } else if (!handled) {
+      updateMountedLayer(map, spec, layer, desiredLayer);
+    }
+
+    const effectiveSourceLayer = layer.sourceLayer ?? sourceLayer;
+    upsertOutlineCompanions(map, layer, effectiveSourceLayer);
+    upsertClickAnchorCompanion(map, layer, effectiveSourceLayer);
   }
 };
 

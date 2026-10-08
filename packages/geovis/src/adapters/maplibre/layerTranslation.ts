@@ -13,6 +13,12 @@ import type {
   VisualizationLayer,
 } from '../../spec/types';
 import type { LegendSpec } from '../../spec/types.legend';
+import { buildExtrusionHeightExpression } from './extrusion';
+import {
+  resolveDimensionMapData,
+  resolveDimensionStateKey,
+  resolveThresholdBreaks,
+} from './layerBindings';
 import { layerFilterToExpression } from './layerFilter';
 import {
   buildFillColorExpression,
@@ -63,73 +69,6 @@ type Builder = (
   ctx?: BuilderContext
 ) => maplibregl.LayerSpecification;
 
-/** Finds a mapData entry matching a predicate, returning its stateKey.
- *  Returns `undefined` when no entry matches (caller falls through to next fallback).
- *  Returns `'value'` when an entry matches but omits `stateKey` (default per spec). */
-const findStateKey = (
-  specMapData: MapData[] | undefined,
-  predicate: (m: MapData) => boolean
-): string | undefined => {
-  const match = specMapData?.find(predicate);
-  if (!match) return undefined;
-  return match.stateKey ?? 'value';
-};
-
-/** Resolves the stateKey for a given dimension from the spec's mapData array. */
-const resolveDimensionStateKey = (
-  dimension: 'color' | 'size',
-  sourceId: string,
-  layerMapDataId: string | undefined,
-  specMapData?: MapData[]
-): string => {
-  // Prefer dataset explicitly marked with this dimension, scoped to the layer's source
-  const byDimension = findStateKey(specMapData, (m) => {
-    return m.dimension === dimension && m.mapId === sourceId;
-  });
-  if (byDimension) return byDimension;
-
-  // Fallback: legacy layer.mapDataId (single-dimension, no dimension declared)
-  if (layerMapDataId) {
-    const byId = findStateKey(specMapData, (m) => {
-      return m.mapDataId === layerMapDataId;
-    });
-    if (byId) return byId;
-  }
-
-  // Fallback: any mapData entry for this source (single-dataset scenario)
-  const anyForSource = findStateKey(specMapData, (m) => {
-    return m.mapId === sourceId;
-  });
-  if (anyForSource) return anyForSource;
-
-  return 'value';
-};
-
-const resolveThresholdBreaks = (
-  layer: VisualizationLayer,
-  specLegends?: LegendSpec[]
-): number[] => {
-  const legend =
-    layer.legends?.find((item) => {
-      return item.id === layer.activeLegendId;
-    }) ??
-    specLegends?.find((item) => {
-      return item.id === layer.activeLegendId;
-    });
-  if (!legend || !legend.colorBy || legend.colorBy.type !== 'quantitative')
-    return [];
-  if (legend.colorBy.scale !== 'threshold') return [];
-  return Array.from(
-    new Set(
-      (legend.colorBy.thresholds ?? []).filter((value) => {
-        return Number.isFinite(value);
-      })
-    )
-  ).sort((a, b) => {
-    return a - b;
-  });
-};
-
 /**
  * Resolves a legend-driven fill expression for polygon layers.
  *
@@ -174,8 +113,113 @@ export const resolveLegendFillColorExpression = (
   });
 };
 
+/**
+ * Whether a layer renders as a MapLibre `fill-extrusion` rather than a flat
+ * `fill`: a polygon layer that declares `extrusion`.
+ */
+export const isExtrudedLayer = (layer: VisualizationLayer): boolean => {
+  return layer.geometry === 'polygon' && layer.extrusion !== undefined;
+};
+
+/**
+ * The paint property carrying a polygon layer's fill colour — `fill-color`
+ * flat, `fill-extrusion-color` extruded.
+ */
+export const polygonFillColorProperty = (layer: VisualizationLayer): string => {
+  return isExtrudedLayer(layer) ? 'fill-extrusion-color' : 'fill-color';
+};
+
+/** Breaks as a `step` needs them: finite, unique and ascending. */
+const normalizeBreaks = (breaks: ReadonlyArray<number>): number[] => {
+  return [...new Set(breaks.filter(Number.isFinite))].sort((a, b) => {
+    return a - b;
+  });
+};
+
+/**
+ * Resolves the `fill-extrusion-height` expression of an extruded polygon
+ * layer: from the dataset `extrusion.mapDataId` names, or the one its colour
+ * reads, stepped over `extrusion.thresholds` or — reading the colour's
+ * dataset — the active legend's breaks.
+ *
+ * @remarks
+ * Exported for the same reason as {@link resolveLegendFillColorExpression}:
+ * a `mapData` mutation can move the continuous scale's top, so runtime update
+ * flows re-apply the height alongside the colour.
+ *
+ * @param layer - The visualization layer.
+ * @param specLegends - Optional legend registry.
+ * @param specMapData - Optional mapData array for stateKey resolution.
+ * @returns The expression, or undefined when the layer is not extruded.
+ */
+export const resolveExtrusionHeightExpression = (
+  layer: VisualizationLayer,
+  specLegends?: LegendSpec[],
+  specMapData?: MapData[]
+): unknown[] | number | undefined => {
+  if (!isExtrudedLayer(layer)) return undefined;
+  const extrusion = layer.extrusion!;
+  const colorMapData = resolveDimensionMapData(
+    'color',
+    layer.sourceId,
+    layer.mapDataId,
+    specMapData
+  );
+  // A dataset of its own when the extrusion names one that exists; an unknown
+  // id (a validation error) falls back to the colour's rather than going flat.
+  const ownMapData = extrusion.mapDataId
+    ? specMapData?.find((entry) => {
+        return entry.mapDataId === extrusion.mapDataId;
+      })
+    : undefined;
+  const heightMapData = ownMapData ?? colorMapData;
+  // The colour legend's breaks describe the colour's indicator, so they only
+  // carry over when the height reads that same dataset.
+  const breaks =
+    extrusion.thresholds ??
+    (ownMapData ? [] : resolveThresholdBreaks(layer, specLegends));
+  return buildExtrusionHeightExpression({
+    extrusion,
+    breaks: normalizeBreaks(breaks),
+    stateKey: heightMapData?.stateKey ?? 'value',
+    mapData: heightMapData,
+  });
+};
+
+/**
+ * Builds a MapLibre `fill-extrusion` layer spec from an extruded polygon
+ * layer: the flat layer's colour and opacity, plus a height read from the same
+ * value (see `buildExtrusionHeightExpression`). `lineColor` has no
+ * counterpart — a prism has no outline.
+ */
+const buildExtrudedPolygon: Builder = (base, layer, paint, ctx) => {
+  const fp = (paint ?? {}) as FillPaint;
+  const legendFillColor = resolveLegendFillColorExpression(
+    layer,
+    ctx?.legends,
+    ctx?.mapData
+  );
+  return {
+    ...base,
+    type: 'fill-extrusion',
+    paint: {
+      'fill-extrusion-color': legendFillColor ?? fp.fillColor ?? '#3b82f6',
+      'fill-extrusion-opacity': fp.fillOpacity ?? 1,
+      'fill-extrusion-height': resolveExtrusionHeightExpression(
+        layer,
+        ctx?.legends,
+        ctx?.mapData
+      ),
+      'fill-extrusion-base': 0,
+    },
+  } as maplibregl.LayerSpecification;
+};
+
 /** Builds a MapLibre `fill` layer spec from a GeoVis polygon layer. */
 const buildPolygon: Builder = (base, layer, paint, ctx) => {
+  if (isExtrudedLayer(layer)) {
+    return buildExtrudedPolygon(base, layer, paint, ctx);
+  }
   const fp = (paint ?? {}) as FillPaint;
   const legendFillColor = resolveLegendFillColorExpression(
     layer,

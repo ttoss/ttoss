@@ -3,7 +3,7 @@ import { Box, Text } from '@ttoss/ui';
 import type { GeovisWorkspaceSidebarVariation } from '../../context/GeovisWorkspaceContext';
 import { IconChip } from './IconChip';
 import { Spinner } from './Spinner';
-import { COLOR } from './theme';
+import { COLOR, FONT_MONO } from './theme';
 
 const ACCENT = COLOR.primary;
 
@@ -48,6 +48,29 @@ const rowAppearance = ({
   };
 };
 
+/** The variation's tag, e.g. `3D`: a small outlined label before the marks. */
+const Badge = ({ text }: { text: string }) => {
+  return (
+    <Text
+      sx={{
+        flexShrink: 0,
+        paddingX: '5px',
+        paddingY: '1px',
+        borderRadius: '4px',
+        border: `1px solid ${COLOR.border}`,
+        backgroundColor: COLOR.fillAlt,
+        fontFamily: FONT_MONO,
+        fontSize: '9px',
+        fontWeight: 500,
+        lineHeight: 1.4,
+        color: COLOR.textMuted,
+      }}
+    >
+      {text}
+    </Text>
+  );
+};
+
 /** The trailing dot marking the row that is the menu's current value. */
 const ActiveMark = () => {
   return (
@@ -71,7 +94,7 @@ const ActiveMark = () => {
  * is declared as, and a change to the row reaches both.
  *
  * @param params.variation - The variation this row selects. Its `description`,
- * when set, becomes the row's hover tooltip.
+ * when set, becomes the row's hover tooltip; its `badge`, a tag after the label.
  * @param params.on - Whether it is the menu's current value.
  * @param params.pending - Whether this row is the pick being served: it keeps
  * the active look and trades its dot for a spinner, so the wait is attributed
@@ -147,6 +170,7 @@ export const VariationRow = ({
         {variation.label}
       </Text>
 
+      {variation.badge ? <Badge text={variation.badge} /> : null}
       {pending ? <Spinner size="12px" /> : null}
       {!pending && on ? <ActiveMark /> : null}
     </Box>

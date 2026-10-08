@@ -9,11 +9,14 @@ export {
   renderMessageRef,
   type RenderMode,
 } from './createI18n';
+export { defineMessage, defineMessages } from './defineMessages';
 export {
   type DateFormatOptions,
   fmt,
   type FormatValue,
   isFormatValue,
+  type ListFormatOptions,
+  type ListItem,
   type NumberFormatOptions,
 } from './fmt';
 export { isLocalizedError, LocalizedError } from './LocalizedError';
@@ -27,8 +30,6 @@ export {
 export { negotiateLocale } from './negotiateLocale';
 export { renderLocalizedError } from './renderLocalizedError';
 export {
-  defineMessage,
-  defineMessages,
   type IntlShape,
   type MessageDescriptor,
   type OnErrorFn,
