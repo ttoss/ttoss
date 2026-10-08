@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.17.2](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.17.1...@ttoss/auth-core@0.17.2) (2026-10-07)
+
+**Note:** Version bump only for package @ttoss/auth-core
+
+## [0.17.1](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.17.0...@ttoss/auth-core@0.17.1) (2026-10-07)
+
+**Note:** Version bump only for package @ttoss/auth-core
+
 # 0.17.0 (2026-10-06)
 
 ### Features

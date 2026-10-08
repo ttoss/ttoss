@@ -1,3 +1,5 @@
+import type { MessageRef } from './messageRef';
+
 /**
  * A value whose formatting is deferred to render time, so it is formatted in
  * the reader's locale rather than in whatever locale the producer ran in.
@@ -33,7 +35,29 @@ export type FormatValue =
       $fmt: 'relativeTime';
       /** ISO 8601, so the value survives JSON. */
       value: string;
-    };
+    }
+  | ({
+      $fmt: 'list';
+      items: ListItem[];
+    } & ListFormatOptions);
+
+/**
+ * An item of a deferred list: anything a message value can be except `null`
+ * and booleans, which have no place in running text. A nested reference
+ * renders in the same locale as the list.
+ */
+export type ListItem = string | number | MessageRef | FormatValue;
+
+/**
+ * `Intl.ListFormat`'s options. `conjunction` joins with the locale's "and"
+ * (`a, b e c` in pt-BR), `disjunction` with its "or", and `unit` without a
+ * word; `unit` with `narrow` style joins with spaces, which suits a run of
+ * whole sentences.
+ */
+export type ListFormatOptions = {
+  type?: 'conjunction' | 'disjunction' | 'unit';
+  style?: 'long' | 'short' | 'narrow';
+};
 
 /**
  * How a date renders: a preset style, or the components to show (`day` and
@@ -89,6 +113,7 @@ const FORMAT_KINDS: ReadonlyArray<FormatValue['$fmt']> = [
   'percent',
   'date',
   'relativeTime',
+  'list',
 ];
 
 const toIsoString = (value: string | Date) => {
@@ -145,6 +170,18 @@ export const fmt = {
   },
   relativeTime: (args: { value: string | Date }): FormatValue => {
     return { $fmt: 'relativeTime', value: toIsoString(args.value) };
+  },
+  /**
+   * A list whose length the message cannot know, e.g. every field that failed
+   * validation. Each item renders in the reader's locale, then the locale's
+   * list format joins them — ICU messages have no loop.
+   */
+  list: (args: { items: ListItem[] } & ListFormatOptions): FormatValue => {
+    if (!Array.isArray(args.items)) {
+      throw new TypeError('fmt.list received items that are not an array.');
+    }
+
+    return { $fmt: 'list', ...args, items: [...args.items] };
   },
 };
 

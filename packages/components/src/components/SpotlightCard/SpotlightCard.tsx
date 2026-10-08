@@ -178,8 +178,12 @@ const SpotlightContent = ({
             fontSize: ['24px', '32px'],
             lineHeight: 1.1,
             color: 'inherit',
-            whiteSpace: 'nowrap',
+            // On a phone a long title (an ad account name) was cut mid-word
+            // with no ellipsis; wrapping keeps it readable.
+            whiteSpace: ['normal', 'nowrap'],
+            overflowWrap: 'anywhere',
             display: 'flex',
+            flexWrap: ['wrap', 'nowrap'],
             alignItems: 'center',
             gap: '3',
           }}

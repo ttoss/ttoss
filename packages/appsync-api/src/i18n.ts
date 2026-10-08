@@ -34,6 +34,70 @@ export const getRequestLocale = (context: {
   return undefined;
 };
 
+/**
+ * An error carrying a stable `code` but no `messageRef` — what a package that
+ * holds no copy throws, with the data its message needs in `values`.
+ */
+export type CodedError = Error & {
+  code: string;
+  values?: Record<string, unknown>;
+};
+
+const isCodedError = (error: unknown): error is CodedError => {
+  return (
+    error instanceof Error &&
+    typeof (error as { code?: unknown }).code === 'string' &&
+    (error as { messageRef?: unknown }).messageRef === undefined
+  );
+};
+
+type ResolveMessageRef<TContext> = (args: {
+  error: CodedError;
+  context: TContext;
+  info: AppSyncInfo;
+}) => MessageRef | undefined | Promise<MessageRef | undefined>;
+
+/**
+ * The error as a localized one, attaching the resolved reference when it has
+ * none; `undefined` when it stays as it is.
+ */
+const asLocalizedError = async <TContext>({
+  error,
+  context,
+  info,
+  resolveMessageRef,
+}: {
+  error: unknown;
+  context: TContext;
+  info: AppSyncInfo;
+  resolveMessageRef?: ResolveMessageRef<TContext>;
+}): Promise<LocalizedErrorShape | undefined> => {
+  if (await isLocalizedError(error)) {
+    return error as LocalizedErrorShape;
+  }
+
+  if (!resolveMessageRef || !isCodedError(error)) {
+    return undefined;
+  }
+
+  try {
+    const messageRef = await resolveMessageRef({ error, context, info });
+    const i18nCore = await import('@ttoss/i18n-core');
+
+    if (!i18nCore.isMessageRef(messageRef)) {
+      return undefined;
+    }
+
+    const localized = error as CodedError & { messageRef?: MessageRef };
+    localized.messageRef = messageRef;
+
+    return localized as LocalizedErrorShape;
+  } catch {
+    // Resolving is best effort, like rendering: the error is still the answer.
+    return undefined;
+  }
+};
+
 export type ErrorTypeArgs = {
   /** The error's stable code. */
   code: string;
@@ -59,6 +123,12 @@ export type ErrorTypeArgs = {
  * If the catalog cannot be loaded, the error is rethrown unrendered. The
  * client then sees the source-language message rather than losing the error.
  *
+ * `resolveMessageRef` covers an error that has a `code` but no `messageRef`,
+ * thrown by code that holds no copy: it maps the code (and the error's
+ * `values`) to a reference, which is attached and rendered like any other.
+ * Returning `undefined` leaves the error as it was, so an unmapped code keeps
+ * its own message. A reference already attached is never replaced.
+ *
  * @example
  * ```ts
  * createAppSyncI18nMiddleware({
@@ -73,6 +143,7 @@ export const createAppSyncI18nMiddleware = <TContext = unknown>({
   errorType = ({ code }) => {
     return code;
   },
+  resolveMessageRef,
 }: {
   catalog: Pick<Catalog, 'getI18n'>;
   /**
@@ -84,6 +155,11 @@ export const createAppSyncI18nMiddleware = <TContext = unknown>({
     info: AppSyncInfo;
   }) => Requested | Promise<Requested>;
   errorType?: (args: ErrorTypeArgs) => string;
+  /**
+   * The reference for an error with a `code` and no `messageRef`, or
+   * `undefined` to leave it unrendered.
+   */
+  resolveMessageRef?: ResolveMessageRef<TContext>;
 }) => {
   const localize = async ({
     error,
@@ -114,22 +190,30 @@ export const createAppSyncI18nMiddleware = <TContext = unknown>({
       try {
         const result = await resolve(source, args, context, info);
 
-        if (result instanceof Error && (await isLocalizedError(result))) {
-          return localize({
-            error: result as LocalizedErrorShape,
+        if (result instanceof Error) {
+          const localized = await asLocalizedError({
+            error: result,
             context,
             info,
+            resolveMessageRef,
           });
+
+          if (localized) {
+            return localize({ error: localized, context, info });
+          }
         }
 
         return result;
       } catch (error) {
-        if (await isLocalizedError(error)) {
-          throw await localize({
-            error: error as LocalizedErrorShape,
-            context,
-            info,
-          });
+        const localized = await asLocalizedError({
+          error,
+          context,
+          info,
+          resolveMessageRef,
+        });
+
+        if (localized) {
+          throw await localize({ error: localized, context, info });
         }
 
         throw error;

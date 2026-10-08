@@ -98,3 +98,40 @@ throw new ValidationError('plan limit reached', {
 ```
 
 The two ideas are independent: "localized" decides how the message is shown, "expected" decides whether it is reported.
+
+### Code plus values, when the thrower does not own the copy
+
+A domain package often should not hold user-facing copy — it has no locale, and several boundaries (an API, an agent tool) may word the same failure differently. It throws a `code` and the `values` the message needs instead, and the boundary that owns the copy builds the `messageRef` from them:
+
+```ts
+// domain package: data only
+export type InputErrorValues = {
+  failures: Array<{
+    field: string;
+    reason: 'required' | 'min';
+    limit?: number;
+  }>;
+};
+
+throw new ValidationError('Invalid input', {
+  code: 'INPUT_INVALID',
+  values: { failures },
+});
+
+// boundary: owns the copy, e.g. through `resolveMessageRef` in @ttoss/appsync-api
+const resolveMessageRef = ({ error }) => {
+  return error.code === 'INPUT_INVALID'
+    ? msg(messages.inputInvalid, { count: error.values.failures.length })
+    : undefined;
+};
+```
+
+`values` is JSON-safe data — primitives, arrays, records and `MessageRef`s — so it survives serialization, and a value can point at copy its owner already defines. Pass numbers and dates raw and let the renderer format them; a string formatted where no locale is known is wrong for every other locale. Declare a values shape with `type`, not `interface`: an interface has no index signature, so TypeScript rejects it as a record.
+
+Narrow both per error with the type parameters, so the placeholders the copy interpolates are a checked contract:
+
+```ts
+class LimitError extends ExpectedError<'OVER_LIMIT', { limit: number }> {}
+```
+
+`ValidationError` and `NotFoundError` infer both from the call.

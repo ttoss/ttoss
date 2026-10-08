@@ -68,10 +68,27 @@ await db.notifications.insert({ body }); // plain JSON
 | `fmt.date({ value, timeZone?, dateStyle?, timeStyle? })` | A date and/or time in that time zone |
 | `fmt.date({ value, timeZone?, day?, month?, year? })`    | Only the date components asked for   |
 | `fmt.relativeTime({ value })`                            | `yesterday`, `in 3 hours`            |
+| `fmt.list({ items, type?, style? })`                     | `A, B and C` / `A, B e C`            |
 
 `fmt.date` takes either a style (`dateStyle` / `timeStyle`, `dateStyle: 'short'` when neither is given) or components (`day`: `numeric` | `2-digit`; `month`: `numeric` | `2-digit` | `long` | `short` | `narrow`; `year`: `numeric` | `2-digit`), never both — `Intl.DateTimeFormat` rejects the mix, so it is a type error and throws a `TypeError`. `fmt.date({ value, timeZone: 'UTC', day: '2-digit', month: '2-digit' })` renders `26/08` for a pt-BR reader and `08/26` for an English one.
 
 A value may also be a string, number, boolean, `null` or another reference, which renders in the same locale.
+
+`fmt.list` is for a list whose length the message cannot know, since ICU has no loop. Items are strings, numbers, nested references and other `fmt` values; each renders in the reader's locale, and the locale's list format (`Intl.ListFormat`) joins them. `type` is `conjunction` (the default, "and"), `disjunction` ("or") or `unit` (no word), and `style` is `long`, `short` or `narrow`. A run of whole sentences, such as one per failed field, joins with spaces under `type: 'unit', style: 'narrow'`:
+
+```ts
+msg(messages.invalidInput, {
+  failures: fmt.list({
+    items: failures.map((failure) => {
+      return msg(messages.required, { field: failure.label });
+    }),
+    type: 'unit',
+    style: 'narrow',
+  }),
+});
+```
+
+`renderHtml` escapes each item on its own and never the separators. `isTranslated` looks inside the list for nested references.
 
 ### Render at the edge
 

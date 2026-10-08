@@ -39,6 +39,62 @@ describe('ExpectedError', () => {
     expect(error.cause).toBe(cause);
   });
 
+  test('carries the values a renderer interpolates, apart from the message', () => {
+    const label = { id: 'field.budget', defaultMessage: 'Daily budget' };
+
+    const error = new ValidationError('Invalid input: Daily budget', {
+      code: 'INPUT_INVALID',
+      values: {
+        failures: [{ reason: 'min', label, limit: 10 }],
+        campaignIds: ['1', '2'],
+        optional: null,
+      },
+    });
+
+    expect(error.values).toEqual({
+      failures: [{ reason: 'min', label, limit: 10 }],
+      campaignIds: ['1', '2'],
+      optional: null,
+    });
+    expect(error.message).toBe('Invalid input: Daily budget');
+    expect(error.messageRef).toBeUndefined();
+    expect(new ExpectedError('no values').values).toBeUndefined();
+  });
+
+  test('a subclass narrows code and values per code', () => {
+    type LimitValues = { limit: number };
+
+    class LimitError extends ExpectedError<'OVER_LIMIT', LimitValues> {}
+
+    const error = new LimitError('over the limit', {
+      code: 'OVER_LIMIT',
+      values: { limit: 4000 },
+    });
+
+    const limit: number = error.values.limit;
+    const code: 'OVER_LIMIT' = error.code;
+
+    expect({ code, limit }).toEqual({ code: 'OVER_LIMIT', limit: 4000 });
+
+    // @ts-expect-error a value outside the declared values type
+    new LimitError('x', { code: 'OVER_LIMIT', values: { max: 1 } });
+  });
+
+  test('the built-in kinds infer code and values from the call', () => {
+    const error = new NotFoundError('milestone not found', {
+      code: 'MILESTONE_NOT_FOUND',
+      values: { milestoneId: 'm1' },
+    });
+
+    const code: 'MILESTONE_NOT_FOUND' = error.code;
+    const milestoneId: string = error.values.milestoneId;
+
+    expect({ code, milestoneId }).toEqual({
+      code: 'MILESTONE_NOT_FOUND',
+      milestoneId: 'm1',
+    });
+  });
+
   test.each([
     [ValidationError, 'ValidationError'],
     [NotFoundError, 'NotFoundError'],
@@ -131,6 +187,26 @@ describe('with @ttoss/i18n-core', () => {
       code: 'NAME_REQUIRED',
       message: 'O nome é obrigatório',
     });
+  });
+
+  test('values are renderable message values once the owner of the copy builds the reference', () => {
+    const error = new ValidationError('Message too long', {
+      code: 'MESSAGE_TOO_LONG',
+      values: { limit: 4000 },
+    });
+
+    const i18n = createI18n({
+      locale: 'en',
+      messages: { 'message.tooLong': 'Messages are limited to {limit}' },
+    });
+
+    expect(
+      i18n.render({
+        id: 'message.tooLong',
+        defaultMessage: 'Mensagens têm limite de {limit}',
+        values: error.values,
+      })
+    ).toBe('Messages are limited to 4000');
   });
 
   test('an ExpectedError without code is not localized', () => {

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.1](https://github.com/ttoss/ttoss/compare/@ttoss/i18n-core@0.8.0...@ttoss/i18n-core@0.8.1) (2026-10-07)
+
+### Bug Fixes
+
+- **i18n-core:** declare defineMessages and defineMessage instead of re-exporting @formatjs/intl's ([#1313](https://github.com/ttoss/ttoss/issues/1313)) ([3650bc0](https://github.com/ttoss/ttoss/commit/3650bc073593d13e3b5afa9099abea985382f995))
+
+# 0.8.0 (2026-10-07)
+
+### Features
+
+- **errors,i18n-core,appsync-api:** code plus values for errors whose thrower holds no copy ([#1311](https://github.com/ttoss/ttoss/issues/1311)) ([cdd82e0](https://github.com/ttoss/ttoss/commit/cdd82e0bf41817084685891920106f2f4f26658b))
+
 # [0.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/i18n-core@0.6.0...@ttoss/i18n-core@0.7.0) (2026-10-01)
 
 ### Features

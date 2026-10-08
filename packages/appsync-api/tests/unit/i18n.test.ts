@@ -13,14 +13,49 @@ const messages = defineMessages({
     defaultMessage: 'Your subscription is not active.',
     description: 'Gate refusal',
   },
+  tooLong: {
+    defaultMessage: 'Messages are limited to {limit, number} characters.',
+    description: 'Message length refusal',
+  },
+  tooLongOverride: {
+    defaultMessage: 'Shorten your question.',
+    description: 'Resolver-specific refusal',
+  },
 });
+
+// What a package that holds no copy throws: a code plus the data its message
+// needs, with a message in its own words for whoever ignores references.
+class CodedError extends Error {
+  expected = true;
+
+  code = 'MESSAGE_TOO_LONG';
+
+  values = { limit: 4000 };
+
+  messageRef?: unknown;
+
+  constructor() {
+    super('Mensagem longa demais');
+    this.name = 'ValidationError';
+  }
+}
+
+const resolveMessageRef = ({ error }: { error: { code: string } & any }) => {
+  return error.code === 'MESSAGE_TOO_LONG'
+    ? msg(messages.tooLong, { limit: error.values.limit })
+    : undefined;
+};
 
 const catalog = createCatalog({
   supported: ['en', 'pt-BR'],
   fallback: 'en',
   load: (locale) => {
     return locale === 'pt-BR'
-      ? { [messages.notActive.id!]: 'Sua assinatura não está ativa.' }
+      ? {
+          [messages.notActive.id!]: 'Sua assinatura não está ativa.',
+          [messages.tooLong.id!]:
+            'Mensagens têm limite de {limit, number} caracteres.',
+        }
       : {};
   },
 });
@@ -139,6 +174,147 @@ describe('createAppSyncI18nMiddleware', () => {
         return { id: '1' };
       })
     ).toEqual({ id: '1' });
+  });
+
+  test('resolves the reference of a thrown error that has only a code', async () => {
+    const middleware = createAppSyncI18nMiddleware({
+      catalog,
+      resolveMessageRef,
+      errorType: ({ name, code }) => {
+        return `${name}[${code}]`;
+      },
+    });
+
+    const error = await run(middleware, () => {
+      throw new CodedError();
+    }).catch((error_: unknown) => {
+      return error_;
+    });
+
+    expect(error).toBeInstanceOf(CodedError);
+    expect(error.expected).toBe(true);
+    expect(error.name).toBe('ValidationError[MESSAGE_TOO_LONG]');
+    expect(error.message).toBe('Mensagens têm limite de 4.000 caracteres.');
+  });
+
+  test('resolves a returned error, and passes the context and info along', async () => {
+    const resolver = jest.fn(resolveMessageRef);
+    const middleware = createAppSyncI18nMiddleware({
+      catalog,
+      resolveMessageRef: resolver,
+    });
+    const ctx = context('en');
+
+    const result = await run(
+      middleware,
+      () => {
+        return new CodedError();
+      },
+      ctx
+    );
+
+    expect(result.message).toBe('Messages are limited to 4,000 characters.');
+    expect(resolver).toHaveBeenCalledWith({
+      error: result,
+      context: ctx,
+      info,
+    });
+  });
+
+  test('leaves an unmapped code with its own message', async () => {
+    const middleware = createAppSyncI18nMiddleware({
+      catalog,
+      resolveMessageRef: () => {
+        return undefined;
+      },
+    });
+
+    const error = new CodedError();
+
+    await expect(
+      run(middleware, () => {
+        throw error;
+      })
+    ).rejects.toBe(error);
+    expect(error.name).toBe('ValidationError');
+    expect(error.message).toBe('Mensagem longa demais');
+    expect(error.messageRef).toBeUndefined();
+  });
+
+  test('never replaces a reference already attached', async () => {
+    const resolver = jest.fn(resolveMessageRef);
+    const middleware = createAppSyncI18nMiddleware({
+      catalog,
+      resolveMessageRef: resolver,
+    });
+
+    const error = await run(
+      middleware,
+      () => {
+        const overridden = new CodedError();
+        overridden.messageRef = msg(messages.tooLongOverride);
+        throw overridden;
+      },
+      context('en')
+    ).catch((error_: unknown) => {
+      return error_;
+    });
+
+    expect(error.message).toBe('Shorten your question.');
+    expect(resolver).not.toHaveBeenCalled();
+  });
+
+  test('passes the error through when resolving fails or answers no reference', async () => {
+    for (const failing of [
+      () => {
+        throw new Error('copy registry bug');
+      },
+      () => {
+        return { id: 'no default message' } as any;
+      },
+    ]) {
+      const middleware = createAppSyncI18nMiddleware({
+        catalog,
+        resolveMessageRef: failing,
+      });
+
+      const error = new CodedError();
+
+      await expect(
+        run(middleware, () => {
+          throw error;
+        })
+      ).rejects.toBe(error);
+      expect(error.name).toBe('ValidationError');
+      expect(error.message).toBe('Mensagem longa demais');
+      expect(error.messageRef).toBeUndefined();
+    }
+  });
+
+  test('does not resolve errors without a code, nor values that are not errors', async () => {
+    const resolver = jest.fn(resolveMessageRef);
+    const middleware = createAppSyncI18nMiddleware({
+      catalog,
+      resolveMessageRef: resolver,
+    });
+    const fault = new Error('boom');
+
+    await expect(
+      run(middleware, () => {
+        throw fault;
+      })
+    ).rejects.toBe(fault);
+    await expect(
+      run(middleware, () => {
+        throw { code: 'NOT_AN_ERROR' };
+      })
+    ).rejects.toEqual({ code: 'NOT_AN_ERROR' });
+    expect(
+      await run(middleware, () => {
+        return fault;
+      })
+    ).toBe(fault);
+    expect(resolver).not.toHaveBeenCalled();
   });
 
   test('rethrows the unrendered error when the catalog fails', async () => {
