@@ -383,6 +383,37 @@
                 "type": "object",
                 "additionalProperties": true
               },
+              "extrusion": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "mode": {
+                    "type": "string",
+                    "enum": ["class", "continuous"]
+                  },
+                  "mapDataId": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "thresholds": {
+                    "type": "array",
+                    "items": { "type": "number" }
+                  },
+                  "maxHeight": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "heights": {
+                    "type": "array",
+                    "items": { "type": "number", "minimum": 0 },
+                    "minItems": 1
+                  },
+                  "transitionMs": {
+                    "type": "number",
+                    "minimum": 0
+                  }
+                }
+              },
               "sizeBy": {
                 "allOf": [
                   {
@@ -808,6 +839,10 @@
         },
         "bearing": {
           "type": "number"
+        },
+        "cameraAngleTransitionMs": {
+          "type": "number",
+          "minimum": 0
         },
         "projection": {
           "type": "string",

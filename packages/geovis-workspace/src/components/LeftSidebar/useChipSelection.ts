@@ -40,50 +40,85 @@ const toggleValue = ({
 };
 
 /**
+ * The ids the chips show: the source's, trimmed to one when `multiple` is off,
+ * and — when `required` — never none of the current options: the first option
+ * steps in, so a value naming no chip (a band the new options dropped, say)
+ * still leaves one lit.
+ */
+const normalize = ({
+  ids,
+  chips,
+}: {
+  ids: string[];
+  chips?: GeovisWorkspaceSidebarChipsFilter;
+}): string[] => {
+  const single = chips?.multiple === false ? ids.slice(0, 1) : ids;
+  if (!chips?.required) return single;
+
+  const known = single.filter((id) => {
+    return chips.options.some((option) => {
+      return option.id === id;
+    });
+  });
+  if (known.length > 0) return known;
+  const first = chips.options[0]?.id;
+  return first === undefined ? [] : [first];
+};
+
+/**
  * The lifted chips selection: the active ids plus toggle/clear actions. Lives
  * here so the tab-bar badge can count the active chips. Honors `multiple:
- * false` by keeping at most one id selected.
+ * false` by keeping at most one id selected, and `required` by never letting
+ * the last one go.
  *
- * With `chips.menuId` the ids are published to the shared selection as a
- * comma-joined string, so the app can react to them — filtering a layer, say.
- * Without it the selection stays local, as it always was.
+ * With `chips.menuId` the shared selection is the source of truth: the chips
+ * show what it holds and write each toggle straight to it, so an app that
+ * rewrites the value sees the chips follow. The value is published only when
+ * the selection holds none yet (on mount, so an uncontrolled parent learns it)
+ * or holds one the chips had to normalize — never a stale copy over the app's.
+ * Without a `menuId` the selection stays local, as it always was.
  */
 export const useChipSelection = (chips?: GeovisWorkspaceSidebarChipsFilter) => {
   const { selection, setSelection } = useGeovisWorkspace();
 
   const menuId = chips?.menuId;
 
-  const [selected, setSelected] = React.useState<string[]>(() => {
-    // Seed from the shared selection when the chips drive it, so a controlled
-    // or permalinked value is reflected on the first render.
-    return (
-      (menuId ? parseIds(selection[menuId]) : null) ??
-      chips?.defaultSelected ??
-      []
-    );
+  const [local, setLocal] = React.useState<string[]>(() => {
+    return chips?.defaultSelected ?? [];
   });
 
+  const shared = menuId ? parseIds(selection[menuId]) : null;
+  const selected = normalize({ ids: shared ?? local, chips });
   const published = selected.join(DELIMITER);
 
-  // Publish to the shared selection so the app can react. Writes only on a real
-  // change: without the guard the effect would re-run on every render (an
-  // unstable `setSelection`/`selection` identity) and loop. Mirrors
-  // `useTimeline`, including publishing the initial value on mount so an
-  // uncontrolled parent learns it without touching a chip.
+  // Writes only on a real difference: without the guard the effect would
+  // re-run on every render (an unstable `setSelection`/`selection` identity)
+  // and loop. Mirrors `useTimeline`.
   React.useEffect(() => {
     if (menuId && selection[menuId] !== published) {
       setSelection({ menuId, value: published });
     }
   }, [menuId, published, selection, setSelection]);
 
-  const toggle = (id: string) => {
-    setSelected((current) => {
-      return toggleValue({ current, id, multiple: chips?.multiple !== false });
-    });
+  const commit = (next: string[]) => {
+    setLocal(next);
+    if (menuId) setSelection({ menuId, value: next.join(DELIMITER) });
   };
 
+  const toggle = (id: string) => {
+    const next = toggleValue({
+      current: selected,
+      id,
+      multiple: chips?.multiple !== false,
+    });
+    // `required`: the last active chip stays on.
+    if (chips?.required && next.length === 0) return;
+    commit(next);
+  };
+
+  // Never offered for a `required` set: `ChipsControl` hides the action.
   const clear = () => {
-    setSelected([]);
+    commit([]);
   };
 
   return { selected, toggle, clear };

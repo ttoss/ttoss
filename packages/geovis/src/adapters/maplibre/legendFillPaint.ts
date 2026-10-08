@@ -1,7 +1,14 @@
 import type maplibregl from 'maplibre-gl';
 
 import type { VisualizationSpec } from '../../spec/types';
-import { resolveLegendFillColorExpression } from './layerTranslation';
+import { extrusionTransitionMs } from './extrusionLifecycle';
+import { transitionExtrusionHeight } from './extrusionTransition';
+import {
+  isExtrudedLayer,
+  polygonFillColorProperty,
+  resolveExtrusionHeightExpression,
+  resolveLegendFillColorExpression,
+} from './layerTranslation';
 
 /**
  * Tracks pending `styledata` listeners keyed by `${layerId}:${property}` per
@@ -89,19 +96,64 @@ export const setPaintWhenReady = (
   if (!applied) applyWhenLayerAppears();
 };
 
-/** Re-applies legend-driven polygon fill expressions for layers with active legends. */
+/** Eases a mounted extruded layer to the height its spec now resolves. */
+const reapplyExtrusionHeight = ({
+  map,
+  spec,
+  layer,
+}: {
+  map: maplibregl.Map;
+  spec: VisualizationSpec;
+  layer: VisualizationSpec['layers'][number];
+}): void => {
+  // Defined: the caller only reaches here for a layer extruded in both the
+  // spec and the map.
+  const height = resolveExtrusionHeightExpression(
+    layer,
+    spec.legends,
+    spec.mapData
+  )!;
+  transitionExtrusionHeight({
+    map,
+    layerId: layer.id,
+    to: height,
+    durationMs:
+      layer.visible === false ? 0 : extrusionTransitionMs({ map, layer }),
+  });
+};
+
+/**
+ * Re-applies legend-driven polygon fill expressions for layers with active
+ * legends, and the height of extruded ones — its continuous scale tops out at
+ * the dataset's largest value, which a `mapData` change can move. The height
+ * eases there rather than jumping, like every other height change.
+ *
+ * A layer mid-swap between `fill` and `fill-extrusion` is skipped: its mounted
+ * type rejects the other's paint, and the swap brings the paint in with it.
+ */
 export const reapplyLegendDrivenFillPaint = (
   map: maplibregl.Map,
   spec: VisualizationSpec
 ): void => {
   for (const layer of spec.layers) {
     if (layer.geometry !== 'polygon') continue;
+    const mountedType = map.getLayer(layer.id)?.type;
+    const expectedType = isExtrudedLayer(layer) ? 'fill-extrusion' : 'fill';
+    if (mountedType !== undefined && mountedType !== expectedType) continue;
+    if (mountedType === 'fill-extrusion') {
+      reapplyExtrusionHeight({ map, spec, layer });
+    }
     const expression = resolveLegendFillColorExpression(
       layer,
       spec.legends,
       spec.mapData
     );
     if (!expression) continue;
-    setPaintWhenReady(map, layer.id, 'fill-color', expression);
+    setPaintWhenReady(
+      map,
+      layer.id,
+      polygonFillColorProperty(layer),
+      expression
+    );
   }
 };

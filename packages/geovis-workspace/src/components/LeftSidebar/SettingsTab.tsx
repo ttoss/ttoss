@@ -4,11 +4,14 @@ import type {
   GeovisWorkspaceSidebarSettingsBlock,
   GeovisWorkspaceSidebarSettingsControl,
 } from '../../context/GeovisWorkspaceContext';
+import { useGeovisWorkspace } from '../../hooks/useGeovisWorkspace';
+import { ChoiceSettingControl } from './ChoiceSettingControl';
 import { ColorRampSettingControl } from './ColorRampSettingControl';
 import { FilterBlockSection } from './FilterBlockSection';
 import { SliderSettingControl } from './SliderSettingControl';
 import { COLOR } from './theme';
 import { ToggleSettingControl } from './ToggleSettingControl';
+import { isGateOpen, useSidebarSections } from './useSections';
 
 /**
  * Renders one block's control.
@@ -31,6 +34,10 @@ const BlockControl = ({
 
   if (control.kind === 'colorRamp') {
     return <ColorRampSettingControl control={control} label={label} />;
+  }
+
+  if (control.kind === 'choice') {
+    return <ChoiceSettingControl control={control} label={label} />;
   }
 
   return <ToggleSettingControl control={control} label={label} />;
@@ -59,7 +66,8 @@ const BlockHint = ({ hint }: { hint: string }) => {
  * A toggle block skips the header band: the switch row already carries the
  * block's title, and a header above it would say the same words twice. Every
  * control holds its own state — the tab is presentational for now, so nothing
- * is lifted.
+ * is lifted. A block whose `shownWhen` gate is closed is not rendered at all;
+ * its value stays in the shared selection, so it returns as it was left.
  *
  * @param params.blocks - The blocks, top to bottom.
  * @returns The tab body.
@@ -72,6 +80,12 @@ export const SettingsTab = ({
 }: {
   blocks: GeovisWorkspaceSidebarSettingsBlock[];
 }) => {
+  const { selection } = useGeovisWorkspace();
+  const sections = useSidebarSections();
+  const shown = blocks.filter((block) => {
+    return isGateOpen({ gate: block.shownWhen, sections, selection });
+  });
+
   return (
     <Flex
       sx={{
@@ -82,7 +96,7 @@ export const SettingsTab = ({
         paddingBottom: '20px',
       }}
     >
-      {blocks.map((block) => {
+      {shown.map((block) => {
         if (block.control.kind === 'toggle') {
           return (
             <Box key={block.id}>

@@ -40,21 +40,51 @@ const syncMinZoom = (
   map.setMinZoom(next?.maxZoomOut ?? null);
 };
 
+/** The angles the next view changes, each only when it differs from the last. */
+const changedAngles = (
+  prev: VisualizationSpec['view'],
+  next: NonNullable<VisualizationSpec['view']>
+): { pitch?: number; bearing?: number } => {
+  const changed: { pitch?: number; bearing?: number } = {};
+  const pitch = next.pitch ?? 0;
+  const bearing = next.bearing ?? 0;
+  if ((prev?.pitch ?? 0) !== pitch) changed.pitch = pitch;
+  if ((prev?.bearing ?? 0) !== bearing) changed.bearing = bearing;
+  return changed;
+};
+
+/**
+ * Moves the camera to the next spec's pitch and bearing, when either changed:
+ * one ease over both when the view declares `cameraAngleTransitionMs`, a jump
+ * otherwise. Only the changed angles are passed, so the ease never touches the
+ * centre or zoom the reader panned to.
+ */
+const syncAngles = (
+  map: maplibregl.Map,
+  prev: VisualizationSpec['view'],
+  next: NonNullable<VisualizationSpec['view']>
+): void => {
+  const changed = changedAngles(prev, next);
+  if (Object.keys(changed).length === 0) return;
+
+  const duration = next.cameraAngleTransitionMs ?? 0;
+  if (duration > 0) {
+    map.easeTo({ ...changed, duration });
+    return;
+  }
+  if (changed.pitch !== undefined) map.setPitch(changed.pitch);
+  if (changed.bearing !== undefined) map.setBearing(changed.bearing);
+};
+
 export const syncMapView = (
   map: maplibregl.Map,
   prev: VisualizationSpec['view'],
   next: VisualizationSpec['view']
 ): void => {
   if (!next) return;
-  const p = prev ?? {};
   syncCenter(map, prev, next);
   syncMaxZoom(map, prev, next);
   syncMinZoom(map, prev, next);
   syncZoom(map, prev, next);
-  const pp = p.pitch ?? 0;
-  const np = next.pitch ?? 0;
-  if (pp !== np) map.setPitch(np);
-  const pb = p.bearing ?? 0;
-  const nb = next.bearing ?? 0;
-  if (pb !== nb) map.setBearing(nb);
+  syncAngles(map, prev, next);
 };
