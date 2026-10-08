@@ -130,6 +130,32 @@ export const messages = defineMessages({
     description:
       "Accessible label for the button that steps a setting's slider up.",
   },
+  bearingDial: {
+    defaultMessage: 'Camera rotation',
+    description:
+      'Accessible label for the compass dial that turns the map camera.',
+  },
+  bearingReadout: {
+    defaultMessage:
+      '{point, select, n {N} ne {NE} e {E} se {SE} s {S} sw {SW} w {W} other {NW}} · {degrees}°',
+    description:
+      'Readout of the camera rotation: the abbreviated cardinal point nearest the bearing, then the bearing in degrees, e.g. "NE · 45°".',
+  },
+  bearingRotateLeft: {
+    defaultMessage: 'Rotate 45° left',
+    description:
+      'Accessible label for the button that turns the map camera 45 degrees counterclockwise.',
+  },
+  bearingRotateRight: {
+    defaultMessage: 'Rotate 45° right',
+    description:
+      'Accessible label for the button that turns the map camera 45 degrees clockwise.',
+  },
+  bearingResetNorth: {
+    defaultMessage: 'Back to north',
+    description:
+      'Label of the button that turns the map camera back to north up.',
+  },
   dismissInspector: {
     defaultMessage: 'Dismiss selection',
     description:

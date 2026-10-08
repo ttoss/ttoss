@@ -413,12 +413,21 @@ A **`settings`** body (`kind: 'settings'`) has `blocks` — each block
 `control` is a `slider`
 (`{ kind, menuId, stops?, min?, max?, step?, defaultValue, unit?, endLabels?, stepButtons? }`),
 a `colorRamp` (`{ kind, menuId, options, defaultValue? }`), a `toggle`
-(`{ kind, menuId, icon?, defaultValue }`), or a `choice`
-(`{ kind, menuId, options, defaultValue?, glyphColors? }`). All publish to
+(`{ kind, menuId, icon?, defaultValue }`), a `choice`
+(`{ kind, menuId, options, defaultValue?, glyphColors? }`), or a `bearing`
+(`{ kind, menuId, defaultValue?, step? }`). All publish to
 `selection[menuId]` as strings — a slider its number, a ramp the chosen option's
-`id`, a toggle `'true'`/`'false'`, a choice the chosen option's `value` — seeded
+`id`, a toggle `'true'`/`'false'`, a choice the chosen option's `value`, a bearing
+whole degrees `0`–`359` — seeded
 from the selection on first render, so a controlled value wins over the
 control's own default.
+
+A block's `subBlocks` — each `{ id, title, hint?, shownWhen?, control }` — nest
+controls under the block's own, under a lighter heading (smaller, no icon), so
+they read as adjustments _of_ the block: the extrusion's dataset, height and
+camera under a 2D/3D choice. The control's value reads on the heading's right
+instead of above the control — a slider's rung, a bearing's `NE · 45°`, the
+chosen option's `unit` — which keeps a stack of them compact.
 
 A block's `shownWhen` (`{ menuId, values }`, the gate a section's `enabledWhen`
 takes) renders it only while that menu holds one of `values` — controls that
@@ -428,7 +437,9 @@ adjust; the value stays in the selection, so the block returns as it was left.
 
 A `choice` lays its `options` — each
 `{ value, label, sublabel?, glyph?, enabledWhen?, disabledHint? }` — side by side
-as cards. `glyph: 'flat' | 'extruded'` draws a strip of map cells lying flat or
+as cards, or with `layout: 'list'` one row each, top to bottom, with the option's
+`icon`, `label` and `sublabel` and a check on the chosen one; a list declaring a
+single option renders it as a read-only card instead. `glyph: 'flat' | 'extruded'` draws a strip of map cells lying flat or
 standing as prisms, in `glyphColors` (pass the active ramp to preview the map);
 a card with neither glyph nor sublabel is a compact button, as for a camera
 pitch. An option's `enabledWhen` keeps it available only while another menu holds
@@ -439,6 +450,14 @@ the gate reopens. The app therefore reads one value and never repeats the rule:
 a 2D/3D choice gated on the variations drawn as polygons publishes `'2d'` while a
 point variation is active, and `'3d'` again when the reader returns. See
 [Storybook](https://storybook.ttoss.dev/) → _Geovis Workspace / View Mode_.
+
+A `bearing` is a compass dial for the camera's rotation: drag it (snapped to
+`step`, `5°` by default) or focus it and use the arrow keys (`45°` with Shift);
+the rotate buttons beside it step `45°` to the next cardinal point, and **Back to
+north** returns to `0°`. The app turns the value into `view.bearing` — typically
+only while the view is 3D, north up otherwise. It runs one way: a reader who
+rotates the map itself leaves the dial where it was, because the map reports no
+camera change back. See _Geovis Workspace / View Mode → CompareIndicators_.
 
 A slider with `stops` is a **ladder**: the handle snaps between the rungs and
 reads each one's `label` (and `hint` beside it), while `min`/`max`/`step` are

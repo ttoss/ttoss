@@ -6,7 +6,7 @@ import type {
   GeovisWorkspaceSidebarSection,
 } from '../../context/GeovisWorkspaceContext';
 import { useGeovisWorkspace } from '../../hooks/useGeovisWorkspace';
-import { isGateOpen } from './useSections';
+import { isGateOpen, settingsControls } from './useSections';
 
 /** Every `choice` setting in the sidebar's settings bodies. */
 const findChoices = (
@@ -14,8 +14,8 @@ const findChoices = (
 ): GeovisWorkspaceSidebarChoiceSetting[] => {
   return sections.flatMap((section) => {
     if (section.body.kind !== 'settings') return [];
-    return section.body.blocks.flatMap((block) => {
-      return block.control.kind === 'choice' ? [block.control] : [];
+    return settingsControls(section.body.blocks).flatMap((control) => {
+      return control.kind === 'choice' ? [control] : [];
     });
   });
 };

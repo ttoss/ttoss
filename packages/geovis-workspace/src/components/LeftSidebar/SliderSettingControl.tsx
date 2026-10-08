@@ -107,6 +107,29 @@ const resolveTrack = ({
   };
 };
 
+/**
+ * What a slider reads as, for a heading that shows it in the control's place:
+ * the rung's label on a ladder, the number with its unit otherwise.
+ *
+ * @param params.control - The slider's spec.
+ * @param params.raw - The serialized value it holds, if it has published one.
+ * @returns The readout.
+ *
+ * @example
+ * sliderReadout({ control, raw: '3' }); // '3×'
+ */
+export const sliderReadout = ({
+  control,
+  raw,
+}: {
+  control: GeovisWorkspaceSidebarSliderSetting;
+  raw: string | undefined;
+}): string => {
+  const value = Number(raw ?? control.defaultValue);
+  const track = resolveTrack({ control, value });
+  return track.current ? track.current.label : `${value}${control.unit ?? ''}`;
+};
+
 /** The value the handle rests on, with a rung's secondary readout beside it. */
 const Readout = ({ text, hint }: { text: string; hint?: string }) => {
   return (
@@ -224,7 +247,12 @@ const ScaleRow = ({
  * own number with the unit. Either way the value is published to the shared
  * selection under `menuId`, so the app redraws from it.
  *
+ * Under a sub-block the readout moves to the heading (`readoutInHeading`),
+ * which reads it through {@link sliderReadout}, so the track sits right under
+ * the title.
+ *
  * @param params.control - The slider's spec.
+ * @param params.readoutInHeading - Leaves the readout to the heading above.
  * @returns The control.
  *
  * @example
@@ -232,8 +260,10 @@ const ScaleRow = ({
  */
 export const SliderSettingControl = ({
   control,
+  readoutInHeading = false,
 }: {
   control: GeovisWorkspaceSidebarSliderSetting;
+  readoutInHeading?: boolean;
 }) => {
   const [raw, setRaw] = useSettingValue({
     menuId: control.menuId,
@@ -258,7 +288,9 @@ export const SliderSettingControl = ({
 
   return (
     <Box>
-      <Readout text={readout} hint={track.current?.hint} />
+      {readoutInHeading ? null : (
+        <Readout text={readout} hint={track.current?.hint} />
+      )}
 
       <input
         type="range"

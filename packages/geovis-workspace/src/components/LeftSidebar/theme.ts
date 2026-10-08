@@ -19,6 +19,7 @@ export const COLOR = {
   primarySoft: 'rgba(51,124,89,0.3)',
   primaryTint: 'rgba(51,124,89,0.07)',
   primaryTintBorder: 'rgba(51,124,89,0.2)',
+  primaryTintStrong: 'rgba(51,124,89,0.14)',
   chipAccent: '#d97706',
   chipAccentText: '#b45309',
 };

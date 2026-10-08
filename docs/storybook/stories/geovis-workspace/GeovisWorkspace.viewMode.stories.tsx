@@ -63,9 +63,18 @@ import { IvsPopulationDemo } from './GeovisWorkspace.ivsPopulation';
  *
  * 1. It opens in 3D: red hexagons stand tall and short alike — vulnerability
  *    and population are independent. Hover one for both values.
- * 2. Pick **IVS** under **Indicador da altura**: the height reads the colour's
- *    own indicator, one step per faixa, and the red hexagons now stand tallest.
+ * 2. The 3D adjustments sit *under* **Visualização**, as sub-blocks with
+ *    lighter headings, each value on the heading's right. Pick **IVS** under
+ *    **Altura representa** — a `list` choice, icon, range and check per row:
+ *    the height reads the colour's own indicator, one step per faixa, the red
+ *    hexagons now stand tallest, and the heading's unit turns to `índice`.
  * 3. The legend's subtitle names what the height reads.
+ * 4. Under **Rotação da câmera**, drag the dial: the map turns with the needle,
+ *    5° at a time. The rotate buttons step 45° to the next cardinal point, the
+ *    arrow keys 5° (45° with Shift) on the focused dial, and **Back to north**
+ *    — green while the map is turned, faded once it faces north — levels the
+ *    bearing at 0°. Pick **2D** and back: the map is north up in
+ *    2D and returns to the dial's bearing in 3D.
  */
 
 const RATES_TOTAL = fictitiousRates();

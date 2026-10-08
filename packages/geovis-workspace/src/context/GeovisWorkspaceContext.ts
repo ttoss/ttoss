@@ -702,6 +702,17 @@ export interface GeovisWorkspaceSidebarChoiceOption {
   enabledWhen?: GeovisWorkspaceSidebarEnabledWhen;
   /** Line shown under the options while this option is unavailable. */
   disabledHint?: string;
+  /**
+   * Iconify token before the label. Drawn only in the `list` layout, where
+   * each row has room for it; `cards` ignore it.
+   */
+  icon?: string;
+  /**
+   * Short unit of what the option measures, e.g. `'habitantes'`. While the
+   * option is the chosen one it reads on the right of a sub-block's heading,
+   * so the reader knows what the value is counted in without opening the row.
+   */
+  unit?: string;
 }
 
 /**
@@ -725,6 +736,48 @@ export interface GeovisWorkspaceSidebarChoiceSetting {
    * color ramp, so the drawing previews the map. Defaults to the primary tint.
    */
   glyphColors?: string[];
+  /**
+   * How the options are laid out. Defaults to `'cards'`.
+   *
+   * - `'cards'` — side by side, each with its `glyph`: a few short
+   *   alternatives read at a glance, like `2D` / `3D` or a camera pitch.
+   * - `'list'` — one row each, top to bottom, with its `icon`, `label` and
+   *   `sublabel`, and a check on the chosen one: alternatives whose names and
+   *   ranges need the width, like the dataset an extrusion's height reads.
+   *
+   * A `list` declaring a single option has nothing to choose, so it renders
+   * that option as a read-only card rather than a one-row radio group — the
+   * reader still sees what the value stands for. The rule counts declared
+   * options, not available ones: a list whose other rows are gated shut keeps
+   * its shape, so it does not change form whenever a gate moves.
+   */
+  layout?: 'cards' | 'list';
+}
+
+/**
+ * A camera-bearing setting: a compass dial the reader drags, with ±45° steps
+ * and a back-to-north button beside it.
+ *
+ * Its own control rather than a slider over `0`–`359`: the value is circular —
+ * `355°` sits next to `0°` — and a dial shows the direction itself, not a
+ * position on a track. The readout names the cardinal point, which is what
+ * makes this a bearing rather than any angle.
+ *
+ * The value runs one way, dial to map: the app turns it into `view.bearing`.
+ * A reader who rotates the map itself (right-drag, the compass button) leaves
+ * the dial where it was, since the map reports no camera change back.
+ */
+export interface GeovisWorkspaceSidebarBearingSetting {
+  kind: 'bearing';
+  /**
+   * Menu id the bearing is reported under: whole degrees clockwise from north,
+   * `0`–`359`.
+   */
+  menuId: string;
+  /** Bearing on first render. Defaults to `0`, north up. */
+  defaultValue?: number;
+  /** Snap of a drag and of an arrow key, in degrees. Defaults to `5`. */
+  step?: number;
 }
 
 /** A settings control, discriminated by `kind`. */
@@ -732,7 +785,36 @@ export type GeovisWorkspaceSidebarSettingsControl =
   | GeovisWorkspaceSidebarSliderSetting
   | GeovisWorkspaceSidebarToggleSetting
   | GeovisWorkspaceSidebarColorRampSetting
-  | GeovisWorkspaceSidebarChoiceSetting;
+  | GeovisWorkspaceSidebarChoiceSetting
+  | GeovisWorkspaceSidebarBearingSetting;
+
+/**
+ * A control nested under a settings block's own, under a lighter heading —
+ * smaller, with no icon — so it reads as an adjustment *of* the block rather
+ * than as a peer of it: the extrusion height and the camera under a 2D/3D
+ * choice, say.
+ *
+ * The control's current value reads on the heading's right — a slider's rung,
+ * a bearing's `NE · 45°`, the chosen option's `unit` — instead of above the
+ * control, which is what keeps a stack of them compact. No `icon`,
+ * `collapsible` or nesting of its own: a sub-block is the light tier, and a
+ * third one is a case to meet when it arrives.
+ */
+export interface GeovisWorkspaceSidebarSettingsSubBlock {
+  /** Unique id of the sub-block. */
+  id: string;
+  /** Heading shown above the control. */
+  title: string;
+  /** Explanatory line under the control. */
+  hint?: string;
+  /**
+   * The gate a block's {@link GeovisWorkspaceSidebarSettingsBlock.shownWhen}
+   * takes: hidden while closed, value kept.
+   */
+  shownWhen?: GeovisWorkspaceSidebarEnabledWhen;
+  /** The control rendered under the heading. */
+  control: GeovisWorkspaceSidebarSettingsControl;
+}
 
 /** A headed block wrapping one settings control. */
 export interface GeovisWorkspaceSidebarSettingsBlock {
@@ -760,6 +842,8 @@ export interface GeovisWorkspaceSidebarSettingsBlock {
   shownWhen?: GeovisWorkspaceSidebarEnabledWhen;
   /** The control rendered inside the block. */
   control: GeovisWorkspaceSidebarSettingsControl;
+  /** Controls nested under the block's own, top to bottom. */
+  subBlocks?: GeovisWorkspaceSidebarSettingsSubBlock[];
 }
 
 /**

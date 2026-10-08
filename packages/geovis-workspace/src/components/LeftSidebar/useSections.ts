@@ -4,10 +4,12 @@ import type {
   GeovisWorkspaceSidebarEnabledWhen,
   GeovisWorkspaceSidebarFilterBlock,
   GeovisWorkspaceSidebarSection,
+  GeovisWorkspaceSidebarSettingsBlock,
   GeovisWorkspaceSidebarSettingsControl,
   GeovisWorkspaceSidebarTimelineFilter,
 } from '../../context/GeovisWorkspaceContext';
 import { useGeovisWorkspace } from '../../hooks/useGeovisWorkspace';
+import { normalizeBearing } from './BearingSettingControl';
 
 /**
  * Every filter block in the sidebar, paired with the section holding it.
@@ -71,6 +73,24 @@ const findChips = (
 };
 
 /**
+ * Every control in a stack of settings blocks — each block's own, then its
+ * sub-blocks' — in render order. Anything that resolves a settings menu walks
+ * this rather than `blocks`, so a control nested under another is found too.
+ */
+export const settingsControls = (
+  blocks: GeovisWorkspaceSidebarSettingsBlock[]
+): GeovisWorkspaceSidebarSettingsControl[] => {
+  return blocks.flatMap((block) => {
+    return [
+      block.control,
+      ...(block.subBlocks ?? []).map((subBlock) => {
+        return subBlock.control;
+      }),
+    ];
+  });
+};
+
+/**
  * The value a settings control starts at, serialized the way it publishes it —
  * a `choice` with no `defaultValue` starts at its first option.
  */
@@ -82,6 +102,9 @@ const settingDefault = (
   }
   if (control.kind === 'colorRamp') {
     return control.defaultValue ?? control.options[0]?.id;
+  }
+  if (control.kind === 'bearing') {
+    return String(normalizeBearing(control.defaultValue ?? 0));
   }
   return String(control.defaultValue);
 };
@@ -96,9 +119,9 @@ const findSettingDefault = ({
 }): string | undefined => {
   for (const section of sections) {
     if (section.body.kind !== 'settings') continue;
-    for (const block of section.body.blocks) {
-      if (block.control.menuId === menuId) {
-        return settingDefault(block.control);
+    for (const control of settingsControls(section.body.blocks)) {
+      if (control.menuId === menuId) {
+        return settingDefault(control);
       }
     }
   }
