@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.36.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.35.0...@ttoss/http-server-mcp@0.36.0) (2026-10-09)
+
+### Features
+
+- **http-server-mcp:** hold each tool description to the client limit ([#1318](https://github.com/ttoss/ttoss/issues/1318)) ([bb8f90d](https://github.com/ttoss/ttoss/commit/bb8f90d4273ec515d3de47b24af2a036731b3675))
+
 # [0.35.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.34.5...@ttoss/http-server-mcp@0.35.0) (2026-10-09)
 
 ### Features
