@@ -1155,7 +1155,7 @@ test('every tool the instructions name exists', () => {
 });
 ```
 
-Sizes are characters of `JSON.stringify({ name, description, inputSchema })`; `measureMcpSurface` answers them without judging. `total` and `perTool` have no default — they are the product's choice — while `instructions` defaults to `2048`, about what Claude Code keeps before cutting the rest silently. `findUnknownToolMentions` reads backticked names with a `-` or `_` (`` `get-next` ``); pass `pattern` when the instructions name tools another way.
+Sizes are characters of `JSON.stringify({ name, description, inputSchema })`; `measureMcpSurface` answers them without judging. `total` and `perTool` have no default — they are the product's choice. `description` (each tool's description alone) and `instructions` default to `2048`, where [Claude Code truncates both](https://code.claude.com/docs/en/mcp) without saying so; a schema is never cut, which is why `perTool` cannot stand in for `description`. `findUnknownToolMentions` reads backticked names with a `-` or `_` (`` `get-next` ``); pass `pattern` when the instructions name tools another way.
 
 ## AWS Lambda Deployment
 
