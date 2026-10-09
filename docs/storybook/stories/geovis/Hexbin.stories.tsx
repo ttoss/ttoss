@@ -195,7 +195,7 @@ const HexbinStory: StoryFn<HexbinStoryArgs> = (args) => {
           geometry: 'polygon',
           mapDataId: 'counts',
           activeLegendId: 'counts',
-          paint: { fillOpacity, lineColor: '#FFFFFF', lineWidth: 0.4 },
+          paint: { fillOpacity, lineColor: '#FFFFFF' },
         },
         // Declared after the grid so the observations sit on top of it, and
         // hidden rather than dropped so toggling the control does not reorder

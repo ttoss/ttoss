@@ -26,6 +26,9 @@ test('package exports expected public symbols', () => {
   expect(typeof geovis.useGeoVisClick).toBe('function');
   expect(typeof geovis.useDismissGeoVisClick).toBe('function');
   expect(typeof geovis.validateSpec).toBe('function');
+  // Validate what will render: a `mapType` spec expanded the way the runtime
+  // expands it, before `validateSpec` (#1301).
+  expect(typeof geovis.resolveSpecFromMapType).toBe('function');
   expect(typeof geovis.useMapData).toBe('function');
   expect(typeof geovis.GeoVisLayerControl).toBe('function');
   // Shared compact breakpoint: consumers branch on the same width the map's own

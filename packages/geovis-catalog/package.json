@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/geovis-catalog",
-  "version": "0.1.19",
+  "version": "0.1.20",
   "description": "Trusted catalog contract for GeoVis — the machine-facing metadata AI tools and builders validate against.",
   "keywords": [
     "Geovis",

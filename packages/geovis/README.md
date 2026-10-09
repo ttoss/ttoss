@@ -142,7 +142,7 @@ Each entry in `spec.legends` (or `layer.legends`) defines one choropleth legend.
 | Field           | Type                   | Required | Description                                                                                                                                                       |
 | --------------- | ---------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `id`            | `string`               | ✓        | Unique legend identifier. Referenced by `activeLegendId` and `GeoVisLegend`.                                                                                      |
-| `colorBy`       | `ColorBy`              | ✓        | Color-by configuration (`categorical` or `quantitative`).                                                                                                         |
+| `colorBy`       | `ColorBy`              | ✓        | Color-by configuration (`categorical` or `quantitative`). The colour always reads the layer's `mapData`; `colorBy.property` is optional, deprecated and ignored.  |
 | `title`         | `string`               |          | Short heading rendered above the swatches.                                                                                                                        |
 | `subtitle`      | `string`               |          | Secondary description rendered below the title.                                                                                                                   |
 | `icon`          | `string`               |          | Icon shown in a tinted chip beside the title, as a [`@ttoss/react-icons`](https://storybook.ttoss.dev/) name (e.g. `'lucide:tractor'`).                           |
@@ -203,7 +203,7 @@ Each entry in `spec.layers` describes one rendered layer.
 
 ### Paint properties
 
-The `paint` field accepts different shapes depending on `geometry`. The three most common:
+The `paint` field accepts different shapes depending on `geometry`, and only the keys of that shape: `validateSpec` rejects any other key as `invalid-schema` — MapLibre's kebab-case `fill-color`, or a `lineWidth` on a polygon (MapLibre has no outline width for fills) — instead of letting the adapter drop it at render time. A kebab-case key comes with a repair naming its camelCase form. The three most common:
 
 **Polygon (`geometry: 'polygon'`) — `FillPaint`**
 
@@ -230,6 +230,7 @@ paint: {
   circleColor: '#10b981',       // circle-color
   circleRadius: 6,              // circle-radius (pixels)
   circleStrokeColor: '#065f46', // circle-stroke-color
+  circleStrokeOpacity: 0.9,     // circle-stroke-opacity
   circleStrokeWidth: 1,         // circle-stroke-width (pixels)
 }
 ```
@@ -1211,6 +1212,19 @@ if (result.status !== 'resolved') {
 
 Each `GeoVisIssue` carries a machine-readable `code`, a `subject` locating the offending field, a human `message`, and — only when an alternative is already known at the check site (never guessed) — a `repair` list of `allowed-values` or `set-value` options.
 
+### Validating what will render
+
+A spec with `mapType` is expanded into layers, legends and `mapData` defaults before it renders — the runtime does it, then validates. To validate or inspect that expanded spec yourself (a server checking a spec before it reaches the browser, say), run the same two steps with the exported resolver:
+
+```tsx
+import { resolveSpecFromMapType, validateSpec } from '@ttoss/geovis';
+
+const result = validateSpec(resolveSpecFromMapType(rawSpec), capabilities);
+// result.spec (when resolved) is exactly what GeoVisProvider will render.
+```
+
+The resolver is pure and returns specs without `mapType` unchanged. Its result carries an internal `__resolved` marker, so handing it on to `GeoVisProvider` does not expand it twice.
+
 ## Applying Patches
 
 > **`applyPatch` is a low-level escape hatch, not the primary mutation API.** Prefer [`dispatch()`](#ai-action-surface-dispatch) for anything expressible as one of its actions (`toggle-layer`, `select-feature`, `set-map-data`, `set-filter`, `set-view-preset`) — it targets stable spec ids instead of internal paint paths, and every call is recorded on the action log. `applyPatch` stays public and fully supported for the layer-visibility, `mapDataId`, `filter`, and paint-property replaces that don't yet have (or will never need) a dedicated action, and for `add`/`remove` — the same "available, not primary" role `getNativeInstance()` plays for direct engine access.
@@ -2090,7 +2104,7 @@ Each `GeoVisIssue` is `{ code, subject: { path, id? }, message, repair? }`:
 
 | `code`                          | Failure status | Meaning                                                                                      |
 | ------------------------------- | -------------- | -------------------------------------------------------------------------------------------- |
-| `invalid-schema`                | `invalid`      | value fails the JSON Schema                                                                  |
+| `invalid-schema`                | `invalid`      | value fails the JSON Schema, or a `paint` key the layer's geometry does not accept           |
 | `invalid-schema-version`        | `invalid`      | `schemaVersion` is declared but doesn't match `SPEC_SCHEMA_VERSION`                          |
 | `invalid-threshold-order`       | `invalid`      | legend/sizeBy thresholds not strictly ascending                                              |
 | `invalid-threshold-value`       | `invalid`      | non-finite threshold value                                                                   |
@@ -2098,6 +2112,7 @@ Each `GeoVisIssue` is `{ code, subject: { path, id? }, message, repair? }`:
 | `invalid-size-mode`             | `invalid`      | stepped `sizeBy` without thresholds or an active threshold legend                            |
 | `duplicate-map-data-id`         | `mismatch`     | non-unique `mapData.mapDataId`                                                               |
 | `unknown-map-data-id`           | `mismatch`     | layer references an undeclared `mapDataId`                                                   |
+| `unknown-legend-id`             | `mismatch`     | layer's `activeLegendId` names no legend in its `legends` or the spec's                      |
 | `unknown-source`                | `mismatch`     | layer or `mapData` references an undeclared source                                           |
 | `source-scope-conflict`         | `mismatch`     | layer's `sourceId` doesn't match its `mapDataId`'s source                                    |
 | `duplicate-dimension`           | `mismatch`     | two `mapData` entries claim the same `dimension` on one source                               |

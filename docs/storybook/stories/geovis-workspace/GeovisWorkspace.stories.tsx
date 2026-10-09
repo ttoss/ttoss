@@ -364,7 +364,7 @@ const LayerControlClearsSidebarStory = () => {
       id: 'regions-outline',
       sourceId: 'regions',
       geometry: 'polygon',
-      paint: { fillOpacity: 0, lineColor: '#111827', lineWidth: 2 },
+      paint: { fillOpacity: 0, lineColor: '#111827' },
     };
 
     return {

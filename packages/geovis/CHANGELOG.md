@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.27.1](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.27.0...@ttoss/geovis@0.27.1) (2026-10-09)
+
+### Bug Fixes
+
+- **geovis:** report spec mistakes that rendered silent defaults ([#1310](https://github.com/ttoss/ttoss/issues/1310)) ([64e5ea1](https://github.com/ttoss/ttoss/commit/64e5ea1c62ece9e958e9b0510e0cdde0f152d244)), closes [#1297](https://github.com/ttoss/ttoss/issues/1297) [#1298](https://github.com/ttoss/ttoss/issues/1298) [#1299](https://github.com/ttoss/ttoss/issues/1299) [#1300](https://github.com/ttoss/ttoss/issues/1300) [#1301](https://github.com/ttoss/ttoss/issues/1301) [#1297](https://github.com/ttoss/ttoss/issues/1297) [#1298](https://github.com/ttoss/ttoss/issues/1298) [#1299](https://github.com/ttoss/ttoss/issues/1299) [#1300](https://github.com/ttoss/ttoss/issues/1300) [#1301](https://github.com/ttoss/ttoss/issues/1301)
+
 # [0.27.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.26.0...@ttoss/geovis@0.27.0) (2026-10-08)
 
 ### Features

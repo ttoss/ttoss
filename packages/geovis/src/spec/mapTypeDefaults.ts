@@ -266,9 +266,18 @@ const applyResolved = (
  *
  * Returns the spec unchanged if no `mapType` is set.
  *
- * This is a pure function (no React hooks, no side effects).
- * It is called automatically by the runtime and `GeoVisProvider`
- * — consumers do **not** need to call it manually.
+ * This is a pure function (no React hooks, no side effects). The runtime and
+ * `GeoVisProvider` call it before validating, so rendering needs no manual
+ * call. Call it yourself to validate or inspect what will actually render —
+ * the generated layers, the chosen source, the merged legends — before the
+ * spec reaches a browser:
+ *
+ * ```ts
+ * const result = validateSpec(resolveSpecFromMapType(spec), capabilities);
+ * ```
+ *
+ * The result carries an internal `__resolved` marker, so passing it on to
+ * `GeoVisProvider` is safe: it is not expanded twice.
  */
 export const resolveSpecFromMapType = (
   spec: VisualizationSpec
