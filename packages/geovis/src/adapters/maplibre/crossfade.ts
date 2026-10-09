@@ -193,17 +193,25 @@ const addShadow = (
   map.addLayer(shadowWithIds);
 };
 
-/** Resolves the layer's base circle fill opacity (stroke base is always 1). */
+/** Resolves the layer's base circle fill opacity. */
 const resolveCircleBase = (layer: VisualizationLayer): number => {
   const circlePaint = layer.paint as { circleOpacity?: number } | undefined;
   return circlePaint?.circleOpacity ?? 1;
 };
 
+/**
+ * Resolves the stroke opacity the real layer rests at — and the fade ramps to
+ * and from — the layer's own `circleStrokeOpacity`, as the layer builder
+ * paints it. A fixed `1` here would undo that value once the fade settles.
+ */
+const resolveStrokeBase = (layer: VisualizationLayer): number => {
+  const circlePaint = layer.paint as
+    { circleStrokeOpacity?: number } | undefined;
+  return circlePaint?.circleStrokeOpacity ?? 1;
+};
+
 /** Max frames to wait for the real source to parse the new data before revealing it anyway. */
 const SETTLE_MAX_FRAMES = 120;
-
-/** Stroke opacity the real layer rests at (and the fade ramps to and from). */
-const STROKE_BASE = 1;
 
 /**
  * Cancels any crossfade already running for the layer, adds the shadow layer
@@ -219,6 +227,7 @@ const setupCrossfadeShadow = (
   shadowLayerId: string;
   shadowSourceId: string;
   circleBase: number;
+  strokeBase: number;
 } | null => {
   const { layer, newData, spec } = args;
 
@@ -242,14 +251,15 @@ const setupCrossfadeShadow = (
   disableOpacityTransitions(map, shadowLayerId);
 
   const circleBase = resolveCircleBase(layer);
+  const strokeBase = resolveStrokeBase(layer);
 
   // Start: real layer (OLD data) fully visible, shadow (NEW data) transparent.
   // Held while the shadow source parses so the new points sit at opacity 0 until
   // the ramp begins, instead of popping in at whatever opacity the ramp reached.
-  setCircleOpacities(map, layer.id, circleBase, STROKE_BASE);
+  setCircleOpacities(map, layer.id, circleBase, strokeBase);
   setCircleOpacities(map, shadowLayerId, 0, 0);
 
-  return { shadowLayerId, shadowSourceId, circleBase };
+  return { shadowLayerId, shadowSourceId, circleBase, strokeBase };
 };
 
 /** Points the real source at the NEW data (deferred by the caller until now). */
@@ -310,7 +320,7 @@ export const startCrossfade = (
 
   const shadow = setupCrossfadeShadow(map, args);
   if (!shadow) return;
-  const { shadowLayerId, shadowSourceId, circleBase } = shadow;
+  const { shadowLayerId, shadowSourceId, circleBase, strokeBase } = shadow;
 
   const ease = resolveEasing(easing);
   // Set once the shadow's new data has parsed and the fade actually begins —
@@ -336,7 +346,7 @@ export const startCrossfade = (
   };
 
   const finalize = (): void => {
-    setCircleOpacities(map, layer.id, circleBase, STROKE_BASE);
+    setCircleOpacities(map, layer.id, circleBase, strokeBase);
     removeShadow(map, shadowLayerId, shadowSourceId);
     entries.delete(layer.id);
   };
@@ -374,9 +384,9 @@ export const startCrossfade = (
       map,
       layer.id,
       circleBase * (1 - e),
-      STROKE_BASE * (1 - e)
+      strokeBase * (1 - e)
     );
-    setCircleOpacities(map, shadowLayerId, circleBase * e, STROKE_BASE * e);
+    setCircleOpacities(map, shadowLayerId, circleBase * e, strokeBase * e);
     if (p >= 1) {
       // Real layer is now invisible; swap its source and wait for the parse.
       commitNewData(map, sourceId, newData);

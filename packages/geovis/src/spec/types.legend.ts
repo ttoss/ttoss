@@ -8,12 +8,14 @@
 export interface CategoricalColorBy {
   type: 'categorical';
   /**
-   * Key identifying the column in the `mapData` dataset whose value drives
-   * the color assignment. The adapter reads this value from
-   * `feature-state.value` (written by `setFeatureState` during data join),
-   * not directly from a GeoJSON feature property.
+   * Has no effect. The colour always comes from the layer's `mapData`
+   * dataset, read from feature-state under its `stateKey` (default `'value'`),
+   * never from a GeoJSON property named here. Accepted for compatibility with
+   * specs that still declare it; leave it out of new specs.
+   *
+   * @deprecated The colour reads the layer's `mapData`; this field is ignored.
    */
-  property: string;
+  property?: string;
   /** Named palette key available for adapter-specific categorical handling. */
   palette?: string;
   /** Explicit color list available for adapter-specific categorical handling. */
@@ -32,12 +34,14 @@ export interface CategoricalColorBy {
 export interface QuantitativeColorBy {
   type: 'quantitative';
   /**
-   * Key identifying the column in the `mapData` dataset whose numeric value
-   * drives the color assignment. The adapter reads this value from
-   * `feature-state.value` (written by `setFeatureState` during data join),
-   * not directly from a GeoJSON feature property.
+   * Has no effect. The colour always comes from the layer's `mapData`
+   * dataset, read from feature-state under its `stateKey` (default `'value'`),
+   * never from a GeoJSON property named here. Accepted for compatibility with
+   * specs that still declare it; leave it out of new specs.
+   *
+   * @deprecated The colour reads the layer's `mapData`; this field is ignored.
    */
-  property: string;
+  property?: string;
   /** Scale used to map numeric values into discrete color buckets. */
   scale: 'threshold';
   /** Explicit break points for the `threshold` scale. */

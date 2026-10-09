@@ -20,6 +20,8 @@ import {
 } from './validateSpec.checks';
 import { validateLayerControlIds } from './validateSpec.controlChecks';
 import { validateExtrusionData } from './validateSpec.extrusionChecks';
+import { validateLegendRefs } from './validateSpec.legendChecks';
+import { validatePaintKeys } from './validateSpec.paintChecks';
 import { validateReferences } from './validateSpec.referenceChecks';
 
 const ajv = new Ajv2020({ strict: false });
@@ -63,6 +65,8 @@ export const validateSpec = (
     ...validateLegendThresholdOrder(spec),
     ...validateSizeBy(spec),
     ...validateMapDataDimensions(spec),
+    ...validatePaintKeys(spec),
+    ...validateLegendRefs(spec),
     ...validateExtrusionData(spec),
     ...validateLayerControlIds(spec),
     ...(capabilities ? validateEngineCapability(spec, capabilities) : []),

@@ -297,7 +297,6 @@ const buildSpec = ({
         paint: {
           fillOpacity: opacity / 100,
           lineColor: '#FFFFFF',
-          lineWidth: 0.4,
         },
       },
       // Declared after the grid so the observations sit on top, and hidden
