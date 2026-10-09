@@ -238,6 +238,35 @@ the middleware answers as Koa would — its `status` (or `500`), with its messag
 only when `expose` is set — and is emitted on the app's `error` event if it has
 a listener. A streamed response body is not supported.
 
+### Rate Limiting
+
+`rateLimit` counts requests per key in a fixed window and answers `429` with `Retry-After` once a key is over its limit. Every response carries `RateLimit-Limit`, `RateLimit-Remaining` and `RateLimit-Reset`. A `key` returning `undefined` skips the limit for that request.
+
+```ts
+import { rateLimit } from '@ttoss/http-server';
+
+router.post(
+  '/login',
+  rateLimit({ windowMs: 60_000, limit: 10, key: (ctx) => ctx.ip }),
+  handler
+);
+```
+
+The `429` is raised with `ctx.throw`, so an error middleware using `toHttpError` and `applyHttpErrorHeaders` keeps its status and headers. When the key or the limit is only known inside a handler (a per-tenant limit read from the database, say), use the counter directly:
+
+```ts
+import { createRateLimiter } from '@ttoss/http-server';
+
+const limiter = createRateLimiter({ windowMs: 60_000 });
+
+const { allowed, resetAt } = limiter.consume({
+  key: tenant.id,
+  limit: tenant.limit,
+});
+```
+
+The counter lives in the process's memory: with N instances the effective limit is N times the configured one, and a fixed window allows a burst of twice the limit at its boundary. Both are the right trade for stopping a runaway client; neither is a quota. Expired keys are swept once a window, so a key per IP does not grow without bound.
+
 ## OAuth
 
 Authentication lives in [`@ttoss/http-server-auth`](https://ttoss.dev/docs/modules/packages/http-server-auth) — `authMiddleware` (verify Bearer tokens, including an `oauth` strategy) and `oauthServer()` (issue tokens), a thin Koa layer over the runner-agnostic engine in [`@ttoss/auth-core`](https://ttoss.dev/docs/modules/packages/auth-core). This base runner stays auth-free. See the [OAuth Authorization Server](https://ttoss.dev/docs/engineering/guidelines/oauth-authorization-server) guideline.
