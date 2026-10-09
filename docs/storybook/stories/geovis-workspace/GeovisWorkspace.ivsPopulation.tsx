@@ -44,8 +44,8 @@ const BASE_HEIGHT = 1000;
 const DEFAULT_SCALE = 5;
 const DEFAULT_PITCH = 60;
 
-/** How far the camera turns from north in 3D, in degrees (negative: left). */
-const BEARING_3D = -25;
+/** Where the camera turns in 3D, clockwise from north: 25° to the left. */
+const DEFAULT_BEARING = 335;
 
 const valueById = (rows: typeof IVS) => {
   return new Map(
@@ -77,11 +77,13 @@ const buildSpec = ({
   view,
   scale,
   pitch,
+  bearing,
   heightIndicator,
 }: {
   view: string;
   scale: number;
   pitch: number;
+  bearing: number;
   heightIndicator: string;
 }): VisualizationSpec => {
   const extruded = view === '3d';
@@ -90,13 +92,13 @@ const buildSpec = ({
   return {
     engine: 'maplibre',
     // Centre and zoom never change, so the view sync only moves the angles:
-    // in 3D the camera tilts and turns a little, so the prisms show a side
-    // face, and both ease back together in 2D.
+    // in 3D the camera tilts and turns to the reader's dial, so the prisms
+    // show a side face, and both ease back together — north up — in 2D.
     view: {
       center: CENTER,
       zoom: 9.3,
       pitch: extruded ? pitch : 0,
-      bearing: extruded ? BEARING_3D : 0,
+      bearing: extruded ? bearing : 0,
       cameraAngleTransitionMs: 600,
     },
     attributionControlEnabled: false,
@@ -214,59 +216,74 @@ const CONFIG: GeovisWorkspaceConfig = {
                   },
                 ],
               },
-            },
-            {
-              id: 'indicador-altura',
-              title: 'Indicador da altura',
-              icon: 'lucide:chart-column',
-              shownWhen: only3d,
-              control: {
-                kind: 'choice',
-                menuId: 'heightIndicator',
-                defaultValue: HEIGHT_POPULATION,
-                options: [
-                  {
-                    value: HEIGHT_POPULATION,
-                    label: 'População',
-                    sublabel: 'habitantes',
+              // The adjustments of the 3D view, nested under the choice that
+              // turns it on and shown only while it is on.
+              subBlocks: [
+                {
+                  id: 'altura-representa',
+                  title: 'Altura representa',
+                  shownWhen: only3d,
+                  control: {
+                    kind: 'choice',
+                    layout: 'list',
+                    menuId: 'heightIndicator',
+                    defaultValue: HEIGHT_POPULATION,
+                    options: [
+                      {
+                        value: HEIGHT_POPULATION,
+                        label: 'População',
+                        sublabel: '3 mil – 150 mil hab.',
+                        icon: 'lucide:users',
+                        unit: 'habitantes',
+                      },
+                      {
+                        value: HEIGHT_IVS,
+                        label: 'IVS',
+                        sublabel: '0,150 – 0,650',
+                        icon: 'lucide:shield-alert',
+                        unit: 'índice',
+                      },
+                    ],
                   },
-                  {
-                    value: HEIGHT_IVS,
-                    label: 'IVS',
-                    sublabel: 'mesmo da cor',
+                },
+                {
+                  id: 'altura',
+                  title: 'Altura das extrusões',
+                  shownWhen: only3d,
+                  control: {
+                    kind: 'slider',
+                    menuId: 'extrusionScale',
+                    defaultValue: DEFAULT_SCALE,
+                    stops: [1, 2, 3, 4, 5].map((scale) => {
+                      return { value: scale, label: `${scale}×` };
+                    }),
                   },
-                ],
-              },
-            },
-            {
-              id: 'altura',
-              title: 'Altura das extrusões',
-              icon: 'lucide:move-vertical',
-              shownWhen: only3d,
-              control: {
-                kind: 'slider',
-                menuId: 'extrusionScale',
-                defaultValue: DEFAULT_SCALE,
-                stops: [1, 2, 3, 4, 5].map((scale) => {
-                  return { value: scale, label: `${scale}×` };
-                }),
-                endLabels: ['Baixa', 'Alta'],
-                stepButtons: true,
-              },
-            },
-            {
-              id: 'inclinacao',
-              title: 'Inclinação da câmera',
-              icon: 'lucide:rotate-3d',
-              shownWhen: only3d,
-              control: {
-                kind: 'choice',
-                menuId: 'pitch',
-                defaultValue: String(DEFAULT_PITCH),
-                options: [30, 45, 60].map((pitch) => {
-                  return { value: String(pitch), label: `${pitch}°` };
-                }),
-              },
+                },
+                {
+                  id: 'inclinacao',
+                  title: 'Inclinação da câmera',
+                  shownWhen: only3d,
+                  control: {
+                    kind: 'choice',
+                    menuId: 'pitch',
+                    defaultValue: String(DEFAULT_PITCH),
+                    options: [30, 45, 60].map((pitch) => {
+                      return { value: String(pitch), label: `${pitch}°` };
+                    }),
+                  },
+                },
+                {
+                  id: 'rotacao',
+                  title: 'Rotação da câmera',
+                  hint: 'Arraste o disco para girar os polígonos e vê-los de outros ângulos.',
+                  shownWhen: only3d,
+                  control: {
+                    kind: 'bearing',
+                    menuId: 'bearing',
+                    defaultValue: DEFAULT_BEARING,
+                  },
+                },
+              ],
             },
           ],
         },
@@ -288,11 +305,13 @@ export const IvsPopulationDemo = () => {
   const view = selection.view ?? '2d';
   const scale = Number(selection.extrusionScale) || DEFAULT_SCALE;
   const pitch = Number(selection.pitch) || DEFAULT_PITCH;
+  // `0` is north, a real bearing, so no `||` fallback here.
+  const bearing = Number(selection.bearing ?? DEFAULT_BEARING);
   const heightIndicator = selection.heightIndicator ?? HEIGHT_POPULATION;
 
   const spec = React.useMemo(() => {
-    return buildSpec({ view, scale, pitch, heightIndicator });
-  }, [view, scale, pitch, heightIndicator]);
+    return buildSpec({ view, scale, pitch, bearing, heightIndicator });
+  }, [view, scale, pitch, bearing, heightIndicator]);
 
   return (
     <div style={{ height: 640 }}>

@@ -7,6 +7,7 @@ import type {
   GeovisWorkspaceSidebarChoiceSetting,
 } from '../../context/GeovisWorkspaceContext';
 import { useGeovisWorkspace } from '../../hooks/useGeovisWorkspace';
+import { ChoiceListRow, ChoiceSingleCard } from './ChoiceList';
 import { COLOR, FONT_MONO } from './theme';
 import { ChoiceSettingsContext } from './useChoiceSettings';
 import { isGateOpen, useSidebarSections } from './useSections';
@@ -224,7 +225,9 @@ const DisabledHint = ({ hint }: { hint: string }) => {
 };
 
 /**
- * A choice among a few options, laid out side by side as cards.
+ * A choice among a few options: side by side as cards, or — `layout: 'list'`
+ * — one row each, top to bottom, which turns into a read-only card when the
+ * list declares a single option.
  *
  * Presentational: which option is on, and what a pick does, come from the
  * sidebar's lifted choice state (`useChoiceSettings`). That state publishes
@@ -267,18 +270,41 @@ export const ChoiceSettingControl = ({
     return !available && option.disabledHint ? [option.disabledHint] : [];
   });
 
+  const list = control.layout === 'list';
+
+  if (list && options.length === 1) {
+    return <ChoiceSingleCard option={options[0]} />;
+  }
+
   return (
     <Box>
       <Box
         role="radiogroup"
         aria-label={label}
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: `repeat(${Math.max(1, options.length)}, minmax(0, 1fr))`,
-          gap: '6px',
-        }}
+        sx={
+          list
+            ? { display: 'flex', flexDirection: 'column', gap: '4px' }
+            : {
+                display: 'grid',
+                gridTemplateColumns: `repeat(${Math.max(1, options.length)}, minmax(0, 1fr))`,
+                gap: '6px',
+              }
+        }
       >
         {availability.map(({ option, available }) => {
+          if (list) {
+            return (
+              <ChoiceListRow
+                key={option.value}
+                option={option}
+                on={option.value === effective}
+                disabled={!available}
+                onPick={() => {
+                  choices.pick({ menuId, value: option.value });
+                }}
+              />
+            );
+          }
           return (
             <ChoiceOption
               key={option.value}
