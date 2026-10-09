@@ -743,7 +743,12 @@
         "maxVisibleItems": {
           "type": "integer",
           "minimum": 1,
-          "description": "Items shown before the rest collapse behind a 'Ver mais' card that opens a panel with every item. When omitted, every item is shown."
+          "description": "Items shown before the rest collapse behind a 'Ver mais' card that opens a panel with every item. Items that are on come first. When omitted, every item is shown."
+        },
+        "maxActiveItems": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "How many items can be on at once; switching one on past it switches off the one on longest. When omitted, there is no limit."
         },
         "items": {
           "type": "array",
@@ -785,6 +790,11 @@
         },
         "defaultActive": {
           "type": "boolean"
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Section heading the item sits under in the 'Ver mais' panel."
         }
       }
     },

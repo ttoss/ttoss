@@ -890,11 +890,30 @@ export interface LayerControl {
    * How many items the expanded panel shows before collapsing the rest behind
    * a "Ver mais" card. Clicking that card opens a larger panel listing every
    * item, which stays open until dismissed (close button, `Escape` or a click
-   * outside) even for the `'hover'` trigger. The first `maxVisibleItems` of
-   * `items`, in order, are the ones shown. When omitted — or when `items` has
-   * no more than this many entries — every item is shown and no card appears.
+   * outside) even for the `'hover'` trigger. When omitted — or when `items`
+   * has no more than this many entries — every item is shown and no card
+   * appears.
+   *
+   * The entries that are on come first — a category counts as on when any of
+   * its items is — in `items` order, and the rest fill the remaining places in
+   * that order too. So a layer switched on from the "Ver mais" panel is in the
+   * summary the next time it opens, and a layer that is on is never out of
+   * sight behind the card. More entries on than places grow the summary
+   * rather than hide one. The order is read when the panel opens and kept
+   * while it stays open, so a card never moves from under the pointer.
    */
   maxVisibleItems?: number;
+  /**
+   * How many items can be on at once. Switching one on past the limit
+   * switches off the one switched on longest ago — items on by default count
+   * as the oldest, in `items` order — so a reader never has to make room
+   * before choosing. Only items whose layers exist in the spec count. When
+   * omitted there is no limit.
+   *
+   * Applied as items are switched on: a control whose defaults already exceed
+   * it keeps them until the next switch.
+   */
+  maxActiveItems?: number;
   /**
    * What the expanded panel shows: toggle buttons ({@link LayerControlItem}),
    * and optionally categories ({@link LayerControlGroup}) holding more of
@@ -969,6 +988,17 @@ export interface LayerControlItem {
   thumbnail?: string;
   /** Ids of `spec.layers` toggled together when the button is clicked. */
   layers: string[];
+  /**
+   * Title of the section this item sits under in the "Ver mais" panel, which
+   * groups its items by category — in the order each category first appears
+   * in `items` — under a heading each. Items without one come first, with no
+   * heading. Only the "Ver mais" panel reads it; the summary and a group's
+   * panel list items flat.
+   *
+   * A heading, not a {@link LayerControlGroup}: it sorts the full list for
+   * reading, where a group is a card that opens a panel of its own.
+   */
+  category?: string;
   /**
    * Whether the referenced layers start visible the first time this item is
    * seen (before the user has toggled it). Defaults to `true`.

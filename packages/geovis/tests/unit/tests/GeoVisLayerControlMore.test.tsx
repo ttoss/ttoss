@@ -188,7 +188,7 @@ describe('GeoVisLayerControl — maxVisibleItems', () => {
     expect(document.activeElement).toBe(panel);
   });
 
-  test('toggles a hidden item from the full panel and badges it on the card', async () => {
+  test('an item switched on from the full panel leads the strip next time', async () => {
     await renderControl(buildSpec({ maxVisibleItems: 2 }));
     openFullPanel();
 
@@ -209,21 +209,16 @@ describe('GeoVisLayerControl — maxVisibleItems', () => {
     expect(fullPanel()).toBeNull();
     expect(itemButton('a')).toBeNull();
 
-    // Reopening lands on the summary strip again, with the hidden-active badge.
+    // Reopening lands on the summary strip again, `d` first since it is on,
+    // and nothing that is on is left behind the card to badge.
     act(() => {
       fireEvent.click(trigger());
     });
     expect(fullPanel()).toBeNull();
-    expect(renderedItemIds()).toEqual(['a', 'b']);
-    const badge = (moreButton() as HTMLButtonElement).querySelector(
-      'span > span'
-    ) as HTMLElement;
-    expect(badge.textContent).toBe('1');
-    // Centred on its digits, as the trigger's count badge is.
-    expect(badge.style.lineHeight).toBe('1');
-    expect(badge.firstElementChild?.getAttribute('style')).toContain(
-      'text-box: trim-both cap alphabetic'
-    );
+    expect(renderedItemIds()).toEqual(['d', 'a']);
+    expect(
+      (moreButton() as HTMLButtonElement).querySelector('span > span')
+    ).toBeNull();
   });
 
   test('closes the full panel on Escape', async () => {
