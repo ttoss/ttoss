@@ -2,11 +2,16 @@
  * A polygon layer gaining or losing `extrusion` changes MapLibre type, which no
  * layer can do in place. `syncSourcesAndLayers` swaps it with the prisms rising
  * from flat, or lying down before the flat layer comes back, and eases every
- * height change in between. A stateful map keeps each layer's type, and a
- * manual scheduler drives the frames.
+ * height change in between — the swap itself waiting until the source has no
+ * tile in flight. A stateful map keeps each layer's type and whether its
+ * source is loading, and a manual scheduler drives the frames.
  */
 
-import { setExtrusionScheduler } from 'src/adapters/maplibre/extrusionTransition';
+import { forgetExtrusionLayer } from 'src/adapters/maplibre/extrusionLifecycle';
+import {
+  setExtrusionScheduler,
+  transitionExtrusionHeight,
+} from 'src/adapters/maplibre/extrusionTransition';
 import { reapplyLegendDrivenFillPaint } from 'src/adapters/maplibre/legendFillPaint';
 import {
   reapplyLayerPaint,
@@ -19,6 +24,10 @@ type Layer = { id: string; type: string; paint?: Record<string, unknown> };
 const makeMap = () => {
   const layers = new Map<string, Layer>();
   const sources = new Set<string>();
+  const handlers = new Map<string, Set<() => void>>();
+  // Whether the sources have every tile loaded; `false` stands for tiles in
+  // flight, as while the camera eases.
+  let loaded = true;
 
   const map = {
     addSource: jest.fn((id: string) => {
@@ -44,11 +53,34 @@ const makeMap = () => {
     setLayoutProperty: jest.fn(),
     setPaintProperty: jest.fn(),
     setFilter: jest.fn(),
-    on: jest.fn(),
-    off: jest.fn(),
+    isSourceLoaded: jest.fn(() => {
+      return loaded;
+    }),
+    on: jest.fn((event: string, handler: () => void) => {
+      if (!handlers.has(event)) handlers.set(event, new Set());
+      handlers.get(event)!.add(handler);
+    }),
+    off: jest.fn((event: string, handler: () => void) => {
+      handlers.get(event)?.delete(handler);
+    }),
   };
 
-  return { map, layers };
+  /** Fires every handler of `event`, as MapLibre would. */
+  const emit = (event: string) => {
+    for (const handler of [...(handlers.get(event) ?? [])]) handler();
+  };
+
+  const setLoaded = (next: boolean) => {
+    loaded = next;
+  };
+
+  const listenerCount = () => {
+    return [...handlers.values()].reduce((sum, set) => {
+      return sum + set.size;
+    }, 0);
+  };
+
+  return { map, layers, sources, emit, setLoaded, listenerCount };
 };
 
 type MapArg = Parameters<typeof syncSourcesAndLayers>[0];
@@ -347,4 +379,162 @@ test('removing an extruded layer drops its state', () => {
   clock.advance(100);
 
   expect(layers.has('fill')).toBe(false);
+});
+
+describe('the type swap waits for the source to settle', () => {
+  test('3D → 2D keeps the flat prisms until the last tile lands', () => {
+    const { map, layers, emit, setLoaded, listenerCount } = makeMap();
+    const extruded = buildSpec({
+      extrusion: { maxHeight: 1000, transitionMs: 100 },
+    });
+    syncSourcesAndLayers(map as unknown as MapArg, extruded, null);
+    clock.advance(100);
+
+    // The camera is easing back from its pitch: tiles are in flight.
+    setLoaded(false);
+    const flat = buildSpec();
+    syncSourcesAndLayers(map as unknown as MapArg, flat, extruded);
+    clock.advance(100);
+
+    // Lain down, but not swapped: a tile built for the extruded layer may
+    // still land.
+    expect(heightWrites(map).at(-1)).toBe(0);
+    expect(layers.get('fill')?.type).toBe('fill-extrusion');
+
+    // A tile lands, others still in flight.
+    emit('sourcedata');
+    expect(layers.get('fill')?.type).toBe('fill-extrusion');
+
+    setLoaded(true);
+    emit('sourcedata');
+    expect(layers.get('fill')?.type).toBe('fill');
+    expect(listenerCount()).toBe(0);
+  });
+
+  test('an update while the swap waits is the flat layer swapped in', () => {
+    const { map, layers, emit, setLoaded } = makeMap();
+    const extruded = buildSpec({
+      extrusion: { maxHeight: 1000, transitionMs: 0 },
+    });
+    syncSourcesAndLayers(map as unknown as MapArg, extruded, null);
+
+    setLoaded(false);
+    const flat = buildSpec();
+    syncSourcesAndLayers(map as unknown as MapArg, flat, extruded);
+    const hidden = buildSpec({ visible: false });
+    syncSourcesAndLayers(map as unknown as MapArg, hidden, flat);
+    expect(layers.get('fill')?.type).toBe('fill-extrusion');
+
+    setLoaded(true);
+    emit('idle');
+    expect(layers.get('fill')?.type).toBe('fill');
+    expect(map.addLayer).toHaveBeenLastCalledWith(
+      expect.objectContaining({ layout: { visibility: 'none' } })
+    );
+  });
+
+  test('back to 3D while the swap waits calls it off', () => {
+    const { map, layers, emit, setLoaded, listenerCount } = makeMap();
+    const extruded = buildSpec({
+      extrusion: { maxHeight: 1000, transitionMs: 0 },
+    });
+    syncSourcesAndLayers(map as unknown as MapArg, extruded, null);
+
+    setLoaded(false);
+    const flat = buildSpec();
+    syncSourcesAndLayers(map as unknown as MapArg, flat, extruded);
+    syncSourcesAndLayers(map as unknown as MapArg, extruded, flat);
+    expect(listenerCount()).toBe(0);
+
+    setLoaded(true);
+    emit('sourcedata');
+    expect(layers.get('fill')?.type).toBe('fill-extrusion');
+  });
+
+  test('2D → 3D keeps the flat layer until the source settles, then rises', () => {
+    const { map, layers, emit, setLoaded } = makeMap();
+    const flat = buildSpec();
+    syncSourcesAndLayers(map as unknown as MapArg, flat, null);
+
+    setLoaded(false);
+    const extruded = buildSpec({
+      extrusion: { maxHeight: 1000, transitionMs: 100 },
+    });
+    syncSourcesAndLayers(map as unknown as MapArg, extruded, flat);
+    expect(layers.get('fill')?.type).toBe('fill');
+    expect(map.removeLayer).not.toHaveBeenCalled();
+
+    setLoaded(true);
+    emit('sourcedata');
+    expect(layers.get('fill')?.type).toBe('fill-extrusion');
+    expect(layers.get('fill')?.paint?.['fill-extrusion-height']).toBe(0);
+    clock.advance(100);
+    expect(heightWrites(map).at(-1)).toEqual(heightAt(1000));
+  });
+
+  test('flat again before the rise swaps in leaves the flat layer alone', () => {
+    const { map, layers, emit, setLoaded, listenerCount } = makeMap();
+    const flat = buildSpec();
+    syncSourcesAndLayers(map as unknown as MapArg, flat, null);
+
+    setLoaded(false);
+    const extruded = buildSpec({ extrusion: { maxHeight: 1000 } });
+    syncSourcesAndLayers(map as unknown as MapArg, extruded, flat);
+    syncSourcesAndLayers(map as unknown as MapArg, flat, extruded);
+    expect(listenerCount()).toBe(0);
+
+    setLoaded(true);
+    emit('sourcedata');
+    expect(layers.get('fill')?.type).toBe('fill');
+  });
+
+  test('a source removed meanwhile counts as settled', () => {
+    const { map, layers, sources, emit, setLoaded } = makeMap();
+    const flat = buildSpec();
+    syncSourcesAndLayers(map as unknown as MapArg, flat, null);
+
+    setLoaded(false);
+    syncSourcesAndLayers(
+      map as unknown as MapArg,
+      buildSpec({ extrusion: { maxHeight: 1000 } }),
+      flat
+    );
+    sources.clear();
+    emit('idle');
+
+    expect(layers.get('fill')?.type).toBe('fill-extrusion');
+  });
+
+  test('forgetting the layer drops a waiting swap', () => {
+    const { map, layers, emit, setLoaded, listenerCount } = makeMap();
+    const flat = buildSpec();
+    syncSourcesAndLayers(map as unknown as MapArg, flat, null);
+
+    setLoaded(false);
+    syncSourcesAndLayers(
+      map as unknown as MapArg,
+      buildSpec({ extrusion: { maxHeight: 1000 } }),
+      flat
+    );
+    forgetExtrusionLayer(map as unknown as MapArg, 'fill');
+    expect(listenerCount()).toBe(0);
+
+    setLoaded(true);
+    emit('sourcedata');
+    expect(layers.get('fill')?.type).toBe('fill');
+  });
+});
+
+test('no height is written to a layer that is no longer extruded', () => {
+  const { map } = makeMap();
+  syncSourcesAndLayers(map as unknown as MapArg, buildSpec(), null);
+
+  transitionExtrusionHeight({
+    map: map as unknown as MapArg,
+    layerId: 'fill',
+    to: 1000,
+    durationMs: 0,
+  });
+
+  expect(heightWrites(map)).toEqual([]);
 });

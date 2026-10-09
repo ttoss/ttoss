@@ -121,7 +121,8 @@ const writeHeight = (
   layerId: string,
   height: ExtrusionHeight
 ): boolean => {
-  if (!map.getLayer(layerId)) return false;
+  // A layer swapped back to `fill` mid-ease has no height to write.
+  if (map.getLayer(layerId)?.type !== 'fill-extrusion') return false;
   map.setPaintProperty(
     layerId,
     'fill-extrusion-height',
