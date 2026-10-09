@@ -15,6 +15,14 @@ import {
   protectedResourceMetadataDocument,
   protectedResourceMetadataUrl,
 } from './protectedResourceMetadata';
+import {
+  INVALID_TARGET_DESCRIPTION,
+  isAllowedResource,
+} from './resourceIndicator';
+import {
+  redirectWithParams,
+  validateAuthorizeParams,
+} from './validateAuthorizeParams';
 
 export * from './oauthServerTypes';
 
@@ -64,19 +72,6 @@ const buildTokenResponse = (
       : {}),
     scope: tokens.scope ?? scopes.join(' '),
   };
-};
-
-const redirectWithParams = (
-  redirectUri: string,
-  params: Record<string, string | undefined>
-): string => {
-  const url = new URL(redirectUri);
-  for (const [key, value] of Object.entries(params)) {
-    if (value !== undefined) {
-      url.searchParams.set(key, value);
-    }
-  }
-  return url.toString();
 };
 
 // ---------------------------------------------------------------------------
@@ -147,6 +142,7 @@ const handleAuthorizationCodeGrant = async (
     subject: stored.subject,
     scopes: stored.scopes,
     client,
+    resource: options.resource,
   });
   return { status: 200, body: buildTokenResponse(tokens, stored.scopes) };
 };
@@ -189,49 +185,9 @@ const handleRefreshTokenGrant = async (
     subject: result.subject,
     scopes: result.scopes,
     client,
+    resource: options.resource,
   });
   return { status: 200, body: buildTokenResponse(tokens, result.scopes) };
-};
-
-/**
- * Validates the authorization request's `response_type` and PKCE parameters,
- * returning a redirect-error response when invalid, or `undefined` when valid.
- */
-const validateAuthorizeParams = (
-  query: Record<string, string | undefined>,
-  redirectUri: string,
-  state: string | undefined
-): OAuthResponse | undefined => {
-  const redirectError = (error: string, description: string): OAuthResponse => {
-    return {
-      status: 302,
-      redirect: redirectWithParams(redirectUri, {
-        error,
-        error_description: description,
-        state,
-      }),
-    };
-  };
-
-  if (asString(query.response_type) !== 'code') {
-    return redirectError(
-      'unsupported_response_type',
-      'response_type must be code'
-    );
-  }
-  if (!asString(query.code_challenge)) {
-    return redirectError(
-      'invalid_request',
-      'code_challenge is required (PKCE)'
-    );
-  }
-  if ((asString(query.code_challenge_method) ?? 'plain') !== 'S256') {
-    return redirectError(
-      'invalid_request',
-      'code_challenge_method must be S256'
-    );
-  }
-  return undefined;
 };
 
 /** Builds the response when the app declines an authorization (login/consent). */
@@ -274,7 +230,12 @@ const handleAuthorize = async (
   }
 
   const state = asString(query.state);
-  const invalid = validateAuthorizeParams(query, redirectUri, state);
+  const invalid = validateAuthorizeParams({
+    query,
+    redirectUri,
+    state,
+    resource: options.resource,
+  });
   if (invalid) {
     return invalid;
   }
@@ -375,8 +336,8 @@ const handleRegister = async (
  * Implements the authorization endpoint (PKCE S256 required), token endpoint
  * (`authorization_code` + `refresh_token` grants), Dynamic Client Registration
  * (RFC 7591), and discovery metadata (RFC 8414, plus RFC 9728 when `resource`
- * is set). The handlers operate on plain {@link OAuthRequest} /
- * {@link OAuthResponse} objects, so any HTTP runtime can host them through a
+ * is set, which also enables RFC 8707 resource indicators). The handlers
+ * operate on plain {@link OAuthRequest} / {@link OAuthResponse} objects, so any HTTP runtime can host them through a
  * thin adapter — `@ttoss/http-server` provides the Koa one.
  *
  * The app owns its user model, signing keys, and login/consent UI through the
@@ -433,6 +394,7 @@ export const createOAuthHandlers = (
         body: protectedResourceMetadataDocument({
           resource,
           authorizationServers: [issuer],
+          scopesSupported,
         }),
       };
     },
@@ -443,6 +405,15 @@ export const createOAuthHandlers = (
 
     token: async (request: OAuthRequest): Promise<OAuthResponse> => {
       const grantType = asString(request.body.grant_type);
+      if (
+        (grantType === 'authorization_code' || grantType === 'refresh_token') &&
+        !isAllowedResource({
+          requested: request.body.resource,
+          configured: resource,
+        })
+      ) {
+        return oauthError(400, 'invalid_target', INVALID_TARGET_DESCRIPTION);
+      }
       if (grantType === 'authorization_code') {
         return handleAuthorizationCodeGrant(request, options);
       }

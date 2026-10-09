@@ -303,6 +303,13 @@ export interface IssueTokensArgs {
   scopes: string[];
   /** The client the tokens are being issued to. */
   client: OAuthClient;
+  /**
+   * The resource (RFC 8707) the access token is for — the server's
+   * `resource` option, set only when that option is. Put it in the token's
+   * `aud` claim so resource servers that check their audience (such as
+   * `@ttoss/http-server-mcp`'s `resourceIndicator`) accept it.
+   */
+  resource?: string;
 }
 
 /** The validated authorization request passed to the consent/login hook. */
@@ -392,8 +399,16 @@ export interface OAuthServerOptions {
   /** Scopes advertised in discovery metadata (`scopes_supported`). */
   scopesSupported?: string[];
   /**
-   * When set, {@link OAuthHandlers.protectedResourceMetadata} is served, pairing
-   * this resource URL with the issuer as its authorization server (RFC 9728).
+   * The resource this server issues tokens for. When set:
+   *
+   * - {@link OAuthHandlers.protectedResourceMetadata} is served, pairing this
+   *   resource URL with the issuer as its authorization server (RFC 9728),
+   *   with `scopesSupported` as its `scopes_supported`.
+   * - A `resource` parameter (RFC 8707) on `/authorize` or `/token` must name
+   *   it, else the request fails with `invalid_target`.
+   * - `issueTokens` receives it as `resource`, to bind the token's audience.
+   *
+   * When unset, `resource` parameters are ignored.
    */
   resource?: string;
   /**

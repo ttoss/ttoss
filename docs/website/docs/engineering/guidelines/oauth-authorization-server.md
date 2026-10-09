@@ -97,7 +97,11 @@ app.use(authServer.routes());
 
 ## Discovery
 
-Clients bootstrap by fetching metadata, so they need no manual configuration. The router serves `/.well-known/oauth-authorization-server` ([RFC 8414](https://www.rfc-editor.org/rfc/rfc8414)) advertising the `authorization_endpoint`, `token_endpoint`, `registration_endpoint`, supported grants, and `code_challenge_methods_supported: ['S256']`. Set `resource` to also serve `/.well-known/oauth-protected-resource` ([RFC 9728](https://www.rfc-editor.org/rfc/rfc9728)), which pairs a resource URL with this issuer as its authorization server.
+Clients bootstrap by fetching metadata, so they need no manual configuration. The router serves `/.well-known/oauth-authorization-server` ([RFC 8414](https://www.rfc-editor.org/rfc/rfc8414)) advertising the `authorization_endpoint`, `token_endpoint`, `registration_endpoint`, supported grants, and `code_challenge_methods_supported: ['S256']`. Set `resource` to also serve `/.well-known/oauth-protected-resource` ([RFC 9728](https://www.rfc-editor.org/rfc/rfc9728)), which pairs a resource URL with this issuer as its authorization server and advertises `scopesSupported` as its `scopes_supported`.
+
+## Resource indicators
+
+MCP clients send a `resource` parameter ([RFC 8707](https://www.rfc-editor.org/rfc/rfc8707)) naming the server they want a token for. With `resource` set, the server rejects any other value with `invalid_target` and passes `resource` to `issueTokens`; put it in the token's `aud` so the resource server's audience check (`resourceIndicator` on `createMcpRouter`) accepts it and rejects tokens minted for anything else. Without `resource`, the parameter is ignored.
 
 ## Dynamic client registration
 

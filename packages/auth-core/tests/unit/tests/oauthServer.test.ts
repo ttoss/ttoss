@@ -185,6 +185,18 @@ describe('createOAuthHandlers — discovery metadata', () => {
   });
 });
 
+test('advertises scopes_supported in protected-resource metadata', () => {
+  const res = build({
+    resource: 'https://mcp.example.com',
+    scopesSupported: ['mcp:tools'],
+  }).protectedResourceMetadata();
+  expect(res?.body).toEqual({
+    resource: 'https://mcp.example.com',
+    authorization_servers: ['https://api.example.com'],
+    scopes_supported: ['mcp:tools'],
+  });
+});
+
 describe('createOAuthHandlers — authorize', () => {
   const authorize = (
     server: ReturnType<typeof build>,

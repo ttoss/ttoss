@@ -16,6 +16,20 @@ describe('protectedResourceMetadataDocument', () => {
       authorization_servers: ['https://auth.example.com'],
     });
   });
+
+  test('adds scopes_supported only when scopes are given', () => {
+    expect(
+      protectedResourceMetadataDocument({
+        resource: 'https://mcp.example.com/mcp',
+        authorizationServers: ['https://auth.example.com'],
+        scopesSupported: ['mcp:tools', 'mcp:resources'],
+      })
+    ).toEqual({
+      resource: 'https://mcp.example.com/mcp',
+      authorization_servers: ['https://auth.example.com'],
+      scopes_supported: ['mcp:tools', 'mcp:resources'],
+    });
+  });
 });
 
 describe('protectedResourceMetadataPaths', () => {

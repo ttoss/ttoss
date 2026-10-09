@@ -107,6 +107,8 @@ export const createProtectedResourceMetadataMiddleware = (args: {
   resource: string;
   /** Authorization server issuer URIs that issue tokens for this resource. */
   authorizationServers: string[];
+  /** Scopes this resource accepts, advertised as `scopes_supported`. */
+  scopesSupported?: string[];
 }): Middleware => {
   const metadataPaths = new Set(
     protectedResourceMetadataPaths({ resource: args.resource })
@@ -114,6 +116,7 @@ export const createProtectedResourceMetadataMiddleware = (args: {
   const body = protectedResourceMetadataDocument({
     resource: args.resource,
     authorizationServers: args.authorizationServers,
+    scopesSupported: args.scopesSupported,
   });
 
   return async (ctx: Context, next) => {

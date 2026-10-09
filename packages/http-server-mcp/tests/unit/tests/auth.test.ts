@@ -723,6 +723,23 @@ describe('auth — resourceMetadataUrl default', () => {
     );
   });
 
+  test('the served document advertises scopesSupported', async () => {
+    const res = await request(
+      buildApp({
+        resourceServerUrl: 'https://mcp.example.com',
+        authorizationServerUrl: 'https://auth.example.com',
+        scopesSupported: ['mcp:tools'],
+      }).callback()
+    ).get('/.well-known/oauth-protected-resource/mcp');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      resource: 'https://mcp.example.com/mcp',
+      authorization_servers: ['https://auth.example.com'],
+      scopes_supported: ['mcp:tools'],
+    });
+  });
+
   test('an explicit resourceMetadataUrl still wins', async () => {
     const res = await post(
       buildApp({

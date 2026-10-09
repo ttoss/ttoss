@@ -357,7 +357,7 @@ createMcpRouter(mcpServer, {
 });
 ```
 
-The `resource` field in the metadata document is automatically set to `resourceServerUrl + path` (e.g. `https://mcp.example.com/mcp` for the default path). This means MCP clients that follow `resource` to connect will land on the actual MCP endpoint rather than the bare origin.
+The `resource` field in the metadata document is automatically set to `resourceServerUrl + path` (e.g. `https://mcp.example.com/mcp` for the default path). This means MCP clients that follow `resource` to connect will land on the actual MCP endpoint rather than the bare origin. Add `scopesSupported` to advertise the scopes this server accepts as `scopes_supported`, so clients request only what they need; unlike `requiredScopes`, it enforces nothing.
 
 **With your own auth middleware** — use `createProtectedResourceMetadataMiddleware` as a standalone middleware, mounted _before_ your auth layer so discovery stays unauthenticated:
 
