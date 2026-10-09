@@ -242,6 +242,18 @@ describe('createI18n', () => {
     );
   });
 
+  test('falls back to defaultMessage with no onError given', () => {
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {
+      return undefined;
+    });
+    const i18n = createI18n({ locale: 'pt-BR', messages: {} });
+
+    expect(i18n.render(msg(messages.greeting, { name: 'Ana' }))).toBe(
+      'Hello, Ana!'
+    );
+    consoleError.mockRestore();
+  });
+
   test('reports no missing translation for the source locale', () => {
     const onError = jest.fn();
     const i18n = createI18n({
