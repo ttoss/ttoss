@@ -193,6 +193,25 @@ describe('createProtectedResourceMetadataMiddleware', () => {
     });
   });
 
+  test('advertises scopes_supported when scopesSupported is set', async () => {
+    const app = new App();
+    app.use(
+      createProtectedResourceMetadataMiddleware({
+        resource: 'https://mcp.example.com',
+        authorizationServers: ['https://api.example.com'],
+        scopesSupported: ['mcp:tools'],
+      })
+    );
+    const res = await request(app.callback()).get(
+      '/.well-known/oauth-protected-resource'
+    );
+    expect(res.body).toEqual({
+      resource: 'https://mcp.example.com',
+      authorization_servers: ['https://api.example.com'],
+      scopes_supported: ['mcp:tools'],
+    });
+  });
+
   test('serves the metadata at the path-derived location for a path resource', async () => {
     const app = new App();
     app.use(

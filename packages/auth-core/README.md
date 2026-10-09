@@ -307,6 +307,8 @@ const oauth = createOAuthHandlers({
 const res = await oauth.token({ query: {}, body, headers }); // { status, body }
 ```
 
+Setting `resource` also enables resource indicators ([RFC 8707](https://www.rfc-editor.org/rfc/rfc8707)): a `resource` parameter on `/authorize` or `/token` that names anything else fails with `invalid_target`, and `issueTokens` receives `resource` so the app can put it in the token's `aud` — the claim `@ttoss/http-server-mcp`'s `resourceIndicator` checks. Without `resource`, the parameter is ignored.
+
 Your app keeps its user model, signing keys, and login/consent UI behind the hooks. See the [OAuth Authorization Server](https://ttoss.dev/docs/engineering/guidelines/oauth-authorization-server) guideline for the full flow.
 
 ### Protected resource metadata (RFC 9728)

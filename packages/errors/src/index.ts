@@ -30,21 +30,21 @@ export type ExpectedErrorValue =
 export type ExpectedErrorValues = Record<string, ExpectedErrorValue>;
 
 export type ExpectedErrorOptions<
-  Code extends string | undefined = string | undefined,
-  Values extends ExpectedErrorValues | undefined =
+  TCode extends string | undefined = string | undefined,
+  TValues extends ExpectedErrorValues | undefined =
     ExpectedErrorValues | undefined,
 > = {
   /**
    * Stable identifier clients branch on. Never rename one once published —
    * change the copy instead.
    */
-  code?: Code;
+  code?: TCode;
   /**
    * The data the message is about — a limit, an id, the fields that failed —
    * kept apart from any sentence, so the code that owns the copy builds the
    * `messageRef` from `code` and `values` in the reader's locale.
    */
-  values?: Values;
+  values?: TValues;
   /** Localized message a boundary renders in the request locale. */
   messageRef?: MessageRef;
   cause?: unknown;
@@ -82,8 +82,8 @@ export type ExpectedErrorLike = Error & {
  * error type a client branches on) pins it with `override name = '…'`.
  */
 export class ExpectedError<
-  Code extends string | undefined = string | undefined,
-  Values extends ExpectedErrorValues | undefined =
+  TCode extends string | undefined = string | undefined,
+  TValues extends ExpectedErrorValues | undefined =
     ExpectedErrorValues | undefined,
 >
   extends Error
@@ -100,25 +100,25 @@ export class ExpectedError<
    * A subclass narrows it through the type parameter, e.g.
    * `extends ExpectedError<'CARD_DECLINED' | 'CARD_EXPIRED'>`.
    */
-  readonly code: Code;
+  readonly code: TCode;
 
   /**
    * A subclass narrows it per code through the type parameter, so the
    * placeholders its copy interpolates are a checked contract.
    */
-  readonly values: Values;
+  readonly values: TValues;
 
   /** Mutable: a boundary may attach it before rendering. */
   messageRef?: MessageRef;
 
   constructor(
     message: string,
-    options: ExpectedErrorOptions<Code, Values> = {}
+    options: ExpectedErrorOptions<TCode, TValues> = {}
   ) {
     super(message, 'cause' in options ? { cause: options.cause } : undefined);
     this.name = new.target.name;
-    this.code = options.code as Code;
-    this.values = options.values as Values;
+    this.code = options.code as TCode;
+    this.values = options.values as TValues;
     if (options.messageRef !== undefined) {
       this.messageRef = options.messageRef;
     }
@@ -127,10 +127,10 @@ export class ExpectedError<
 
 /** The caller supplied invalid input. */
 export class ValidationError<
-  Code extends string | undefined = string | undefined,
-  Values extends ExpectedErrorValues | undefined =
+  TCode extends string | undefined = string | undefined,
+  TValues extends ExpectedErrorValues | undefined =
     ExpectedErrorValues | undefined,
-> extends ExpectedError<Code, Values> {}
+> extends ExpectedError<TCode, TValues> {}
 
 /**
  * A referenced resource is missing, or the caller may not access it. Use it
@@ -138,10 +138,10 @@ export class ValidationError<
  * see exists.
  */
 export class NotFoundError<
-  Code extends string | undefined = string | undefined,
-  Values extends ExpectedErrorValues | undefined =
+  TCode extends string | undefined = string | undefined,
+  TValues extends ExpectedErrorValues | undefined =
     ExpectedErrorValues | undefined,
-> extends ExpectedError<Code, Values> {}
+> extends ExpectedError<TCode, TValues> {}
 
 /**
  * Whether `error` is expected — handled, and to be kept out of error tracking.
