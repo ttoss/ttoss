@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.35.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.34.5...@ttoss/http-server-mcp@0.35.0) (2026-10-09)
+
+### Features
+
+- **http-server,http-server-mcp:** rate limiting and an MCP surface budget ([#1315](https://github.com/ttoss/ttoss/issues/1315)) ([58962fe](https://github.com/ttoss/ttoss/commit/58962fea89af4f8a7460be4fb8f99f674a8f75b5))
+
 ## [0.34.5](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.34.4...@ttoss/http-server-mcp@0.34.5) (2026-10-07)
 
 **Note:** Version bump only for package @ttoss/http-server-mcp
