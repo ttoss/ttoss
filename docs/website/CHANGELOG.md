@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 10.1.0 (2026-10-09)
+
+### Bug Fixes
+
+- **react-auth-cognito:** do not call onError for a signed-out visitor ([#1307](https://github.com/ttoss/ttoss/issues/1307)) ([824ff71](https://github.com/ttoss/ttoss/commit/824ff7172bc2ed4a5ed91f74df7e9c1445c6f103))
+
+### Features
+
+- **auth-core,http-server-auth,http-server-mcp:** resource indicators and scopes_supported ([#1316](https://github.com/ttoss/ttoss/issues/1316)) ([8203460](https://github.com/ttoss/ttoss/commit/82034600ba2eab429ed625f85e74296abf5bcefc))
+
 ## [10.0.2](https://github.com/ttoss/ttoss/compare/@docs/website@10.0.1...@docs/website@10.0.2) (2026-10-03)
 
 ### Bug Fixes

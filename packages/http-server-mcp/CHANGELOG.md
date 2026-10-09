@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.37.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.36.0...@ttoss/http-server-mcp@0.37.0) (2026-10-09)
+
+### Features
+
+- **auth-core,http-server-auth,http-server-mcp:** resource indicators and scopes_supported ([#1316](https://github.com/ttoss/ttoss/issues/1316)) ([8203460](https://github.com/ttoss/ttoss/commit/82034600ba2eab429ed625f85e74296abf5bcefc))
+
 # [0.36.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.35.0...@ttoss/http-server-mcp@0.36.0) (2026-10-09)
 
 ### Features
