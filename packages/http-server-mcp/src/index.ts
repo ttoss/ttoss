@@ -879,6 +879,16 @@ export const createMcpRouter = (
 
 export { type DeferToolsOptions } from './deferTools';
 export {
+  checkMcpSurface,
+  DEFAULT_INSTRUCTIONS_LIMIT,
+  findUnknownToolMentions,
+  type McpSurfaceBudget,
+  type McpSurfaceReport,
+  type McpSurfaceTool,
+  type McpSurfaceViolation,
+  measureMcpSurface,
+} from './mcpSurface';
+export {
   registerAppResource,
   type RegisterAppResourceParams,
   type RegisteredAppResource,

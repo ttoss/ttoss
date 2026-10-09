@@ -1130,6 +1130,33 @@ Either way the authorization flow works. Driving the official MCP client SDK aga
 
 **Whether the handshake should be public at all is a separate question.** `publicMethods: []` closes both eras, and the authorization flow still works — RFC 9728 discovery is driven by the challenge itself, so a client authenticates from its very first request instead of one step later.
 
+### Holding the surface to a budget
+
+Every tool's name, description and input schema, and the server's instructions, are loaded into every session before the first call. `checkMcpSurface` compares them with a budget and answers the limits they exceed, so a test fails naming the tool that grew:
+
+```typescript
+import {
+  checkMcpSurface,
+  findUnknownToolMentions,
+} from '@ttoss/http-server-mcp';
+
+test('the surface stays inside its budget', () => {
+  expect(
+    checkMcpSurface({
+      tools, // { name, description?, inputSchema? }[], e.g. from openApiToToolDefinitions
+      instructions,
+      budget: { total: 70_000, perTool: 10_000 },
+    })
+  ).toEqual([]);
+});
+
+test('every tool the instructions name exists', () => {
+  expect(findUnknownToolMentions({ instructions, tools })).toEqual([]);
+});
+```
+
+Sizes are characters of `JSON.stringify({ name, description, inputSchema })`; `measureMcpSurface` answers them without judging. `total` and `perTool` have no default — they are the product's choice — while `instructions` defaults to `2048`, about what Claude Code keeps before cutting the rest silently. `findUnknownToolMentions` reads backticked names with a `-` or `_` (`` `get-next` ``); pass `pattern` when the instructions name tools another way.
+
 ## AWS Lambda Deployment
 
 The default **stateless** mode (see [Stateless vs stateful mode](#stateless-vs-stateful-mode)) is built for serverless: a fresh transport is created per request, nothing is kept in memory between invocations, and responses are plain JSON (no SSE) — exactly the request/response shape API Gateway and Lambda Function URLs expect.
