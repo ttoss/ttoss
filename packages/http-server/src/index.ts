@@ -18,6 +18,12 @@ export {
   toHttpError,
 } from './httpError';
 export { i18nMiddleware, type I18nState } from './i18n';
+export {
+  createRateLimiter,
+  rateLimit,
+  type RateLimiter,
+  type RateLimitResult,
+} from './rateLimit';
 export type { File as MulterFile } from '@koa/multer';
 export type { Context, Middleware, Next } from 'koa';
 
