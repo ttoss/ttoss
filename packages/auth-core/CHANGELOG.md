@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.18.0](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.17.2...@ttoss/auth-core@0.18.0) (2026-10-09)
+
+### Features
+
+- **auth-core,http-server-auth,http-server-mcp:** resource indicators and scopes_supported ([#1316](https://github.com/ttoss/ttoss/issues/1316)) ([8203460](https://github.com/ttoss/ttoss/commit/82034600ba2eab429ed625f85e74296abf5bcefc))
+
 ## [0.17.2](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.17.1...@ttoss/auth-core@0.17.2) (2026-10-07)
 
 **Note:** Version bump only for package @ttoss/auth-core

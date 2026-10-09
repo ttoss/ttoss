@@ -18,6 +18,8 @@ export interface ProtectedResourceMetadata {
   resource: string;
   /** Issuer identifiers of the authorization servers that issue for it. */
   authorization_servers: string[];
+  /** Scopes this resource accepts, so clients request only what they need. */
+  scopes_supported?: string[];
 }
 
 /**
@@ -58,10 +60,13 @@ export const protectedResourceMetadataDocument = (args: {
   resource: string;
   /** Issuer identifiers of the authorization servers that issue for it. */
   authorizationServers: string[];
+  /** Scopes this resource accepts, advertised as `scopes_supported`. */
+  scopesSupported?: string[];
 }): ProtectedResourceMetadata => {
   return {
     resource: args.resource,
     authorization_servers: args.authorizationServers,
+    ...(args.scopesSupported ? { scopes_supported: args.scopesSupported } : {}),
   };
 };
 

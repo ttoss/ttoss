@@ -128,6 +128,12 @@ export interface McpAuthOptions {
   /** URL of the OAuth Authorization Server that issues tokens for this resource. */
   authorizationServerUrl?: string;
   /**
+   * Scopes this MCP server accepts, advertised as `scopes_supported` in the
+   * Protected Resource Metadata document so clients request only what they
+   * need. Unlike `requiredScopes`, nothing is enforced from it.
+   */
+  scopesSupported?: string[];
+  /**
    * Expected audience — the resource indicator (RFC 8707) this MCP server
    * identifies as. When set, the verified token's `aud` claim must include at
    * least one of these values, or the request is rejected with `401`. Without
@@ -732,6 +738,7 @@ export const createMcpRouter = (
             document: protectedResourceMetadataDocument({
               resource: resourceUrl,
               authorizationServers: [auth.authorizationServerUrl],
+              scopesSupported: auth.scopesSupported,
             }),
             paths: protectedResourceMetadataPaths({ resource: resourceUrl }),
             url: protectedResourceMetadataUrl({ resource: resourceUrl }),

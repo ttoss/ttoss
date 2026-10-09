@@ -28,7 +28,7 @@ The **resource server** is the MCP endpoint itself: it verifies the Bearer token
 
 ## Resource server: verifying tokens
 
-`createMcpRouter` gates requests through its `auth` option. Invalid or missing tokens get `401 Unauthorized` before any tool runs — except for the MCP lifecycle methods `initialize` and `tools/list`, which stay public so a client can discover the server before it has a token (see [Client discovery](#client-discovery)).
+`createMcpRouter` gates requests through its `auth` option. Invalid or missing tokens get `401 Unauthorized` before any tool runs — except for the lifecycle handshake (`initialize`, or `server/discover` on `2026-07-28`), which stays public so a client can discover the server before it has a token (see [Client discovery](#client-discovery)).
 
 ### Against Amazon Cognito
 
@@ -67,6 +67,27 @@ app.use(mcpRouter.routes());
 app.listen(3000);
 ```
 
+### Against another OIDC provider
+
+For Keycloak, Entra ID, Auth0, Okta, or any other OIDC provider, `createOidcVerifier` from `@ttoss/auth-core/oidc` discovers the provider's signing keys from its issuer URL and verifies signature, issuer, and expiry. It leaves the audience to you, so pair it with `resourceIndicator` (see [Binding tokens to this server](#binding-tokens-to-this-server)):
+
+```typescript
+import { createOidcVerifier } from '@ttoss/auth-core/oidc';
+
+const mcpRouter = createMcpRouter(mcpServer, {
+  auth: {
+    verifyToken: createOidcVerifier({
+      issuer: 'https://keycloak.example.com/realms/my-realm',
+    }),
+    resourceIndicator: 'https://mcp.example.com/mcp',
+    resourceServerUrl: 'https://mcp.example.com',
+    authorizationServerUrl: 'https://keycloak.example.com/realms/my-realm',
+  },
+});
+```
+
+The provider has to put that value in the token's `aud`. In Keycloak, set it as the MCP server client's `resource_url` (with the `resource-indicators` feature) or add an Audience mapper to a client scope; see [Keycloak as an MCP authorization server](https://www.keycloak.org/securing-apps/mcp-authz-server).
+
 ### Against your own tokens
 
 When your app signs its own JWTs with `@ttoss/auth-core`, verify them with a custom `verifyToken`. The contract is minimal: resolve with an identity payload, or throw to reject.
@@ -90,9 +111,24 @@ const mcpRouter = createMcpRouter(mcpServer, {
 
 Opaque API tokens work the same way — hash the presented token with `@ttoss/auth-core` and look it up in your database, throwing when it is missing or revoked. See the [`@ttoss/http-server-mcp` README](/docs/modules/packages/http-server-mcp) for the opaque-token recipe and the `getIdentity()` / `checkScopes()` helpers used inside tool handlers.
 
+### Binding tokens to this server
+
+The [MCP authorization spec](https://modelcontextprotocol.io/specification/latest/basic/authorization) requires an MCP server to accept only tokens issued for it. A valid signature is not enough: a token your authorization server minted for another API or another MCP server would otherwise pass here too, which is the confused-deputy attack [RFC 8707](https://www.rfc-editor.org/rfc/rfc8707) resource indicators exist to close. Set `resourceIndicator` to this server's canonical URL and the router rejects any token whose `aud` claim does not include it, whatever `verifyToken` returned:
+
+```typescript
+createMcpRouter(mcpServer, {
+  auth: {
+    verifyToken,
+    resourceIndicator: 'https://mcp.example.com/mcp',
+  },
+});
+```
+
+Use the same URL clients see as `resource` in the protected-resource metadata, which is `resourceServerUrl` plus the router's `path`. Amazon Cognito access tokens carry `client_id` rather than `aud`, so leave `resourceIndicator` off with `cognitoUserPool`.
+
 ### Client discovery
 
-The [MCP authorization spec](https://spec.modelcontextprotocol.io/specification/2025-03-26/basic/authorization/) requires two behaviors so clients like Claude and Cursor can bootstrap OAuth without being pre-configured, and `createMcpRouter` handles both. The lifecycle handshake bypasses verification so the client can complete it before authenticating — one entry per protocol era, `initialize` on 2025 and `server/discover` on `2026-07-28`, which removed `initialize`. Override the set with `publicMethods` (pass `[]` to require a token for every method). And a `401` advertises the [RFC 9728](https://www.rfc-editor.org/rfc/rfc9728) protected-resource document via `WWW-Authenticate: Bearer resource_metadata="…"`, pointing the client at the metadata that names the authorization server.
+The [MCP authorization spec](https://modelcontextprotocol.io/specification/latest/basic/authorization) requires two behaviors so clients like Claude and Cursor can bootstrap OAuth without being pre-configured, and `createMcpRouter` handles both. The lifecycle handshake bypasses verification so the client can complete it before authenticating — one entry per protocol era, `initialize` on 2025 and `server/discover` on `2026-07-28`, which removed `initialize`. Override the set with `publicMethods` (pass `[]` to require a token for every method). And a `401` advertises the [RFC 9728](https://www.rfc-editor.org/rfc/rfc9728) protected-resource document via `WWW-Authenticate: Bearer resource_metadata="…"`, pointing the client at the metadata that names the authorization server.
 
 ```typescript
 const mcpRouter = createMcpRouter(mcpServer, {
@@ -103,7 +139,8 @@ const mcpRouter = createMcpRouter(mcpServer, {
     resourceServerUrl: 'https://mcp.example.com',
     authorizationServerUrl: process.env.COGNITO_ISSUER_URL!,
     // Set publicMethods: [] when you need OAuth clients to authenticate
-    // before anything else (see note below). Defaults to ['initialize'].
+    // before anything else (see note below). Defaults to
+    // ['initialize', 'server/discover'].
     publicMethods: [],
   },
 });
@@ -121,7 +158,41 @@ Setting both `resourceServerUrl` and `authorizationServerUrl` serves that metada
 
 ## Authorization server: issuing tokens
 
-To make your server first-party — so an MCP client discovers it, registers itself, and runs the full login flow against it — mount `oauthServer()` from `@ttoss/http-server-auth`. It serves the discovery, `/authorize`, `/token`, and `/register` endpoints that MCP clients auto-discover, and you pair it with the `verifyToken` resource server above so one deployment both issues and verifies its tokens (set `scopesSupported: ['mcp:access']`).
+To make your server first-party — so an MCP client discovers it, registers itself, and runs the full login flow against it — mount `oauthServer()` from `@ttoss/http-server-auth`. It serves the discovery, `/authorize`, `/token`, and `/register` endpoints that MCP clients auto-discover, and you pair it with the `verifyToken` resource server above so one deployment both issues and verifies its tokens.
+
+Bind the two halves with one URL. Set `resource` on `oauthServer` to the MCP endpoint's URL: it rejects a client's `resource` parameter that names anything else and passes `resource` to `issueTokens`, which puts it in the token's `aud`. Set the same URL as `resourceIndicator` on `createMcpRouter`, which checks it. Set `scopesSupported` (for example `['mcp:access']`) so the protected-resource metadata advertises the scopes clients should request.
+
+```typescript
+import { protectedResourceMetadataUrl, signJwt } from '@ttoss/auth-core';
+import { oauthServer } from '@ttoss/http-server-auth';
+import { createMcpRouter } from '@ttoss/http-server-mcp';
+
+const MCP_URL = 'https://mcp.example.com/mcp';
+
+const authServer = oauthServer({
+  issuer: 'https://mcp.example.com',
+  resource: MCP_URL,
+  scopesSupported: ['mcp:access'],
+  issueTokens: async ({ subject, scopes, resource }) => ({
+    accessToken: signJwt({
+      payload: { sub: subject, scope: scopes.join(' '), aud: resource },
+      secret: process.env.JWT_SECRET!,
+      expiresInSeconds: 3600,
+    }),
+  }),
+  // clientStore, authCodeStore, onAuthorize, …
+});
+
+const mcpRouter = createMcpRouter(mcpServer, {
+  auth: {
+    verifyToken,
+    resourceIndicator: MCP_URL,
+    resourceMetadataUrl: protectedResourceMetadataUrl({ resource: MCP_URL }),
+  },
+});
+```
+
+Clients register through Dynamic Client Registration (`/register`). The current MCP spec prefers [Client ID Metadata Documents](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization/client-registration) and keeps registration only for backwards compatibility; `oauthServer` does not support them yet.
 
 These are general OAuth 2.1 primitives, not MCP-specific — the runner-agnostic engine is `createOAuthHandlers` in `@ttoss/auth-core`. The full setup — discovery, dynamic client registration, the authorize/PKCE flow, the token grants, and the ttoss-vs-app responsibility split — lives in the [OAuth Authorization Server](/docs/engineering/guidelines/oauth-authorization-server) guideline.
 
@@ -154,10 +225,10 @@ verifyToken: async (token) => {
 
 ## Choosing your setup
 
-| You authenticate against… | Use                                                          |
-| ------------------------- | ------------------------------------------------------------ |
-| Amazon Cognito            | `createMcpRouter({ auth: { cognitoUserPool } })`             |
-| Another OAuth provider    | `createMcpRouter({ auth: { verifyToken } })` with `jose`     |
-| Tokens your app issues    | `oauthServer` + `createMcpRouter({ auth: { verifyToken } })` |
+| You authenticate against… | Use                                               |
+| ------------------------- | ------------------------------------------------- |
+| Amazon Cognito            | `createMcpRouter({ auth: { cognitoUserPool } })`  |
+| Another OIDC provider     | `createOidcVerifier` + `resourceIndicator`        |
+| Tokens your app issues    | `oauthServer({ resource })` + `resourceIndicator` |
 
 In every case the only runtime dependencies are ttoss packages. Refer to the [`@ttoss/http-server-mcp`](/docs/modules/packages/http-server-mcp) and [`@ttoss/auth-core`](/docs/modules/packages/auth-core) documentation for the complete API surface.

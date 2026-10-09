@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/errors",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Zero-dependency expected-error contract: errors an operation anticipates and handles, kept out of error tracking",
   "keywords": [
     "error-tracking",
