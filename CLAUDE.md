@@ -85,51 +85,17 @@ All React packages follow a **context-first** pattern — applications configure
 - `@ttoss/react-notifications` — notifications via `useNotifications()`
 - `@ttoss/forms` — form management with validation (legacy — see `@ttoss/ui` note)
 
-```typescript
-// ✅ Correct: consume context
-import { Box, Button } from '@ttoss/ui';
-import { defineMessages, useI18n } from '@ttoss/react-i18n';
-import { useNotifications } from '@ttoss/react-notifications';
-
-// ❌ Wrong: props for style/text/notifications
-type Props = { backgroundColor?: string; buttonText?: string; onNotify?: fn };
-```
-
 Application root sets up providers once; all ttoss packages inherit automatically.
 
 ## Internationalization (i18n)
 
 Use `defineMessages` from `@ttoss/react-i18n` for **all** user-facing text, labels, error messages, and locale-specific formatting values (decimal separators, date formats). Do not hardcode locale-specific values.
 
-```typescript
-import { defineMessages, useI18n } from '@ttoss/react-i18n';
-
-const messages = defineMessages({
-  label: {
-    defaultMessage: 'English text here',
-    description: 'Context for translators',
-  },
-});
-
-const { intl } = useI18n();
-const text = intl.formatMessage(messages.label);
-```
-
 After any `defineMessages` change, run `pnpm run -w i18n` from the monorepo root.
 
 ## Code Style
 
-**Object parameters** — prefer destructured object params over multiple positional args for functions with 2+ parameters:
-
-```typescript
-// ✅ Preferred
-function createUser({ name, email, isActive }: CreateUserParams) {}
-
-// ❌ Avoid
-function createUser(name: string, email: string, isActive: boolean) {}
-```
-
-Exceptions: single-param functions, standard callbacks (`.map((item, index) => ...)`), simple utilities like `Math.max(a, b)`.
+**Object parameters** — prefer destructured object params over multiple positional args for functions with 2+ parameters. Exceptions: single-param functions, standard callbacks (`.map((item, index) => ...)`), simple utilities like `Math.max(a, b)`.
 
 **JSDoc on React components** — every exported React component must have a JSDoc comment describing what it does; every prop in the interface must have a `/** ... */` doc comment. Storybook's `autodocs` reads these automatically. Internal helper components (not exported from the package's public API) do not need JSDoc.
 
@@ -150,18 +116,6 @@ Required for any new or modified React component, form field, or UI element:
 Recipes and slot recipes must contain **only color tokens** — never spacing, sizing, typography, border-width, layout, or other non-color properties. Use Chakra UI defaults for everything except color.
 
 Use ttoss semantic color tokens from these categories: `navigation`, `display`, `action`, `input`, `feedback`.
-
-```typescript
-// ✅ Only color tokens in recipes
-base: {
-  color: 'display.text.primary.default',
-  backgroundColor: 'display.background.primary.default',
-  borderColor: 'display.border.muted.default',
-}
-
-// ❌ Non-color tokens do not belong in recipes
-base: { gap: '4', fontSize: 'sm', borderRadius: 'full', display: 'flex' }
-```
 
 New recipes go in `packages/ui/src/chakra/recipes/`; slot recipes in `packages/ui/src/chakra/slotRecipes/`. Both are auto-integrated by `ChakraThemeProvider.tsx`.
 
