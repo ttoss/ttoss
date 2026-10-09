@@ -1,5 +1,6 @@
 import {
   checkMcpSurface,
+  DEFAULT_DESCRIPTION_LIMIT,
   DEFAULT_INSTRUCTIONS_LIMIT,
   findUnknownToolMentions,
   measureMcpSurface,
@@ -78,6 +79,29 @@ describe('checkMcpSurface', () => {
         limit: DEFAULT_INSTRUCTIONS_LIMIT,
       },
     ]);
+  });
+
+  test('holds each description to the client limit by default', () => {
+    const atLimit = tool('get-a', 'x'.repeat(DEFAULT_DESCRIPTION_LIMIT));
+    const over = tool('get-b', 'x'.repeat(DEFAULT_DESCRIPTION_LIMIT + 1));
+
+    expect(checkMcpSurface({ tools: [atLimit, over] })).toEqual([
+      {
+        kind: 'description',
+        name: 'get-b',
+        size: DEFAULT_DESCRIPTION_LIMIT + 1,
+        limit: DEFAULT_DESCRIPTION_LIMIT,
+      },
+    ]);
+  });
+
+  test('takes a different description limit, and a tool with none fits', () => {
+    expect(
+      checkMcpSurface({
+        tools: [tool('get-a', 'abcdef'), { name: 'get-b' }],
+        budget: { description: 5 },
+      })
+    ).toEqual([{ kind: 'description', name: 'get-a', size: 6, limit: 5 }]);
   });
 
   test('takes a different instructions limit', () => {

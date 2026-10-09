@@ -20,14 +20,21 @@ export interface McpSurfaceReport {
 }
 
 /**
- * The limits a surface is checked against. Only `instructions` has a default:
- * the others are a product's own choice, not a property of any client.
+ * The limits a surface is checked against. `description` and `instructions`
+ * have defaults, because a client cuts them; `total` and `perTool` are a
+ * product's own choice, not a property of any client.
  */
 export interface McpSurfaceBudget {
   /** Ceiling on the sum of every tool's size. */
   total?: number;
   /** Ceiling on any one tool's size. */
   perTool?: number;
+  /**
+   * Ceiling on any one tool's description length. Unlike `perTool`, it leaves
+   * out the name and input schema, which no client cuts.
+   * @default 2048
+   */
+  description?: number;
   /**
    * Ceiling on the instructions' length.
    * @default 2048
@@ -39,14 +46,22 @@ export interface McpSurfaceBudget {
 export type McpSurfaceViolation =
   | { kind: 'total'; size: number; limit: number }
   | { kind: 'per_tool'; name: string; size: number; limit: number }
+  | { kind: 'description'; name: string; size: number; limit: number }
   | { kind: 'instructions'; size: number; limit: number };
 
 /**
- * Claude Code keeps about this many characters of a server's instructions and
- * drops the rest without telling anyone, so a rule past it never reaches an
- * agent.
+ * Claude Code truncates a server's instructions at this many characters
+ * without telling anyone, so a rule past it never reaches an agent
+ * (https://code.claude.com/docs/en/mcp; a user can change it with
+ * `CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH`).
  */
 export const DEFAULT_INSTRUCTIONS_LIMIT = 2048;
+
+/**
+ * Claude Code truncates each tool description at the same length as the
+ * instructions, from the same documentation, and just as silently.
+ */
+export const DEFAULT_DESCRIPTION_LIMIT = 2048;
 
 const sizeOf = (tool: McpSurfaceTool): number => {
   return JSON.stringify({
@@ -85,6 +100,22 @@ export const measureMcpSurface = ({
     tools: sizes,
     instructions: instructions?.length ?? 0,
   };
+};
+
+const checkDescriptions = ({
+  tools,
+  limit,
+}: {
+  tools: McpSurfaceTool[];
+  limit: number;
+}): McpSurfaceViolation[] => {
+  return tools.flatMap((tool) => {
+    const size = tool.description?.length ?? 0;
+
+    return size > limit
+      ? [{ kind: 'description' as const, name: tool.name, size, limit }]
+      : [];
+  });
 };
 
 /**
@@ -133,6 +164,13 @@ export const checkMcpSurface = ({
       }
     }
   }
+
+  violations.push(
+    ...checkDescriptions({
+      tools,
+      limit: budget.description ?? DEFAULT_DESCRIPTION_LIMIT,
+    })
+  );
 
   const instructionsLimit = budget.instructions ?? DEFAULT_INSTRUCTIONS_LIMIT;
 
