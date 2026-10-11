@@ -25,6 +25,10 @@
   "JEsxDw": {
     "defaultMessage": "Uploading..."
   },
+  "LLj+ZC": {
+    "defaultMessage": "Open",
+    "description": "Notification card: label of an action button that has no label of its own."
+  },
   "UD/D6v": {
     "defaultMessage": "Install",
     "description": "PWA install banner: button that starts the installation."

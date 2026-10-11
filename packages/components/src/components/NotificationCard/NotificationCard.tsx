@@ -1,8 +1,17 @@
+import { defineMessages, useI18n } from '@ttoss/react-i18n';
 import { Icon } from '@ttoss/react-icons';
 import { Box, Card, CloseButton, Tag, Text } from '@ttoss/ui';
 import type * as React from 'react';
 
 import { NotificationButton } from './NotificationButton';
+
+const messages = defineMessages({
+  defaultActionLabel: {
+    defaultMessage: 'Open',
+    description:
+      'Notification card: label of an action button that has no label of its own.',
+  },
+});
 
 type NotificationType = 'success' | 'error' | 'warning' | 'info' | 'neutral';
 
@@ -133,6 +142,13 @@ const NotificationCardTitle = ({
   );
 };
 
+// Its own component so that only a label-less action needs an I18nProvider.
+const DefaultActionLabel = () => {
+  const { intl } = useI18n();
+
+  return <>{intl.formatMessage(messages.defaultActionLabel)}</>;
+};
+
 const NotificationCardActions = ({
   type,
   actions,
@@ -164,7 +180,7 @@ const NotificationCardActions = ({
 
         return (
           <NotificationButton key={index} type={type} onClick={onClick}>
-            {action.label || 'Acessar'}
+            {action.label || <DefaultActionLabel />}
           </NotificationButton>
         );
       })}

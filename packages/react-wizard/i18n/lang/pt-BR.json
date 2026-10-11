@@ -14,5 +14,9 @@
   "FmaVut": {
     "defaultMessage": "Avançar",
     "description": "Label for the next step button in the wizard."
+  },
+  "mVLnY8": {
+    "defaultMessage": "Etapas do assistente",
+    "description": "Wizard: accessible name of the list of steps."
   }
 }

@@ -1,7 +1,16 @@
+import { defineMessages, useI18n } from '@ttoss/react-i18n';
 import { Icon } from '@ttoss/react-icons';
 import { Button, Flex } from '@ttoss/ui';
 
 import type { SubscriptionPanelAction } from './SubscriptionPanel.types';
+
+const messages = defineMessages({
+  processing: {
+    defaultMessage: 'Processing...',
+    description:
+      'Subscription panel: label of an action button while its action runs.',
+  },
+});
 
 /**
  * Props for the SubscriptionPanelActionsSlot component.
@@ -19,6 +28,8 @@ export interface SubscriptionPanelActionsSlotProps {
 export const SubscriptionPanelActionsSlot = ({
   actions,
 }: SubscriptionPanelActionsSlotProps) => {
+  const { intl } = useI18n();
+
   if (actions.length === 0) {
     return null;
   }
@@ -63,7 +74,7 @@ export const SubscriptionPanelActionsSlot = ({
             {isLoading ? (
               <>
                 <Icon icon="fluent:spinner-ios-20-regular" />
-                Processando...
+                {intl.formatMessage(messages.processing)}
               </>
             ) : (
               label

@@ -373,6 +373,6 @@ test('SubscriptionPanelActionsSlot renders loading action state', () => {
     />
   );
 
-  expect(screen.getByText('Processando...')).toBeInTheDocument();
+  expect(screen.getByText('Processing...')).toBeInTheDocument();
   expect(screen.getByRole('button')).toBeDisabled();
 });
