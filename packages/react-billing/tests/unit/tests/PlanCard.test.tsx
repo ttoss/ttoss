@@ -150,3 +150,18 @@ test('renders topTag and supports react-element features', () => {
   expect(screen.getByText('TOP TAG')).toBeInTheDocument();
   expect(screen.getByText('Custom feature')).toBeInTheDocument();
 });
+
+test('renders the features heading in the active locale', () => {
+  render(
+    <PlanCard
+      title="Starter"
+      metadata={[]}
+      price={{ value: 29, interval: '/month' }}
+      features={['Basic reporting']}
+      buttonProps={{ label: 'Subscribe' }}
+    />
+  );
+
+  expect(screen.getByText('Features')).toBeInTheDocument();
+  expect(screen.queryByText('RECURSOS')).not.toBeInTheDocument();
+});

@@ -1,4 +1,8 @@
 {
+  "0OwPAx": {
+    "defaultMessage": "Features",
+    "description": "Plan card: heading above the list of features the plan includes."
+  },
   "4Es6pi": {
     "defaultMessage": "Cancelled",
     "description": "Subscription panel status badge: the subscription was cancelled."
