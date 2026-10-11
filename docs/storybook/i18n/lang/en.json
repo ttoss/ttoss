@@ -32,6 +32,11 @@
     "module": "@ttoss/components",
     "defaultMessage": "Uploading..."
   },
+  "LLj+ZC": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Open",
+    "description": "Notification card: label of an action button that has no label of its own."
+  },
   "UD/D6v": {
     "module": "@ttoss/components",
     "defaultMessage": "Install",
@@ -731,6 +736,11 @@
     "defaultMessage": "Confirmation code",
     "description": "Confirmation code"
   },
+  "0OwPAx": {
+    "module": "@ttoss/react-billing",
+    "defaultMessage": "Features",
+    "description": "Plan card: heading above the list of features the plan includes."
+  },
   "4Es6pi": {
     "module": "@ttoss/react-billing",
     "defaultMessage": "Cancelled",
@@ -751,10 +761,20 @@
     "defaultMessage": "Renewal cancelled",
     "description": "Subscription panel badge: the subscription will not renew at the end of the cycle."
   },
+  "tkc8EI": {
+    "module": "@ttoss/react-billing",
+    "defaultMessage": "Processing...",
+    "description": "Subscription panel: label of an action button while its action runs."
+  },
   "vRSfVR": {
     "module": "@ttoss/react-billing",
     "defaultMessage": "Active",
     "description": "Subscription panel status badge: the subscription is active."
+  },
+  "yHR3z2": {
+    "module": "@ttoss/react-billing",
+    "defaultMessage": "Subscribe now",
+    "description": "Plan card: default label of the call-to-action button."
   },
   "5s17r1": {
     "module": "@ttoss/react-dashboard",
@@ -845,5 +865,10 @@
     "module": "@ttoss/react-wizard",
     "defaultMessage": "Next",
     "description": "Label for the next step button in the wizard."
+  },
+  "mVLnY8": {
+    "module": "@ttoss/react-wizard",
+    "defaultMessage": "Wizard steps",
+    "description": "Wizard: accessible name of the list of steps."
   }
 }
