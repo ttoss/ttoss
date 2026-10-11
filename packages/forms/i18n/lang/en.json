@@ -68,6 +68,11 @@
     "module": "@ttoss/components",
     "defaultMessage": "Uploading..."
   },
+  "LLj+ZC": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Open",
+    "description": "Notification card: label of an action button that has no label of its own."
+  },
   "UD/D6v": {
     "module": "@ttoss/components",
     "defaultMessage": "Install",

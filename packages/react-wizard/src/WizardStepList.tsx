@@ -1,4 +1,5 @@
 import { Steps } from '@chakra-ui/react';
+import { defineMessages, useI18n } from '@ttoss/react-i18n';
 import { Box, Flex } from '@ttoss/ui';
 import type * as React from 'react';
 
@@ -24,6 +25,49 @@ interface WizardStepListProps {
   onStepClick: (params: { stepIndex: number }) => void;
 }
 
+const messages = defineMessages({
+  stepListLabel: {
+    defaultMessage: 'Wizard steps',
+    description: 'Wizard: accessible name of the list of steps.',
+  },
+});
+
+const WizardStepText = ({
+  step,
+  status,
+  variant,
+}: {
+  step: WizardStep;
+  status: WizardStepStatus;
+  variant: WizardVariant;
+}) => {
+  if (!step.title && !step.description) {
+    return null;
+  }
+
+  return (
+    <Box sx={WizardStepTextWrapperSx}>
+      {step.title && (
+        <Steps.Title css={getWizardStepTitleSx({ status, variant })}>
+          {step.title}
+        </Steps.Title>
+      )}
+      {step.description && (
+        <Flex sx={WizardStepDescriptionFlexSx}>
+          <Steps.Description
+            css={getWizardStepDescriptionSx({
+              status,
+              variant,
+            })}
+          >
+            {step.description}
+          </Steps.Description>
+        </Flex>
+      )}
+    </Box>
+  );
+};
+
 export const WizardStepList = ({
   steps,
   currentStep,
@@ -33,13 +77,14 @@ export const WizardStepList = ({
   getStepStatus,
   onStepClick,
 }: WizardStepListProps) => {
+  const { intl } = useI18n();
   const isHorizontal = layout === 'top' || layout === 'bottom';
   const orientation = isHorizontal ? 'horizontal' : 'vertical';
 
   return (
     <Flex
       role="navigation"
-      aria-label="Wizard steps"
+      aria-label={intl.formatMessage(messages.stepListLabel)}
       data-variant={variant}
       sx={getWizardStepListSx({ layout, variant })}
     >
@@ -95,29 +140,11 @@ export const WizardStepList = ({
                       />
                     </Steps.Indicator>
                   </Box>
-                  {(step.title || step.description) && (
-                    <Box sx={WizardStepTextWrapperSx}>
-                      {step.title && (
-                        <Steps.Title
-                          css={getWizardStepTitleSx({ status, variant })}
-                        >
-                          {step.title}
-                        </Steps.Title>
-                      )}
-                      {step.description && (
-                        <Flex sx={WizardStepDescriptionFlexSx}>
-                          <Steps.Description
-                            css={getWizardStepDescriptionSx({
-                              status,
-                              variant,
-                            })}
-                          >
-                            {step.description}
-                          </Steps.Description>
-                        </Flex>
-                      )}
-                    </Box>
-                  )}
+                  <WizardStepText
+                    step={step}
+                    status={status}
+                    variant={variant}
+                  />
                 </Flex>
                 {index < steps.length - 1 && (
                   <Steps.Separator

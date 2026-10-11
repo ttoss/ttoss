@@ -1,4 +1,8 @@
 {
+  "0OwPAx": {
+    "defaultMessage": "Recursos",
+    "description": "Plan card: heading above the list of features the plan includes."
+  },
   "4Es6pi": {
     "defaultMessage": "Cancelado",
     "description": "Subscription panel status badge: the subscription was cancelled."
@@ -15,8 +19,16 @@
     "defaultMessage": "Renovação Cancelada",
     "description": "Subscription panel badge: the subscription will not renew at the end of the cycle."
   },
+  "tkc8EI": {
+    "defaultMessage": "Processando...",
+    "description": "Subscription panel: label of an action button while its action runs."
+  },
   "vRSfVR": {
     "defaultMessage": "Ativo",
     "description": "Subscription panel status badge: the subscription is active."
+  },
+  "yHR3z2": {
+    "defaultMessage": "Assine agora",
+    "description": "Plan card: default label of the call-to-action button."
   }
 }

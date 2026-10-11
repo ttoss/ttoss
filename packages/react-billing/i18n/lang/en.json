@@ -1,4 +1,8 @@
 {
+  "0OwPAx": {
+    "defaultMessage": "Features",
+    "description": "Plan card: heading above the list of features the plan includes."
+  },
   "4Es6pi": {
     "defaultMessage": "Cancelled",
     "description": "Subscription panel status badge: the subscription was cancelled."
@@ -15,9 +19,17 @@
     "defaultMessage": "Renewal cancelled",
     "description": "Subscription panel badge: the subscription will not renew at the end of the cycle."
   },
+  "tkc8EI": {
+    "defaultMessage": "Processing...",
+    "description": "Subscription panel: label of an action button while its action runs."
+  },
   "vRSfVR": {
     "defaultMessage": "Active",
     "description": "Subscription panel status badge: the subscription is active."
+  },
+  "yHR3z2": {
+    "defaultMessage": "Subscribe now",
+    "description": "Plan card: default label of the call-to-action button."
   },
   "0EjvY6": {
     "module": "@ttoss/components",
@@ -51,6 +63,11 @@
   "JEsxDw": {
     "module": "@ttoss/components",
     "defaultMessage": "Uploading..."
+  },
+  "LLj+ZC": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Open",
+    "description": "Notification card: label of an action button that has no label of its own."
   },
   "UD/D6v": {
     "module": "@ttoss/components",

@@ -27,6 +27,10 @@
     "defaultMessage": "Enviando...",
     "description": null
   },
+  "LLj+ZC": {
+    "defaultMessage": "Acessar",
+    "description": "Notification card: label of an action button that has no label of its own."
+  },
   "UD/D6v": {
     "defaultMessage": "Instalar",
     "description": "PWA install banner: button that starts the installation."

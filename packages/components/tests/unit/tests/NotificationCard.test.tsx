@@ -72,7 +72,7 @@ describe('NotificationCard', () => {
         actions={[{ action: 'open_url', url: 'https://example.com' }]}
       />
     );
-    expect(screen.getByRole('button', { name: 'Acessar' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Open' })).toBeInTheDocument();
   });
 
   test('renders nothing for actions when array is empty', () => {
