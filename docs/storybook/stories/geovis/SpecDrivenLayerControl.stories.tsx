@@ -24,11 +24,15 @@ import { computeBbox } from './helpers/map-story-helpers';
  * 2. **Auto-disable** — the "Coroplético" mode has no kitchen layer at all, so
  *    the "Localização das cozinhas" button renders greyed and non-interactive,
  *    while "Linhas dos estados" keeps working.
- * 3. **"Ver mais"** — `control.maxVisibleItems: 3` keeps the panel to the first
- *    three items plus a "Ver mais" card counting the rest. Clicking it opens a
- *    larger panel with every item, which stays open until closed (✕, `Escape`
- *    or a click on the map). Turn on a layer in it
- *    and close it: the "Ver mais" card badges how many hidden items are on.
+ * 3. **"Ver mais"** — `control.maxVisibleItems: 3` keeps the panel to three
+ *    items plus a "Ver mais" card counting the rest, the ones that are on
+ *    first. Clicking it opens a larger panel with every item, sectioned by
+ *    each item's `category` (Saúde, Educação e cultura, Lazer, …), which stays
+ *    open until closed (✕, `Escape` or a click on the map). Turn on "Museus"
+ *    in it and close it: reopening the control shows it in the short row.
+ * 4. **Items on at once** — `control.maxActiveItems: 3`. With the kitchens and
+ *    the state lines on, turn on two of the extra layers: the second switches
+ *    off the one on longest, the kitchens.
  */
 export default {
   title: 'GeoVis/SpecDrivenLayerControl',
@@ -107,14 +111,49 @@ const STATES_THUMB =
  * colour, used both for its dots and for its thumbnail.
  */
 const EXTRA_OVERLAYS = [
-  { id: 'hospitals', label: 'Hospitais', color: 'rgb(220,38,38)' },
-  { id: 'schools', label: 'Escolas', color: 'rgb(37,99,235)' },
-  { id: 'parks', label: 'Parques', color: 'rgb(22,163,74)' },
-  { id: 'metro', label: 'Estações de metrô', color: 'rgb(147,51,234)' },
-  { id: 'libraries', label: 'Bibliotecas', color: 'rgb(202,138,4)' },
-  { id: 'markets', label: 'Feiras livres', color: 'rgb(234,88,12)' },
-  { id: 'sports', label: 'Centros esportivos', color: 'rgb(8,145,178)' },
-  { id: 'museums', label: 'Museus', color: 'rgb(190,24,93)' },
+  {
+    id: 'hospitals',
+    label: 'Hospitais',
+    color: 'rgb(220,38,38)',
+    category: 'Saúde',
+  },
+  {
+    id: 'schools',
+    label: 'Escolas',
+    color: 'rgb(37,99,235)',
+    category: 'Educação e cultura',
+  },
+  { id: 'parks', label: 'Parques', color: 'rgb(22,163,74)', category: 'Lazer' },
+  {
+    id: 'metro',
+    label: 'Estações de metrô',
+    color: 'rgb(147,51,234)',
+    category: 'Transporte',
+  },
+  {
+    id: 'libraries',
+    label: 'Bibliotecas',
+    color: 'rgb(202,138,4)',
+    category: 'Educação e cultura',
+  },
+  {
+    id: 'markets',
+    label: 'Feiras livres',
+    color: 'rgb(234,88,12)',
+    category: 'Abastecimento',
+  },
+  {
+    id: 'sports',
+    label: 'Centros esportivos',
+    color: 'rgb(8,145,178)',
+    category: 'Lazer',
+  },
+  {
+    id: 'museums',
+    label: 'Museus',
+    color: 'rgb(190,24,93)',
+    category: 'Educação e cultura',
+  },
 ];
 
 // A few scattered points per overlay, spread across both states and offset by
@@ -178,8 +217,10 @@ const control: NonNullable<VisualizationSpec['control']> = {
   label: 'Camadas',
   position: 'bottom-left',
   trigger: 'click',
-  // Ten items: the panel shows the first three plus a "Ver mais" card (+7).
+  // Ten items: the panel shows three — those on first — plus "Ver mais" (+7).
   maxVisibleItems: 3,
+  // Three on at once: a fourth switches off the one on longest.
+  maxActiveItems: 3,
   items: [
     {
       id: 'kitchens',
@@ -201,6 +242,9 @@ const control: NonNullable<VisualizationSpec['control']> = {
         label: overlay.label,
         thumbnail: dotsThumb(overlay.color),
         layers: [`${overlay.id}-pts`],
+        // Its heading in the "Ver mais" panel; the kitchens and the state
+        // lines carry none, so they open it with no heading.
+        category: overlay.category,
         // Start off so the map stays readable; turn them on from the panel.
         defaultActive: false,
       };

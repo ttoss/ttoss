@@ -43,6 +43,10 @@
     "defaultMessage": "This map violates the cartography policy.",
     "description": "Warnings panel: spec.metadata flags a policy violation."
   },
+  "2vN9Fa": {
+    "defaultMessage": "Back to north",
+    "description": "Label of the button that turns the map camera back to north up."
+  },
   "35Dt1p": {
     "defaultMessage": "Details",
     "description": "Default title shown in the right sidebar when none is set."
@@ -58,6 +62,10 @@
   "4Kaze0": {
     "defaultMessage": "A layer references a source that does not exist.",
     "description": "Warnings panel: layer.sourceId has no matching source."
+  },
+  "5vQsIP": {
+    "defaultMessage": "{point, select, n {N} ne {NE} e {E} se {SE} s {S} sw {SW} w {W} other {NW}} · {degrees}°",
+    "description": "Readout of the camera rotation: the abbreviated cardinal point nearest the bearing, then the bearing in degrees, e.g. \"NE · 45°\"."
   },
   "6Rj6DM": {
     "defaultMessage": "No value",
@@ -86,6 +94,10 @@
   "AVBgd7": {
     "defaultMessage": "Two sources conflict with each other.",
     "description": "Warnings panel: two sources declare overlapping scope."
+  },
+  "B53J1J": {
+    "defaultMessage": "Rotate 45° left",
+    "description": "Accessible label for the button that turns the map camera 45 degrees counterclockwise."
   },
   "BJLxvK": {
     "defaultMessage": "Close timeline",
@@ -187,6 +199,10 @@
     "defaultMessage": "{count} rec.",
     "description": "Abbreviated record count beside the current value in the compact timeline bar anchored to the map."
   },
+  "WXH5zK": {
+    "defaultMessage": "Rotate 45° right",
+    "description": "Accessible label for the button that turns the map camera 45 degrees clockwise."
+  },
   "X4guJB": {
     "defaultMessage": "Tons · clique para ajustar",
     "description": "Heading of the row of tones in the color-ramp editor; each tone opens the custom color picker."
@@ -218,6 +234,10 @@
   "ZoQ4ZH": {
     "defaultMessage": "Two layer-control entries share an id; each toggle and category needs its own.",
     "description": "Warnings panel: an id repeats among the layer control toggles and categories."
+  },
+  "Ztp5cY": {
+    "defaultMessage": "Camera rotation",
+    "description": "Accessible label for the compass dial that turns the map camera."
   },
   "b+PIz+": {
     "defaultMessage": "Remover seleção",

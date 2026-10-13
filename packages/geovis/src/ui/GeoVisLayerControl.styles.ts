@@ -490,6 +490,28 @@ export const fullPanelHeaderStyle: React.CSSProperties = {
   justifyContent: 'space-between',
 };
 
+/**
+ * The full panel's scrolling body when its items are sectioned by category:
+ * the sections stacked, scrolling together under the fixed header.
+ */
+export const fullPanelBodyStyle: React.CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 12,
+  overflowY: 'auto',
+};
+
+/** A category's heading in the full panel, above its items. */
+export const fullPanelSectionTitleStyle: React.CSSProperties = {
+  color: TEXT_MUTED,
+  fontFamily: FONT,
+  fontSize: 11,
+  fontWeight: 600,
+  letterSpacing: '0.04em',
+  marginBottom: 6,
+  textTransform: 'uppercase',
+};
+
 export const fullPanelTitleStyle: React.CSSProperties = {
   color: TEXT,
   fontFamily: FONT,

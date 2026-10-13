@@ -2,7 +2,6 @@ import { Icon } from '@ttoss/react-icons';
 import * as React from 'react';
 
 import { layerControlItems } from '../spec/layerControl';
-import type { LayerControlItem } from '../spec/types';
 import { useGeoVis } from './contexts';
 import { resolveItemActive } from './GeoVisLayerControl.items';
 import { LayerControlExpandedPanel } from './GeoVisLayerControl.panels';
@@ -11,7 +10,9 @@ import {
   useControlView,
   useDismissFullPanel,
   useExpandedState,
+  useItemToggle,
   useLayerVisibilitySync,
+  useValueAtOpen,
 } from './GeoVisLayerControl.state';
 import {
   badgeCountStyle,
@@ -139,9 +140,14 @@ const LayerControlTrigger = ({
  * switches) as long as the `control` remains present.
  *
  * With `control.maxVisibleItems` set and more items than that, the panel shows
- * only the first ones plus a "Ver mais" card; clicking it swaps in a larger
- * panel with every item, which stays open until closed (its close button,
+ * the items that are on, then the first of the rest, plus a "Ver mais" card;
+ * clicking it swaps in a larger panel with every item — sectioned by each
+ * item's `category` — which stays open until closed (its close button,
  * `Escape`, a click outside, or the trigger) — even for the `'hover'` trigger.
+ * The strip's order is read when the panel opens and held while it is open.
+ *
+ * With `control.maxActiveItems` set, switching an item on past the limit
+ * switches off the one on longest.
  *
  * An entry with `items` is a category ({@link LayerControlGroup}): its card
  * shows how many of its items are on, and clicking it opens a panel of those
@@ -184,10 +190,6 @@ export const GeoVisLayerControl = ({
   const { view, pinned, openFull, openGroup, back } = useControlView(expanded);
   const [hoveredId, setHoveredId] = React.useState<string | null>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const [activeById, setActiveById] = React.useState<Record<string, boolean>>(
-    {}
-  );
-
   const layerIds = React.useMemo(() => {
     return new Set(
       spec.layers.map((layer) => {
@@ -195,6 +197,8 @@ export const GeoVisLayerControl = ({
       })
     );
   }, [spec.layers]);
+  const { activeById, toggleItem } = useItemToggle({ control, layerIds });
+  const stripActiveById = useValueAtOpen({ expanded, value: activeById });
 
   useLayerVisibilitySync({
     control,
@@ -231,18 +235,6 @@ export const GeoVisLayerControl = ({
         setExpanded,
       });
 
-  const toggleItem = (item: LayerControlItem) => {
-    const existing = item.layers.filter((id) => {
-      return layerIds.has(id);
-    });
-    // Disabled item: none of its layers exist in the current spec.
-    if (existing.length === 0) return;
-    const next = !resolveItemActive(item, activeById);
-    setActiveById((prev) => {
-      return { ...prev, [item.id]: next };
-    });
-  };
-
   const triggerButton = (
     <LayerControlTrigger
       key="trigger"
@@ -265,6 +257,7 @@ export const GeoVisLayerControl = ({
       compact={isCompact}
       items={control.items}
       maxVisibleItems={control.maxVisibleItems}
+      stripActiveById={stripActiveById}
       view={view}
       onShowAll={openFull}
       onBack={back}

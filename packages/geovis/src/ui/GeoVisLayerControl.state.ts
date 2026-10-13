@@ -1,9 +1,14 @@
 import * as React from 'react';
 
 import { layerControlItems } from '../spec/layerControl';
-import type { LayerControl, VisualizationSpec } from '../spec/types';
+import type {
+  LayerControl,
+  LayerControlItem,
+  VisualizationSpec,
+} from '../spec/types';
 import type { useGeoVis } from './contexts';
 import { resolveItemActive } from './GeoVisLayerControl.items';
+import { itemsToSwitchOff } from './GeoVisLayerControl.order';
 
 export type SetExpanded = React.Dispatch<React.SetStateAction<boolean>>;
 
@@ -199,4 +204,95 @@ export const useControlView = (expanded: boolean) => {
       });
     },
   };
+};
+
+/**
+ * A value as it was when the panel opened, held while it stays open and let go
+ * when it closes — what keeps the summary strip's order still while the reader
+ * toggles items in it. Taken during render, like {@link useControlView}'s
+ * reset, so the first frame of an expansion already reads it.
+ *
+ * @param params.expanded - Whether the panel is open.
+ * @param params.value - The live value.
+ * @returns The value at opening while open, the live value while closed.
+ *
+ * @example
+ * const stripActiveById = useValueAtOpen({ expanded, value: activeById });
+ */
+export const useValueAtOpen = <T>({
+  expanded,
+  value,
+}: {
+  expanded: boolean;
+  value: T;
+}): T => {
+  const [atOpen, setAtOpen] = React.useState<{ value: T } | null>(null);
+  if (expanded && atOpen === null) setAtOpen({ value });
+  if (!expanded && atOpen !== null) setAtOpen(null);
+  return expanded && atOpen ? atOpen.value : value;
+};
+
+/**
+ * Each item's on/off state and the toggle that flips it. Switching an item on
+ * past `control.maxActiveItems` switches off the one on longest; an item none
+ * of whose layers exist in the spec is disabled and does not toggle.
+ *
+ * @param params.control - The spec's layer control, if any.
+ * @param params.layerIds - Ids of the layers in the current spec.
+ * @returns The state by item id and the toggle.
+ *
+ * @example
+ * const { activeById, toggleItem } = useItemToggle({ control, layerIds });
+ */
+export const useItemToggle = ({
+  control,
+  layerIds,
+}: {
+  control: LayerControl | undefined;
+  layerIds: Set<string>;
+}) => {
+  const [activeById, setActiveById] = React.useState<Record<string, boolean>>(
+    {}
+  );
+  // Item ids in the order they were switched on, oldest first: whom a switch
+  // past `maxActiveItems` turns off.
+  const [switchedOn, setSwitchedOn] = React.useState<string[]>([]);
+
+  const toggleItem = (item: LayerControlItem) => {
+    const existing = item.layers.filter((id) => {
+      return layerIds.has(id);
+    });
+    // Disabled item: none of its layers exist in the current spec.
+    if (!control || existing.length === 0) return;
+    const next = !resolveItemActive(item, activeById);
+    const switchOff = next
+      ? itemsToSwitchOff({
+          items: control.items,
+          activeById,
+          switchedOn,
+          layerIds,
+          incoming: item,
+          maxActiveItems: control.maxActiveItems,
+        })
+      : [];
+    setActiveById((prev) => {
+      return {
+        ...prev,
+        ...Object.fromEntries(
+          switchOff.map((id) => {
+            return [id, false];
+          })
+        ),
+        [item.id]: next,
+      };
+    });
+    setSwitchedOn((prev) => {
+      const kept = prev.filter((id) => {
+        return id !== item.id && !switchOff.includes(id);
+      });
+      return next ? [...kept, item.id] : kept;
+    });
+  };
+
+  return { activeById, toggleItem };
 };

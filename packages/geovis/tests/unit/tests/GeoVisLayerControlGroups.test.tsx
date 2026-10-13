@@ -266,13 +266,17 @@ describe('GeoVisLayerControl — categories', () => {
     expect(groupCard('saude')).not.toBeNull();
   });
 
-  test('the "Ver mais" badge counts the items of the categories it hides', async () => {
+  test('a category with an item on leads the strip', async () => {
     await renderControl(buildSpec({ maxVisibleItems: 1 }));
     openControl();
 
-    // Metrô (in "Transporte") and Nada (in "Vazio"), both hidden, are on.
-    const badge = $('button[data-more]')?.querySelector('span > span');
-    expect(badge?.textContent).toBe('2');
+    // Metrô is on, so "Transporte" takes the one place. Nada is on too, but
+    // its layers are missing — it draws nothing — so "Vazio" stays behind.
+    expect(groupCard('transporte')).not.toBeNull();
+    expect(groupCard('vazio')).toBeNull();
+    expect($('button[data-more]')?.getAttribute('aria-label')).toBe(
+      'Ver mais (+3)'
+    );
   });
 
   test('a category panel stays open when the pointer leaves a hover control', async () => {

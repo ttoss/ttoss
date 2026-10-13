@@ -1085,31 +1085,56 @@ const spec: VisualizationSpec = {
 | `label`           | `string`                               |          | Accessible label / tooltip for the icon-only trigger. Defaults to `'Layers'`.                                                                                                                                                                                                                                                                          |
 | `icon`            | `string`                               |          | Icon on the collapsed trigger, a `@ttoss/react-icons` name (e.g. `'lucide:layers'`). Defaults to a built-in stacked-sheets glyph.                                                                                                                                                                                                                      |
 | `trigger`         | `'hover' \| 'click'`                   |          | How the panel expands. `'hover'` (default) also opens on click, for touch devices.                                                                                                                                                                                                                                                                     |
-| `maxVisibleItems` | `number`                               |          | Items shown before the rest collapse behind a "Ver mais" card. Omitted (or when every item fits), all items are shown. See [Long item lists](#long-item-lists).                                                                                                                                                                                        |
+| `maxVisibleItems` | `number`                               |          | Items shown before the rest collapse behind a "Ver mais" card — the ones that are on first. Omitted (or when every item fits), all items are shown. See [Long item lists](#long-item-lists).                                                                                                                                                           |
+| `maxActiveItems`  | `number`                               |          | How many items can be on at once; switching one on past it switches off the one on longest. Omitted, there is no limit. See [Limiting the items on](#limiting-the-items-on).                                                                                                                                                                           |
 
 ### Long item lists
 
 With many items the single row of cards outgrows the map. Set
-`maxVisibleItems` to show only the first items, in `items` order, followed by a
-**"Ver mais"** card with the hidden count (`+7`). Clicking it swaps the row for a
-larger panel, anchored in the same corner, listing every item in a grid under
-the control's `label` — up to five columns, capped at `60vh` and scrolling past
-that; below the compact breakpoint it spans the map's width instead.
+`maxVisibleItems` to show only that many, followed by a **"Ver mais"** card with
+the hidden count (`+7`). The entries that are on come first — a category counts
+when any of its items is — then the rest, both in `items` order. So a layer
+switched on from the larger panel is in the row the next time it opens, and a
+layer that is on is never out of sight behind the card; more entries on than
+places grow the row rather than hide one. The order is read when the panel
+opens and kept while it stays open, so a card never moves from under the
+pointer. An item whose layers are all missing draws nothing and is not counted
+as on.
+
+Clicking the card swaps the row for a larger panel, anchored in the same
+corner, listing every item in a grid under the control's `label` — up to five
+columns, capped at `60vh` and scrolling past that; below the compact breakpoint
+it spans the map's width instead. Items that declare a `category` are grouped
+there under its heading, in the order each category first appears; items
+without one come first, with no heading.
 
 The larger panel stays open until the user closes it — its ✕ button, `Escape`,
 a click outside the control, or the trigger — even with `trigger: 'hover'`, so
 a pointer drifting off it does not throw the list away. Closing it collapses the
-whole control; the next expansion starts from the short row again. When hidden
-items are on, the "Ver mais" card shows how many in an accent badge.
+whole control; the next expansion starts from the short row again.
 
 ```typescript
 control: {
   id: 'layers',
   label: 'Camadas',
   maxVisibleItems: 3, // three cards + "Ver mais"
-  items: [/* ten items */],
+  items: [
+    { id: 'parques', label: 'Parques', layers: ['parques-fill'] },
+    { id: 'ubs', label: 'UBS', layers: ['ubs-pins'], category: 'Saúde' },
+    { id: 'metro', label: 'Metrô', layers: ['metro-pins'], category: 'Transporte' },
+    /* … */
+  ],
 },
 ```
+
+### Limiting the items on
+
+`maxActiveItems` caps how many items are on at once. Switching one on past the
+limit switches off the one switched on longest ago — items on by default count
+as the oldest, in `items` order — so a reader never has to make room before
+choosing. Only items whose layers exist in the spec count. It applies as items
+are switched on: a control whose defaults already exceed it keeps them until
+the next switch.
 
 ### Categories
 
@@ -1168,6 +1193,7 @@ that read a control.
 | `thumbnail`     | `string`   |          | Image (URL or data URI) filling the item's card, cropped to cover. Defaults to a built-in map preview. |
 | `layers`        | `string[]` | ✓        | Ids of `spec.layers` toggled together when the button is clicked.                                      |
 | `defaultActive` | `boolean`  |          | Whether the layers start visible the first time the item is seen. Defaults to `true`.                  |
+| `category`      | `string`   |          | Heading the item sits under in the "Ver mais" panel. Only that panel reads it.                         |
 
 ### Three item states
 

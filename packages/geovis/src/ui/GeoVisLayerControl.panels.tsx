@@ -1,23 +1,27 @@
 import * as React from 'react';
 
-import { isLayerControlGroup, layerControlItems } from '../spec/layerControl';
+import { isLayerControlGroup } from '../spec/layerControl';
 import type { LayerControlEntry, LayerControlGroup } from '../spec/types';
 import {
   type ItemListProps,
   LayerControlItemList,
-  resolveItemActive,
 } from './GeoVisLayerControl.items';
 import {
-  badgeCountStyle,
+  type EntrySection,
+  sectionEntries,
+  splitStripEntries,
+} from './GeoVisLayerControl.order';
+import {
   buildFullPanelGridStyle,
   buildFullPanelStyle,
   buildItemLabelStyle,
   buildItemStyle,
   buildPanelStyle,
+  fullPanelBodyStyle,
   fullPanelCloseStyle,
   fullPanelHeaderStyle,
+  fullPanelSectionTitleStyle,
   fullPanelTitleStyle,
-  moreActiveBadgeStyle,
   moreThumbStyle,
 } from './GeoVisLayerControl.styles';
 
@@ -62,17 +66,14 @@ const BackIcon = () => {
 
 /**
  * The card closing the summary strip when items are hidden: a tile with the
- * hidden count ("+12") labelled "Ver mais", plus an accent badge counting the
- * hidden items that are currently on, so a layer left active in the full panel
- * is never silently out of sight.
+ * hidden count ("+12") labelled "Ver mais". It carries no count of items on:
+ * those all sit in the strip (see `splitStripEntries`), so none hides here.
  */
 const LayerControlMoreButton = ({
   hiddenCount,
-  hiddenActiveCount,
   onOpen,
 }: {
   hiddenCount: number;
-  hiddenActiveCount: number;
   onOpen: () => void;
 }) => {
   const [hovered, setHovered] = React.useState(false);
@@ -94,14 +95,7 @@ const LayerControlMoreButton = ({
         return setHovered(false);
       }}
     >
-      <span style={moreThumbStyle}>
-        {countText}
-        {hiddenActiveCount > 0 ? (
-          <span style={moreActiveBadgeStyle}>
-            <span style={badgeCountStyle}>{hiddenActiveCount}</span>
-          </span>
-        ) : null}
-      </span>
+      <span style={moreThumbStyle}>{countText}</span>
       <span style={buildItemLabelStyle({ active: false, disabled: false })}>
         {MORE_LABEL}
       </span>
@@ -110,16 +104,78 @@ const LayerControlMoreButton = ({
 };
 
 /**
+ * The full panel's grids: one with every entry, or — when items declare a
+ * `category` — one per section, each under its heading. Every grid is sized
+ * for the longest section, so the columns line up from one to the next.
+ */
+const FullPanelSections = ({
+  label,
+  compact,
+  sections,
+  ...listProps
+}: Omit<ItemListProps, 'items'> & {
+  label: string;
+  compact: boolean;
+  sections: EntrySection[];
+}) => {
+  const itemCount = Math.max(
+    0,
+    ...sections.map((section) => {
+      return section.entries.length;
+    })
+  );
+  const flat = sections.length === 1 && sections[0].title === undefined;
+
+  if (flat) {
+    return (
+      <div
+        role="group"
+        aria-label={label}
+        style={buildFullPanelGridStyle({ compact, itemCount })}
+      >
+        <LayerControlItemList items={sections[0].entries} {...listProps} />
+      </div>
+    );
+  }
+
+  return (
+    <div style={fullPanelBodyStyle}>
+      {sections.map((section) => {
+        const name = section.title ?? label;
+        return (
+          <div key={name} role="group" aria-label={name}>
+            {section.title ? (
+              <div style={fullPanelSectionTitleStyle}>{section.title}</div>
+            ) : null}
+            <div
+              style={{
+                ...buildFullPanelGridStyle({ compact, itemCount }),
+                // The body scrolls as a whole, so the headings scroll with
+                // their sections.
+                overflowY: 'visible',
+              }}
+            >
+              <LayerControlItemList items={section.entries} {...listProps} />
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+/**
  * A larger panel listing entries in a grid under a title and a close button:
- * the one the "Ver mais" card opens, with every entry, and a category's, with
- * its items and a back button. Anchored where the summary strip was, so it
- * grows toward the map's centre the same way.
+ * the one the "Ver mais" card opens, with every entry sectioned by category,
+ * and a category's, with its items and a back button. Anchored where the
+ * summary strip was, so it grows toward the map's centre the same way.
  */
 const LayerControlFullPanel = ({
   label,
   compact,
   onClose,
   onBack,
+  items,
   ...listProps
 }: ItemListProps & {
   label: string;
@@ -176,41 +232,22 @@ const LayerControlFullPanel = ({
           <CloseIcon />
         </button>
       </div>
-      <div
-        role="group"
-        aria-label={label}
-        style={buildFullPanelGridStyle({
-          compact,
-          itemCount: listProps.items.length,
-        })}
-      >
-        <LayerControlItemList {...listProps} />
-      </div>
+      <FullPanelSections
+        label={label}
+        compact={compact}
+        // A category's own panel lists its items flat; only "Ver mais"
+        // sections them.
+        sections={onBack ? [{ entries: items }] : sectionEntries(items)}
+        {...listProps}
+      />
     </div>
   );
 };
 
 /**
- * Splits `items` into the summary strip's visible head and the hidden tail,
- * per `maxVisibleItems`. Nothing is hidden when the limit is unset or the list
- * already fits within it, so no "Ver mais" card is needed.
- */
-const splitItems = (
-  items: LayerControlEntry[],
-  maxVisibleItems: number | undefined
-): { visible: LayerControlEntry[]; hidden: LayerControlEntry[] } => {
-  if (maxVisibleItems == null || items.length <= maxVisibleItems) {
-    return { visible: items, hidden: [] };
-  }
-  return {
-    visible: items.slice(0, maxVisibleItems),
-    hidden: items.slice(maxVisibleItems),
-  };
-};
-
-/**
  * The expanded panel's content: the summary strip — every entry, or, when
- * `maxVisibleItems` hides some, the first ones followed by a "Ver mais" card —
+ * `maxVisibleItems` hides some, the ones that are on and then the first of
+ * the rest, followed by a "Ver mais" card (see `splitStripEntries`) —
  * the full panel listing them all once that card is clicked, or a category's
  * panel once its card is. A category whose id is gone from the spec (the
  * control was rebuilt without it) falls back to the view beneath it.
@@ -220,6 +257,7 @@ export const LayerControlExpandedPanel = ({
   compact,
   items,
   maxVisibleItems,
+  stripActiveById,
   view,
   onShowAll,
   onBack,
@@ -230,6 +268,8 @@ export const LayerControlExpandedPanel = ({
   compact: boolean;
   items: LayerControlEntry[];
   maxVisibleItems: number | undefined;
+  /** The choices the strip's order is read from, as they were at opening. */
+  stripActiveById: Record<string, boolean>;
   view: { full: boolean; groupId: string | null };
   onShowAll: () => void;
   onBack: () => void;
@@ -264,11 +304,12 @@ export const LayerControlExpandedPanel = ({
     );
   }
 
-  const { visible, hidden } = splitItems(items, maxVisibleItems);
-  // Counts toggles, so a category hidden behind the card counts its items.
-  const hiddenActiveCount = layerControlItems(hidden).filter((item) => {
-    return resolveItemActive(item, listProps.activeById);
-  }).length;
+  const { visible, hidden } = splitStripEntries({
+    items,
+    maxVisibleItems,
+    activeById: stripActiveById,
+    layerIds: listProps.layerIds,
+  });
 
   return (
     <div role="group" aria-label={label} style={buildPanelStyle({ compact })}>
@@ -276,7 +317,6 @@ export const LayerControlExpandedPanel = ({
       {hidden.length > 0 ? (
         <LayerControlMoreButton
           hiddenCount={hidden.length}
-          hiddenActiveCount={hiddenActiveCount}
           onOpen={onShowAll}
         />
       ) : null}

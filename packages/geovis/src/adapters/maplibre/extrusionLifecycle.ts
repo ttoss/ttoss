@@ -23,6 +23,9 @@ const pendingCollapses = new WeakMap<
 /** The duration each layer last animated with, for the collapse that follows. */
 const lastDurations = new WeakMap<maplibregl.Map, Map<string, number>>();
 
+/** Cancels a type swap waiting for its source to settle, keyed by layer id. */
+const pendingSwaps = new WeakMap<maplibregl.Map, Map<string, () => void>>();
+
 const mapFor = <T>(
   store: WeakMap<maplibregl.Map, Map<string, T>>,
   map: maplibregl.Map
@@ -59,11 +62,84 @@ export const extrusionTransitionMs = ({
   return durations.get(layer.id) ?? DEFAULT_EXTRUSION_TRANSITION_MS;
 };
 
+/** Calls off a layer's swap still waiting for its source to settle. */
+const cancelSwap = (map: maplibregl.Map, layerId: string): void => {
+  mapFor(pendingSwaps, map).get(layerId)?.();
+};
+
+/**
+ * Runs a layer's type swap once its source has no tile in flight.
+ *
+ * MapLibre cannot change a layer's type, so a swap removes the layer and adds
+ * it back under the same id with the other type. MapLibre handles that by
+ * clearing the source's tiles — but only on the next frame. A tile the worker
+ * built for the old type that lands before then is bound to the new layer, and
+ * applying feature state to it reads paint the new type does not have
+ * (`Cannot read properties of undefined (reading 'value')` in
+ * `updatePaintArrays`). A 3D → 2D switch all but guarantees such a tile: the
+ * camera is easing back from its pitch, loading tiles all the while.
+ *
+ * Waiting until the source has loaded closes that window — with no tile in
+ * flight, the clear on the next frame runs before any new one is requested. It
+ * costs nothing visible: a collapsing layer is already flat when it swaps, and
+ * a rising one keeps its flat self on screen meanwhile. A later swap of the
+ * same layer replaces this one.
+ */
+const swapWhenSourceSettles = ({
+  map,
+  layerId,
+  sourceId,
+  swap,
+}: {
+  map: maplibregl.Map;
+  layerId: string;
+  sourceId: string | undefined;
+  swap: () => void;
+}): void => {
+  cancelSwap(map, layerId);
+  const settled = () => {
+    return (
+      sourceId === undefined ||
+      !map.getSource(sourceId) ||
+      map.isSourceLoaded(sourceId)
+    );
+  };
+  if (settled()) {
+    swap();
+    return;
+  }
+  const swaps = mapFor(pendingSwaps, map);
+  // `sourcedata` fires as each tile lands, so the last one triggers the swap;
+  // `idle` catches a source that settles without one. One object, since the
+  // listener and its cancel each refer to the other.
+  const subscription = {
+    onSettle: () => {
+      if (!settled()) return;
+      subscription.cancel();
+      swap();
+    },
+    cancel: () => {
+      map.off('sourcedata', subscription.onSettle);
+      map.off('idle', subscription.onSettle);
+      if (swaps.get(layerId) === subscription.cancel) swaps.delete(layerId);
+    },
+  };
+  swaps.set(layerId, subscription.cancel);
+  map.on('sourcedata', subscription.onSettle);
+  map.on('idle', subscription.onSettle);
+};
+
+/** The source a translated layer draws from. */
+const sourceOf = (layer: maplibregl.LayerSpecification): string | undefined => {
+  return (layer as { source?: string }).source;
+};
+
 /** Drops every bit of extrusion state for a layer leaving the map. */
 export const forgetExtrusionLayer = (
   map: maplibregl.Map,
   layerId: string
 ): void => {
+  cancelSwap(map, layerId);
   forgetExtrusionHeight(map, layerId);
   mapFor(pendingCollapses, map).delete(layerId);
 };
@@ -73,16 +149,29 @@ const heightOf = (layer: maplibregl.LayerSpecification): ExtrusionHeight => {
   return (paint?.['fill-extrusion-height'] ?? 0) as ExtrusionHeight;
 };
 
-/** Swaps a collapsed extruded layer for the flat one waiting on it. */
+/**
+ * Swaps a collapsed extruded layer for the flat one waiting on it, once its
+ * source settles (see {@link swapWhenSourceSettles}). The flat layer is read
+ * when the swap runs, so an update that lands meanwhile is the one swapped in.
+ */
 const finishCollapse = (map: maplibregl.Map, layerId: string): void => {
   const pending = mapFor(pendingCollapses, map).get(layerId);
   // Gone means the layer was removed or the collapse was called off.
   if (!pending || !map.getLayer(layerId)) return;
-  mapFor(pendingCollapses, map).delete(layerId);
-  forgetExtrusionHeight(map, layerId);
-  map.removeLayer(layerId);
-  map.addLayer(pending.flat);
-  pending.afterSwap();
+  swapWhenSourceSettles({
+    map,
+    layerId,
+    sourceId: sourceOf(pending.flat),
+    swap: () => {
+      const latest = mapFor(pendingCollapses, map).get(layerId);
+      if (!latest || !map.getLayer(layerId)) return;
+      mapFor(pendingCollapses, map).delete(layerId);
+      forgetExtrusionHeight(map, layerId);
+      map.removeLayer(layerId);
+      map.addLayer(latest.flat);
+      latest.afterSwap();
+    },
+  });
 };
 
 interface UpsertExtrusionParams {
@@ -96,24 +185,38 @@ interface UpsertExtrusionParams {
   afterSwap: () => void;
 }
 
-/** 2D → 3D: the flat layer goes, the extruded one comes in flat and rises. */
+/**
+ * 2D → 3D: the flat layer goes, the extruded one comes in flat and rises —
+ * once the source settles (see {@link swapWhenSourceSettles}), the flat layer
+ * staying on screen until then.
+ */
 const grow = ({ map, layer, desiredLayer }: UpsertExtrusionParams): void => {
   mapFor(pendingCollapses, map).delete(layer.id);
-  if (map.getLayer(layer.id)) map.removeLayer(layer.id);
-  const height = heightOf(desiredLayer);
-  const durationMs =
-    layer.visible === false ? 0 : extrusionTransitionMs({ map, layer });
-  const paint = (desiredLayer as { paint?: Record<string, unknown> }).paint;
-  map.addLayer({
-    ...desiredLayer,
-    paint: { ...paint, 'fill-extrusion-height': durationMs > 0 ? 0 : height },
-  } as maplibregl.LayerSpecification);
-  transitionExtrusionHeight({
+  swapWhenSourceSettles({
     map,
     layerId: layer.id,
-    from: durationMs > 0 ? 0 : height,
-    to: height,
-    durationMs,
+    sourceId: sourceOf(desiredLayer),
+    swap: () => {
+      if (map.getLayer(layer.id)) map.removeLayer(layer.id);
+      const height = heightOf(desiredLayer);
+      const durationMs =
+        layer.visible === false ? 0 : extrusionTransitionMs({ map, layer });
+      const paint = (desiredLayer as { paint?: Record<string, unknown> }).paint;
+      map.addLayer({
+        ...desiredLayer,
+        paint: {
+          ...paint,
+          'fill-extrusion-height': durationMs > 0 ? 0 : height,
+        },
+      } as maplibregl.LayerSpecification);
+      transitionExtrusionHeight({
+        map,
+        layerId: layer.id,
+        from: durationMs > 0 ? 0 : height,
+        to: height,
+        durationMs,
+      });
+    },
   });
 };
 
@@ -172,6 +275,7 @@ export const upsertExtrusionAwareLayer = (
     // Back to 3D mid-collapse: calling it off here, and easing towards the new
     // height below, picks the prisms up from wherever they had got to.
     mapFor(pendingCollapses, map).delete(layer.id);
+    cancelSwap(map, layer.id);
     updateMounted();
     return true;
   }
@@ -183,5 +287,7 @@ export const upsertExtrusionAwareLayer = (
     collapse(params);
     return true;
   }
+  // Flat again before a rise could swap in: the flat layer stays as it is.
+  cancelSwap(map, layer.id);
   return false;
 };
