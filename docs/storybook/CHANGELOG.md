@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.2.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@8.1.2...@docs/storybook@8.2.0) (2026-10-13)
+
+### Features
+
+- **geovis-workspace:** camera bearing dial, settings sub-blocks and … ([#1314](https://github.com/ttoss/ttoss/issues/1314)) ([39d4bf1](https://github.com/ttoss/ttoss/commit/39d4bf1da034f75383e428b2509d8746a29ad6e1))
+
 ## [8.1.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@8.1.1...@docs/storybook@8.1.2) (2026-10-11)
 
 ### Bug Fixes
