@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.23.7](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.23.6...@ttoss/components@2.23.7) (2026-10-11)
+
+### Bug Fixes
+
+- **components,react-billing,react-wizard:** translate hardcoded UI labels ([#1319](https://github.com/ttoss/ttoss/issues/1319)) ([1e1e87d](https://github.com/ttoss/ttoss/commit/1e1e87dd69ac54502c520be595f9545e0fd28df4))
+
 ## [2.23.6](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.23.5...@ttoss/components@2.23.6) (2026-10-07)
 
 **Note:** Version bump only for package @ttoss/components

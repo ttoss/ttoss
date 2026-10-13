@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.11.9](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.11.8...@ttoss/react-auth-strapi@0.11.9) (2026-10-11)
+
+### Bug Fixes
+
+- **components,react-billing,react-wizard:** translate hardcoded UI labels ([#1319](https://github.com/ttoss/ttoss/issues/1319)) ([1e1e87d](https://github.com/ttoss/ttoss/commit/1e1e87dd69ac54502c520be595f9545e0fd28df4))
+
 ## [0.11.8](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.11.7...@ttoss/react-auth-strapi@0.11.8) (2026-10-07)
 
 **Note:** Version bump only for package @ttoss/react-auth-strapi

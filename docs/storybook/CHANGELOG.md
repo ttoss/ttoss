@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.1.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@8.1.1...@docs/storybook@8.1.2) (2026-10-11)
+
+### Bug Fixes
+
+- **components,react-billing,react-wizard:** translate hardcoded UI labels ([#1319](https://github.com/ttoss/ttoss/issues/1319)) ([1e1e87d](https://github.com/ttoss/ttoss/commit/1e1e87dd69ac54502c520be595f9545e0fd28df4))
+
 ## [8.1.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@8.1.0...@docs/storybook@8.1.1) (2026-10-09)
 
 ### Bug Fixes

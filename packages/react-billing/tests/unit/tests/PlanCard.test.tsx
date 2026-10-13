@@ -79,7 +79,7 @@ test('optional sections are omitted when not provided', () => {
   expect(screen.queryByText('✓ Basic reporting')).toBeNull();
 });
 
-test('CTA label defaults to Assine agora', () => {
+test('CTA label defaults to Subscribe now', () => {
   render(
     <PlanCard
       title="Starter"
@@ -93,7 +93,7 @@ test('CTA label defaults to Assine agora', () => {
   );
 
   expect(
-    screen.getByRole('button', { name: 'Assine agora' })
+    screen.getByRole('button', { name: 'Subscribe now' })
   ).toBeInTheDocument();
 });
 
@@ -149,4 +149,19 @@ test('renders topTag and supports react-element features', () => {
 
   expect(screen.getByText('TOP TAG')).toBeInTheDocument();
   expect(screen.getByText('Custom feature')).toBeInTheDocument();
+});
+
+test('renders the features heading in the active locale', () => {
+  render(
+    <PlanCard
+      title="Starter"
+      metadata={[]}
+      price={{ value: 29, interval: '/month' }}
+      features={['Basic reporting']}
+      buttonProps={{ label: 'Subscribe' }}
+    />
+  );
+
+  expect(screen.getByText('Features')).toBeInTheDocument();
+  expect(screen.queryByText('RECURSOS')).not.toBeInTheDocument();
 });

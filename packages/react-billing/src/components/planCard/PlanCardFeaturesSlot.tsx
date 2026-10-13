@@ -1,3 +1,4 @@
+import { defineMessages, useI18n } from '@ttoss/react-i18n';
 import { Icon } from '@ttoss/react-icons';
 import { Box, Flex, Stack, Text } from '@ttoss/ui';
 import * as React from 'react';
@@ -10,12 +11,19 @@ export interface PlanCardFeaturesSlotProps {
   variant?: PlanCardVariant;
 }
 
-const featuresTitle = 'RECURSOS';
+const messages = defineMessages({
+  featuresTitle: {
+    defaultMessage: 'Features',
+    description:
+      'Plan card: heading above the list of features the plan includes.',
+  },
+});
 
 export const PlanCardFeaturesSlot = ({
   features,
   variant = 'primary',
 }: PlanCardFeaturesSlotProps) => {
+  const { intl } = useI18n();
   const variantStyles = getPlanCardVariantStyles(variant);
   const featurePositiveColor = variantStyles.positiveColor;
 
@@ -34,10 +42,11 @@ export const PlanCardFeaturesSlot = ({
         <Flex
           sx={{
             letterSpacing: 'widest',
+            textTransform: 'uppercase',
             color: variantStyles.color,
           }}
         >
-          {featuresTitle}
+          {intl.formatMessage(messages.featuresTitle)}
         </Flex>
         <Flex sx={{ flexDirection: 'column', gap: '3' }}>
           {features.map((feature, index) => {
