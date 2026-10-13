@@ -116,7 +116,10 @@ export const options = {
     describe: 'Output directory for built Lambda code.',
     type: 'string',
   },
-  'lambda-sourcemap': {
+  'lambda-source-maps': {
+    // The name 3.1.0 shipped with; kept so a config written against it still
+    // works after the rename to match `upload-source-maps`.
+    alias: 'lambda-sourcemap',
     default: false,
     describe:
       'Ship a source map with the Lambda bundle and set NODE_OPTIONS=--enable-source-maps, so stack traces point at source files.',

@@ -385,15 +385,20 @@ describe('lambda-runtime option', () => {
   );
 });
 
-describe('lambda-sourcemap option', () => {
+describe('lambda-source-maps option', () => {
   test('should not ship Lambda source maps by default', async () => {
     const argv = await parseCli('deploy', {});
-    expect(argv.lambdaSourcemap).toEqual(false);
+    expect(argv.lambdaSourceMaps).toEqual(false);
   });
 
-  test('should accept lambda-sourcemap option', async () => {
-    const argv = await parseCli('deploy', { lambdaSourcemap: true });
-    expect(argv.lambdaSourcemap).toEqual(true);
+  test('should accept lambda-source-maps option', async () => {
+    const argv = await parseCli('deploy', { lambdaSourceMaps: true });
+    expect(argv.lambdaSourceMaps).toEqual(true);
+  });
+
+  test('should still accept the lambda-sourcemap name 3.1.0 shipped with', async () => {
+    const argv = await parseCli('deploy --lambda-sourcemap', {});
+    expect(argv.lambdaSourceMaps).toEqual(true);
   });
 });
 
