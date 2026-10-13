@@ -627,7 +627,7 @@ test('do not deploy lambda code if lambda-entry-points is empty', async () => {
   expect(buildLambdaCode).not.toHaveBeenCalled();
 });
 
-test('set NODE_OPTIONS=--enable-source-maps on functions when lambdaSourcemap is true', async () => {
+test('set NODE_OPTIONS=--enable-source-maps on functions when lambdaSourceMaps is true', async () => {
   (deployLambdaCode as jest.Mock).mockResolvedValueOnce({
     bucket: faker.lorem.word(),
     key: faker.lorem.word(),
@@ -637,7 +637,7 @@ test('set NODE_OPTIONS=--enable-source-maps on functions when lambdaSourcemap is
   await deployCloudFormation({
     lambdaEntryPoints: [],
     lambdaExternal,
-    lambdaSourcemap: true,
+    lambdaSourceMaps: true,
     template: {
       ...mockWorkingCloudFormationTemplate,
       Resources: {
@@ -650,7 +650,7 @@ test('set NODE_OPTIONS=--enable-source-maps on functions when lambdaSourcemap is
   });
 
   expect(deployLambdaCode).toHaveBeenLastCalledWith(
-    expect.objectContaining({ lambdaSourcemap: true })
+    expect.objectContaining({ lambdaSourceMaps: true })
   );
   expect(
     jest.mocked(deploy).mock.lastCall?.[0].template.Resources.LambdaFunction
@@ -658,7 +658,7 @@ test('set NODE_OPTIONS=--enable-source-maps on functions when lambdaSourcemap is
   ).toEqual({ Variables: { NODE_OPTIONS: '--enable-source-maps' } });
 });
 
-test('leave function environments alone when lambdaSourcemap is not set', async () => {
+test('leave function environments alone when lambdaSourceMaps is not set', async () => {
   (deployLambdaCode as jest.Mock).mockResolvedValueOnce({
     bucket: faker.lorem.word(),
     key: faker.lorem.word(),

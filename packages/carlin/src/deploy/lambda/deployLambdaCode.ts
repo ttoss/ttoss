@@ -18,7 +18,7 @@ export const deployLambdaCode = async ({
   lambdaEntryPointsBaseDir = 'src',
   lambdaFormat,
   lambdaOutdir = 'out',
-  lambdaSourcemap,
+  lambdaSourceMaps,
   stackName,
 }: {
   lambdaDockerfile?: string;
@@ -28,7 +28,7 @@ export const deployLambdaCode = async ({
   lambdaEntryPointsBaseDir?: string;
   lambdaFormat?: 'esm' | 'cjs';
   lambdaOutdir?: string;
-  lambdaSourcemap?: boolean;
+  lambdaSourceMaps?: boolean;
   stackName: string;
 }) => {
   if (!lambdaEntryPoints.length) {
@@ -50,7 +50,7 @@ export const deployLambdaCode = async ({
     lambdaEntryPointsBaseDir,
     lambdaFormat,
     lambdaOutdir,
-    lambdaSourcemap,
+    lambdaSourceMaps,
   });
 
   const { bucket, key, versionId } = await uploadCodeToS3({

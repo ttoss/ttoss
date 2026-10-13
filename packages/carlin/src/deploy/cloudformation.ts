@@ -89,7 +89,7 @@ type DeployCloudFormationOptions = {
   lambdaExternal?: string[];
   lambdaFormat?: 'esm' | 'cjs';
   lambdaOutdir?: string;
-  lambdaSourcemap?: boolean;
+  lambdaSourceMaps?: boolean;
   parameters?: CloudFormationParameter[];
   templatePath?: string;
   template?: CloudFormationTemplate;
@@ -224,7 +224,7 @@ const deployCloudFormationLambdaCode = async ({
   stackName: string;
   cliOptions: DeployCloudFormationOptions;
 }) => {
-  const { lambdaEntryPoints, lambdaSourcemap } = cliOptions;
+  const { lambdaEntryPoints, lambdaSourceMaps } = cliOptions;
 
   const finalLambdaEntryPoints =
     lambdaEntryPoints && lambdaEntryPoints.length > 0
@@ -239,11 +239,11 @@ const deployCloudFormationLambdaCode = async ({
     lambdaFormat: cliOptions.lambdaFormat,
     lambdaImage: cliOptions.lambdaImage,
     lambdaOutdir: cliOptions.lambdaOutdir,
-    lambdaSourcemap,
+    lambdaSourceMaps,
     stackName,
   });
 
-  if (lambdaSourcemap && finalLambdaEntryPoints.length > 0) {
+  if (lambdaSourceMaps && finalLambdaEntryPoints.length > 0) {
     addSourceMapsNodeOptions(template);
   }
 

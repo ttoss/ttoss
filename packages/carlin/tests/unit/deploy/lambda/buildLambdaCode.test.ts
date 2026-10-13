@@ -47,7 +47,7 @@ test('build lambda code properly as cjs', () => {
   }
 });
 
-test('writes a linked source map without sources when lambdaSourcemap is true', () => {
+test('writes a linked source map without sources when lambdaSourceMaps is true', () => {
   const outDir = `${lambdaOutdir}/sourcemap`;
 
   buildLambdaCode({
@@ -56,7 +56,7 @@ test('writes a linked source map without sources when lambdaSourcemap is true', 
     lambdaEntryPointsBaseDir: 'tests/fixtures/lambdaCodeExample',
     lambdaFormat: 'cjs',
     lambdaOutdir: outDir,
-    lambdaSourcemap: true,
+    lambdaSourceMaps: true,
   });
 
   const code = fs.readFileSync(`${outDir}/lambda.cjs`, 'utf8');
