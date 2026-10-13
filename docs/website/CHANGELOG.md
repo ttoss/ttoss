@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.2.0](https://github.com/ttoss/ttoss/compare/@docs/website@10.1.0...@docs/website@10.2.0) (2026-10-13)
+
+### Features
+
+- **carlin:** --lambda-sourcemap ships a source map and sets NODE_OPTIONS=--enable-source-maps ([#1320](https://github.com/ttoss/ttoss/issues/1320)) ([b34ec0c](https://github.com/ttoss/ttoss/commit/b34ec0c7427cc49052e64c8d9b13560d1b6a6f6f))
+
 # 10.1.0 (2026-10-09)
 
 ### Bug Fixes
