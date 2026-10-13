@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.3.0](https://github.com/ttoss/ttoss/compare/@docs/website@10.2.0...@docs/website@10.3.0) (2026-10-13)
+
+### Features
+
+- **carlin:** rename --lambda-sourcemap to --lambda-source-maps ([#1321](https://github.com/ttoss/ttoss/issues/1321)) ([438ea02](https://github.com/ttoss/ttoss/commit/438ea02042db29a4e0979ee6cd7f45283a4ddf12))
+
 # [10.2.0](https://github.com/ttoss/ttoss/compare/@docs/website@10.1.0...@docs/website@10.2.0) (2026-10-13)
 
 ### Features
