@@ -385,6 +385,18 @@ describe('lambda-runtime option', () => {
   );
 });
 
+describe('lambda-sourcemap option', () => {
+  test('should not ship Lambda source maps by default', async () => {
+    const argv = await parseCli('deploy', {});
+    expect(argv.lambdaSourcemap).toEqual(false);
+  });
+
+  test('should accept lambda-sourcemap option', async () => {
+    const argv = await parseCli('deploy', { lambdaSourcemap: true });
+    expect(argv.lambdaSourcemap).toEqual(true);
+  });
+});
+
 describe('upload-source-maps option', () => {
   test('should exclude source maps by default', async () => {
     const argv = await parseCli('deploy static-app', {});

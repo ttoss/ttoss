@@ -2,6 +2,10 @@ import path from 'node:path';
 
 import type { CloudFormationTemplate } from '@ttoss/cloudformation';
 import { faker } from '@ttoss/test-utils/faker';
+import {
+  defaultTemplatePaths,
+  deployCloudFormation,
+} from 'src/deploy/cloudformation';
 import { deploy } from 'src/deploy/cloudformation.core';
 import { buildLambdaCode } from 'src/deploy/lambda/buildLambdaCode';
 import { deployLambdaCode } from 'src/deploy/lambda/deployLambdaCode';
@@ -52,11 +56,6 @@ jest.mock('src/deploy/lambda/buildLambdaCode', () => {
     buildLambdaCode: jest.fn(),
   };
 });
-
-import {
-  defaultTemplatePaths,
-  deployCloudFormation,
-} from 'src/deploy/cloudformation';
 
 const mockStackName = faker.word.sample();
 
@@ -626,4 +625,62 @@ test('do not deploy lambda code if lambda-entry-points is empty', async () => {
   });
 
   expect(buildLambdaCode).not.toHaveBeenCalled();
+});
+
+test('set NODE_OPTIONS=--enable-source-maps on functions when lambdaSourcemap is true', async () => {
+  (deployLambdaCode as jest.Mock).mockResolvedValueOnce({
+    bucket: faker.lorem.word(),
+    key: faker.lorem.word(),
+    versionId: faker.lorem.word(),
+  });
+
+  await deployCloudFormation({
+    lambdaEntryPoints: [],
+    lambdaExternal,
+    lambdaSourcemap: true,
+    template: {
+      ...mockWorkingCloudFormationTemplate,
+      Resources: {
+        LambdaFunction: {
+          Type: 'AWS::Lambda::Function',
+          Properties: { Handler: `${faker.lorem.word()}.handler` },
+        },
+      },
+    },
+  });
+
+  expect(deployLambdaCode).toHaveBeenLastCalledWith(
+    expect.objectContaining({ lambdaSourcemap: true })
+  );
+  expect(
+    jest.mocked(deploy).mock.lastCall?.[0].template.Resources.LambdaFunction
+      .Properties?.Environment
+  ).toEqual({ Variables: { NODE_OPTIONS: '--enable-source-maps' } });
+});
+
+test('leave function environments alone when lambdaSourcemap is not set', async () => {
+  (deployLambdaCode as jest.Mock).mockResolvedValueOnce({
+    bucket: faker.lorem.word(),
+    key: faker.lorem.word(),
+    versionId: faker.lorem.word(),
+  });
+
+  await deployCloudFormation({
+    lambdaEntryPoints: [],
+    lambdaExternal,
+    template: {
+      ...mockWorkingCloudFormationTemplate,
+      Resources: {
+        LambdaFunction: {
+          Type: 'AWS::Lambda::Function',
+          Properties: { Handler: `${faker.lorem.word()}.handler` },
+        },
+      },
+    },
+  });
+
+  expect(
+    jest.mocked(deploy).mock.lastCall?.[0].template.Resources.LambdaFunction
+      .Properties?.Environment
+  ).toBeUndefined();
 });
