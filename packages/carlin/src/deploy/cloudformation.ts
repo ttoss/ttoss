@@ -14,6 +14,7 @@ import {
   doesStackExist,
   validateTemplate,
 } from './cloudformation.core';
+import { addSourceMapsNodeOptions } from './lambda/addSourceMapsNodeOptions';
 import { deployLambdaCode } from './lambda/deployLambdaCode';
 import { getLambdaEntryPointsFromTemplate } from './lambda/getLambdaEntryPointsFromTemplate';
 import { emptyS3Directory } from './s3';
@@ -67,7 +68,20 @@ const getCloudformationTemplateOptions = ({
   return options;
 };
 
-export const deployCloudFormation = async (cliOptions: {
+type CloudFormationParameter = {
+  key: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  value: any;
+  usePreviousValue?: true | false;
+  resolvedValue?: string;
+};
+
+type DeployParams = {
+  StackName: string;
+  Parameters: AWS.CloudFormation.Parameter[];
+};
+
+type DeployCloudFormationOptions = {
   lambdaDockerfile?: string;
   lambdaEntryPoints?: string[];
   lambdaEntryPointsBaseDir?: string;
@@ -75,79 +89,208 @@ export const deployCloudFormation = async (cliOptions: {
   lambdaExternal?: string[];
   lambdaFormat?: 'esm' | 'cjs';
   lambdaOutdir?: string;
-  parameters?: {
-    key: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    value: any;
-    usePreviousValue?: true | false;
-    resolvedValue?: string;
-  }[];
+  lambdaSourcemap?: boolean;
+  parameters?: CloudFormationParameter[];
   templatePath?: string;
   template?: CloudFormationTemplate;
+};
+
+const getParameterType = (parameter: CloudFormationParameter) => {
+  if (typeof parameter.value === 'string') {
+    return 'String';
+  }
+
+  if (typeof parameter.value === 'number') {
+    return 'Number';
+  }
+
+  throw new Error(
+    `Parameter assertion failed. Parameter ${parameter.key} value ${parameter.value} is not mapped.`
+  );
+};
+
+/**
+ * Add Parameters passed on CLI to CloudFormation template if they don't exist.
+ * Also, automatically add the Type of the parameter.
+ */
+const addCliParametersToTemplate = ({
+  template,
+  parameters = [],
+}: {
+  template: CloudFormationTemplate;
+  parameters?: CloudFormationParameter[];
 }) => {
+  for (const parameter of parameters) {
+    if (template.Parameters?.[parameter.key]) {
+      continue;
+    }
+
+    template.Parameters = {
+      ...template.Parameters,
+      [parameter.key]: { Type: getParameterType(parameter) },
+    };
+  }
+};
+
+/**
+ * Add `Code` property to every AWS::Lambda::Function resource or `CodeUri`
+ * property to every AWS::Serverless::Function resource if they are NOT
+ * already defined.
+ */
+const addLambdaCodeToResources = (template: CloudFormationTemplate) => {
+  for (const resource of Object.values(template.Resources)) {
+    if (
+      resource.Type === 'AWS::Lambda::Function' &&
+      !resource.Properties?.Code
+    ) {
+      resource.Properties = {
+        ...resource.Properties,
+        Code: {
+          S3Bucket: { Ref: 'LambdaS3Bucket' },
+          S3Key: { Ref: 'LambdaS3Key' },
+          S3ObjectVersion: { Ref: 'LambdaS3ObjectVersion' },
+        },
+      };
+    }
+
+    if (
+      resource.Type === 'AWS::Serverless::Function' &&
+      !resource.Properties?.CodeUri
+    ) {
+      resource.Properties = {
+        ...resource.Properties,
+        CodeUri: {
+          Bucket: { Ref: 'LambdaS3Bucket' },
+          Key: { Ref: 'LambdaS3Key' },
+          Version: { Ref: 'LambdaS3ObjectVersion' },
+        },
+      };
+    }
+  }
+};
+
+const addLambdaS3Parameters = ({
+  template,
+  params,
+  bucket,
+  key,
+  versionId,
+}: {
+  template: CloudFormationTemplate;
+  params: DeployParams;
+  bucket: string;
+  key: string;
+  versionId: string;
+}) => {
+  template.Parameters = {
+    LambdaS3Bucket: { Type: 'String' },
+    LambdaS3Key: { Type: 'String' },
+    LambdaS3ObjectVersion: { Type: 'String' },
+    ...template.Parameters,
+  };
+
+  params.Parameters.push(
+    {
+      ParameterKey: 'LambdaS3Bucket',
+      ParameterValue: bucket,
+    },
+    {
+      ParameterKey: 'LambdaS3Key',
+      ParameterValue: key,
+    },
+    /**
+     * Used by CloudFormation AWS::Lambda::Function
+     * @see {@link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html}
+     * and by CloudFormation AWS::Serverless::Function
+     * @see {@link https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-functioncode.html}
+     */
+    {
+      ParameterKey: 'LambdaS3ObjectVersion',
+      ParameterValue: versionId,
+    }
+  );
+
+  addLambdaCodeToResources(template);
+};
+
+const deployCloudFormationLambdaCode = async ({
+  template,
+  params,
+  stackName,
+  cliOptions,
+}: {
+  template: CloudFormationTemplate;
+  params: DeployParams;
+  stackName: string;
+  cliOptions: DeployCloudFormationOptions;
+}) => {
+  const { lambdaEntryPoints, lambdaSourcemap } = cliOptions;
+
+  const finalLambdaEntryPoints =
+    lambdaEntryPoints && lambdaEntryPoints.length > 0
+      ? lambdaEntryPoints
+      : getLambdaEntryPointsFromTemplate(template);
+
+  const response = await deployLambdaCode({
+    lambdaDockerfile: cliOptions.lambdaDockerfile,
+    lambdaExternal: cliOptions.lambdaExternal,
+    lambdaEntryPoints: finalLambdaEntryPoints,
+    lambdaEntryPointsBaseDir: cliOptions.lambdaEntryPointsBaseDir,
+    lambdaFormat: cliOptions.lambdaFormat,
+    lambdaImage: cliOptions.lambdaImage,
+    lambdaOutdir: cliOptions.lambdaOutdir,
+    lambdaSourcemap,
+    stackName,
+  });
+
+  if (lambdaSourcemap && finalLambdaEntryPoints.length > 0) {
+    addSourceMapsNodeOptions(template);
+  }
+
+  if (!response) {
+    return;
+  }
+
+  const { bucket, key, versionId, imageUri } = response;
+
+  if (imageUri) {
+    template.Parameters = {
+      LambdaImageUri: { Type: 'String' },
+      ...template.Parameters,
+    };
+
+    params.Parameters.push({
+      ParameterKey: 'LambdaImageUri',
+      ParameterValue: imageUri,
+    });
+  } else if (bucket && key && versionId) {
+    addLambdaS3Parameters({ template, params, bucket, key, versionId });
+  }
+};
+
+export const deployCloudFormation = async (
+  cliOptions: DeployCloudFormationOptions
+) => {
   try {
-    const {
-      lambdaDockerfile,
-      lambdaEntryPoints,
-      lambdaEntryPointsBaseDir,
-      lambdaImage,
-      lambdaExternal,
-      lambdaFormat,
-      lambdaOutdir,
-      parameters,
-      template,
-      templatePath,
-    } = cliOptions;
+    const { parameters, template, templatePath } = cliOptions;
 
     const { stackName } = await handleDeployInitialization({ logPrefix });
 
-    const cloudFormationTemplate: CloudFormationTemplate = await (async () => {
-      if (template) {
-        return { ...template };
-      }
+    const cloudFormationTemplate: CloudFormationTemplate = template
+      ? { ...template }
+      : await findAndReadCloudFormationTemplate({
+          templatePath,
+          options: getCloudformationTemplateOptions({ stackName, cliOptions }),
+        });
 
-      return findAndReadCloudFormationTemplate({
-        templatePath,
-        options: getCloudformationTemplateOptions({ stackName, cliOptions }),
-      });
-    })();
-
-    /**
-     * Add Parameters passed on CLI to CloudFormation template if they don't exist.
-     * Also, automatically add the Type of the parameter.
-     */
-    if (parameters)
-      for (const parameter of parameters) {
-        if (cloudFormationTemplate.Parameters?.[parameter.key]) {
-          continue;
-        }
-
-        if (!cloudFormationTemplate.Parameters) {
-          cloudFormationTemplate.Parameters = {};
-        }
-
-        const type = (() => {
-          if (typeof parameter.value === 'string') {
-            return 'String';
-          }
-
-          if (typeof parameter.value === 'number') {
-            return 'Number';
-          }
-
-          throw new Error(
-            `Parameter assertion failed. Parameter ${parameter.key} value ${parameter.value} is not mapped.`
-          );
-        })();
-
-        cloudFormationTemplate.Parameters[parameter.key] = {
-          Type: type,
-        };
-      }
+    addCliParametersToTemplate({
+      template: cloudFormationTemplate,
+      parameters,
+    });
 
     await validateTemplate({ stackName, template: cloudFormationTemplate });
 
-    const params = {
+    const params: DeployParams = {
       StackName: stackName,
       Parameters:
         parameters?.map<AWS.CloudFormation.Parameter>((parameter) => {
@@ -160,113 +303,12 @@ export const deployCloudFormation = async (cliOptions: {
         }) || [],
     };
 
-    const deployCloudFormationDeployLambdaCode = async () => {
-      const finalLambdaEntryPoints = (() => {
-        if (lambdaEntryPoints && lambdaEntryPoints.length > 0) {
-          return lambdaEntryPoints;
-        }
-
-        return getLambdaEntryPointsFromTemplate(cloudFormationTemplate);
-      })();
-
-      const response = await deployLambdaCode({
-        lambdaDockerfile,
-        lambdaExternal,
-        lambdaEntryPoints: finalLambdaEntryPoints,
-        lambdaEntryPointsBaseDir,
-        lambdaFormat,
-        lambdaImage,
-        lambdaOutdir,
-        stackName,
-      });
-
-      if (response) {
-        const { bucket, key, versionId, imageUri } = response;
-
-        if (imageUri) {
-          cloudFormationTemplate.Parameters = {
-            LambdaImageUri: { Type: 'String' },
-            ...cloudFormationTemplate.Parameters,
-          };
-
-          params.Parameters.push({
-            ParameterKey: 'LambdaImageUri',
-            ParameterValue: imageUri,
-          });
-        } else if (bucket && key && versionId) {
-          /**
-           * Add Parameters to CloudFormation template.
-           */
-          cloudFormationTemplate.Parameters = {
-            LambdaS3Bucket: { Type: 'String' },
-            LambdaS3Key: { Type: 'String' },
-            LambdaS3ObjectVersion: { Type: 'String' },
-            ...cloudFormationTemplate.Parameters,
-          };
-
-          /**
-           * Add S3Bucket and S3Key to params.
-           */
-          params.Parameters.push(
-            {
-              ParameterKey: 'LambdaS3Bucket',
-              ParameterValue: bucket,
-            },
-            {
-              ParameterKey: 'LambdaS3Key',
-              ParameterValue: key,
-            },
-            /**
-             * Used by CloudFormation AWS::Lambda::Function
-             * @see {@link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html}
-             * and by CloudFormation AWS::Serverless::Function
-             * @see {@link https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-functioncode.html}
-             */
-            {
-              ParameterKey: 'LambdaS3ObjectVersion',
-              ParameterValue: versionId,
-            }
-          );
-
-          /**
-           * Add `Code` property to every AWS::Lambda::Function resource or
-           * `CodeUri` property to every AWS::Serverless::Function resource if
-           * they are NOT already defined.
-           */
-          for (const key of Object.keys(cloudFormationTemplate.Resources)) {
-            const resource = cloudFormationTemplate.Resources[key];
-
-            if (resource.Type === 'AWS::Lambda::Function') {
-              if (!resource.Properties?.Code) {
-                resource.Properties = {
-                  ...resource.Properties,
-                  Code: {
-                    S3Bucket: { Ref: 'LambdaS3Bucket' },
-                    S3Key: { Ref: 'LambdaS3Key' },
-                    S3ObjectVersion: { Ref: 'LambdaS3ObjectVersion' },
-                  },
-                };
-              }
-            }
-
-            if (resource.Type === 'AWS::Serverless::Function') {
-              if (!resource.Properties?.CodeUri) {
-                resource.Properties = {
-                  ...resource.Properties,
-                  CodeUri: {
-                    Bucket: { Ref: 'LambdaS3Bucket' },
-                    Key: { Ref: 'LambdaS3Key' },
-                    Version: { Ref: 'LambdaS3ObjectVersion' },
-                  },
-                };
-              }
-            }
-          }
-        }
-      }
-    };
-
-    await deployCloudFormationDeployLambdaCode();
+    await deployCloudFormationLambdaCode({
+      template: cloudFormationTemplate,
+      params,
+      stackName,
+      cliOptions,
+    });
 
     const output = await deploy({
       params,

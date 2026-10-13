@@ -20,12 +20,14 @@ export const buildLambdaCode = async ({
   lambdaExternal = [],
   lambdaFormat = 'esm',
   lambdaOutdir,
+  lambdaSourcemap = false,
 }: {
   lambdaEntryPoints: string[];
   lambdaEntryPointsBaseDir: string;
   lambdaExternal?: string[];
   lambdaFormat?: 'esm' | 'cjs';
   lambdaOutdir: string;
+  lambdaSourcemap?: boolean;
 }) => {
   log.info(logPrefix, 'Building Lambda single file...');
 
@@ -66,6 +68,15 @@ export const buildLambdaCode = async ({
      */
     minifySyntax: true,
     platform: 'node',
+    /**
+     * Node applies the map only with `--enable-source-maps`, which
+     * `addSourceMapsNodeOptions` sets on every function. Without
+     * `sourcesContent`: Node maps a frame from names and lines alone, and the
+     * source text would only grow the zip.
+     */
+    ...(lambdaSourcemap
+      ? { sourcemap: 'linked' as const, sourcesContent: false }
+      : {}),
     splitting: lambdaFormat === 'esm',
     outbase: path.join(process.cwd(), lambdaEntryPointsBaseDir),
     outdir: path.join(process.cwd(), lambdaOutdir),

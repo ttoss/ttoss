@@ -1,5 +1,6 @@
-import { buildLambdaCode } from 'src/deploy/lambda/buildLambdaCode';
 import fs from 'node:fs';
+
+import { buildLambdaCode } from 'src/deploy/lambda/buildLambdaCode';
 
 const lambdaOutdir = 'tests/dist/buildLambdaCode';
 
@@ -44,4 +45,37 @@ test('build lambda code properly as cjs', () => {
     const filePath = `${outDir}/${entryPoint}`.replace('.ts', '.cjs');
     expect(fs.existsSync(filePath)).toBe(true);
   }
+});
+
+test('writes a linked source map without sources when lambdaSourcemap is true', () => {
+  const outDir = `${lambdaOutdir}/sourcemap`;
+
+  buildLambdaCode({
+    lambdaExternal: [],
+    lambdaEntryPoints: ['lambda.ts'],
+    lambdaEntryPointsBaseDir: 'tests/fixtures/lambdaCodeExample',
+    lambdaFormat: 'cjs',
+    lambdaOutdir: outDir,
+    lambdaSourcemap: true,
+  });
+
+  const code = fs.readFileSync(`${outDir}/lambda.cjs`, 'utf8');
+  expect(code).toContain('//# sourceMappingURL=lambda.cjs.map');
+  const map = JSON.parse(fs.readFileSync(`${outDir}/lambda.cjs.map`, 'utf8'));
+  expect(map.sources.length).toBeGreaterThan(0);
+  expect(map.sourcesContent).toBeUndefined();
+});
+
+test('writes no source map by default', () => {
+  const outDir = `${lambdaOutdir}/nosourcemap`;
+
+  buildLambdaCode({
+    lambdaExternal: [],
+    lambdaEntryPoints: ['lambda.ts'],
+    lambdaEntryPointsBaseDir: 'tests/fixtures/lambdaCodeExample',
+    lambdaFormat: 'cjs',
+    lambdaOutdir: outDir,
+  });
+
+  expect(fs.existsSync(`${outDir}/lambda.cjs.map`)).toBe(false);
 });

@@ -116,6 +116,12 @@ export const options = {
     describe: 'Output directory for built Lambda code.',
     type: 'string',
   },
+  'lambda-sourcemap': {
+    default: false,
+    describe:
+      'Ship a source map with the Lambda bundle and set NODE_OPTIONS=--enable-source-maps, so stack traces point at source files.',
+    type: 'boolean',
+  },
   'lambda-runtime': {
     choices: ['nodejs20.x', 'nodejs22.x', 'nodejs24.x'] as const,
     default: 'nodejs24.x',
@@ -314,7 +320,6 @@ export const deployCommand: CommandModule<
 
     for (const command of commands) {
       yargsBuilder.command(command as CommandModule);
-      continue;
     }
 
     return yargsBuilder;

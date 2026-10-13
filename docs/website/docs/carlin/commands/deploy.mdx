@@ -158,6 +158,14 @@ flowchart TD
 
 Carlin builds Lambda entry points with esbuild, uploads the bundle to S3, and passes the generated S3 object parameters into the CloudFormation stack. Configure output format with `--lambda-format`. Default is `esm`; use `cjs` when a dependency requires CommonJS.
 
+### Source Maps
+
+`--lambda-sourcemap` ships a source map beside the Lambda bundle and sets `NODE_OPTIONS=--enable-source-maps` on every function in the template, so a stack trace names the source file and line instead of a line in the bundle. The map carries no source text, only names and positions. A `NODE_OPTIONS` already set as a string keeps its flags; one set with an intrinsic function is left as is. Default is `false`.
+
+```bash
+carlin deploy --lambda-sourcemap
+```
+
 ### Runtime Configuration
 
 You can specify the Node.js runtime version for Lambda functions using `--lambda-runtime`. Default is `nodejs24.x`.
@@ -269,18 +277,19 @@ After deployment, outputs are saved to `.carlin/$STACK_NAME.json` and `.carlin/l
 
 ### Options
 
-| Option                           | Description                                                  |
-| -------------------------------- | ------------------------------------------------------------ |
-| `--template-path`, `-t`          | Path to the CloudFormation template.                         |
-| `--stack-name`                   | Explicit CloudFormation stack name.                          |
-| `--parameters`, `-p`             | CloudFormation parameters as an object or parameter array.   |
-| `--destroy`                      | Destroy the selected stack.                                  |
-| `--lambda-format`                | Lambda bundle format: `esm` or `cjs`.                        |
-| `--lambda-runtime`               | Lambda runtime: `nodejs20.x`, `nodejs22.x`, or `nodejs24.x`. |
-| `--lambda-external`              | Modules excluded from the Lambda bundle.                     |
-| `--lambda-entry-points-base-dir` | Base directory for Lambda handler entry points.              |
-| `--skip-deploy`                  | Skip deployment after config resolution.                     |
-| `--channel`                      | Report deploy outputs to a channel. Supported: `github-pr`.  |
+| Option                           | Description                                                    |
+| -------------------------------- | -------------------------------------------------------------- |
+| `--template-path`, `-t`          | Path to the CloudFormation template.                           |
+| `--stack-name`                   | Explicit CloudFormation stack name.                            |
+| `--parameters`, `-p`             | CloudFormation parameters as an object or parameter array.     |
+| `--destroy`                      | Destroy the selected stack.                                    |
+| `--lambda-format`                | Lambda bundle format: `esm` or `cjs`.                          |
+| `--lambda-runtime`               | Lambda runtime: `nodejs20.x`, `nodejs22.x`, or `nodejs24.x`.   |
+| `--lambda-sourcemap`             | Ship a source map and set `NODE_OPTIONS=--enable-source-maps`. |
+| `--lambda-external`              | Modules excluded from the Lambda bundle.                       |
+| `--lambda-entry-points-base-dir` | Base directory for Lambda handler entry points.                |
+| `--skip-deploy`                  | Skip deployment after config resolution.                       |
+| `--channel`                      | Report deploy outputs to a channel. Supported: `github-pr`.    |
 
 `--parameters` accepts a simple object:
 
