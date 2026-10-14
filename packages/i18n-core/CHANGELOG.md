@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.1](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fi18n-core%400.9.0...%40ttoss%2Fi18n-core%400.9.1) (2026-10-14)
+
+**Note:** Version bump only for package @ttoss/i18n-core
+
 # 0.9.0 (2026-10-14)
 
 ### chore

@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.1](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fread-config-file%403.0.0...%40ttoss%2Fread-config-file%403.0.1) (2026-10-14)
+
+**Note:** Version bump only for package @ttoss/read-config-file
+
 # [3.0.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fread-config-file%402.6.0...%40ttoss%2Fread-config-file%403.0.0) (2026-10-14)
 
 ### chore

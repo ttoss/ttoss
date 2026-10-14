@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.9.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Freact-feature-flags%400.8.0...%40ttoss%2Freact-feature-flags%400.9.0) (2026-10-14)
+
+- feat!: ESLint 10 with maintained React/import/a11y plugins, and a lint-clean monorepo (#1323) ([6efae16](https://github.com/ttoss/ttoss/commit/6efae16a0ee2e036bb9fe41c132aa8cd03fe3489)), closes [#1323](https://github.com/ttoss/ttoss/issues/1323) [jsx-eslint/eslint-plugin-react#3977](https://github.com/jsx-eslint/eslint-plugin-react/issues/3977) [#958](https://github.com/ttoss/ttoss/issues/958)
+
+### BREAKING CHANGES
+
+- @ttoss/layouts, @ttoss/react-notifications and
+  @ttoss/geovis now have @ttoss/react-i18n as a peer dependency, and their
+  components must be rendered inside an `I18nProvider` (NotificationsProvider
+  renders the modal, and GeoVisProvider renders the hover tooltip).
+- requires ESLint 10. Rules are renamed: `import/*` ->
+  `import-x/*`, `jsx-a11y/*` -> `jsx-a11y-x/*`, `react/*` ->
+  `@eslint-react/*` (see the package README for the mapping); update
+  `eslint-disable` comments accordingly.
+
 # [0.8.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Freact-feature-flags%400.7.0...%40ttoss%2Freact-feature-flags%400.8.0) (2026-10-14)
 
 ### chore

@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/eslint-config",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "ESLint config.",
   "keywords": [
     "eslint",
