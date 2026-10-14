@@ -2,11 +2,13 @@
  * @jest-environment jsdom
  */
 
-import { act, render, renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import { useDismissGeoVisClick, useGeoVisClick } from 'src/react/contexts';
 import { GeoVisProvider, useGeoVis } from 'src/react/GeoVisProvider';
 import type { VisualizationSpec } from 'src/spec/types';
+
+import { render } from '../renderWithI18n';
 
 // ---------------------------------------------------------------------------
 // Mock plumbing — mirrors GeoVisHoverTooltip.test.tsx exactly

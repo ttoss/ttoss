@@ -1,0 +1,10 @@
+{
+  "Ws/Os5": {
+    "defaultMessage": "Feature #{feature_id}",
+    "description": "Map hover tooltip heading: the identifier of the hovered map feature."
+  },
+  "lRO8cA": {
+    "defaultMessage": "No data",
+    "description": "Map hover tooltip: shown instead of a value when the feature has no data."
+  }
+}

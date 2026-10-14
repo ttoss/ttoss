@@ -2,6 +2,8 @@ import { fireEvent, render, screen, userEvent } from '@ttoss/test-utils/react';
 import { NotificationsBox, useNotifications } from 'src/index';
 import { type Notification, NotificationsProvider } from 'src/Provider';
 
+import { NotificationsTestProvider } from '../NotificationsTestProvider';
+
 const NOTIFICATION_MESSAGE = 'notification message test';
 
 describe('Notifications Box Test', () => {
@@ -37,7 +39,7 @@ describe('Notifications Box Test', () => {
           type: 'error',
         }}
       />,
-      { wrapper: NotificationsProvider }
+      { wrapper: NotificationsTestProvider }
     );
 
     expect(screen.getByRole('button')).toBeInTheDocument();
@@ -62,7 +64,7 @@ describe('Notifications Box Test', () => {
         })}
       />,
       {
-        wrapper: NotificationsProvider,
+        wrapper: NotificationsTestProvider,
       }
     );
 
@@ -86,7 +88,7 @@ describe('Notifications Box Test', () => {
     ];
 
     render(<Component notifications={keyedNotifications} />, {
-      wrapper: NotificationsProvider,
+      wrapper: NotificationsTestProvider,
     });
 
     expect(screen.getByRole('button')).toBeInTheDocument();
@@ -350,7 +352,7 @@ describe('Notifications Box Test', () => {
           ],
         }}
       />,
-      { wrapper: NotificationsProvider }
+      { wrapper: NotificationsTestProvider }
     );
 
     const windowOpenSpy = jest.spyOn(window, 'open').mockImplementation(() => {

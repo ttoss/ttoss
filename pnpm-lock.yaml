@@ -1763,6 +1763,12 @@ importers:
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config
+      '@ttoss/i18n-cli':
+        specifier: workspace:^
+        version: link:../i18n-cli
+      '@ttoss/react-i18n':
+        specifier: workspace:^
+        version: link:../react-i18n
       '@ttoss/react-icons':
         specifier: workspace:^
         version: link:../react-icons
@@ -2257,6 +2263,12 @@ importers:
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config
+      '@ttoss/i18n-cli':
+        specifier: workspace:^
+        version: link:../i18n-cli
+      '@ttoss/react-i18n':
+        specifier: workspace:^
+        version: link:../react-i18n
       '@ttoss/react-icons':
         specifier: workspace:^
         version: link:../react-icons

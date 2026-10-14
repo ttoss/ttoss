@@ -7,8 +7,10 @@ This module provides a simple way to show notifications in your application usin
 ## Installation
 
 ```shell
-pnpm add @ttoss/notifications @ttoss/components @ttoss/react-icons @ttoss/ui @emotion/react
+pnpm add @ttoss/notifications @ttoss/components @ttoss/react-icons @ttoss/ui @ttoss/react-i18n @emotion/react
 ```
+
+The notifications modal's close button is translated, so `NotificationsProvider` must be rendered inside an [`I18nProvider`](https://ttoss.dev/docs/modules/packages/react-i18n/) from `@ttoss/react-i18n`. English and Portuguese (pt-BR) messages ship in `i18n/lang`.
 
 ## Getting Started
 

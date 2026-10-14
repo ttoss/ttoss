@@ -1,4 +1,5 @@
 import { Drawer } from '@ttoss/components';
+import { useI18n } from '@ttoss/react-i18n';
 import { Icon } from '@ttoss/react-icons';
 import type { BoxProps } from '@ttoss/ui';
 import { Box, Flex, IconButton } from '@ttoss/ui';
@@ -6,8 +7,37 @@ import * as React from 'react';
 
 import { useIsDesktop } from '../useIsDesktop';
 import { useLayout } from './LayoutProvider';
+import { sidebarMessages } from './messages';
 
 export const SIDEBAR_WIDTH = '2xs';
+
+/**
+ * Desktop sidebar styles that depend on whether it is open: closed collapses
+ * it to zero size with a fade, open gives it its width, border and padding.
+ */
+const getDesktopOpenStateSx = (isSidebarOpen: boolean) => {
+  if (!isSidebarOpen) {
+    return {
+      minHeight: '0',
+      width: '0',
+      minWidth: '0',
+      opacity: 0,
+      borderRight: 'none',
+      paddingX: '0',
+      paddingY: '0',
+    };
+  }
+
+  return {
+    minHeight: 'full',
+    width: SIDEBAR_WIDTH,
+    minWidth: SIDEBAR_WIDTH,
+    opacity: 1,
+    borderRight: 'sm',
+    paddingX: '6',
+    paddingY: '6',
+  };
+};
 
 export const Sidebar = ({
   drawerSlot,
@@ -17,8 +47,8 @@ export const Sidebar = ({
 }: BoxProps & {
   showSidebarButtonInDrawer?: boolean;
   drawerSlot?: React.ReactNode;
-  // eslint-disable-next-line complexity
 }) => {
+  const { intl } = useI18n();
   const { isSidebarOpen, toggleSidebar } = useLayout();
   const { isDesktop } = useIsDesktop();
 
@@ -29,7 +59,11 @@ export const Sidebar = ({
 
     return (
       <IconButton
-        aria-label={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}
+        aria-label={intl.formatMessage(
+          isSidebarOpen
+            ? sidebarMessages.closeSidebar
+            : sidebarMessages.openSidebar
+        )}
         aria-expanded={isSidebarOpen}
         aria-controls="sidebar"
         sx={{
@@ -41,7 +75,7 @@ export const Sidebar = ({
         <Icon icon={isSidebarOpen ? 'sidebar-close' : 'sidebar-open'} />
       </IconButton>
     );
-  }, [isSidebarOpen, showSidebarButtonInDrawer]);
+  }, [intl, isSidebarOpen, showSidebarButtonInDrawer]);
 
   const memoizedDrawerSlot = React.useMemo(() => {
     if (!drawerSlot) {
@@ -84,23 +118,17 @@ export const Sidebar = ({
       {isDesktop ? (
         <Box
           role="complementary"
-          aria-label="Sidebar"
+          aria-label={intl.formatMessage(sidebarMessages.sidebar)}
           aria-hidden={!isSidebarOpen}
           sx={{
             position: 'relative',
             zIndex: 'overlay',
             height: 'full',
-            minHeight: isSidebarOpen ? 'full' : '0',
-            width: isSidebarOpen ? SIDEBAR_WIDTH : '0',
-            minWidth: isSidebarOpen ? SIDEBAR_WIDTH : '0',
-            opacity: isSidebarOpen ? 1 : 0,
             transition: 'width 0.5s ease, opacity 0.5s ease',
-            borderRight: isSidebarOpen ? 'sm' : 'none',
             borderColor: 'display.border.muted.default',
             backgroundColor: 'navigation.background.muted.default',
-            paddingX: isSidebarOpen ? '6' : '0',
-            paddingY: isSidebarOpen ? '6' : '0',
             overflowY: 'auto',
+            ...getDesktopOpenStateSx(isSidebarOpen),
             ...boxProps.sx,
           }}
         >
@@ -109,7 +137,7 @@ export const Sidebar = ({
       ) : (
         <Box
           role="complementary"
-          aria-label="Sidebar"
+          aria-label={intl.formatMessage(sidebarMessages.sidebar)}
           aria-hidden={!isSidebarOpen}
           sx={{
             position: 'fixed',

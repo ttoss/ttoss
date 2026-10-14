@@ -26,11 +26,13 @@
     ".": "./src/index.ts"
   },
   "files": [
-    "dist"
+    "dist",
+    "i18n"
   ],
   "scripts": {
     "build": "tsdown",
     "dev": "pnpm --filter @docs/storybook run dev",
+    "i18n": "ttoss-i18n",
     "test": "jest --projects tests/unit",
     "type-check": "tsc --noEmit"
   },
@@ -40,6 +42,8 @@
   "devDependencies": {
     "@emotion/react": "^11.14.0",
     "@ttoss/config": "workspace:^",
+    "@ttoss/i18n-cli": "workspace:^",
+    "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
@@ -53,6 +57,7 @@
     "tsdown": "^0.23.1"
   },
   "peerDependencies": {
+    "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "maplibre-gl": ">=6.4.1",

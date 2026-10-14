@@ -5,8 +5,10 @@ Professional layout components for React applications with responsive design and
 ## Installation
 
 ```shell
-pnpm add @ttoss/layouts @ttoss/ui @emotion/react
+pnpm add @ttoss/layouts @ttoss/ui @ttoss/react-i18n @emotion/react
 ```
+
+The sidebar's accessible labels are translated, so render the layouts inside an [`I18nProvider`](https://ttoss.dev/docs/modules/packages/react-i18n/) from `@ttoss/react-i18n`. English and Portuguese (pt-BR) messages ship in `i18n/lang`.
 
 ## Available Layouts
 

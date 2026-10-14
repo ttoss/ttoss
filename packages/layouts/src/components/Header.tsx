@@ -1,3 +1,4 @@
+import { useI18n } from '@ttoss/react-i18n';
 import { Icon } from '@ttoss/react-icons';
 import type { BoxProps } from '@ttoss/ui';
 import { Box, Flex, IconButton } from '@ttoss/ui';
@@ -5,6 +6,7 @@ import * as React from 'react';
 
 import { useIsDesktop } from '../useIsDesktop';
 import { useLayout } from './LayoutProvider';
+import { sidebarMessages } from './messages';
 import { SIDEBAR_WIDTH } from './Sidebar';
 
 const paddingSx = {
@@ -21,6 +23,7 @@ export const Header = ({
   showSidebarButton?: boolean;
   sidebarSlot?: React.ReactNode;
 }) => {
+  const { intl } = useI18n();
   const { isSidebarOpen, toggleSidebar } = useLayout();
   const { isDesktop } = useIsDesktop();
 
@@ -31,7 +34,11 @@ export const Header = ({
 
     return (
       <IconButton
-        aria-label={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}
+        aria-label={intl.formatMessage(
+          isSidebarOpen
+            ? sidebarMessages.closeSidebar
+            : sidebarMessages.openSidebar
+        )}
         aria-expanded={isSidebarOpen}
         aria-controls="sidebar"
         sx={{
@@ -44,7 +51,7 @@ export const Header = ({
         <Icon icon={isSidebarOpen ? 'sidebar-close' : 'sidebar-open'} />
       </IconButton>
     );
-  }, [isSidebarOpen, showSidebarButton, toggleSidebar]);
+  }, [intl, isSidebarOpen, showSidebarButton, toggleSidebar]);
 
   const memoizedSidebarSlot = React.useMemo(() => {
     if (!sidebarSlot) {

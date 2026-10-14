@@ -1,6 +1,7 @@
 import { jestUnitConfig } from '@ttoss/config';
 
 const config = jestUnitConfig({
+  setupFilesAfterEnv: ['./setupTests.tsx'],
   testEnvironment: 'jsdom',
   transformIgnorePatterns: ['node_modules/(?!rehype-raw)/'],
   coverageThreshold: {

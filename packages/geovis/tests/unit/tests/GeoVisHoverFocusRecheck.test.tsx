@@ -15,11 +15,13 @@
  * 3. The tooltip is cleared when the cursor is genuinely off the feature.
  */
 
-import { act, render, waitFor } from '@testing-library/react';
+import { act, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import { GeoVisProvider, useGeoVis } from 'src/react/GeoVisProvider';
 import type { VisualizationSpec } from 'src/spec/types';
 import { GeoVisHoverTooltip } from 'src/ui/GeoVisHoverTooltip';
+
+import { render } from '../renderWithI18n';
 
 type MapMouseHandler = (event: {
   point: { x: number; y: number };
