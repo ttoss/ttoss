@@ -485,7 +485,7 @@ export const ThemeProvider = ({
           systemModeFallback: shouldEmitSystemFallback(initialDefaultMode),
         })
       : null;
-  }, [theme, themeId]);
+  }, [theme, themeId, initialDefaultMode]);
 
   useDedupMismatchWarning(cssContent, themeId);
 

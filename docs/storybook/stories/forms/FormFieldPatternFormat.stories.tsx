@@ -31,7 +31,7 @@ const Template: Story = () => {
     formMethods.setError('CreditcardNumber', { message: 'Value is required' });
     formMethods.setError('document', { message: 'Value is required' });
     formMethods.setError('cnpj', { message: 'Value is required' });
-  }, []);
+  }, [formMethods]);
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>

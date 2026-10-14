@@ -79,7 +79,10 @@ export const NotificationsMenu = ({
   }, [isOpen]);
 
   React.useEffect(() => {
-    if (!hasMore || !onLoadMore || !loadMoreRef.current) return;
+    // Copy the node so cleanup unobserves the same element observed here.
+    const loadMoreElement = loadMoreRef.current;
+
+    if (!hasMore || !onLoadMore || !loadMoreElement) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -94,12 +97,10 @@ export const NotificationsMenu = ({
       }
     );
 
-    observer.observe(loadMoreRef.current);
+    observer.observe(loadMoreElement);
 
     return () => {
-      if (loadMoreRef.current) {
-        observer.unobserve(loadMoreRef.current);
-      }
+      observer.unobserve(loadMoreElement);
     };
   }, [hasMore, onLoadMore, notifications.length]);
 

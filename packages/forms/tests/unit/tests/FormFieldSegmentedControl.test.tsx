@@ -130,7 +130,7 @@ test('should set aria-invalid when there is a field error', async () => {
     // set an error to trigger aria-invalid
     React.useEffect(() => {
       formMethods.setError('choice', { message: 'Required' });
-    }, []);
+    }, [formMethods]);
 
     return (
       <Form {...formMethods} onSubmit={onSubmit}>

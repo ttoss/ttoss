@@ -83,18 +83,21 @@ const useEditingGridActions = ({
         return [...prev, newItem];
       });
     },
-    [cardCatalog]
+    [cardCatalog, setEditingGrid]
   );
 
-  const removeCard = React.useCallback((id: string) => {
-    setEditingGrid((prev) => {
-      return prev
-        ? prev.filter((item) => {
-            return item.i !== id;
-          })
-        : prev;
-    });
-  }, []);
+  const removeCard = React.useCallback(
+    (id: string) => {
+      setEditingGrid((prev) => {
+        return prev
+          ? prev.filter((item) => {
+              return item.i !== id;
+            })
+          : prev;
+      });
+    },
+    [setEditingGrid]
+  );
 
   const updateCard = React.useCallback(
     (id: string, cardPatch: Record<string, unknown>) => {
@@ -107,35 +110,44 @@ const useEditingGridActions = ({
         });
       });
     },
-    []
+    [setEditingGrid]
   );
 
-  const onLayoutChange = React.useCallback((currentLayout: Layout) => {
-    setEditingGrid((prev) => {
-      if (!prev) return prev;
-      const byId = new Map(
-        currentLayout.map((l) => {
-          return [l.i, l];
-        })
-      );
-      let changed = false;
-      const next = prev.map((item) => {
-        const layout = byId.get(item.i);
-        if (!layout) return item;
-        if (
-          item.x === layout.x &&
-          item.y === layout.y &&
-          item.w === layout.w &&
-          item.h === layout.h
-        ) {
-          return item;
-        }
-        changed = true;
-        return { ...item, x: layout.x, y: layout.y, w: layout.w, h: layout.h };
+  const onLayoutChange = React.useCallback(
+    (currentLayout: Layout) => {
+      setEditingGrid((prev) => {
+        if (!prev) return prev;
+        const byId = new Map(
+          currentLayout.map((l) => {
+            return [l.i, l];
+          })
+        );
+        let changed = false;
+        const next = prev.map((item) => {
+          const layout = byId.get(item.i);
+          if (!layout) return item;
+          if (
+            item.x === layout.x &&
+            item.y === layout.y &&
+            item.w === layout.w &&
+            item.h === layout.h
+          ) {
+            return item;
+          }
+          changed = true;
+          return {
+            ...item,
+            x: layout.x,
+            y: layout.y,
+            w: layout.w,
+            h: layout.h,
+          };
+        });
+        return changed ? next : prev;
       });
-      return changed ? next : prev;
-    });
-  }, []);
+    },
+    [setEditingGrid]
+  );
 
   return { addCard, removeCard, updateCard, onLayoutChange };
 };

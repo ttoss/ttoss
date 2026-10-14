@@ -28,7 +28,7 @@ const TemplateComponent: React.FC = () => {
 
   React.useEffect(() => {
     formMethods.setError('choice', { message: 'Value is required' });
-  }, []);
+  }, [formMethods]);
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>

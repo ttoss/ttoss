@@ -62,7 +62,7 @@ const GenericTemplate: StoryFn = () => {
 
   React.useEffect(() => {
     formMethods.setError('phone', { message: 'Value is required' });
-  }, []);
+  }, [formMethods]);
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
@@ -116,7 +116,7 @@ const BrazilTemplate: StoryFn = () => {
 
   React.useEffect(() => {
     formMethods.setError('phone', { message: 'Value is required' });
-  }, []);
+  }, [formMethods]);
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>

@@ -481,7 +481,7 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
     });
   }, [populationData, year, dataProperty]);
 
-  const getLabelFormat = (): LabelFormatSpec => {
+  const getLabelFormat = React.useCallback((): LabelFormatSpec => {
     switch (labelFormatType) {
       case 'range':
         return { type: 'range', separator: ' ≤ ', extended };
@@ -516,7 +516,7 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
       default:
         return { type: 'count', abbreviate, extended };
     }
-  };
+  }, [labelFormatType, abbreviate, extended]);
 
   const districtsGroup = React.useMemo<BoundaryGroup>(() => {
     return customizeBoundaryGroup(baseDistrictsGroup, {
@@ -650,8 +650,6 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
     districtGeoJson,
     mapDataEntries,
     labelFormatType,
-    abbreviate,
-    extended,
     position,
     trimmedNoDataLabel,
     thresholdPreset,
@@ -664,6 +662,10 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
     selectedLineWidth,
     clickAnchorColor,
     normalizationType,
+    getLabelFormat,
+    populationData,
+    year,
+    dataProperty,
   ]);
 
   const { spec, toggle, isVisible } = useBoundaryToggle(

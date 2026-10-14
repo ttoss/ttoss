@@ -22,7 +22,7 @@ const Template: StoryFn = () => {
 
   React.useEffect(() => {
     formMethods.setError('cnpj', { message: 'Value is required' });
-  }, []);
+  }, [formMethods]);
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
