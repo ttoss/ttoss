@@ -1,7 +1,7 @@
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Webhooks } from '@octokit/webhooks';
 import AdmZip from 'adm-zip';
 import type { ProxyHandler } from 'aws-lambda';
-import AWS from 'aws-sdk';
 
 import { getTriggerPipelinesObjectKey } from '../getTriggerPipelineObjectKey';
 import type { Pipeline } from '../pipelines';
@@ -10,7 +10,7 @@ import { executeTasks } from './executeTasks';
 import { getProcessEnvVariable } from './getProcessEnvVariable';
 import { shConditionalCommands } from './shConditionalCommands';
 
-const s3 = new AWS.S3();
+const s3 = new S3Client({});
 
 /**
  * When this file is saved on S3, a CodePipeline pipeline is started.
@@ -31,13 +31,13 @@ const putJobDetails = async ({
 
   zip.addFile(pipeline, Buffer.from(content));
 
-  return s3
-    .putObject({
+  return s3.send(
+    new PutObjectCommand({
       Body: zip.toBuffer(),
       Bucket: getProcessEnvVariable('BASE_STACK_BUCKET_NAME'),
       Key: getTriggerPipelinesObjectKey({ prefix, pipeline }),
     })
-    .promise();
+  );
 };
 
 /**

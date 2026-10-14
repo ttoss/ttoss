@@ -3,7 +3,10 @@ import {
   DescribeStacksCommand,
   type DescribeStacksOutput,
   ListStackResourcesCommand,
+  type StackStatus,
 } from '@aws-sdk/client-cloudformation';
+import { destroy } from 'src/deploy/cloudformation.core';
+import { emptyS3Directory } from 'src/deploy/s3';
 
 const MockDeleteStackCommand = DeleteStackCommand;
 const MockDescribeStacksCommand = DescribeStacksCommand;
@@ -12,7 +15,16 @@ const MockListStackResourcesCommand = ListStackResourcesCommand;
 const mockStackName = 'mock-stack-name';
 const mockBucketName = 'mock-bucket-name';
 
-const mockDeleteStack = jest.fn().mockResolvedValue({});
+/**
+ * The stack is deleted once DeleteStackCommand is sent, which ends the
+ * `waitUntilStackDeleteComplete` polling on its first check.
+ */
+let mockStackStatus: StackStatus = 'CREATE_COMPLETE';
+
+const mockDeleteStack = jest.fn(() => {
+  mockStackStatus = 'DELETE_COMPLETE';
+  return Promise.resolve({});
+});
 const mockListStackResources = jest.fn().mockResolvedValue({
   StackResourceSummaries: [
     {
@@ -36,7 +48,7 @@ jest.mock('@aws-sdk/client-cloudformation', () => {
                 {
                   StackName: mockStackName,
                   CreationTime: new Date(),
-                  StackStatus: 'CREATE_COMPLETE',
+                  StackStatus: mockStackStatus,
                   EnableTerminationProtection: false,
                 },
               ],
@@ -58,20 +70,6 @@ jest.mock('@aws-sdk/client-cloudformation', () => {
   };
 });
 
-jest.mock('aws-sdk', () => {
-  return {
-    CloudFormation: jest.fn(() => {
-      return {
-        waitFor: jest.fn().mockReturnValue({
-          promise: jest.fn().mockResolvedValue({}),
-        }),
-      };
-    }),
-  };
-});
-
-import { emptyS3Directory } from 'src/deploy/s3';
-
 jest.mock('src/deploy/s3', () => {
   return {
     ...jest.requireActual('src/deploy/s3'),
@@ -79,12 +77,11 @@ jest.mock('src/deploy/s3', () => {
   };
 });
 
-import { destroy } from 'src/deploy/cloudformation.core';
-
 describe('destroy', () => {
   beforeEach(() => {
     jest.mocked(emptyS3Directory).mockReset();
     mockDeleteStack.mockClear();
+    mockStackStatus = 'CREATE_COMPLETE';
   });
 
   test('should proceed with stack deletion even when emptying a bucket fails', async () => {

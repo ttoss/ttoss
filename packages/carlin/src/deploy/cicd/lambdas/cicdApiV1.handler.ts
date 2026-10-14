@@ -1,9 +1,10 @@
-import { ProxyHandler } from 'aws-lambda';
+import { CodeBuildClient, StartBuildCommand } from '@aws-sdk/client-codebuild';
+import type { ProxyHandler } from 'aws-lambda';
+
 import { executeTasks } from './executeTasks';
 import { getProcessEnvVariable } from './getProcessEnvVariable';
-import AWS from 'aws-sdk';
 
-const codebuild = new AWS.CodeBuild({ apiVersion: '2016-10-06' });
+const codebuild = new CodeBuildClient({});
 
 /**
  * The CI/CD REST API is responsible to update the image of the repository and
@@ -89,13 +90,13 @@ export const cicdApiV1Handler: ProxyHandler = async (event) => {
     let response;
 
     if (body.action === 'updateRepository') {
-      response = await codebuild
-        .startBuild({
+      response = await codebuild.send(
+        new StartBuildCommand({
           projectName: getProcessEnvVariable(
             'PROCESS_ENV_REPOSITORY_IMAGE_CODE_BUILD_PROJECT_NAME'
           ),
         })
-        .promise();
+      );
     }
 
     if (body.action === 'executeTask') {
@@ -109,12 +110,17 @@ export const cicdApiV1Handler: ProxyHandler = async (event) => {
     }
 
     if (response) {
+      /**
+       * Keep the body as the service output, without the SDK request metadata.
+       */
+      const { $metadata: _metadata, ...output } = response;
+
       return {
         statusCode: 200,
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(response),
+        body: JSON.stringify(output),
       };
     }
 

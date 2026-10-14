@@ -154,6 +154,8 @@ AWS_PROFILE=staging carlin deploy --environment staging
 AWS_PROFILE=production carlin deploy --environment production
 ```
 
+Carlin resolves credentials with the [AWS SDK for JavaScript v3 default provider chain](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-credentials-node.html), so environment variables, `AWS_PROFILE`, IAM Identity Center (SSO) profiles from `~/.aws/config`, and container or instance roles all work without `AWS_SDK_LOAD_CONFIG`. The region always comes from the `--region` option or `CARLIN_REGION` (default `us-east-1`), not from `AWS_REGION`.
+
 ### CI/CD Integration
 
 Configure GitHub Actions for automatic environment deployments:

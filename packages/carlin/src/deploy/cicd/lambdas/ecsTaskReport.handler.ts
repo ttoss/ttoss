@@ -1,10 +1,10 @@
+import { DescribeTasksCommand, ECSClient } from '@aws-sdk/client-ecs';
 import { IncomingWebhook } from '@slack/webhook';
 import type { Handler } from 'aws-lambda';
-import AWS from 'aws-sdk';
 
 import { putApprovalResultManualTask } from './putApprovalResultManualTask';
 
-const ecs = new AWS.ECS({ apiVersion: '2014-11-13' });
+const ecs = new ECSClient({});
 
 const getEcsTaskId = ({ ecsTaskArn }: { ecsTaskArn: string }) => {
   /**
@@ -69,9 +69,13 @@ export const getEcsTaskTags = async ({
   try {
     const cluster = getEcsTaskCluster({ ecsTaskArn });
 
-    const { tasks } = await ecs
-      .describeTasks({ cluster, include: ['TAGS'], tasks: [ecsTaskArn] })
-      .promise();
+    const { tasks } = await ecs.send(
+      new DescribeTasksCommand({
+        cluster,
+        include: ['TAGS'],
+        tasks: [ecsTaskArn],
+      })
+    );
 
     const task = tasks?.[0];
 

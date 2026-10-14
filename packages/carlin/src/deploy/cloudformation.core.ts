@@ -1,6 +1,3 @@
-import * as fs from 'node:fs';
-import * as path from 'node:path';
-
 import type {
   CloudFormationClientConfig,
   CreateStackCommandInput,
@@ -19,22 +16,19 @@ import {
   UpdateStackCommand,
   UpdateTerminationProtectionCommand,
   ValidateTemplateCommand,
+  waitUntilStackCreateComplete,
+  waitUntilStackDeleteComplete,
+  waitUntilStackUpdateComplete,
 } from '@aws-sdk/client-cloudformation';
 import type { CloudFormationTemplate } from '@ttoss/cloudformation';
-import AWS from 'aws-sdk';
-import { log } from '../utils/log';
 
-import {
-  getEnvironment,
-  getEnvVar,
-  getPackageName,
-  getProjectName,
-} from '../utils';
+import { getEnvironment, getEnvVar } from '../utils';
+import { log } from '../utils/log';
 import { addDefaults } from './addDefaults.cloudformation';
 import { BASE_STACK_BUCKET_TEMPLATES_FOLDER } from './baseStack/config';
 import { getBaseStackResource } from './baseStack/getBaseStackResource';
-import { LATEST_DEPLOY_OUTPUTS_FILENAME } from './config';
 import { emptyS3Directory, uploadFileToS3 } from './s3';
+import { saveEnvironmentOutput } from './saveEnvironmentOutput';
 
 const logPrefix = 'cloudformation';
 
@@ -102,8 +96,17 @@ export const cloudformation = () => {
   return cloudFormationClients[key];
 };
 
-export const cloudFormationV2 = () => {
-  return new AWS.CloudFormation({ apiVersion: '2010-05-15' });
+/**
+ * Stack waiters poll every 30 seconds by default. One hour matches the
+ * timeout of the AWS SDK v2 waiters carlin used before.
+ */
+const STACK_WAITER_MAX_WAIT_TIME_IN_SECONDS = 60 * 60;
+
+const getStackWaiterParams = () => {
+  return {
+    client: cloudformation(),
+    maxWaitTime: STACK_WAITER_MAX_WAIT_TIME_IN_SECONDS,
+  };
 };
 
 export const describeStacks = async ({
@@ -163,7 +166,6 @@ export const describeStackEvents = async ({
 
   for (const { LogicalResourceId, ResourceStatusReason } of events) {
     log.event(LogicalResourceId, ResourceStatusReason);
-    continue;
   }
 
   return events;
@@ -197,50 +199,6 @@ export const getStackOutput = async ({
   }
 
   return output;
-};
-
-const saveEnvironmentOutput = async ({
-  outputs,
-  stackName,
-}: {
-  outputs: AWS.CloudFormation.Output[];
-  stackName: string;
-}) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const envFile: any = {
-    stackName,
-    environment: getEnvironment(),
-    projectName: getProjectName(),
-    packageName: getPackageName(),
-  };
-
-  envFile.outputs = outputs.reduce((acc, output) => {
-    if (!output.OutputKey || !output) {
-      return acc;
-    }
-
-    return {
-      ...acc,
-      [output.OutputKey]: output,
-    };
-  }, {});
-
-  const dotCarlinFolderPath = path.join(process.cwd(), '.carlin');
-
-  if (!fs.existsSync(dotCarlinFolderPath)) {
-    await fs.promises.mkdir(dotCarlinFolderPath);
-  }
-
-  const filePath = path.join(dotCarlinFolderPath, `${stackName}.json`);
-
-  await fs.promises.writeFile(filePath, JSON.stringify(envFile, null, 2));
-
-  const latestFilePath = path.join(
-    dotCarlinFolderPath,
-    LATEST_DEPLOY_OUTPUTS_FILENAME
-  );
-
-  await fs.promises.writeFile(latestFilePath, JSON.stringify(envFile, null, 2));
 };
 
 /**
@@ -292,9 +250,9 @@ export const deleteStack = async ({ stackName }: { stackName: string }) => {
   log.info(logPrefix, `Deleting stack ${stackName}...`);
   await cloudformation().send(new DeleteStackCommand({ StackName: stackName }));
   try {
-    await cloudFormationV2()
-      .waitFor('stackDeleteComplete', { StackName: stackName })
-      .promise();
+    await waitUntilStackDeleteComplete(getStackWaiterParams(), {
+      StackName: stackName,
+    });
   } catch (error) {
     log.error(logPrefix, `An error occurred when deleting stack ${stackName}.`);
     await describeStackEvents({ stackName });
@@ -312,9 +270,9 @@ export const createStack = async ({
   log.info(logPrefix, `Creating stack ${stackName}...`);
   await cloudformation().send(new CreateStackCommand(params));
   try {
-    await cloudFormationV2()
-      .waitFor('stackCreateComplete', { StackName: stackName })
-      .promise();
+    await waitUntilStackCreateComplete(getStackWaiterParams(), {
+      StackName: stackName,
+    });
   } catch (error) {
     log.error(logPrefix, `An error occurred when creating stack ${stackName}.`);
     await describeStackEvents({ stackName });
@@ -333,9 +291,9 @@ export const updateStack = async ({
   log.info(logPrefix, `Updating stack ${stackName}...`);
   try {
     await cloudformation().send(new UpdateStackCommand(params));
-    await cloudFormationV2()
-      .waitFor('stackUpdateComplete', { StackName: stackName })
-      .promise();
+    await waitUntilStackUpdateComplete(getStackWaiterParams(), {
+      StackName: stackName,
+    });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.message === 'No updates are to be performed.') {

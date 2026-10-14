@@ -1,5 +1,4 @@
 import { faker } from '@ttoss/test-utils/faker';
-import AWS from 'aws-sdk';
 import * as deepmerge from 'deepmerge';
 import dotenv from 'dotenv';
 import { getConfigFileOptions, loadDotEnv } from 'src/cli';
@@ -87,7 +86,6 @@ describe('testing AWS region', () => {
   ])('%#: %p', async (command, result) => {
     const argv = await parseCli(command, {});
     expect(argv.region).toEqual(result);
-    expect(AWS.config.region).toEqual(result);
     expect(await cloudformation().config.region()).toEqual(result);
     expect(getEnvVar('REGION')).toEqual(result);
   });

@@ -8,7 +8,6 @@ blockExoticSubdeps: true
 allowBuilds:
   '@parcel/watcher': false
   '@swc/core': false
-  aws-sdk: false
   core-js: false
   cpu-features: false
   esbuild: false
