@@ -40,3 +40,7 @@ overrides:
   # Match the Node.js 24 runtime (`engines`); transitive `@types/node: *` would
   # otherwise pull 26.x next to 24.x and type APIs Node 24 doesn't have.
   '@types/node': ^24.19.2
+  # docusaurus-plugin-llms pins exact vulnerable patch versions; take the
+  # patched releases on the same minor.
+  docusaurus-plugin-llms>minimatch: 9.0.7
+  docusaurus-plugin-llms>yaml: 2.8.3
