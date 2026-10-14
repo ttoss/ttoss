@@ -1,8 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { load } from 'js-yaml';
-
+import { loadYamlFile } from './loadYamlFile';
 import { parseRef } from './parseRef';
 import type { OpenApiSpec } from './types';
 
@@ -296,7 +295,7 @@ export const mergeOpenApiSpecs = (args: MergeOpenApiSpecsArgs): OpenApiSpec => {
     const cached = specs.get(specPath);
     if (cached) return cached;
 
-    const spec = load(fs.readFileSync(specPath, 'utf-8')) as OpenApiSpec;
+    const spec = loadYamlFile(specPath) as OpenApiSpec;
     specs.set(specPath, spec);
     return spec;
   };

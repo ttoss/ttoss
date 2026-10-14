@@ -26,6 +26,17 @@ const createAuth = (config: VertexConfig): GoogleAuth => {
   });
 };
 
+/**
+ * The `GoogleAuth` type `AnthropicVertex` declares. The vertex SDK pins
+ * google-auth-library 10 while this package is on 11, and the class's
+ * `#private` field makes the two nominally incompatible. At runtime the SDK
+ * only calls `getClient()` and then `getRequestHeaders()` (a fetch `Headers`)
+ * and `projectId` on the result, which 11 provides unchanged.
+ */
+type VertexGoogleAuth = NonNullable<
+  NonNullable<ConstructorParameters<typeof AnthropicVertex>[0]>['googleAuth']
+>;
+
 const createVertexGeminiProvider = ({ model }: { model: string }): Provider => {
   let auth: GoogleAuth | undefined;
 
@@ -62,7 +73,7 @@ const createVertexClaudeProvider = ({ model }: { model: string }): Provider => {
       return new AnthropicVertex({
         projectId: config.projectId,
         region: config.location,
-        googleAuth: createAuth(config),
+        googleAuth: createAuth(config) as unknown as VertexGoogleAuth,
         maxRetries: 4,
       }) as unknown as ClaudeMessagesClient;
     },

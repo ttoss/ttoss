@@ -372,7 +372,8 @@ describe('createMcpRouter', () => {
   describe('2026-07-28 protocol revision', () => {
     /**
      * A request speaking the 2026-07-28 revision: the per-request envelope in
-     * `params._meta` plus the `Mcp-Method` header the revision requires. Such a
+     * `params._meta` plus the `Mcp-Method` and `MCP-Protocol-Version` headers
+     * the revision requires. Such a
      * request is served by that revision's stateless core rather than the
      * transport that answers 2025-era traffic.
      */
@@ -389,7 +390,10 @@ describe('createMcpRouter', () => {
             },
           },
         },
-        headers: { 'Mcp-Method': method },
+        headers: {
+          'Mcp-Method': method,
+          'MCP-Protocol-Version': '2026-07-28',
+        },
       };
     };
 

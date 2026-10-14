@@ -25,6 +25,9 @@ cross-file `$ref`s (e.g. `./widgets.yaml#/components/schemas/Widget`) are
 rewritten to local refs (`#/components/schemas/Widget`) so the merged
 document is self-contained.
 
+Spec files are parsed with the YAML 1.2 Core schema plus merge keys
+(`<<: *anchor`), so scalars such as `2024-01-02` stay strings.
+
 A `$ref` into a file that is not in `specsDir` — a shared components file —
 pulls the component it names into the merged document, together with whatever
 that component refs in turn, so the rewritten local ref has something to point

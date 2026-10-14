@@ -13,6 +13,8 @@ export default jestUnitConfig({
     '<rootDir>/../../src/models/',
     '<rootDir>/../../src/index.ts',
   ],
+  // pgvector (through @ttoss/postgresdb) ships ESM only.
+  transformIgnorePatterns: ['/node_modules/(?!(\\.pnpm/)?pgvector)'],
   coverageThreshold: {
     global: {
       statements: 100,
