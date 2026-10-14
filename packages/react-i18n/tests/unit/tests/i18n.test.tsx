@@ -86,6 +86,26 @@ test('formatMessage - default message', async () => {
   });
 });
 
+test('defineMessage returns the descriptor and formats with values', async () => {
+  const greeting = defineMessage({
+    description: 'Greeting',
+    defaultMessage: 'Hello, {name}!',
+  });
+
+  // The formatjs Babel plugin still recognizes the call and injects the id.
+  expect(greeting.id).toEqual(expect.any(String));
+
+  const { result } = renderHook(() => {
+    return useI18n();
+  });
+
+  await act(() => {
+    expect(result.current.intl.formatMessage(greeting, { name: 'Ana' })).toBe(
+      'Hello, Ana!'
+    );
+  });
+});
+
 test('formatMessage - change en -> pt-BR -> en', async () => {
   const { result } = renderHook(() => {
     return useI18n();

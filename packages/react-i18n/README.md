@@ -417,7 +417,10 @@ const date = intl.formatDate(new Date(), { dateStyle: 'medium' });
 
 ### defineMessages / defineMessage
 
-Type-safe message definition utilities from FormatJS.
+Message definition utilities, extracted by FormatJS like react-intl's own.
+Unlike react-intl 12's, they leave the descriptor untyped, so
+`intl.formatMessage(message, values)` and `FormattedMessage` accept any values
+without declaring them per message.
 
 ```tsx
 import { defineMessages, defineMessage } from '@ttoss/react-i18n';
