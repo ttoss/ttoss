@@ -1,6 +1,6 @@
 import type { CloudFormationTemplate } from '@ttoss/cloudformation';
 import { pascalCase } from 'change-case';
-import yaml from 'js-yaml';
+import { dump } from 'js-yaml';
 
 import { DEFAULT_NODE_RUNTIME } from '../../config';
 import { getEnvironment, getIamPath, getProjectName } from '../../utils';
@@ -209,7 +209,7 @@ export const getRepositoryImageBuilder = () => {
         'Fn::GetAtt': [CODE_BUILD_PROJECT_SERVICE_ROLE_LOGICAL_ID, 'Arn'],
       },
       Source: {
-        BuildSpec: yaml.dump({
+        BuildSpec: dump({
           version: '0.2',
           phases: {
             install: {

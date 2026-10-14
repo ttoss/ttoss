@@ -1,7 +1,7 @@
 import {
   dumpToYamlCloudFormationTemplate,
   loadCloudFormationTemplate,
-} from './cloudFormationTemplate';
+} from 'src/utils/cloudFormationTemplate';
 
 test('method dumpToYamlCloudFormationTemplate', () => {
   const jsonTemplate = {
@@ -65,5 +65,41 @@ test('method loadCloudFormationTemplate', () => {
         },
       },
     },
+  });
+});
+
+test('should round-trip intrinsic functions through dump and load', () => {
+  const template = {
+    AWSTemplateFormatVersion: '2010-09-09',
+    Resources: {
+      Bucket: {
+        Type: 'AWS::S3::Bucket',
+        Properties: {
+          BucketName: { 'Fn::Sub': '${AWS::StackName}-bucket' },
+          Arn: { 'Fn::GetAtt': ['Other', 'Arn'] },
+          Name: { Ref: 'Name' },
+        },
+      },
+    },
+  } as const;
+
+  expect(
+    loadCloudFormationTemplate(dumpToYamlCloudFormationTemplate(template))
+  ).toEqual(template);
+});
+
+test('should keep unquoted dates as strings and support merge keys', () => {
+  const yamlTemplate = `
+AWSTemplateFormatVersion: 2010-09-09
+Defaults: &defaults
+  Runtime: nodejs24.x
+Function:
+  <<: *defaults
+  Handler: index.handler
+`;
+
+  expect(loadCloudFormationTemplate(yamlTemplate)).toMatchObject({
+    AWSTemplateFormatVersion: '2010-09-09',
+    Function: { Runtime: 'nodejs24.x', Handler: 'index.handler' },
   });
 });

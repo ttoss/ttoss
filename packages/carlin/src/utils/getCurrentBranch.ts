@@ -1,5 +1,6 @@
+import { simpleGit } from 'simple-git';
+
 import { getEnvVar } from './environmentVariables';
-import git from 'simple-git';
 
 export const BRANCH_UNDEFINED = '';
 
@@ -22,7 +23,7 @@ export const getCurrentBranch = async () => {
       return getEnvVar('BRANCH');
     }
 
-    const { current } = await git().branch();
+    const { current } = await simpleGit().branch();
 
     return current || BRANCH_UNDEFINED;
   } catch (err) {
