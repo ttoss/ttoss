@@ -133,11 +133,15 @@ export const NotificationsProvider = (props: NotificationsProviderProps) => {
           }
         );
 
+        const newIds = new Set(
+          nonToastNewNotifications.map((notification) => {
+            return notification.id;
+          })
+        );
+
         const oldNotifications = prevNotifications.filter(
           (prevNotification) => {
-            return !nonToastNewNotifications.some((newNotification) => {
-              return newNotification.id === prevNotification.id;
-            });
+            return !newIds.has(prevNotification.id);
           }
         );
 
