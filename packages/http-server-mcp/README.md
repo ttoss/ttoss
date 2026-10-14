@@ -1114,6 +1114,28 @@ const call = await request(app.callback())
 expect(call.status).toBe(200);
 ```
 
+A `2026-07-28` request carries the per-request envelope in `params._meta` and must also send the `Mcp-Method` and `MCP-Protocol-Version` headers; the SDK answers `-32020` (headers and body disagree) at HTTP 400 when the version header is missing:
+
+```typescript
+const discover = await request(app.callback())
+  .post('/mcp')
+  .set('Content-Type', 'application/json')
+  .set('Accept', 'application/json, text/event-stream')
+  .set('Mcp-Method', 'server/discover')
+  .set('MCP-Protocol-Version', '2026-07-28')
+  .send({
+    jsonrpc: '2.0',
+    id: 3,
+    method: 'server/discover',
+    params: {
+      _meta: {
+        'io.modelcontextprotocol/protocolVersion': '2026-07-28',
+        'io.modelcontextprotocol/clientCapabilities': {},
+      },
+    },
+  });
+```
+
 ### `publicMethods` and OAuth clients
 
 `auth.publicMethods` defaults to `['initialize', 'server/discover']`: the lifecycle handshake is reachable without a token, nothing else is. There are two entries because the exemption is about _the handshake_, not the method name — `initialize` is the 2025-era handshake and `server/discover` its `2026-07-28` replacement, since that revision removed `initialize` outright. Naming only one leaves the other era unable to negotiate at all.
