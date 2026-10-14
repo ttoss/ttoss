@@ -5,7 +5,7 @@
  * `fitBoundsToData.test.ts`.
  */
 
-import maplibregl from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl';
 import createMapLibreAdapter from 'src/adapters/maplibre/MapLibreAdapter';
 import type { VisualizationSpec } from 'src/spec/types';
 

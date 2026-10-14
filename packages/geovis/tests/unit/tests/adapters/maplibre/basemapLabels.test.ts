@@ -1,4 +1,4 @@
-import type maplibregl from 'maplibre-gl';
+import type * as maplibregl from 'maplibre-gl';
 import { applyBasemapLabelsVisibility } from 'src/adapters/maplibre/basemapLabels';
 import type { VisualizationSpec } from 'src/spec/types';
 

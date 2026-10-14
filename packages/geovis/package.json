@@ -55,7 +55,7 @@
   "peerDependencies": {
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/ui": "workspace:^",
-    "maplibre-gl": ">=5.0.0",
+    "maplibre-gl": ">=6.4.1",
     "react": ">=16.8.0",
     "react-dom": ">=16.8.0"
   },

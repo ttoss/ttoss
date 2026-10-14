@@ -4,10 +4,10 @@ export default jestUnitConfig({
   testEnvironment: 'node',
   coverageThreshold: {
     global: {
-      statements: 99,
-      branches: 99,
-      functions: 99,
-      lines: 99,
+      statements: 99.9,
+      branches: 99.9,
+      functions: 99.9,
+      lines: 99.9,
     },
   },
 });
