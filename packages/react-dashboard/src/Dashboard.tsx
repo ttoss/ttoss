@@ -1,7 +1,7 @@
 import type { SxProp } from '@ttoss/ui';
 import { Divider, Flex } from '@ttoss/ui';
 import * as React from 'react';
-import type ReactGridLayout from 'react-grid-layout';
+import type { LayoutItem } from 'react-grid-layout';
 
 import type { DashboardCard } from './DashboardCard';
 import type { CardCatalogItem } from './dashboardCardCatalog';
@@ -11,7 +11,7 @@ import { DashboardHeader } from './DashboardHeader';
 import { DashboardProvider, useDashboard } from './DashboardProvider';
 import type { SectionDivider } from './DashboardSectionDivider';
 
-export type DashboardGridItem = ReactGridLayout.Layout & {
+export type DashboardGridItem = LayoutItem & {
   card: DashboardCard | SectionDivider;
 };
 
