@@ -46,6 +46,26 @@ describe('mergeOpenApiSpecs', () => {
     expect(widget.properties).not.toHaveProperty('conflictingField');
   });
 
+  test('resolves YAML merge keys and keeps date-like scalars as strings', () => {
+    const merged = mergeOpenApiSpecs({ specsDir });
+
+    const widget = merged.components?.schemas?.Widget as {
+      properties: Record<string, unknown>;
+    };
+
+    expect(widget.properties.createdAt).toEqual({
+      type: 'string',
+      format: 'date',
+      example: '2024-01-02',
+    });
+    expect(widget.properties.updatedAt).toEqual({
+      type: 'string',
+      format: 'date',
+      example: '2024-01-02',
+      description: 'Last update',
+    });
+  });
+
   test('keeps the first non-empty servers array found', () => {
     const merged = mergeOpenApiSpecs({ specsDir });
 
