@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "@emotion/jest": "^11.14.2",
-    "@faker-js/faker": "^10.3.0",
+    "@faker-js/faker": "^10.6.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",

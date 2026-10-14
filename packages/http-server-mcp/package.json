@@ -34,7 +34,7 @@
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
-    "@modelcontextprotocol/node": "^2.0.0",
+    "@modelcontextprotocol/node": "^2.1.1",
     "@modelcontextprotocol/server": "^2.0.0",
     "@ttoss/auth-core": "workspace:^",
     "@ttoss/http-server": "workspace:^",
@@ -43,7 +43,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@modelcontextprotocol/client": "^2.0.0",
+    "@modelcontextprotocol/client": "^2.3.1",
     "@ttoss/config": "workspace:^",
     "@types/koa": "^3.0.3",
     "jest": "^30.4.2",
