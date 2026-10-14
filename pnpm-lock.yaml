@@ -649,6 +649,25 @@ importers:
         specifier: ~6.0.3
         version: 6.0.3
 
+  packages/cloud-cron:
+    dependencies:
+      '@ttoss/cloudformation':
+        specifier: workspace:^
+        version: link:../cloudformation
+    devDependencies:
+      '@ttoss/config':
+        specifier: workspace:^
+        version: link:../config
+      '@types/jest':
+        specifier: ^30.0.0
+        version: 30.0.0
+      jest:
+        specifier: ^30.5.2
+        version: 30.5.2(@types/node@24.19.2)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@swc/core@1.16.18(@swc/helpers@0.5.23))(@types/node@24.19.2)(typescript@6.0.3))
+      tsdown:
+        specifier: ^0.23.1
+        version: 0.23.1(oxc-resolver@11.21.2)(tsx@4.23.15)(typescript@6.0.3)
+
   packages/cloud-roles:
     dependencies:
       '@ttoss/cloudformation':
