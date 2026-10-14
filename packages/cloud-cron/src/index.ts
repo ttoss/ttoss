@@ -1,4 +1,5 @@
 import type {
+  CloudFormationImportValue,
   CloudFormationTemplate,
   CloudFormationValue,
   Outputs,
@@ -6,7 +7,19 @@ import type {
   Resources,
 } from '@ttoss/cloudformation';
 
-export { importValueFromParameter } from '@ttoss/cloudformation';
+/**
+ * `Fn::ImportValue` of the export named by a parameter.
+ *
+ * Defined here rather than re-exported: carlin bundles a template with every
+ * import it reaches, and `@ttoss/cloudformation`'s runtime brings its template
+ * reader and esbuild, which fail to load inside that CJS bundle. This package
+ * imports types only from it.
+ */
+export const importValueFromParameter = (
+  parameterName: string
+): CloudFormationImportValue => {
+  return { 'Fn::ImportValue': { 'Fn::Sub': `\${${parameterName}}` } };
+};
 
 export const CRON_JOB_DEFAULTS = {
   runtime: 'nodejs24.x',
