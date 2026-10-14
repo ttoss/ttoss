@@ -1,4 +1,8 @@
 {
+  "EG1xJT": {
+    "defaultMessage": "Hello, {name}!",
+    "description": "Greeting"
+  },
   "IDLw9V": {
     "defaultMessage": "My name is {name}.",
     "description": "My name is"

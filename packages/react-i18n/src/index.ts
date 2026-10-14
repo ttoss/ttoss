@@ -1,3 +1,4 @@
+export { defineMessage, defineMessages } from './defineMessages';
 export {
   DEFAULT_LOCALE,
   I18nProvider,
@@ -11,8 +12,6 @@ export {
   useMessageRef,
 } from './useMessageRef';
 export {
-  defineMessage,
-  defineMessages,
   FormattedMessage,
   type IntlShape,
   type MessageDescriptor,
