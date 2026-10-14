@@ -44,3 +44,9 @@ overrides:
   # patched releases on the same minor.
   docusaurus-plugin-llms>minimatch: 9.0.7
   docusaurus-plugin-llms>yaml: 2.8.3
+  # graphql-middleware (unmaintained since 2023) depends on @graphql-tools 8,
+  # whose utils has a prototype-pollution advisory (fixed in utils 12). It only
+  # calls `addResolversToSchema` and imports the `StitchingInfo` type, both
+  # unchanged in these releases.
+  graphql-middleware>@graphql-tools/schema: ^10.1.4
+  graphql-middleware>@graphql-tools/delegate: ^12.2.1
