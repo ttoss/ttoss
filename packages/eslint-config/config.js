@@ -1,14 +1,15 @@
 import eslint from '@eslint/js';
+import eslintReact from '@eslint-react/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import { defineConfig } from 'eslint/config';
+import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 import formatjs from 'eslint-plugin-formatjs';
-import importPlugin from 'eslint-plugin-import';
+import importX from 'eslint-plugin-import-x';
 import jest from 'eslint-plugin-jest';
 import jestDom from 'eslint-plugin-jest-dom';
-import jsxA11y from 'eslint-plugin-jsx-a11y';
+import jsxA11y from 'eslint-plugin-jsx-a11y-x';
 import preferArrowFunctions from 'eslint-plugin-prefer-arrow-functions';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
-import reactPlugin from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactNamespaceImport from 'eslint-plugin-react-namespace-import';
 import reactRefresh from 'eslint-plugin-react-refresh';
@@ -30,21 +31,52 @@ export default defineConfig(
   },
   eslint.configs.recommended,
   tseslint.configs.recommended,
-  importPlugin.flatConfigs.recommended,
+  importX.flatConfigs.recommended,
   {
+    // eslint-plugin-react does not run on ESLint 10, so its `recommended` +
+    // `jsx-runtime` rules are ported one by one rather than adopting
+    // @eslint-react's own presets, which also re-implement react-hooks (already
+    // enabled below) and add React 19 migration rules. Dropped from the old
+    // set because TypeScript already rejects them: prop-types, jsx-no-undef,
+    // jsx-no-duplicate-props, jsx-uses-vars, require-render-return,
+    // no-string-refs, no-is-mounted. no-unescaped-entities has no equivalent.
     files: ['**/*.{jsx,tsx}'],
-    ...reactPlugin.configs.flat.recommended,
-  },
-  {
-    files: ['**/*.{jsx,tsx}'],
-    ...reactPlugin.configs.flat['jsx-runtime'],
+    plugins: {
+      '@eslint-react': eslintReact,
+    },
+    languageOptions: {
+      // Automatic JSX runtime: JSX does not reference `React`, so an unused
+      // `import React` must still be reported (was eslint-plugin-react's
+      // `jsx-runtime` config).
+      parserOptions: {
+        ecmaFeatures: { jsx: true },
+        jsxPragma: null,
+      },
+    },
+    rules: {
+      '@eslint-react/dom-no-dangerously-set-innerhtml-with-children': 'error',
+      '@eslint-react/dom-no-find-dom-node': 'error',
+      '@eslint-react/dom-no-hydrate': 'error',
+      '@eslint-react/dom-no-render': 'error',
+      '@eslint-react/dom-no-render-return-value': 'error',
+      '@eslint-react/dom-no-unknown-property': 'error',
+      '@eslint-react/dom-no-unsafe-target-blank': 'error',
+      '@eslint-react/jsx-no-children-prop': 'error',
+      '@eslint-react/jsx-no-comment-textnodes': 'error',
+      '@eslint-react/no-component-will-mount': 'error',
+      '@eslint-react/no-component-will-receive-props': 'error',
+      '@eslint-react/no-component-will-update': 'error',
+      '@eslint-react/no-direct-mutation-state': 'error',
+      '@eslint-react/no-missing-component-display-name': 'error',
+      '@eslint-react/no-missing-key': 'error',
+    },
   },
   // Not scoped to JSX: custom hooks live in plain .ts files, and scoping this
   // to {jsx,tsx} silently drops the hooks rules there.
   reactHooks.configs.flat.recommended,
   {
     files: ['**/*.{jsx,tsx}'],
-    ...jsxA11y.flatConfigs.recommended,
+    ...jsxA11y.configs.recommended,
   },
   {
     plugins: {
@@ -66,13 +98,10 @@ export default defineConfig(
       parser: tsParser,
     },
     settings: {
-      react: {
-        version: 'detect',
-      },
-      'import/resolver': {
-        typescript: true,
-        node: true,
-      },
+      'import-x/resolver-next': [
+        createTypeScriptImportResolver(),
+        importX.createNodeResolver(),
+      ],
     },
     rules: {
       // ── TypeScript ────────────────────────────────────────────────────────
@@ -109,10 +138,10 @@ export default defineConfig(
       // ── Import organization ───────────────────────────────────────────────
       // Keep imports sorted, explicit, and free of unresolved paths.
       // https://github.com/lydell/eslint-plugin-simple-import-sort
-      'import/first': 'error',
-      'import/newline-after-import': 'error',
-      'import/no-duplicates': 'error',
-      'import/no-unresolved': 'off',
+      'import-x/first': 'error',
+      'import-x/newline-after-import': 'error',
+      'import-x/no-duplicates': 'error',
+      'import-x/no-unresolved': 'off',
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
 

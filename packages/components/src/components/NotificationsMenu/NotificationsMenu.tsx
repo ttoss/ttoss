@@ -39,7 +39,6 @@ const formatBadgeCount = (count: number): string => {
 };
 
 // Pre-existing size/complexity debt, unchanged by the i18n work below.
-// eslint-disable-next-line max-lines-per-function
 export const NotificationsMenu = ({
   notifications,
   defaultOpen = false,
@@ -49,7 +48,7 @@ export const NotificationsMenu = ({
   count,
   onClose,
   onClearAll,
-  // eslint-disable-next-line complexity -- pre-existing branching, unchanged by the i18n work below
+  // eslint-disable-next-line complexity, max-lines-per-function -- pre-existing branching, unchanged by the i18n work below
 }: Props) => {
   const { intl } = useI18n();
   const [isOpen, setIsOpen] = React.useState(defaultOpen);

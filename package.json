@@ -43,7 +43,7 @@
     "@ttoss/eslint-config": "workspace:^",
     "@ttoss/monorepo": "workspace:^",
     "carlin": "workspace:^",
-    "eslint": "^9.39.4",
+    "eslint": "^10.12.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.5",
     "playwright": "1.60.0",
