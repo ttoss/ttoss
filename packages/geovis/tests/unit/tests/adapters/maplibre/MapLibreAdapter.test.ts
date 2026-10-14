@@ -6,7 +6,7 @@
  * feature-state handling in MapLibreAdapter.mapData.test.ts.
  */
 
-import maplibregl from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl';
 import createMapLibreAdapter from 'src/adapters/maplibre/MapLibreAdapter';
 import type { VisualizationLayer } from 'src/spec/types';
 

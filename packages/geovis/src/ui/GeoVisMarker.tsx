@@ -74,7 +74,7 @@ export const GeoVisMarker = ({
     let marker: MapLibreMarker | null = null;
 
     (async () => {
-      const { default: maplibregl } = await import('maplibre-gl');
+      const { Marker } = await import('maplibre-gl');
       if (cancelled) return;
 
       const markerOptions: MapLibreMarkerOptions = {};
@@ -87,9 +87,7 @@ export const GeoVisMarker = ({
       }
       if (offset) markerOptions.offset = offset;
 
-      marker = new maplibregl.Marker(markerOptions)
-        .setLngLat(click.lngLat)
-        .addTo(map);
+      marker = new Marker(markerOptions).setLngLat(click.lngLat).addTo(map);
     })();
 
     return () => {

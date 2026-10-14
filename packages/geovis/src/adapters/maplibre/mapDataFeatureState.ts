@@ -1,4 +1,4 @@
-import type maplibregl from 'maplibre-gl';
+import type * as maplibregl from 'maplibre-gl';
 
 import { coerceGeometryId } from '../../spec/mapDataPatch';
 import type { MapData, MapDataRow, VisualizationSpec } from '../../spec/types';

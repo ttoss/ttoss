@@ -1,4 +1,4 @@
-import type maplibregl from 'maplibre-gl';
+import type * as maplibregl from 'maplibre-gl';
 import type { LayerHostState } from 'src/adapters/maplibre/patchDispatch';
 import {
   applyLayerPatch,
