@@ -350,5 +350,15 @@
   "zija6w": {
     "defaultMessage": "Decrease",
     "description": "Accessible label for the button that steps a setting's slider down."
+  },
+  "Ws/Os5": {
+    "module": "@ttoss/geovis",
+    "defaultMessage": "Feature #{feature_id}",
+    "description": "Map hover tooltip heading: the identifier of the hovered map feature."
+  },
+  "lRO8cA": {
+    "module": "@ttoss/geovis",
+    "defaultMessage": "No data",
+    "description": "Map hover tooltip: shown instead of a value when the feature has no data."
   }
 }
