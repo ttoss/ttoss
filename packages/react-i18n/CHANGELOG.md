@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.2](https://github.com/ttoss/ttoss/compare/%40ttoss%2Freact-i18n%403.0.1...%40ttoss%2Freact-i18n%403.0.2) (2026-10-14)
+
+### Bug Fixes
+
+- **react-i18n:** keep defineMessages values untyped under react-intl 12 ([#1329](https://github.com/ttoss/ttoss/issues/1329)) ([60d8ea0](https://github.com/ttoss/ttoss/commit/60d8ea080c5d3a2a5afacbdca996d776c33312a2))
+
 ## [3.0.1](https://github.com/ttoss/ttoss/compare/%40ttoss%2Freact-i18n%403.0.0...%40ttoss%2Freact-i18n%403.0.1) (2026-10-14)
 
 **Note:** Version bump only for package @ttoss/react-i18n
