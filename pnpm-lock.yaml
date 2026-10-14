@@ -663,6 +663,9 @@ importers:
       '@types/jest':
         specifier: ^30.0.0
         version: 30.0.0
+      esbuild:
+        specifier: ^0.28.2
+        version: 0.28.2
       jest:
         specifier: ^30.5.2
         version: 30.5.2(@types/node@24.19.2)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@swc/core@1.16.18(@swc/helpers@0.5.23))(@types/node@24.19.2)(typescript@6.0.3))
