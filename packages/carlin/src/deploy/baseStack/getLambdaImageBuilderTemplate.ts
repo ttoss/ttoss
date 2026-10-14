@@ -1,5 +1,10 @@
+/**
+ * This module builds CloudFormation templates as literals, which these rules
+ * were not written for.
+ */
+/* eslint-disable max-lines-per-function */
 import type { CloudFormationTemplate } from '@ttoss/cloudformation';
-import yaml from 'js-yaml';
+import { dump } from 'js-yaml';
 
 import { getIamPath } from '../../utils';
 import {
@@ -134,7 +139,7 @@ export const getLambdaImageBuilderTemplate = (): CloudFormationTemplate => {
             'Fn::GetAtt': [CODE_BUILD_PROJECT_SERVICE_ROLE_LOGICAL_ID, 'Arn'],
           },
           Source: {
-            BuildSpec: yaml.dump({
+            BuildSpec: dump({
               version: '0.2',
               phases: {
                 install: {

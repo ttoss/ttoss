@@ -1,8 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import log from 'npmlog';
-
+import { log } from '../../utils/log';
 import { buildLambdaCode } from './buildLambdaCode';
 import { deployLambdaLayers } from './deployLambdaLayers';
 import { uploadCodeToECR } from './uploadCodeToECR';

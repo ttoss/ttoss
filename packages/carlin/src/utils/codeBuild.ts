@@ -1,9 +1,20 @@
-import AWS from 'aws-sdk';
-import log from 'npmlog';
+import {
+  BatchGetBuildsCommand,
+  type Build,
+  CodeBuildClient,
+  StartBuildCommand,
+} from '@aws-sdk/client-codebuild';
+
+import { getEnvVar } from './environmentVariables';
+import { log } from './log';
 
 const logPrefix = 'codebuild';
 
 const WAIT_TIME = 10 * 1000;
+
+export const codeBuild = () => {
+  return new CodeBuildClient({ region: getEnvVar('REGION') });
+};
 
 /**
  * @param param.name name used to identify the build.
@@ -15,16 +26,16 @@ export const waitCodeBuildFinish = async ({
   buildId: string;
   name?: string;
 }) => {
-  const codeBuild = new AWS.CodeBuild();
+  const client = codeBuild();
 
   let result;
 
   const checkIfBuildIsFinished = async () => {
-    const { builds } = await codeBuild
-      .batchGetBuilds({ ids: [buildId] })
-      .promise();
+    const { builds } = await client.send(
+      new BatchGetBuildsCommand({ ids: [buildId] })
+    );
 
-    return new Promise<AWS.CodeBuild.Build | undefined>((resolve, reject) => {
+    return new Promise<Build | undefined>((resolve, reject) => {
       setTimeout(() => {
         const executedBuild = builds?.find(({ id }) => {
           return id === buildId;
@@ -62,9 +73,9 @@ export const startCodeBuildBuild = async ({
 }: {
   projectName: string;
 }) => {
-  const codeBuild = new AWS.CodeBuild();
-
-  const { build } = await codeBuild.startBuild({ projectName }).promise();
+  const { build } = await codeBuild().send(
+    new StartBuildCommand({ projectName })
+  );
 
   if (!build) {
     throw new Error(`Cannot start ${projectName} build`);

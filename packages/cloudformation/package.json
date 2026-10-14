@@ -32,7 +32,6 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@types/jest": "^30.0.0",
-    "@types/js-yaml": "^4.0.9",
     "@types/node": "^24.19.2",
     "jest": "^30.5.2",
     "tsdown": "^0.23.1"

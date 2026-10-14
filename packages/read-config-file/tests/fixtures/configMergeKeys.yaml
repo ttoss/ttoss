@@ -1,7 +1,0 @@
-defaults: &defaults
-  region: us-east-1
-  memory: 128
-dev:
-  <<: *defaults
-  memory: 256
-createdAt: 2024-01-02

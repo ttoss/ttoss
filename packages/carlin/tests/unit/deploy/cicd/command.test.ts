@@ -1,14 +1,17 @@
-jest.mock('./deployCicd');
-
-jest.mock('./readSSHKey');
-
-import * as commandModule from './command';
-import * as yargs from 'yargs';
-import { deployCicd } from './deployCicd';
 import { faker } from '@ttoss/test-utils/faker';
-import { readSSHKey } from './readSSHKey';
+import * as commandModule from 'src/deploy/cicd/command';
+import { deployCicd } from 'src/deploy/cicd/deployCicd';
+import { readSSHKey } from 'src/deploy/cicd/readSSHKey';
+import yargs from 'yargs';
 
-const cli = yargs.command(commandModule.deployCicdCommand);
+jest.mock('src/deploy/cicd/deployCicd');
+
+jest.mock('src/deploy/cicd/readSSHKey');
+
+/**
+ * yargs 18 has no global singleton, so the test builds its own instance.
+ */
+const cli = yargs().command(commandModule.deployCicdCommand);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const parse = (command: string, options: any = {}) => {

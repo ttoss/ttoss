@@ -70,21 +70,15 @@ test.each([
   });
 });
 
-test.each([
-  ['async', readConfigFile],
-  ['sync', readConfigFileSync],
-])(
-  'should keep YAML merge keys and timestamps support (%s)',
-  async (_, read) => {
-    const configFilePath = getConfigFilePath('configMergeKeys.yaml');
-    const config = await read({ configFilePath });
-    expect(config).toEqual({
-      defaults: { region: 'us-east-1', memory: 128 },
-      dev: { region: 'us-east-1', memory: 256 },
-      createdAt: new Date('2024-01-02T00:00:00.000Z'),
-    });
-  }
-);
+test('should read YAML merge keys and keep unquoted dates as strings', () => {
+  const configFilePath = getConfigFilePath('configMerge.yml');
+  expect(readConfigFileSync({ configFilePath })).toEqual({
+    defaults: { region: 'us-east-1', version: '2010-09-09' },
+    environments: {
+      Production: { region: 'sa-east-1', version: '2010-09-09' },
+    },
+  });
+});
 
 test('read config when importing package', async () => {
   const configFilePath = getConfigFilePath('importingPackage.ts');

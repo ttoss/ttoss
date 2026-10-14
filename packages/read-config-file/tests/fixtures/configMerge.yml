@@ -1,0 +1,7 @@
+defaults: &defaults
+  region: us-east-1
+  version: 2010-09-09
+environments:
+  Production:
+    <<: *defaults
+    region: sa-east-1

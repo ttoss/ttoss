@@ -1,29 +1,19 @@
+import type { Parameter } from '@aws-sdk/client-cloudformation';
 import {
   type CloudFormationTemplate,
   findAndReadCloudFormationTemplate,
 } from '@ttoss/cloudformation';
-import type AWS from 'aws-sdk';
-import log from 'npmlog';
 
 import { getEnvironment, getPackageName, getProjectName } from '../utils';
-import {
-  canDestroyStack,
-  cloudFormationV2,
-  deleteStack,
-  deploy,
-  doesStackExist,
-  validateTemplate,
-} from './cloudformation.core';
+import { log } from '../utils/log';
+import { deploy, destroy, validateTemplate } from './cloudformation.core';
 import { addSourceMapsNodeOptions } from './lambda/addSourceMapsNodeOptions';
 import { deployLambdaCode } from './lambda/deployLambdaCode';
 import { getLambdaEntryPointsFromTemplate } from './lambda/getLambdaEntryPointsFromTemplate';
-import { emptyS3Directory } from './s3';
 import { getStackName } from './stackName';
 import { handleDeployError, handleDeployInitialization } from './utils';
 
 const logPrefix = 'cloudformation';
-log.addLevel('event', 10000, { fg: 'yellow' });
-log.addLevel('output', 10000, { fg: 'blue' });
 
 export const defaultTemplatePaths = ['ts', 'js', 'yaml', 'yml', 'json'].map(
   (extension) => {
@@ -78,7 +68,7 @@ type CloudFormationParameter = {
 
 type DeployParams = {
   StackName: string;
-  Parameters: AWS.CloudFormation.Parameter[];
+  Parameters: Parameter[];
 };
 
 type DeployCloudFormationOptions = {
@@ -293,7 +283,7 @@ export const deployCloudFormation = async (
     const params: DeployParams = {
       StackName: stackName,
       Parameters:
-        parameters?.map<AWS.CloudFormation.Parameter>((parameter) => {
+        parameters?.map<Parameter>((parameter) => {
           return {
             ParameterKey: parameter.key,
             ParameterValue: parameter.value,
@@ -320,76 +310,6 @@ export const deployCloudFormation = async (
   } catch (error: any) {
     return handleDeployError({ error, logPrefix });
   }
-};
-
-const emptyStackBuckets = async ({ stackName }: { stackName: string }) => {
-  const buckets: string[] = [];
-
-  await (async ({ nextToken }: { nextToken?: string }) => {
-    const {
-      // NextToken,
-      StackResourceSummaries,
-    } = await cloudFormationV2()
-      .listStackResources({ StackName: stackName, NextToken: nextToken })
-      .promise();
-
-    // if (NextToken) {
-    //   await getBuckets({ nextToken: NextToken });
-    // }
-
-    for (const { ResourceType, PhysicalResourceId } of StackResourceSummaries ||
-      []) {
-      if (ResourceType === 'AWS::S3::Bucket' && PhysicalResourceId) {
-        buckets.push(PhysicalResourceId);
-      }
-    }
-  })({});
-
-  return Promise.all(
-    buckets.map((bucket) => {
-      return emptyS3Directory({ bucket });
-    })
-  );
-};
-
-/**
- * 1. Check if `environment` is defined. If defined, do nothing. It doesn't
- * destroy stacks with defined `environment`.
- * 1. Check if termination protection is disabled.
- * 1. Empty all buckets in the stack (if any).
- * 1. Delete the stack.
- */
-const destroy = async ({ stackName }: { stackName: string }) => {
-  const environment = getEnvironment();
-
-  if (environment) {
-    log.info(
-      logPrefix,
-      `Cannot destroy stack when environment (${environment}) is defined.`
-    );
-    return;
-  }
-
-  if (!(await doesStackExist({ stackName }))) {
-    log.info(logPrefix, `Stack ${stackName} doesn't exist.`);
-    return;
-  }
-
-  if (!(await canDestroyStack({ stackName }))) {
-    const message = `Stack ${stackName} cannot be destroyed while TerminationProtection is enabled.`;
-    throw new Error(message);
-  }
-
-  try {
-    await emptyStackBuckets({ stackName });
-  } catch (error) {
-    log.warn(
-      logPrefix,
-      `Failed to empty buckets for stack ${stackName}: ${(error as Error)?.message || error}. Proceeding with stack deletion.`
-    );
-  }
-
-  await deleteStack({ stackName });
 };
 
 export const destroyCloudFormation = async ({

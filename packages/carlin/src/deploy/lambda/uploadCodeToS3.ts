@@ -1,8 +1,10 @@
+import fs from 'node:fs';
+
+import AdmZip from 'adm-zip';
+
+import { log } from '../../utils/log';
 import { getBaseStackResource } from '../baseStack/getBaseStackResource';
 import { uploadFileToS3 } from '../s3';
-import AdmZip from 'adm-zip';
-import fs from 'node:fs';
-import log from 'npmlog';
 
 const logPrefix = 'lambda';
 
