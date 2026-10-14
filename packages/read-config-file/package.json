@@ -36,16 +36,16 @@
   },
   "dependencies": {
     "esbuild": "^0.28.2",
-    "js-yaml": "^4.3.2"
+    "js-yaml": "^5.4.3"
   },
   "devDependencies": {
     "@fixtures/config-file-ts": "workspace:^",
     "@ttoss/config": "workspace:^",
     "@types/jest": "^30.0.0",
     "@types/js-yaml": "^4.0.9",
-    "@types/react": "^19.2.14",
-    "jest": "^30.4.2",
-    "tsdown": "^0.22.2"
+    "@types/react": "^19.3.0",
+    "jest": "^30.5.2",
+    "tsdown": "^0.23.1"
   },
   "publishConfig": {
     "access": "public",

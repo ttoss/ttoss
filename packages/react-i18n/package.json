@@ -34,18 +34,18 @@
   },
   "dependencies": {
     "@ttoss/i18n-core": "workspace:^",
-    "react-intl": "^10.1.1"
+    "react-intl": "^12.1.4"
   },
   "devDependencies": {
-    "@formatjs/cli": "^6.14.1",
+    "@formatjs/cli": "^6.16.34",
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "@types/react": "^19.2.14",
-    "jest": "^30.4.2",
-    "react": "^19.2.6",
-    "tsdown": "^0.22.2",
-    "typescript": "~6.0.3"
+    "@types/react": "^19.3.0",
+    "jest": "^30.5.2",
+    "react": "^19.3.0",
+    "tsdown": "^0.23.1",
+    "typescript": "~7.0.2"
   },
   "peerDependencies": {
     "react": ">=16.8.0"

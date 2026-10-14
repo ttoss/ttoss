@@ -41,10 +41,10 @@
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "@types/jest": "^30.0.0",
-    "@types/react": "^19.2.14",
-    "jest": "^30.4.2",
-    "react": "^19.2.6",
-    "tsdown": "^0.22.2"
+    "@types/react": "^19.3.0",
+    "jest": "^30.5.2",
+    "react": "^19.3.0",
+    "tsdown": "^0.23.1"
   },
   "peerDependencies": {
     "@chakra-ui/react": "^3",

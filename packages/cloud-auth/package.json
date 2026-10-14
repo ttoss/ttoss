@@ -24,9 +24,9 @@
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@types/jest": "^30.0.0",
-    "jest": "^30.4.2",
-    "tsdown": "^0.22.2",
-    "typescript": "~6.0.3"
+    "jest": "^30.5.2",
+    "tsdown": "^0.23.1",
+    "typescript": "~7.0.2"
   },
   "publishConfig": {
     "access": "public",

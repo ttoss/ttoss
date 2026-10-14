@@ -32,14 +32,14 @@
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
-    "serverless-http": "^3.2.0"
+    "serverless-http": "^4.0.0"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@ttoss/http-server": "workspace:^",
     "@types/koa": "^3.0.3",
-    "jest": "^30.4.2",
-    "tsdown": "^0.22.2"
+    "jest": "^30.5.2",
+    "tsdown": "^0.23.1"
   },
   "peerDependencies": {
     "@ttoss/http-server": "workspace:^"

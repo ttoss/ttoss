@@ -24,11 +24,11 @@
     "test": "echo test"
   },
   "dependencies": {
-    "commander": "^14.0.3"
+    "commander": "^15.0.0"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "tsdown": "^0.22.2"
+    "tsdown": "^0.23.1"
   },
   "publishConfig": {
     "access": "public",

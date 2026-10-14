@@ -32,8 +32,8 @@
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-core": "workspace:^",
-    "jest": "^30.4.2",
-    "tsdown": "^0.22.2"
+    "jest": "^30.5.2",
+    "tsdown": "^0.23.1"
   },
   "publishConfig": {
     "access": "public",

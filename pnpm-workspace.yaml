@@ -6,6 +6,7 @@ packages:
 minimumReleaseAge: 1440
 blockExoticSubdeps: true
 allowBuilds:
+  '@parcel/watcher': false
   '@swc/core': false
   aws-sdk: false
   core-js: false
@@ -28,3 +29,8 @@ trustPolicyExclude:
   - tinyexec
   # semver@6.3.1 comes from Babel stack, especially @babel/core
   - semver
+
+overrides:
+  # 7.4.6 trips `trustPolicy: no-downgrade` (ERR_PNPM_TRUST_DOWNGRADE). Keep the
+  # last trusted 7.x until upstream restores provenance.
+  webpack-dev-middleware@7: 7.4.5

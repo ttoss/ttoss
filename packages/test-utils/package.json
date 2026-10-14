@@ -34,25 +34,25 @@
   "dependencies": {
     "@emotion/jest": "^11.14.2",
     "@faker-js/faker": "^10.6.0",
-    "@testing-library/dom": "^10.4.1",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.2",
-    "@testing-library/user-event": "^14.6.1",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.8",
     "@types/relay-test-utils": "^19.0.0",
-    "jest-environment-jsdom": "^30.2.0",
-    "relay-test-utils": "^20.1.1",
+    "jest-environment-jsdom": "^30.5.2",
+    "relay-test-utils": "^21.0.1",
     "resize-observer-polyfill": "^1.5.1"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.12.0",
-    "@types/react": "^19.2.14",
-    "jest": "^30.4.2",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6",
+    "@types/react": "^19.3.0",
+    "jest": "^30.5.2",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
     "ts-node": "^10.9.2",
-    "tsdown": "^0.22.2"
+    "tsdown": "^0.23.1"
   },
   "peerDependencies": {
     "jest": "^30.0.0",

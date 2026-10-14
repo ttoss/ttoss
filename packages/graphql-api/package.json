@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@ttoss/ids": "workspace:^",
-    "graphql-compose": "^9.0.11",
+    "graphql-compose": "^9.2.2",
     "graphql-compose-connection": "^8.2.1",
     "graphql-middleware": "^6.1.35",
     "graphql-shield": "^7.6.5",
@@ -39,9 +39,9 @@
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "graphql": "^16.11.0",
-    "jest": "^30.4.2",
-    "tsdown": "^0.22.2"
+    "graphql": "^17.0.2",
+    "jest": "^30.5.2",
+    "tsdown": "^0.23.1"
   },
   "peerDependencies": {
     "graphql": "^16.6.0"

@@ -32,25 +32,25 @@
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
-    "@babel/core": "^7.29.7",
-    "@babel/plugin-proposal-decorators": "^7.29.0",
-    "@babel/preset-env": "^7.29.2",
-    "@babel/preset-react": "^7.28.5",
-    "@babel/preset-typescript": "^7.28.5",
-    "@commitlint/config-conventional": "^20.5.0",
-    "@formatjs/ts-transformer": "^4.4.8",
-    "babel-plugin-formatjs": "^11.3.2",
-    "babel-plugin-transform-import-meta": "^2.3.3",
+    "@babel/core": "^8.0.7",
+    "@babel/plugin-proposal-decorators": "^8.0.2",
+    "@babel/preset-env": "^8.0.7",
+    "@babel/preset-react": "^8.0.1",
+    "@babel/preset-typescript": "^8.0.7",
+    "@commitlint/config-conventional": "^21.2.3",
+    "@formatjs/ts-transformer": "^4.5.0",
+    "babel-plugin-formatjs": "^13.0.7",
+    "babel-plugin-transform-import-meta": "^3.0.0",
     "deepmerge": "^4.3.1",
     "identity-obj-proxy": "^3.0.0",
-    "sort-package-json": "^3.6.1"
+    "sort-package-json": "^4.0.0"
   },
   "devDependencies": {
-    "@jest/types": "^30.3.0",
+    "@jest/types": "^30.5.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.12.0",
-    "jest": "^30.4.2",
-    "tsdown": "^0.22.2",
+    "jest": "^30.5.2",
+    "tsdown": "^0.23.1",
     "tsup": "^8.5.1"
   },
   "publishConfig": {
