@@ -231,7 +231,7 @@ export const createThemeRuntime = (
 
   /** Parse + validate a persisted `{ mode }` payload; null when unusable. */
   const parseStoredMode = (raw: string): ThemeMode | null => {
-    let stored: { mode?: string } | null = null;
+    let stored: { mode?: string } | null;
     try {
       stored = JSON.parse(raw);
     } catch {
