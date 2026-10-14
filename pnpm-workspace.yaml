@@ -38,3 +38,6 @@ overrides:
   # typescript-eslint, typedoc and @formatjs/ts-transformer depend on. Pin
   # auto-installed peers too, so tsdown/jest don't resolve 7.x.
   typescript: ~6.0.3
+  # Match the Node.js 24 runtime (`engines`); transitive `@types/node: *` would
+  # otherwise pull 26.x next to 24.x and type APIs Node 24 doesn't have.
+  '@types/node': ^24.19.2

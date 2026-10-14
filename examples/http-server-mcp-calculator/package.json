@@ -14,7 +14,7 @@
     "@ttoss/logger": "workspace:^"
   },
   "devDependencies": {
-    "@types/node": "^24.12.0",
+    "@types/node": "^24.19.2",
     "tsx": "^4.23.15"
   }
 }

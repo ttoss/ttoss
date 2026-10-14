@@ -35,7 +35,7 @@
     "@ttoss/fsl-theme": "workspace:^",
     "@ttoss/fsl-ui": "workspace:^",
     "@types/jsdom": "^30.0.0",
-    "@types/node": "^24.12.0",
+    "@types/node": "^24.19.2",
     "@types/react": "^19.3.0",
     "esbuild": "^0.28.2",
     "google-auth-library": "^11.3.0",
