@@ -300,7 +300,7 @@ const MyComponent = () => {
 | `addCard`            | `(item: CardCatalogItem) => void`                          | Adds a card to editing grid                         |
 | `removeCard`         | `(id: string) => void`                                     | Removes card from editing grid                      |
 | `updateCard`         | `(id: string, cardPatch: Record<string, unknown>) => void` | Patches a card in editing grid                      |
-| `onLayoutChange`     | `(layout: Layout[]) => void`                               | Syncs edited card positions/sizes from grid changes |
+| `onLayoutChange`     | `(layout: Layout) => void`                                 | Syncs edited card positions/sizes from grid changes |
 
 ### DashboardCard
 
@@ -381,7 +381,7 @@ import { DashboardHeader } from '@ttoss/react-dashboard';
 
 ### DashboardGrid
 
-Responsive grid layout component that displays dashboard cards using `react-grid-layout`.
+Responsive grid layout component that displays dashboard cards using `react-grid-layout` v2. It measures its container width itself, and in edit mode a layout constraint snaps dragged cards to columns 0, 3, 6 and 9.
 
 ```tsx
 import { DashboardGrid } from '@ttoss/react-dashboard';
@@ -552,9 +552,10 @@ interface DashboardTemplate {
 ### DashboardGridItem
 
 ```tsx
-interface DashboardGridItem extends ReactGridLayout.Layout {
+// LayoutItem comes from react-grid-layout v2 (i, x, y, w, h, minW, static, ...)
+type DashboardGridItem = LayoutItem & {
   card: DashboardCard | SectionDivider;
-}
+};
 ```
 
 ### DashboardFilter
@@ -576,10 +577,7 @@ interface DashboardFilter {
 
 ```tsx
 type DashboardFilterValue =
-  | string
-  | number
-  | boolean
-  | { from: Date; to: Date };
+  string | number | boolean | { from: Date; to: Date };
 ```
 
 ### DashboardFilterType
@@ -625,12 +623,7 @@ type CardSourceType = {
 
 ```tsx
 type DashboardCardType =
-  | 'bigNumber'
-  | 'pieChart'
-  | 'barChart'
-  | 'lineChart'
-  | 'table'
-  | 'list';
+  'bigNumber' | 'pieChart' | 'barChart' | 'lineChart' | 'table' | 'list';
 ```
 
 ### CardVariant

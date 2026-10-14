@@ -10,7 +10,7 @@
 import '@testing-library/jest-dom';
 
 import { act, render, waitFor } from '@testing-library/react';
-import maplibregl from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl';
 import * as React from 'react';
 
 import { GeoVisClickContext, GeoVisContext } from '../../../src/react/contexts';
@@ -47,7 +47,7 @@ jest.mock('maplibre-gl', () => {
       __options: options, // Store for test assertions
     };
   });
-  return { __esModule: true, default: { Marker } };
+  return { __esModule: true, Marker };
 });
 
 const getMockMarkerCtor = () => {

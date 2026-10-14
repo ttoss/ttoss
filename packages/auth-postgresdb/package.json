@@ -36,8 +36,8 @@
     "@ttoss/auth-core": "workspace:^",
     "@ttoss/config": "workspace:^",
     "@ttoss/postgresdb": "workspace:^",
-    "jest": "^30.4.2",
-    "tsdown": "^0.22.2"
+    "jest": "^30.5.2",
+    "tsdown": "^0.23.1"
   },
   "peerDependencies": {
     "@ttoss/auth-core": "workspace:^",

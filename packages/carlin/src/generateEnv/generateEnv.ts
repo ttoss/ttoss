@@ -1,10 +1,9 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
-import log from 'npmlog';
-
 import { LATEST_DEPLOY_OUTPUTS_FILENAME } from '../deploy/config';
 import { getEnvironment } from '../utils';
+import { log } from '../utils/log';
 
 const logPrefix = 'generate-env';
 

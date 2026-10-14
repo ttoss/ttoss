@@ -1,1 +1,1 @@
-export { JsonEditor } from 'json-edit-react';
+export { JsonEditor, JsonViewer } from 'json-edit-react';

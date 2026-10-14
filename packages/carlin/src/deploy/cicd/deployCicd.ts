@@ -1,15 +1,16 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import {
-  REPOSITORY_IMAGE_CODE_BUILD_PROJECT_LOGICAL_ID,
-  getCicdTemplate,
-} from './cicd.template';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+
+import { startCodeBuildBuild, waitCodeBuildFinish } from '../../utils';
+import { log } from '../../utils/log';
 import { deploy, getStackOutput } from '../cloudformation.core';
 import { deployLambdaCode } from '../lambda/deployLambdaCode';
-import { getCicdStackName } from './getCicdStackName';
 import { handleDeployError, handleDeployInitialization } from '../utils';
-import { startCodeBuildBuild, waitCodeBuildFinish } from '../../utils';
-import log from 'npmlog';
+import {
+  getCicdTemplate,
+  REPOSITORY_IMAGE_CODE_BUILD_PROJECT_LOGICAL_ID,
+} from './cicd.template';
+import { getCicdStackName } from './getCicdStackName';
 import type { Pipeline } from './pipelines';
 
 const logPrefix = 'cicd';

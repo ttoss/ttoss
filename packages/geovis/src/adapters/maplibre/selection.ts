@@ -1,4 +1,4 @@
-import type maplibregl from 'maplibre-gl';
+import type * as maplibregl from 'maplibre-gl';
 
 import type { GeoVisSelection } from '../../runtime/action';
 import type { VisualizationSpec } from '../../spec/types';

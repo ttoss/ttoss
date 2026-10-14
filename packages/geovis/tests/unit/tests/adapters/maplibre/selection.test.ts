@@ -1,4 +1,4 @@
-import type maplibregl from 'maplibre-gl';
+import type * as maplibregl from 'maplibre-gl';
 import { applySelectionToMap } from 'src/adapters/maplibre/selection';
 import type { VisualizationSpec } from 'src/spec/types';
 

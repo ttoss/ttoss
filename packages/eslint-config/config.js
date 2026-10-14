@@ -1,3 +1,4 @@
+import { fixupConfigRules } from '@eslint/compat';
 import eslint from '@eslint/js';
 import tsParser from '@typescript-eslint/parser';
 import { defineConfig } from 'eslint/config';
@@ -30,22 +31,25 @@ export default defineConfig(
   },
   eslint.configs.recommended,
   tseslint.configs.recommended,
-  importPlugin.flatConfigs.recommended,
-  {
+  // eslint-plugin-import, eslint-plugin-react and eslint-plugin-jsx-a11y don't
+  // support ESLint 10 yet (they call context methods it removed, e.g.
+  // `context.getFilename`). `fixupConfigRules` restores those methods.
+  fixupConfigRules(importPlugin.flatConfigs.recommended),
+  fixupConfigRules({
     files: ['**/*.{jsx,tsx}'],
     ...reactPlugin.configs.flat.recommended,
-  },
-  {
+  }),
+  fixupConfigRules({
     files: ['**/*.{jsx,tsx}'],
     ...reactPlugin.configs.flat['jsx-runtime'],
-  },
+  }),
   // Not scoped to JSX: custom hooks live in plain .ts files, and scoping this
   // to {jsx,tsx} silently drops the hooks rules there.
   reactHooks.configs.flat.recommended,
-  {
+  fixupConfigRules({
     files: ['**/*.{jsx,tsx}'],
     ...jsxA11y.flatConfigs.recommended,
-  },
+  }),
   {
     plugins: {
       formatjs,
@@ -185,7 +189,7 @@ export default defineConfig(
       // ── Unicorn ───────────────────────────────────────────────────────────
       // Enforce modern JavaScript best practices and Node.js idioms.
       // https://github.com/sindresorhus/eslint-plugin-unicorn
-      'unicorn/no-array-for-each': 'error',
+      'unicorn/no-for-each': 'error',
       'unicorn/catch-error-name': 'error',
       'unicorn/prefer-node-protocol': 'error',
     },

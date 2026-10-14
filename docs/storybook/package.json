@@ -14,8 +14,8 @@
     "update-storybook": "npx storybook@latest upgrade"
   },
   "dependencies": {
-    "@chakra-ui/react": "^3.35.0",
-    "@iconify-icons/mdi-light": "^1.2.5",
+    "@chakra-ui/react": "^3.37.0",
+    "@iconify-icons/mdi-light": "^2.0.0",
     "@iconify/icons-carbon": "^1.2.20",
     "@ttoss/components": "workspace:^",
     "@ttoss/forms": "workspace:^",
@@ -38,17 +38,17 @@
   "devDependencies": {
     "@babel/core": "^7.29.7",
     "@fluentui/storybook-llms-extractor": "^0.0.4",
-    "@storybook/addon-a11y": "^10.5.3",
-    "@storybook/addon-docs": "^10.5.3",
-    "@storybook/addon-links": "^10.5.3",
+    "@storybook/addon-a11y": "^10.6.2",
+    "@storybook/addon-docs": "^10.6.2",
+    "@storybook/addon-links": "^10.6.2",
     "@storybook/addon-webpack5-compiler-babel": "^4.0.1",
-    "@storybook/react-webpack5": "^10.5.3",
+    "@storybook/react-webpack5": "^10.6.2",
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "babel-loader": "^10.1.1",
-    "eslint-plugin-storybook": "10.4.1",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6",
-    "storybook": "^10.5.3"
+    "eslint-plugin-storybook": "10.6.2",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "storybook": "^10.6.2"
   }
 }

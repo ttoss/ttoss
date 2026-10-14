@@ -74,6 +74,7 @@ const modern = (
     .set('Accept', 'application/json, text/event-stream')
     .set({
       'Mcp-Method': method,
+      'MCP-Protocol-Version': '2026-07-28',
       ...(name === undefined ? {} : { 'Mcp-Name': name }),
     });
 };

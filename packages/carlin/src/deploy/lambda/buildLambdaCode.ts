@@ -4,7 +4,8 @@ import path from 'node:path';
 
 import { typescriptConfig } from '@ttoss/config';
 import * as esbuild from 'esbuild';
-import log from 'npmlog';
+
+import { log } from '../../utils/log';
 
 const logPrefix = 'lambda';
 

@@ -574,7 +574,7 @@ describe('auth — public methods and RFC 9728 discovery', () => {
    * (ttoss/ttoss#1222).
    */
   describe('the handshake is public on both protocol eras', () => {
-    /** A request speaking `2026-07-28`: per-request envelope plus the header. */
+    /** A request speaking `2026-07-28`: per-request envelope plus headers. */
     const postModern = (app: ReturnType<typeof buildApp>, method: string) => {
       return request(app.callback())
         .post('/mcp')
@@ -591,7 +591,8 @@ describe('auth — public methods and RFC 9728 discovery', () => {
         })
         .set('Content-Type', 'application/json')
         .set('Accept', MCP_ACCEPT)
-        .set('Mcp-Method', method);
+        .set('Mcp-Method', method)
+        .set('MCP-Protocol-Version', '2026-07-28');
     };
 
     test('server/discover is public by default', async () => {

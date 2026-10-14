@@ -7,6 +7,9 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
       "additionalProperties": false,
       "properties": {
         "bbox": {
+          "items": false,
+          "maxItems": 4,
+          "minItems": 4,
           "prefixItems": [
             {
               "type": "number",
@@ -24,6 +27,9 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
           "type": "array",
         },
         "cameraCenter": {
+          "items": false,
+          "maxItems": 2,
+          "minItems": 2,
           "prefixItems": [
             {
               "type": "number",

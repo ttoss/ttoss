@@ -1,8 +1,8 @@
-import log from 'npmlog';
 import type { CommandModule, InferredOptionTypes } from 'yargs';
 
 import { NAME } from '../../config';
 import { addGroupToOptions } from '../../utils';
+import { log } from '../../utils/log';
 import { deployLambdaLayer } from './deployLambdaLayer';
 
 const logPrefix = 'deploy-lambda-layer';

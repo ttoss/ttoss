@@ -29,7 +29,7 @@ export const DashboardContext = React.createContext<{
   addCard: (item: CardCatalogItem) => void;
   removeCard: (id: string) => void;
   updateCard: (id: string, cardPatch: Record<string, unknown>) => void;
-  onLayoutChange: (currentLayout: Layout[]) => void;
+  onLayoutChange: (currentLayout: Layout) => void;
 }>({
   filters: [],
   updateFilter: () => {},
@@ -51,6 +51,94 @@ export const DashboardContext = React.createContext<{
   updateCard: () => {},
   onLayoutChange: () => {},
 });
+
+/**
+ * Card and layout mutations applied to the editing grid while in edit mode.
+ */
+const useEditingGridActions = ({
+  setEditingGrid,
+  cardCatalog,
+}: {
+  setEditingGrid: React.Dispatch<
+    React.SetStateAction<DashboardGridItem[] | null>
+  >;
+  cardCatalog: CardCatalogItem[];
+}) => {
+  const addCard = React.useCallback(
+    (item: CardCatalogItem) => {
+      setEditingGrid((prev) => {
+        if (!prev) return prev;
+        const catalogItem = cardCatalog.find((c) => {
+          return c.card.title === item.card.title;
+        });
+        if (!catalogItem) return prev;
+        const maxY = prev.length
+          ? Math.max(
+              ...prev.map((item) => {
+                return item.y + item.h;
+              })
+            )
+          : 0;
+        const newItem = createGridItemWithPlacement(catalogItem, 0, maxY);
+        return [...prev, newItem];
+      });
+    },
+    [cardCatalog]
+  );
+
+  const removeCard = React.useCallback((id: string) => {
+    setEditingGrid((prev) => {
+      return prev
+        ? prev.filter((item) => {
+            return item.i !== id;
+          })
+        : prev;
+    });
+  }, []);
+
+  const updateCard = React.useCallback(
+    (id: string, cardPatch: Record<string, unknown>) => {
+      setEditingGrid((prev) => {
+        if (!prev) return prev;
+        return prev.map((item) => {
+          return item.i === id
+            ? { ...item, card: { ...item.card, ...cardPatch } }
+            : item;
+        });
+      });
+    },
+    []
+  );
+
+  const onLayoutChange = React.useCallback((currentLayout: Layout) => {
+    setEditingGrid((prev) => {
+      if (!prev) return prev;
+      const byId = new Map(
+        currentLayout.map((l) => {
+          return [l.i, l];
+        })
+      );
+      let changed = false;
+      const next = prev.map((item) => {
+        const layout = byId.get(item.i);
+        if (!layout) return item;
+        if (
+          item.x === layout.x &&
+          item.y === layout.y &&
+          item.w === layout.w &&
+          item.h === layout.h
+        ) {
+          return item;
+        }
+        changed = true;
+        return { ...item, x: layout.x, y: layout.y, w: layout.w, h: layout.h };
+      });
+      return changed ? next : prev;
+    });
+  }, []);
+
+  return { addCard, removeCard, updateCard, onLayoutChange };
+};
 
 export const DashboardProvider = (props: {
   children: React.ReactNode;
@@ -178,78 +266,8 @@ export const DashboardProvider = (props: {
     setSaveAsNewModalOpen(false);
   }, []);
 
-  const addCard = React.useCallback(
-    (item: CardCatalogItem) => {
-      setEditingGrid((prev) => {
-        if (!prev) return prev;
-        const catalogItem = cardCatalog.find((c) => {
-          return c.card.title === item.card.title;
-        });
-        if (!catalogItem) return prev;
-        const maxY = prev.length
-          ? Math.max(
-              ...prev.map((item) => {
-                return item.y + item.h;
-              })
-            )
-          : 0;
-        const newItem = createGridItemWithPlacement(catalogItem, 0, maxY);
-        return [...prev, newItem];
-      });
-    },
-    [cardCatalog]
-  );
-
-  const removeCard = React.useCallback((id: string) => {
-    setEditingGrid((prev) => {
-      return prev
-        ? prev.filter((item) => {
-            return item.i !== id;
-          })
-        : prev;
-    });
-  }, []);
-
-  const updateCard = React.useCallback(
-    (id: string, cardPatch: Record<string, unknown>) => {
-      setEditingGrid((prev) => {
-        if (!prev) return prev;
-        return prev.map((item) => {
-          return item.i === id
-            ? { ...item, card: { ...item.card, ...cardPatch } }
-            : item;
-        });
-      });
-    },
-    []
-  );
-
-  const onLayoutChange = React.useCallback((currentLayout: Layout[]) => {
-    setEditingGrid((prev) => {
-      if (!prev) return prev;
-      const byId = new Map(
-        currentLayout.map((l) => {
-          return [l.i, l];
-        })
-      );
-      let changed = false;
-      const next = prev.map((item) => {
-        const layout = byId.get(item.i);
-        if (!layout) return item;
-        if (
-          item.x === layout.x &&
-          item.y === layout.y &&
-          item.w === layout.w &&
-          item.h === layout.h
-        ) {
-          return item;
-        }
-        changed = true;
-        return { ...item, x: layout.x, y: layout.y, w: layout.w, h: layout.h };
-      });
-      return changed ? next : prev;
-    });
-  }, []);
+  const { addCard, removeCard, updateCard, onLayoutChange } =
+    useEditingGridActions({ setEditingGrid, cardCatalog });
 
   return (
     <DashboardContext.Provider

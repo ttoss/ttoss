@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 
-import yaml from 'js-yaml';
+import { CORE_SCHEMA, load, mergeTag } from 'js-yaml';
 
 import { loadConfig } from './loadConfig';
 
@@ -18,7 +18,8 @@ export const readConfigFileSync = <ConfigFile = unknown>({
 
   if (extension === 'yaml' || extension === 'yml') {
     const file = fs.readFileSync(configFilePath, 'utf8');
-    return yaml.load(file) as ConfigFile;
+    // Keep YAML merge keys (`<<`), which js-yaml 5 left out of its default schema.
+    return load(file, { schema: CORE_SCHEMA.withTags(mergeTag) }) as ConfigFile;
   }
 
   if (extension === 'json') {

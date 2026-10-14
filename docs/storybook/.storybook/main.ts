@@ -11,6 +11,17 @@ const getAbsolutePath = (value: string): any => {
   return dirname(require.resolve(join(value, 'package.json')));
 };
 
+/**
+ * `maplibre-gl` is not a dependency of this package, only of `@ttoss/geovis`,
+ * so `.storybook/preview.tsx` resolves it through geovis to reach its worker
+ * file (see `configureMapLibreWorker` there).
+ */
+const maplibreDir = dirname(
+  require.resolve('maplibre-gl/package.json', {
+    paths: [dirname(require.resolve('@ttoss/geovis'))],
+  })
+);
+
 const config: StorybookConfig = {
   /**
    * TODO: automatic title generation
@@ -33,6 +44,21 @@ const config: StorybookConfig = {
   framework: {
     name: getAbsolutePath('@storybook/react-webpack5'),
     options: {},
+  },
+  webpackFinal: (webpackConfig) => {
+    webpackConfig.resolve = {
+      ...webpackConfig.resolve,
+      alias: {
+        ...webpackConfig.resolve?.alias,
+        'maplibre-gl': maplibreDir,
+      },
+    };
+    // Emit MapLibre's worker as a file and import its URL instead of its code.
+    webpackConfig.module?.rules?.push({
+      test: /maplibre-gl-worker\.mjs$/,
+      type: 'asset/resource',
+    });
+    return webpackConfig;
   },
   refs: {
     '@chakra-ui/react': {

@@ -1,8 +1,7 @@
-import AWS from 'aws-sdk';
 import type { CommandModule, InferredOptionTypes } from 'yargs';
 
 import { CLOUDFRONT_REGION, NAME } from '../../config';
-import { addGroupToOptions } from '../../utils';
+import { addGroupToOptions, setEnvVar } from '../../utils';
 import { destroyCloudFormation } from '../cloudformation';
 import { parseContentTypes } from './contentTypes';
 import { deployStaticApp } from './deployStaticApp';
@@ -220,7 +219,7 @@ export const deployStaticAppCommand: CommandModule<
          * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-requirements-limits.html#lambda-requirements-cloudfront-triggers
          */
         .middleware(() => {
-          AWS.config.region = CLOUDFRONT_REGION;
+          setEnvVar('REGION', CLOUDFRONT_REGION);
         })
     );
   },

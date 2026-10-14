@@ -1,6 +1,11 @@
+/**
+ * This module builds CloudFormation templates as literals, which these rules
+ * were not written for.
+ */
+/* eslint-disable max-lines, max-lines-per-function */
 import type { CloudFormationTemplate } from '@ttoss/cloudformation';
 import { pascalCase } from 'change-case';
-import yaml from 'js-yaml';
+import { dump } from 'js-yaml';
 
 import { DEFAULT_NODE_RUNTIME } from '../../config';
 import { getEnvironment, getIamPath, getProjectName } from '../../utils';
@@ -12,7 +17,8 @@ import {
   BASE_STACK_VPC_PUBLIC_SUBNET_2_EXPORTED_NAME,
 } from '../baseStack/config';
 import { getNodeVersion } from '../runtime';
-import { CicdCommandOptions, getCicdConfig } from './command.options';
+import type { CicdCommandOptions } from './command.options';
+import { getCicdConfig } from './command.options';
 import {
   ECS_TASK_DEFAULT_CPU,
   ECS_TASK_DEFAULT_MEMORY,
@@ -209,7 +215,7 @@ export const getRepositoryImageBuilder = () => {
         'Fn::GetAtt': [CODE_BUILD_PROJECT_SERVICE_ROLE_LOGICAL_ID, 'Arn'],
       },
       Source: {
-        BuildSpec: yaml.dump({
+        BuildSpec: dump({
           version: '0.2',
           phases: {
             install: {

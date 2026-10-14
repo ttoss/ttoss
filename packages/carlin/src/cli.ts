@@ -3,7 +3,6 @@
 import path from 'node:path';
 
 import { readConfigFileSync } from '@ttoss/read-config-file';
-import AWS from 'aws-sdk';
 import { constantCase, kebabCase } from 'change-case';
 import deepEqual from 'deep-equal';
 import deepMerge from 'deepmerge';
@@ -182,12 +181,13 @@ export const loadDotEnv = () => {
   if (environment) {
     const result = dotenv.config({
       path: path.resolve(process.cwd(), `.env.${environment}`),
+      quiet: true,
     });
     if (result.error) {
-      dotenv.config();
+      dotenv.config({ quiet: true });
     }
   } else {
-    dotenv.config();
+    dotenv.config({ quiet: true });
   }
 };
 
@@ -259,7 +259,6 @@ export const cli = () => {
       }
     })
     .middleware(({ region }) => {
-      AWS.config.region = region;
       setEnvVar('REGION', region);
     })
     .pkgConf(getPkgConfig())

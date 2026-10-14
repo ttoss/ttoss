@@ -1,7 +1,8 @@
-import { CommandModule, InferredOptionTypes } from 'yargs';
-import AWS from 'aws-sdk';
-import log from 'npmlog';
+import { InvokeCommand, LambdaClient } from '@aws-sdk/client-lambda';
+import type { CommandModule, InferredOptionTypes } from 'yargs';
 
+import { getEnvVar } from '../../utils/environmentVariables';
+import { log } from '../../utils/log';
 import type { Event, Status } from './lambdas/ecsTaskReport.handler';
 
 const logPrefix = 'cicd-ecs-task-report';
@@ -11,13 +12,13 @@ const logPrefix = 'cicd-ecs-task-report';
  *
  * @param param.status execution status.
  */
-const sendEcsTaskReport = async ({ status }: { status: Status }) => {
+export const sendEcsTaskReport = async ({ status }: { status: Status }) => {
   if (!process.env.ECS_TASK_REPORT_HANDLER_NAME) {
     log.info(logPrefix, 'ECS_TASK_REPORT_HANDLER_NAME not defined.');
     return;
   }
 
-  const lambda = new AWS.Lambda();
+  const lambda = new LambdaClient({ region: getEnvVar('REGION') });
 
   const payload: Event = { status };
 
@@ -29,12 +30,17 @@ const sendEcsTaskReport = async ({ status }: { status: Status }) => {
     payload.pipelineName = process.env.PIPELINE_NAME;
   }
 
-  await lambda
-    .invokeAsync({
+  /**
+   * `Event` invokes the function asynchronously, replacing the deprecated
+   * InvokeAsync API.
+   */
+  await lambda.send(
+    new InvokeCommand({
       FunctionName: process.env.ECS_TASK_REPORT_HANDLER_NAME,
-      InvokeArgs: JSON.stringify(payload),
+      InvocationType: 'Event',
+      Payload: JSON.stringify(payload),
     })
-    .promise();
+  );
 
   log.info(logPrefix, 'Report sent.');
 };
@@ -51,6 +57,7 @@ const options = {
  * Used to send report to ECS Task Report Handler Lambda.
  */
 export const ecsTaskReportCommand: CommandModule<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   any,
   InferredOptionTypes<typeof options>
 > = {
@@ -60,6 +67,6 @@ export const ecsTaskReportCommand: CommandModule<
     return yargs.options(options);
   },
   handler: async (args) => {
-    return sendEcsTaskReport(args as any);
+    return sendEcsTaskReport({ status: args.status as Status });
   },
 };

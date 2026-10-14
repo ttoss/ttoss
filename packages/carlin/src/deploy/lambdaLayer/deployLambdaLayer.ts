@@ -1,9 +1,9 @@
+import { StartBuildCommand } from '@aws-sdk/client-codebuild';
 import type { CloudFormationTemplate } from '@ttoss/cloudformation';
-import AWS from 'aws-sdk';
-import log from 'npmlog';
 
 import { DEFAULT_NODE_RUNTIME } from '../../config';
-import { waitCodeBuildFinish } from '../../utils';
+import { codeBuild, waitCodeBuildFinish } from '../../utils';
+import { log } from '../../utils/log';
 import { getBaseStackResource } from '../baseStack/getBaseStackResource';
 import { deploy, doesStackExist } from '../cloudformation.core';
 import { handleDeployError } from '../utils';
@@ -20,10 +20,8 @@ const createLambdaLayerZipFile = async ({
 }) => {
   log.info(logPrefix, `Creating zip file for package ${packageName}...`);
 
-  const codeBuild = new AWS.CodeBuild();
-
-  const { build } = await codeBuild
-    .startBuild({
+  const { build } = await codeBuild().send(
+    new StartBuildCommand({
       environmentVariablesOverride: [
         {
           name: 'PACKAGE_NAME',
@@ -32,7 +30,7 @@ const createLambdaLayerZipFile = async ({
       ],
       projectName: codeBuildProjectName,
     })
-    .promise();
+  );
 
   if (!build?.id) {
     throw new Error('Cannot start build.');

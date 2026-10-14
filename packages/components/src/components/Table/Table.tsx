@@ -2,11 +2,11 @@ import type { BoxProps } from '@ttoss/ui';
 import { Box } from '@ttoss/ui';
 
 export {
-  createCell,
   createColumnHelper,
+  FlexRender,
   flexRender,
-  getCoreRowModel,
-  useReactTable,
+  tableFeatures,
+  useTable,
 } from '@tanstack/react-table';
 
 export const Table = (props: BoxProps) => {

@@ -364,10 +364,10 @@ export const useClickAnchor = ({
     let marker: MapLibreMarker | null = null;
 
     (async () => {
-      const { default: maplibregl } = await import('maplibre-gl');
+      const { Marker } = await import('maplibre-gl');
       if (cancelled) return;
 
-      marker = new maplibregl.Marker(buildMarkerOptions(anchor))
+      marker = new Marker(buildMarkerOptions(anchor))
         .setLngLat(click.featureLngLat ?? click.lngLat)
         .addTo(map);
 

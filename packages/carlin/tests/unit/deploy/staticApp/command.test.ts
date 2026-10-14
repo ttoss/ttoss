@@ -1,9 +1,9 @@
 import { faker } from '@ttoss/test-utils/faker';
-import AWS from 'aws-sdk';
 import { CLOUDFRONT_REGION } from 'src/config';
 import { destroyCloudFormation } from 'src/deploy/cloudformation';
 import { deployStaticAppCommand } from 'src/deploy/staticApp/command';
 import { deployStaticApp } from 'src/deploy/staticApp/deployStaticApp';
+import { getEnvVar, setEnvVar } from 'src/utils';
 import yargs from 'yargs';
 
 jest.mock('src/deploy/cloudformation');
@@ -28,7 +28,7 @@ const parse = (options: any) => {
 
 describe('region should be us-east-1', () => {
   beforeEach(() => {
-    AWS.config.region = undefined;
+    setEnvVar('REGION', undefined);
   });
 
   test.each([
@@ -41,7 +41,7 @@ describe('region should be us-east-1', () => {
   ])('should return us-east-1 if region option is: %s', async () => {
     const argv = await parse({});
     expect(argv.region).toEqual(CLOUDFRONT_REGION);
-    expect(AWS.config.region).toEqual(CLOUDFRONT_REGION);
+    expect(getEnvVar('REGION')).toEqual(CLOUDFRONT_REGION);
     expect(deployStaticApp).toHaveBeenCalledWith(
       expect.objectContaining({ region: CLOUDFRONT_REGION })
     );

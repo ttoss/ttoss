@@ -43,18 +43,18 @@
     "test": "tsc --noEmit -p tsconfig.json && jest --projects tests/unit"
   },
   "devDependencies": {
-    "@testing-library/react": "^16.3.2",
+    "@testing-library/react": "^16.3.3",
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "@types/node": "^24.12.0",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.0.2",
-    "jest": "^30.4.2",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6",
+    "@types/node": "^24.19.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "jest": "^30.5.2",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
     "ts-morph": "^28.0.0",
-    "tsdown": "^0.22.2",
-    "tsx": "^4.21.0"
+    "tsdown": "^0.23.1",
+    "tsx": "^4.23.15"
   },
   "peerDependencies": {
     "react": ">=18"
