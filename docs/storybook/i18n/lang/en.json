@@ -137,6 +137,16 @@
     "defaultMessage": ",",
     "description": "Thousand separator for number formatting (e.g., \",\" for 1,000 or \".\" for 1.000)"
   },
+  "Ws/Os5": {
+    "module": "@ttoss/geovis",
+    "defaultMessage": "Feature #{feature_id}",
+    "description": "Map hover tooltip heading: the identifier of the hovered map feature."
+  },
+  "lRO8cA": {
+    "module": "@ttoss/geovis",
+    "defaultMessage": "No data",
+    "description": "Map hover tooltip: shown instead of a value when the feature has no data."
+  },
   "+YBKEN": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Next step",
@@ -577,6 +587,21 @@
     "defaultMessage": "Decrease",
     "description": "Accessible label for the button that steps a setting's slider down."
   },
+  "3tsiA5": {
+    "module": "@ttoss/layouts",
+    "defaultMessage": "Open sidebar",
+    "description": "Accessible label of the button that expands the layout sidebar."
+  },
+  "PgOiBP": {
+    "module": "@ttoss/layouts",
+    "defaultMessage": "Close sidebar",
+    "description": "Accessible label of the button that collapses the layout sidebar."
+  },
+  "cQ3gQg": {
+    "module": "@ttoss/layouts",
+    "defaultMessage": "Sidebar",
+    "description": "Accessible name of the layout sidebar region."
+  },
   "0XOzcH": {
     "module": "@ttoss/react-auth-core",
     "defaultMessage": "Required field",
@@ -760,6 +785,11 @@
     "module": "@ttoss/react-auth-core",
     "defaultMessage": "Confirmation code",
     "description": "Confirmation code"
+  },
+  "xtdZ4H": {
+    "module": "@ttoss/react-notifications",
+    "defaultMessage": "Close",
+    "description": "Accessible label of the button that dismisses the notifications modal."
   },
   "0OwPAx": {
     "module": "@ttoss/react-billing",
