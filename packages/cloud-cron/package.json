@@ -1,0 +1,51 @@
+{
+  "name": "@ttoss/cloud-cron",
+  "version": "0.0.0",
+  "description": "Create CloudFormation templates for scheduled Lambda cron jobs with TypeScript.",
+  "keywords": [
+    "cloudformation",
+    "cron",
+    "lambda",
+    "sam"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/cloud-cron"
+  },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+  ],
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@ttoss/cloudformation": "workspace:^"
+  },
+  "devDependencies": {
+    "@ttoss/config": "workspace:^",
+    "@types/jest": "^30.0.0",
+    "jest": "^30.5.2",
+    "tsdown": "^0.23.1"
+  },
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.cjs",
+        "types": "./dist/index.d.mts"
+      }
+    },
+    "provenance": true
+  }
+}
