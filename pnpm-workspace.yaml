@@ -34,3 +34,7 @@ overrides:
   # 7.4.6 trips `trustPolicy: no-downgrade` (ERR_PNPM_TRUST_DOWNGRADE). Keep the
   # last trusted 7.x until upstream restores provenance.
   webpack-dev-middleware@7: 7.4.5
+  # TypeScript 7 (native/tsgo) ships no JS compiler API yet, which
+  # typescript-eslint, typedoc and @formatjs/ts-transformer depend on. Pin
+  # auto-installed peers too, so tsdown/jest don't resolve 7.x.
+  typescript: ~6.0.3
