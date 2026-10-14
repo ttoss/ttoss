@@ -1,7 +1,6 @@
-import { z } from 'zod';
-
 import { catalogSchema } from './schema/catalog';
 import type { Catalog } from './schema/types';
+import { toJSONSchema } from './toJSONSchema';
 
 /**
  * Returns `catalog` with `permissions` stripped — the curated-metadata
@@ -43,5 +42,5 @@ export const getCatalogIntrospection = (
  * drift from what `validateCatalog` actually enforces.
  */
 export const getCatalogJSONSchema = (): Record<string, unknown> => {
-  return z.toJSONSchema(catalogSchema, { target: 'draft-2020-12' });
+  return toJSONSchema(catalogSchema);
 };
