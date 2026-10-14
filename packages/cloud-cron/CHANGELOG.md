@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.1](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fcloud-cron%400.1.0...%40ttoss%2Fcloud-cron%400.1.1) (2026-10-14)
+
+### Bug Fixes
+
+- **cloud-cron:** load as a carlin template ([#1328](https://github.com/ttoss/ttoss/issues/1328)) ([5f96d21](https://github.com/ttoss/ttoss/commit/5f96d21e28ed60b32ade9988017e02cf06bb9b15))
+
 # 0.1.0 (2026-10-14)
 
 ### Features
