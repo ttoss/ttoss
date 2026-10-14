@@ -1,3 +1,8 @@
+/**
+ * This module builds CloudFormation templates as literals, which these rules
+ * were not written for.
+ */
+/* eslint-disable max-lines, max-lines-per-function */
 import type { CloudFormationTemplate } from '@ttoss/cloudformation';
 import { pascalCase } from 'change-case';
 import { dump } from 'js-yaml';
@@ -12,7 +17,8 @@ import {
   BASE_STACK_VPC_PUBLIC_SUBNET_2_EXPORTED_NAME,
 } from '../baseStack/config';
 import { getNodeVersion } from '../runtime';
-import { CicdCommandOptions, getCicdConfig } from './command.options';
+import type { CicdCommandOptions } from './command.options';
+import { getCicdConfig } from './command.options';
 import {
   ECS_TASK_DEFAULT_CPU,
   ECS_TASK_DEFAULT_MEMORY,

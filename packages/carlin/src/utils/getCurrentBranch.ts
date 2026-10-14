@@ -26,7 +26,7 @@ export const getCurrentBranch = async () => {
     const { current } = await simpleGit().branch();
 
     return current || BRANCH_UNDEFINED;
-  } catch (err) {
+  } catch {
     return BRANCH_UNDEFINED;
   }
 };

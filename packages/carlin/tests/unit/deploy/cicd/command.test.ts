@@ -1,12 +1,12 @@
-jest.mock('src/deploy/cicd/deployCicd');
-
-jest.mock('src/deploy/cicd/readSSHKey');
-
 import { faker } from '@ttoss/test-utils/faker';
 import * as commandModule from 'src/deploy/cicd/command';
 import { deployCicd } from 'src/deploy/cicd/deployCicd';
 import { readSSHKey } from 'src/deploy/cicd/readSSHKey';
 import yargs from 'yargs';
+
+jest.mock('src/deploy/cicd/deployCicd');
+
+jest.mock('src/deploy/cicd/readSSHKey');
 
 /**
  * yargs 18 has no global singleton, so the test builds its own instance.

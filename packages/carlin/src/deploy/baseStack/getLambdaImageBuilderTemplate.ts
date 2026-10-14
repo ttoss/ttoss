@@ -1,3 +1,8 @@
+/**
+ * This module builds CloudFormation templates as literals, which these rules
+ * were not written for.
+ */
+/* eslint-disable max-lines-per-function */
 import type { CloudFormationTemplate } from '@ttoss/cloudformation';
 import { dump } from 'js-yaml';
 

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import type { CloudFormationTemplate } from '@ttoss/cloudformation';
 import {
   CORE_SCHEMA,
   defineScalarTag,
@@ -8,8 +9,6 @@ import {
   mergeTag,
   type TagDefinition,
 } from 'js-yaml';
-
-import type { CloudFormationTemplate } from '@ttoss/cloudformation';
 
 export interface TagAndType {
   tag: string;
