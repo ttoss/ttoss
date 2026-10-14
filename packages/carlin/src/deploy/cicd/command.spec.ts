@@ -1,12 +1,13 @@
+import { faker } from '@ttoss/test-utils/faker';
+import * as yargs from 'yargs';
+
+import * as commandModule from './command';
+import { deployCicd } from './deployCicd';
+import { readSSHKey } from './readSSHKey';
+
 jest.mock('./deployCicd');
 
 jest.mock('./readSSHKey');
-
-import * as commandModule from './command';
-import * as yargs from 'yargs';
-import { deployCicd } from './deployCicd';
-import { faker } from '@ttoss/test-utils/faker';
-import { readSSHKey } from './readSSHKey';
 
 const cli = yargs.command(commandModule.deployCicdCommand);
 

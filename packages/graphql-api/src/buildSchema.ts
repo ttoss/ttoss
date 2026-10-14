@@ -11,8 +11,7 @@ export type { Middleware, MiddlewareGenerator };
 export type BuildSchemaInput<TContext = unknown> = {
   schemaComposer: SchemaComposer<TContext>;
   middlewares?: (
-    | Middleware
-    | MiddlewareGenerator<unknown, TContext, unknown>
+    Middleware | MiddlewareGenerator<unknown, TContext, unknown>
   )[];
 };
 

@@ -162,8 +162,7 @@ const triggerClick = (
   }
 ) => {
   const handler = map.__handlers.get(`click:${layerId}`) as
-    | MapClickHandler
-    | undefined;
+    MapClickHandler | undefined;
   if (!handler)
     throw new Error(`click handler missing for key click:${layerId}`);
   act(() => {
@@ -371,8 +370,7 @@ describe('GeoVisClickContext', () => {
     });
 
     const genericHandler = mockCurrentMap.__handlers.get('click:*') as
-      | MapClickHandler
-      | undefined;
+      MapClickHandler | undefined;
 
     if (!genericHandler) {
       throw new Error('Generic click:* handler not registered on map');

@@ -1,6 +1,7 @@
 import { render, screen, userEvent } from '@ttoss/test-utils/react';
 
-import { Label, LabelProps } from '../../../src';
+import type { LabelProps } from '../../../src';
+import { Label } from '../../../src';
 
 const LABEL_CONTENT = 'Label text';
 

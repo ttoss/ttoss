@@ -1,6 +1,7 @@
-import { compileCommands } from './shConditionalCommands';
-import { getProcessEnvVariable } from './getProcessEnvVariable';
 import AWS from 'aws-sdk';
+
+import { getProcessEnvVariable } from './getProcessEnvVariable';
+import { compileCommands } from './shConditionalCommands';
 
 const ecs = new AWS.ECS({ apiVersion: '2014-11-13', maxRetries: 3 });
 

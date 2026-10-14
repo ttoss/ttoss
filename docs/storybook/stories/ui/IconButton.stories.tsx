@@ -1,6 +1,7 @@
-import { Meta, StoryFn } from '@storybook/react-webpack5';
+import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import { Icon } from '@ttoss/react-icons';
-import { Flex, IconButton, IconButtonProps } from '@ttoss/ui';
+import type { IconButtonProps } from '@ttoss/ui';
+import { Flex, IconButton } from '@ttoss/ui';
 
 export default {
   title: 'UI/IconButton',

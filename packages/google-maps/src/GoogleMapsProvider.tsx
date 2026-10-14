@@ -1,4 +1,5 @@
-import { ScriptStatus, useScript } from '@ttoss/react-hooks';
+import type { ScriptStatus } from '@ttoss/react-hooks';
+import { useScript } from '@ttoss/react-hooks';
 import * as React from 'react';
 
 type Extends<T, U extends T> = U;

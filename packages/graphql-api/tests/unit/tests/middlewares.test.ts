@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { allow, deny, shield } from 'src/shield';
-import { buildSchema } from 'src/index';
 import { graphql } from 'graphql';
+import { buildSchema } from 'src/index';
+import { allow, deny, shield } from 'src/shield';
+
 import { schemaComposer } from '../schemaComposer';
 
 let authorsResponse: any;

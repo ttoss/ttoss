@@ -4,6 +4,8 @@ import {
   type DescribeStacksOutput,
   ListStackResourcesCommand,
 } from '@aws-sdk/client-cloudformation';
+import { destroy } from 'src/deploy/cloudformation.core';
+import { emptyS3Directory } from 'src/deploy/s3';
 
 const MockDeleteStackCommand = DeleteStackCommand;
 const MockDescribeStacksCommand = DescribeStacksCommand;
@@ -70,16 +72,12 @@ jest.mock('aws-sdk', () => {
   };
 });
 
-import { emptyS3Directory } from 'src/deploy/s3';
-
 jest.mock('src/deploy/s3', () => {
   return {
     ...jest.requireActual('src/deploy/s3'),
     emptyS3Directory: jest.fn(),
   };
 });
-
-import { destroy } from 'src/deploy/cloudformation.core';
 
 describe('destroy', () => {
   beforeEach(() => {

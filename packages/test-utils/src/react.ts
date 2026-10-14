@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 
 import { createSerializer, matchers } from '@emotion/jest';
 import { render, renderHook, type RenderOptions } from '@testing-library/react';
-import * as React from 'react';
+import type * as React from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
 /**

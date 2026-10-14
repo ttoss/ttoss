@@ -1,6 +1,7 @@
 import radioButtonIcon from '@iconify/icons-carbon/radio-button';
-import { Meta, StoryFn } from '@storybook/react-webpack5';
-import { Flex, Input, InputProps } from '@ttoss/ui';
+import type { Meta, StoryFn } from '@storybook/react-webpack5';
+import type { InputProps } from '@ttoss/ui';
+import { Flex, Input } from '@ttoss/ui';
 import * as React from 'react';
 
 export default {

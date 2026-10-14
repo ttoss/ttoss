@@ -1,5 +1,6 @@
-import { Meta, StoryObj } from '@storybook/react-webpack5';
-import { Label, Radio, RadioProps } from '@ttoss/ui';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { RadioProps } from '@ttoss/ui';
+import { Label, Radio } from '@ttoss/ui';
 
 type Story = StoryObj<typeof Radio>;
 

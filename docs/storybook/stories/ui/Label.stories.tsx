@@ -1,5 +1,6 @@
-import { Meta, StoryObj } from '@storybook/react-webpack5';
-import { Label, LabelProps } from '@ttoss/ui';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { LabelProps } from '@ttoss/ui';
+import { Label } from '@ttoss/ui';
 import { action } from 'storybook/actions';
 
 type Story = StoryObj<typeof Label>;

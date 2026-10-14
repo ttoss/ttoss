@@ -1,8 +1,15 @@
-import {
-  DescribeStacksCommand,
-  DescribeStacksOutput,
-} from '@aws-sdk/client-cloudformation';
+import * as fs from 'node:fs';
+
+import type { DescribeStacksOutput } from '@aws-sdk/client-cloudformation';
+import { DescribeStacksCommand } from '@aws-sdk/client-cloudformation';
 import { faker } from '@ttoss/test-utils/faker';
+import {
+  describeStack,
+  describeStacks,
+  doesStackExist,
+  getStackOutput,
+  printStackOutputsAfterDeploy,
+} from 'src/deploy/cloudformation.core';
 
 const MockDescribeStacksCommand = DescribeStacksCommand;
 
@@ -78,16 +85,6 @@ jest.mock('@aws-sdk/client-cloudformation', () => {
     }),
   };
 });
-
-import * as fs from 'node:fs';
-
-import {
-  describeStack,
-  describeStacks,
-  doesStackExist,
-  getStackOutput,
-  printStackOutputsAfterDeploy,
-} from 'src/deploy/cloudformation.core';
 
 jest.mock('fs', () => {
   return {

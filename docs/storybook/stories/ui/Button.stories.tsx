@@ -1,5 +1,6 @@
-import { Meta, Story } from '@storybook/react-webpack5';
-import { Button, ButtonProps, Flex } from '@ttoss/ui';
+import type { Meta, Story } from '@storybook/react-webpack5';
+import type { ButtonProps } from '@ttoss/ui';
+import { Button, Flex } from '@ttoss/ui';
 
 export default {
   title: 'UI/Button',

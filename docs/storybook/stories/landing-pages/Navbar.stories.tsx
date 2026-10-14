@@ -1,5 +1,6 @@
-import { Meta, Story } from '@storybook/react-webpack5';
-import { Navbar, NavbarProps } from '@ttoss/landing-pages';
+import type { Meta, Story } from '@storybook/react-webpack5';
+import type { NavbarProps } from '@ttoss/landing-pages';
+import { Navbar } from '@ttoss/landing-pages';
 
 export default {
   title: 'Landing Pages/Navbar',

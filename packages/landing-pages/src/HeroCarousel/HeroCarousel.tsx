@@ -1,6 +1,6 @@
-import * as React from 'react';
-import { Box, Flex, Image } from '@ttoss/ui';
 import { Icon } from '@ttoss/react-icons';
+import { Box, Flex, Image } from '@ttoss/ui';
+import * as React from 'react';
 
 export type HeroCarouselProps = {
   images: {

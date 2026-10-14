@@ -44,12 +44,12 @@ export const invalidateCloudFront = async ({
         `CloudFront Distribution ID ${distributionId} invalidated with success.`
       );
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
+    } catch (error: any) {
       log.error(
         logPrefix,
         `Error while trying to invalidate CloudFront distribution ${distributionId}.`
       );
-      log.error(logPrefix, err);
+      log.error(logPrefix, error);
     }
   } else {
     log.info(

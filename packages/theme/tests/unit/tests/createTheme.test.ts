@@ -1,5 +1,5 @@
-import { BruttalTheme } from '../../../src/themes/Bruttal/Bruttal';
 import { createTheme } from '../../../src';
+import { BruttalTheme } from '../../../src/themes/Bruttal/Bruttal';
 
 test('should match BruttalTheme', () => {
   expect(createTheme({}, BruttalTheme)).toEqual(BruttalTheme);

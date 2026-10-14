@@ -1,6 +1,7 @@
-import { Pipeline } from './pipelines';
 import { faker } from '@ttoss/test-utils/faker';
+
 import { getTriggerPipelinesObjectKey } from './getTriggerPipelineObjectKey';
+import type { Pipeline } from './pipelines';
 
 const prefix = faker.word.words();
 

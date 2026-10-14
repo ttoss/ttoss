@@ -1,14 +1,15 @@
+import { faker } from '@ttoss/test-utils/faker';
+import simpleGit from 'simple-git';
+
+import { cache, setEnvVar } from './environmentVariables';
+import { BRANCH_UNDEFINED, getCurrentBranch } from './getCurrentBranch';
+
 jest.mock('simple-git', () => {
   return {
     __esModule: true,
     default: jest.fn(),
   };
 });
-
-import { BRANCH_UNDEFINED, getCurrentBranch } from './getCurrentBranch';
-import { cache, setEnvVar } from './environmentVariables';
-import { faker } from '@ttoss/test-utils/faker';
-import simpleGit from 'simple-git';
 
 const branch = faker.word.words();
 

@@ -164,17 +164,7 @@ export const renderTooltip = (info: {
 };
 
 export type Year =
-  | 2000
-  | 2005
-  | 2010
-  | 2015
-  | 2020
-  | 2025
-  | 2030
-  | 2035
-  | 2040
-  | 2045
-  | 2050;
+  2000 | 2005 | 2010 | 2015 | 2020 | 2025 | 2030 | 2035 | 2040 | 2045 | 2050;
 
 export const buildSpec = ({
   sizeData,

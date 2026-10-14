@@ -1,5 +1,5 @@
-import * as React from 'react';
 import CodeBlock from '@theme/CodeBlock';
+import * as React from 'react';
 
 export const Examples = ({ examples }: { examples: [string, string][] }) => {
   return (

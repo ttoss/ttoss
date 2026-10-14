@@ -1,14 +1,14 @@
-jest.mock('fs', () => {
-  return {
-    readFileSync: jest.fn(),
-  };
-});
-
 import * as fs from 'node:fs';
 
 import { faker } from '@ttoss/test-utils/faker';
 
 import { readCloudFormationYamlTemplate } from '../../src/readCloudFormationYamlTemplate';
+
+jest.mock('fs', () => {
+  return {
+    readFileSync: jest.fn(),
+  };
+});
 
 const subStringPath = 'some-path';
 

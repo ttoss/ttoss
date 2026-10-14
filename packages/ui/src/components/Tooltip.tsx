@@ -2,7 +2,8 @@
 import { type ITooltip } from 'react-tooltip';
 import { Tooltip as TooltipReact } from 'react-tooltip';
 
-import { Box, SxProp } from '..';
+import type { SxProp } from '..';
+import { Box } from '..';
 
 export type TooltipProps = ITooltip & SxProp;
 

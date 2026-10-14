@@ -1,11 +1,8 @@
 import { cleanup, render, screen, userEvent } from '@ttoss/test-utils/react';
 import Modal from 'react-modal';
 import { NotificationsHeader } from 'src/NotificationsHeader';
-import {
-  Notification,
-  NotificationsProvider,
-  useNotifications,
-} from 'src/Provider';
+import type { Notification } from 'src/Provider';
+import { NotificationsProvider, useNotifications } from 'src/Provider';
 
 Modal.setAppElement(document.createElement('div'));
 

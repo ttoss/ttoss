@@ -1,7 +1,8 @@
-import { ProxyHandler } from 'aws-lambda';
+import type { ProxyHandler } from 'aws-lambda';
+import AWS from 'aws-sdk';
+
 import { executeTasks } from './executeTasks';
 import { getProcessEnvVariable } from './getProcessEnvVariable';
-import AWS from 'aws-sdk';
 
 const codebuild = new AWS.CodeBuild({ apiVersion: '2016-10-06' });
 

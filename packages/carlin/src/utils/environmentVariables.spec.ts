@@ -1,10 +1,7 @@
-import {
-  EnvironmentVariables,
-  cache,
-  getEnvVar,
-  setEnvVar,
-} from './environmentVariables';
 import { faker } from '@ttoss/test-utils/faker';
+
+import type { EnvironmentVariables } from './environmentVariables';
+import { cache, getEnvVar, setEnvVar } from './environmentVariables';
 
 test('basic cache routines', () => {
   const key = faker.word.words();

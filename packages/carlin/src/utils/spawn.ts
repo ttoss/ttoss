@@ -1,5 +1,6 @@
-import { stdout } from 'process';
-import childProcess from 'child_process';
+import childProcess from 'node:child_process';
+import { stdout } from 'node:process';
+
 import log from 'npmlog';
 
 log.heading = 'exec';

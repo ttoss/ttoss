@@ -1,9 +1,9 @@
-import { cache } from 'src/utils/environmentVariables';
 import { faker } from '@ttoss/test-utils/faker';
 import {
   handleDeployError,
   handleDeployInitialization,
 } from 'src/deploy/utils';
+import { cache } from 'src/utils/environmentVariables';
 
 const logPrefix = faker.lorem.word();
 

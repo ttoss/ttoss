@@ -1,7 +1,9 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { deployLambdaLayer } from '../lambdaLayer/deployLambdaLayer';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+
 import log from 'npmlog';
+
+import { deployLambdaLayer } from '../lambdaLayer/deployLambdaLayer';
 
 const logPrefix = 'lambda';
 
@@ -27,11 +29,11 @@ export const deployLambdaLayers = async ({
         fs.readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf8')
       );
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
+    } catch (error: any) {
       log.error(
         logPrefix,
         'Cannot read package.json. Error message: %j',
-        err.message
+        error.message
       );
       return {};
     }

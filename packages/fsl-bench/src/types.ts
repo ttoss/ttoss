@@ -15,11 +15,7 @@ export type ScenarioId =
   | 'themed-composite';
 
 export type LibraryId =
-  | 'fsl-ui'
-  | 'fsl-ui-bare'
-  | 'react-aria'
-  | 'radix'
-  | 'mui';
+  'fsl-ui' | 'fsl-ui-bare' | 'react-aria' | 'radix' | 'mui';
 
 /**
  * Tools handed to a scenario's behavior assertion. All instances come from

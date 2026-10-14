@@ -1,3 +1,15 @@
+import * as configModule from '../../config';
+import {
+  API_LOGICAL_ID,
+  getCicdTemplate,
+  getRepositoryImageBuilder,
+  IMAGE_UPDATER_SCHEDULE_SERVERLESS_FUNCTION_LOGICAL_ID,
+  PIPELINES_ARTIFACT_STORE_S3_BUCKET_LOGICAL_ID,
+  PIPELINES_HANDLER_LAMBDA_FUNCTION_LOGICAL_ID,
+  PIPELINES_MAIN_LOGICAL_ID,
+  PIPELINES_ROLE_LOGICAL_ID,
+  PIPELINES_TAG_LOGICAL_ID,
+} from './cicd.template';
 import type { Pipeline } from './pipelines';
 
 const projectName = 'my-project';
@@ -11,19 +23,6 @@ jest.mock('../../utils', () => {
     }),
   };
 });
-
-import * as configModule from '../../config';
-import {
-  API_LOGICAL_ID,
-  getCicdTemplate,
-  getRepositoryImageBuilder,
-  IMAGE_UPDATER_SCHEDULE_SERVERLESS_FUNCTION_LOGICAL_ID,
-  PIPELINES_ARTIFACT_STORE_S3_BUCKET_LOGICAL_ID,
-  PIPELINES_HANDLER_LAMBDA_FUNCTION_LOGICAL_ID,
-  PIPELINES_MAIN_LOGICAL_ID,
-  PIPELINES_ROLE_LOGICAL_ID,
-  PIPELINES_TAG_LOGICAL_ID,
-} from './cicd.template';
 
 const s3 = {
   bucket: 'bucket',

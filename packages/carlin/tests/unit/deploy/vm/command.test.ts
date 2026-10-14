@@ -1,4 +1,13 @@
 // Mock the dependencies
+import log from 'npmlog';
+import type { Argv, CommandModule } from 'yargs';
+import yargs from 'yargs';
+
+import * as commandModule from '../../../../src/deploy/vm/command';
+import { options } from '../../../../src/deploy/vm/command.options';
+// Import after mocking
+import { deployVM } from '../../../../src/deploy/vm/deployVM';
+
 jest.mock('../../../../src/deploy/vm/deployVM', () => {
   return {
     deployVM: jest.fn(),
@@ -21,15 +30,6 @@ jest.mock('../../../../src/deploy/vm/command.options', () => {
     // Tests can override individual values using mockOptions below
   };
 });
-
-import log from 'npmlog';
-import type { Argv, CommandModule } from 'yargs';
-import yargs from 'yargs';
-
-import * as commandModule from '../../../../src/deploy/vm/command';
-import { options } from '../../../../src/deploy/vm/command.options';
-// Import after mocking
-import { deployVM } from '../../../../src/deploy/vm/deployVM';
 
 const deployVMCommand = commandModule.deployVMCommand;
 

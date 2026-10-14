@@ -1,5 +1,6 @@
-import { Meta, Story } from '@storybook/react-webpack5';
-import { Footer, FooterProps } from '@ttoss/landing-pages';
+import type { Meta, Story } from '@storybook/react-webpack5';
+import type { FooterProps } from '@ttoss/landing-pages';
+import { Footer } from '@ttoss/landing-pages';
 
 export default {
   title: 'Landing Pages/Footer',

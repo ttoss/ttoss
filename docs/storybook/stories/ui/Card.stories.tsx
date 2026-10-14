@@ -1,5 +1,6 @@
-import { Meta, StoryFn } from '@storybook/react-webpack5';
-import { Card, CardProps, Flex, Text } from '@ttoss/ui';
+import type { Meta, StoryFn } from '@storybook/react-webpack5';
+import type { CardProps } from '@ttoss/ui';
+import { Card, Flex, Text } from '@ttoss/ui';
 
 export default {
   title: 'UI/Card',

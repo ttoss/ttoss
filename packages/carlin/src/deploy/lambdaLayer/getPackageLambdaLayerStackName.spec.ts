@@ -1,4 +1,5 @@
 import { faker } from '@ttoss/test-utils/faker';
+
 import {
   getPackageLambdaLayerStackName,
   lambdaLayerStackNamePrefix,
@@ -10,18 +11,18 @@ const generateRandomPackageName = () => {
 
 describe('testing getPackageLambdaLayerStackName', () => {
   test('should return a valid stack name', () => {
-    [
+    for (const packageName of [
       generateRandomPackageName(),
       generateRandomPackageName(),
       generateRandomPackageName(),
       '@scope/package@1.2.3',
       '@scope/package@^1.2.3',
       'package@3.2.1',
-    ].forEach((packageName) => {
+    ]) {
       expect(getPackageLambdaLayerStackName(packageName)).toMatch(
         new RegExp('[a-zA-Z][-a-zA-Z0-9]*')
       );
-    });
+    }
   });
 
   test('should return a valid stack name for scoped packages', () => {

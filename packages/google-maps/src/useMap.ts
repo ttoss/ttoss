@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { MapContext } from './MapProvider';
 import { useCallbackRef } from 'use-callback-ref';
+
+import { MapContext } from './MapProvider';
 import { useGoogleMaps } from './useGoogleMaps';
 
 export const useMap = (options: google.maps.MapOptions = {}) => {

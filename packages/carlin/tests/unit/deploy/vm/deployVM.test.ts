@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-jest.mock('node:child_process');
-jest.mock('node:fs');
-jest.mock('../../../../src/deploy/vm/VMconnection');
-
 import { spawn } from 'node:child_process';
 import { chmodSync, createReadStream, existsSync, statSync } from 'node:fs';
 
 import { deployVM } from '../../../../src/deploy/vm/deployVM';
 import * as VMconnection from '../../../../src/deploy/vm/VMconnection';
+
+jest.mock('node:child_process');
+jest.mock('node:fs');
+jest.mock('../../../../src/deploy/vm/VMconnection');
 
 describe('deployVM', () => {
   const mockSpawn = spawn as jest.MockedFunction<typeof spawn>;

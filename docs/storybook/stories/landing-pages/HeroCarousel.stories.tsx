@@ -1,5 +1,6 @@
-import { Meta, Story } from '@storybook/react-webpack5';
-import { HeroCarousel, HeroCarouselProps } from '@ttoss/landing-pages';
+import type { Meta, Story } from '@storybook/react-webpack5';
+import type { HeroCarouselProps } from '@ttoss/landing-pages';
+import { HeroCarousel } from '@ttoss/landing-pages';
 
 export default {
   title: 'Landing Pages/HeroCarousel',

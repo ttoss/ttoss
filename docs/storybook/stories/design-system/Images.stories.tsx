@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react-webpack5';
+import type { Meta, Story } from '@storybook/react-webpack5';
 import { Flex, Image } from '@ttoss/ui';
 
 const IMAGES_1 = [

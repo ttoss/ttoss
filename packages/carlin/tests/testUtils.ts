@@ -1,6 +1,8 @@
 /**
  * Should import this module before importing the methods that you'll test.
  */
+import { cli } from 'src/cli';
+
 export const optionsFromConfigFiles = {
   option: 'option',
   optionEnv: 'optionEnv',
@@ -40,8 +42,6 @@ jest.mock('findup-sync', () => {
       .mockReturnValueOnce(undefined),
   };
 });
-
-import { cli } from 'src/cli';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const parseCli = async (arg: any, context: any) => {

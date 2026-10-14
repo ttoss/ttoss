@@ -1,4 +1,5 @@
-import { Flex, FlexProps } from './Flex';
+import type { FlexProps } from './Flex';
+import { Flex } from './Flex';
 
 export type StackProps = FlexProps;
 

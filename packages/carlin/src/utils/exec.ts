@@ -1,4 +1,5 @@
-import childProcess from 'child_process';
+import childProcess from 'node:child_process';
+
 import log from 'npmlog';
 
 log.heading = 'exec';

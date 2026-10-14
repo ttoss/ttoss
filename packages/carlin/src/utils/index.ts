@@ -1,6 +1,6 @@
 export * from './addGroupToOptions';
-export * from './codeBuild';
 export * from './cloudFormationTemplate';
+export * from './codeBuild';
 export * from './environmentVariables';
 export * from './exec';
 export * from './formatCode';
