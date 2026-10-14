@@ -1,10 +1,11 @@
-jest.mock('./packageJson');
+import { faker } from '@ttoss/test-utils/faker';
+import { pascalCase } from 'change-case';
 
 import { cache } from './environmentVariables';
-import { faker } from '@ttoss/test-utils/faker';
-import { getPackageName } from './packageJson';
 import { getProjectName } from './getProjectName';
-import { pascalCase } from 'change-case';
+import { getPackageName } from './packageJson';
+
+jest.mock('./packageJson');
 
 afterEach(() => {
   cache.delete('PROJECT');

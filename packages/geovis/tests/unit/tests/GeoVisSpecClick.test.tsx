@@ -148,8 +148,7 @@ const triggerClick = (
   }
 ) => {
   const handler = map.__handlers.get(`click:${layerId}`) as
-    | MapClickHandler
-    | undefined;
+    MapClickHandler | undefined;
   if (!handler) {
     throw new Error(`click handler missing for key click:${layerId}`);
   }

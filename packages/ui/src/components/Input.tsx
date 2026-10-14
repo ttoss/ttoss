@@ -34,6 +34,30 @@ const normalizeIcon = (
   return { icon };
 };
 
+/**
+ * Resolves the trailing icon: an invalid input (`aria-invalid`) always shows
+ * the warning icon, while a caller-provided warning icon flags a warning state.
+ */
+const resolveTrailingIcon = ({
+  trailingIconProp,
+  ariaInvalid,
+}: {
+  trailingIconProp: InputProps['trailingIcon'];
+  ariaInvalid: InputProps['aria-invalid'];
+}) => {
+  const normalizedTrailingIconProp = normalizeIcon(trailingIconProp);
+
+  const isInvalid = ariaInvalid === true || ariaInvalid === 'true';
+
+  const trailingIcon = isInvalid
+    ? { ...normalizedTrailingIconProp, icon: 'warning-alt' as IconType }
+    : normalizedTrailingIconProp;
+
+  const isWarning = !isInvalid && trailingIcon?.icon === 'warning-alt';
+
+  return { trailingIcon, isWarning };
+};
+
 export const Input = ({
   leadingIcon,
   trailingIcon: trailingIconProp,
@@ -43,16 +67,10 @@ export const Input = ({
 }: InputProps) => {
   const normalizedLeadingIcon = normalizeIcon(leadingIcon);
 
-  const normalizedTrailingIconProp = normalizeIcon(trailingIconProp);
-
-  const ariaInvalid = inputProps['aria-invalid'];
-  const isInvalid = ariaInvalid === true || ariaInvalid === 'true';
-
-  const trailingIcon = isInvalid
-    ? { ...normalizedTrailingIconProp, icon: 'warning-alt' as IconType }
-    : normalizedTrailingIconProp;
-
-  const isWarning = !isInvalid && trailingIcon?.icon === 'warning-alt';
+  const { trailingIcon, isWarning } = resolveTrailingIcon({
+    trailingIconProp,
+    ariaInvalid: inputProps['aria-invalid'],
+  });
 
   const wrapperClassName = [className, isWarning && 'is-warning']
     .filter(Boolean)

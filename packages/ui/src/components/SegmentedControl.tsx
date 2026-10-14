@@ -94,6 +94,104 @@ const sizeTokens: Record<
   },
 };
 
+/**
+ * Styles of the control and its `rc-segmented-*` parts for a variant and size.
+ * Caller `sx` is spread last so it can override any of them.
+ */
+const getSegmentedControlSx = ({
+  tokens,
+  sizeStyles,
+  sx,
+}: {
+  tokens: (typeof variantTokens)[keyof typeof variantTokens];
+  sizeStyles: (typeof sizeTokens)[keyof typeof sizeTokens];
+  sx: SegmentedControlProps['sx'];
+}): FlexProps['sx'] => {
+  return {
+    width: '100%',
+    borderRadius: '4xl',
+    border: 'sm',
+    borderColor: tokens.border,
+    overflow: 'hidden',
+    position: 'relative',
+
+    '.rc-segmented': {
+      width: '100%',
+      padding: '0',
+      backgroundColor: 'display.background.primary.default',
+      position: 'relative',
+      display: 'flex',
+      flexGrow: 1,
+    },
+    '.rc-segmented-group, .custom-segmented-group': {
+      borderRadius: '4xl',
+      gap: '0',
+      display: 'flex',
+      width: '100%',
+      position: 'relative',
+    },
+    '.rc-segmented-item': {
+      borderRadius: '4xl',
+      margin: 0,
+      paddingX: sizeStyles.paddingX,
+      paddingY: sizeStyles.paddingY,
+      fontSize: sizeStyles.fontSize,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: tokens.unselectedColor,
+      flex: '1 1 auto',
+      minWidth: 'min-content',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      zIndex: 2,
+      transition: 'background-color 0.2s ease, color 0.2s ease',
+      cursor: 'pointer',
+
+      '&:focus': {
+        outline: '2px solid',
+        outlineColor: tokens.selectedBg,
+        outlineOffset: '2px',
+        boxShadow: '0 0 0 1px rgba(0, 0, 0, 0.1)',
+      },
+      '&:focus-visible': {
+        outline: '2px solid',
+        outlineColor: tokens.selectedBg,
+        outlineOffset: '2px',
+      },
+      '&:hover:not(.rc-segmented-item-selected)': {
+        backgroundColor: tokens.hoverBg,
+      },
+
+      'input[type="radio"]': {
+        display: 'none',
+      },
+    },
+    '.rc-segmented-item-selected': {
+      backgroundColor: tokens.selectedBg,
+      color: tokens.selectedColor,
+    },
+    '.rc-segmented-thumb': {
+      backgroundColor: tokens.thumb,
+      borderRadius: '4xl',
+      zIndex: -1,
+      margin: 0,
+      position: 'absolute',
+      height: '100%',
+      width: '100%',
+      left: 0,
+      transition: 'transform 0.2s ease, left 0.2s ease',
+    },
+    '.rc-segmented-item-disabled': {
+      opacity: 0.5,
+      cursor: 'not-allowed',
+      backgroundColor: 'action.background.muted.disabled',
+    },
+    ...sx,
+  };
+};
+
 export const SegmentedControl = ({
   options,
   value: propValue,
@@ -108,14 +206,22 @@ export const SegmentedControl = ({
 }: SegmentedControlProps) => {
   const [internalValue, setInternalValue] = React.useState<
     string | number | undefined
-  >(propValue || defaultValue);
+  >(propValue ?? defaultValue);
 
-  // Keep internal state in sync with prop value
-  React.useEffect(() => {
+  /**
+   * Keep internal state in sync with the prop value, adjusting it while
+   * rendering instead of in an effect, so it holds the last controlled value
+   * if the control later becomes uncontrolled:
+   * https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+   */
+  const [prevPropValue, setPrevPropValue] = React.useState(propValue);
+
+  if (propValue !== prevPropValue) {
+    setPrevPropValue(propValue);
     if (propValue !== undefined) {
       setInternalValue(propValue);
     }
-  }, [propValue]);
+  }
 
   const handleChange = (newValue: string | number) => {
     setInternalValue(newValue);
@@ -139,89 +245,7 @@ export const SegmentedControl = ({
       className={className}
       data-variant={variant}
       data-size={size}
-      sx={{
-        width: '100%',
-        borderRadius: '4xl',
-        border: 'sm',
-        borderColor: tokens.border,
-        overflow: 'hidden',
-        position: 'relative',
-
-        '.rc-segmented': {
-          width: '100%',
-          padding: '0',
-          backgroundColor: 'display.background.primary.default',
-          position: 'relative',
-          display: 'flex',
-          flexGrow: 1,
-        },
-        '.rc-segmented-group, .custom-segmented-group': {
-          borderRadius: '4xl',
-          gap: '0',
-          display: 'flex',
-          width: '100%',
-          position: 'relative',
-        },
-        '.rc-segmented-item': {
-          borderRadius: '4xl',
-          margin: 0,
-          paddingX: sizeStyles.paddingX,
-          paddingY: sizeStyles.paddingY,
-          fontSize: sizeStyles.fontSize,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: tokens.unselectedColor,
-          flex: '1 1 auto',
-          minWidth: 'min-content',
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          zIndex: 2,
-          transition: 'background-color 0.2s ease, color 0.2s ease',
-          cursor: 'pointer',
-
-          '&:focus': {
-            outline: '2px solid',
-            outlineColor: tokens.selectedBg,
-            outlineOffset: '2px',
-            boxShadow: '0 0 0 1px rgba(0, 0, 0, 0.1)',
-          },
-          '&:focus-visible': {
-            outline: '2px solid',
-            outlineColor: tokens.selectedBg,
-            outlineOffset: '2px',
-          },
-          '&:hover:not(.rc-segmented-item-selected)': {
-            backgroundColor: tokens.hoverBg,
-          },
-
-          'input[type="radio"]': {
-            display: 'none',
-          },
-        },
-        '.rc-segmented-item-selected': {
-          backgroundColor: tokens.selectedBg,
-          color: tokens.selectedColor,
-        },
-        '.rc-segmented-thumb': {
-          backgroundColor: tokens.thumb,
-          borderRadius: '4xl',
-          zIndex: -1,
-          margin: 0,
-          position: 'absolute',
-          height: '100%',
-          width: '100%',
-          left: 0,
-          transition: 'transform 0.2s ease, left 0.2s ease',
-        },
-        '.rc-segmented-item-disabled': {
-          opacity: 0.5,
-          cursor: 'not-allowed',
-          backgroundColor: 'action.background.muted.disabled',
-        },
-        ...sx,
-      }}
+      sx={getSegmentedControlSx({ tokens, sizeStyles, sx })}
       {...rest}
     >
       <div className="rc-segmented">

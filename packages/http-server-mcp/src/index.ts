@@ -676,11 +676,10 @@ export interface McpRouterOptions {
  * app.listen(3000);
  * ```
  */
-// eslint-disable-next-line max-lines-per-function
 export const createMcpRouter = (
   server: McpServer,
   options: McpRouterOptions = {}
-  // eslint-disable-next-line complexity
+  // eslint-disable-next-line complexity, max-lines-per-function
 ): McpRouter => {
   const {
     path = '/mcp',

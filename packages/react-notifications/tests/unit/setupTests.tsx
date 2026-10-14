@@ -1,11 +1,16 @@
 import 'react-toastify/dist/ReactToastify.css';
 
+import { I18nProvider } from '@ttoss/react-i18n';
 import { setOptions } from '@ttoss/test-utils/react';
 import { ThemeProvider } from '@ttoss/ui';
-import * as React from 'react';
+import type * as React from 'react';
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
-  return <ThemeProvider>{children}</ThemeProvider>;
+  return (
+    <I18nProvider locale="en">
+      <ThemeProvider>{children}</ThemeProvider>
+    </I18nProvider>
+  );
 };
 
 setOptions({ wrapper: Providers });

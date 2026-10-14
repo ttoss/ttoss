@@ -23,7 +23,7 @@ const Template: Story = () => {
 
   React.useEffect(() => {
     formMethods.setError('lastName', { message: 'Last name is required' });
-  }, []);
+  }, [formMethods]);
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>

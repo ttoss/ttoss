@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { fromGlobalId } from '@ttoss/ids';
+import { schemaComposer } from 'graphql-compose';
 import {
   GraphQLInputObjectType,
   GraphQLInt,
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql-compose/lib/graphql';
-import { fromGlobalId } from '@ttoss/ids';
-import { schemaComposer } from 'graphql-compose';
 
 export const UserType = new GraphQLObjectType({
   name: 'User',

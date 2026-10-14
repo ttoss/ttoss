@@ -1,5 +1,6 @@
-import { Meta, StoryObj } from '@storybook/react-webpack5';
-import { InputNumber, InputNumberProps } from '@ttoss/ui';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { InputNumberProps } from '@ttoss/ui';
+import { InputNumber } from '@ttoss/ui';
 import * as React from 'react';
 import { action } from 'storybook/actions';
 

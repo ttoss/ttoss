@@ -1,16 +1,3 @@
-jest.mock('glob', () => {
-  return {
-    glob: jest.fn(),
-  };
-});
-jest.mock('node:fs', () => {
-  return {
-    promises: {
-      readFile: jest.fn(),
-    },
-  };
-});
-
 import * as fs from 'node:fs';
 
 import { faker } from '@ttoss/test-utils/faker';
@@ -25,6 +12,19 @@ import {
   readAllDeployFiles,
   reportToGitHubPR,
 } from 'src/deploy/reportToGitHubPR';
+
+jest.mock('glob', () => {
+  return {
+    glob: jest.fn(),
+  };
+});
+jest.mock('node:fs', () => {
+  return {
+    promises: {
+      readFile: jest.fn(),
+    },
+  };
+});
 
 const mockFetch = jest.fn();
 global.fetch = mockFetch;

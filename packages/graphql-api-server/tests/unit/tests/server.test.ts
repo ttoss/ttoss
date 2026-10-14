@@ -1,7 +1,9 @@
 import { CognitoJwtVerifier } from '@ttoss/auth-core/amazon-cognito';
-import { CreateServerInput, Router, createServer } from 'src/index';
-import { schemaComposer } from '../schemaComposer';
+import type { CreateServerInput } from 'src/index';
+import { createServer, Router } from 'src/index';
 import request from 'supertest';
+
+import { schemaComposer } from '../schemaComposer';
 
 jest.mock('@ttoss/auth-core/amazon-cognito');
 

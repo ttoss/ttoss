@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-jest.mock('aws-amplify');
-
 import * as API from 'aws-amplify/api';
 import * as Auth from 'aws-amplify/auth';
 import {
@@ -9,6 +7,8 @@ import {
   encodeCredentials,
   fetchQuery,
 } from 'src/index';
+
+jest.mock('aws-amplify');
 
 const mockCredentials = {
   accessKeyId: 'accessKeyId',

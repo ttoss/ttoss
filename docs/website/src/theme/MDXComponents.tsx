@@ -1,8 +1,8 @@
 /**
  * https://docusaurus.io/docs/markdown-features/react#mdx-component-scope
  */
-import MDXComponents from '@theme-original/MDXComponents';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import MDXComponents from '@theme-original/MDXComponents';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const Link = (props: any) => {

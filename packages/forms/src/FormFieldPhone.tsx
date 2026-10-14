@@ -145,6 +145,48 @@ export type FormFieldPhoneProps<
   };
 
 /**
+ * Strips the country code prefix from the stored phone value so the pattern
+ * input only shows the local number.
+ */
+const getLocalPhoneValue = ({
+  value,
+  countryCode,
+  isManual,
+}: {
+  value: string | undefined;
+  countryCode: string | undefined;
+  isManual: boolean;
+}) => {
+  return !isManual && countryCode && value?.startsWith(countryCode)
+    ? value.slice(countryCode.length)
+    : value;
+};
+
+const getPhoneFormat = ({
+  value,
+  countryCodeOptions,
+  countryCode,
+  format,
+  isManual,
+}: {
+  value: string;
+  countryCodeOptions: CountryCodeOption[];
+  countryCode: string | undefined;
+  format: string | ((value: string) => string) | undefined;
+  isManual: boolean;
+}) => {
+  const selectedOption = countryCodeOptions.find((opt) => {
+    return opt.value === countryCode;
+  });
+  const resolvedFormat = selectedOption?.format ?? format ?? '(###) ###-####';
+  const baseFormat =
+    typeof resolvedFormat === 'function'
+      ? resolvedFormat(value)
+      : resolvedFormat;
+  return countryCode && !isManual ? `${countryCode} ${baseFormat}` : baseFormat;
+};
+
+/**
  * Generic phone number form field that supports an optional country code prefix.
  *
  * By default, a country-code dropdown is rendered using `COMMON_PHONE_COUNTRY_CODES`
@@ -279,17 +321,13 @@ export const FormFieldPhone = <
   const isManual = countryCode === MANUAL_PHONE_COUNTRY_CODE;
 
   const getFormat = (value: string) => {
-    const selectedOption = countryCodeOptions.find((opt) => {
-      return opt.value === countryCode;
+    return getPhoneFormat({
+      value,
+      countryCodeOptions,
+      countryCode,
+      format,
+      isManual,
     });
-    const resolvedFormat = selectedOption?.format ?? format ?? '(###) ###-####';
-    const baseFormat =
-      typeof resolvedFormat === 'function'
-        ? resolvedFormat(value)
-        : resolvedFormat;
-    return countryCode && !isManual
-      ? `${countryCode} ${baseFormat}`
-      : baseFormat;
   };
 
   const showDropdown = countryCodeOptions.length > 0;
@@ -331,10 +369,13 @@ export const FormFieldPhone = <
            * FormField's cloneElement call (no-dropdown path) or forwarded by
            * PhoneDropdownWrapper (dropdown path) to ensure label association.
            */
-          const localPhoneValue =
-            !isManual && countryCode && field.value?.startsWith(countryCode)
-              ? field.value.slice(countryCode.length)
-              : field.value;
+          const localPhoneValue = getLocalPhoneValue({
+            value: field.value,
+            countryCode,
+            isManual,
+          });
+          const inputDisabled = disabled ?? field.disabled;
+          const ariaInvalid = fieldState.error ? 'true' : undefined;
 
           const inputNode = isManual ? (
             <NumericFormat
@@ -354,8 +395,8 @@ export const FormFieldPhone = <
                 onValueChange?.(values, sourceInfo);
               }}
               customInput={Input}
-              disabled={disabled ?? field.disabled}
-              aria-invalid={fieldState.error ? 'true' : undefined}
+              disabled={inputDisabled}
+              aria-invalid={ariaInvalid}
             />
           ) : (
             <PatternFormat
@@ -377,8 +418,8 @@ export const FormFieldPhone = <
               }}
               format={getFormat(localPhoneValue ?? '')}
               customInput={Input}
-              disabled={disabled ?? field.disabled}
-              aria-invalid={fieldState.error ? 'true' : undefined}
+              disabled={inputDisabled}
+              aria-invalid={ariaInvalid}
             />
           );
 
@@ -398,7 +439,7 @@ export const FormFieldPhone = <
               countryCodeFieldName={countryCodeFieldName}
               defaultCountryCode={defaultCountryCode}
               countryCodeOptions={countryCodeOptions}
-              disabled={disabled ?? field.disabled}
+              disabled={inputDisabled}
               onCountryCodeChange={handleCountryCodeChange}
               onPhoneReset={() => {
                 return field.onChange('');

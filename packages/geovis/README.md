@@ -11,8 +11,10 @@ pnpm add @ttoss/geovis
 You will also need to install the following peer dependencies:
 
 ```shell
-pnpm add maplibre-gl @ttoss/ui
+pnpm add maplibre-gl @ttoss/ui @ttoss/react-i18n
 ```
+
+The hover tooltip's default text ("Feature #…", "No data") is translated, so render `GeoVisProvider` inside an [`I18nProvider`](https://ttoss.dev/docs/modules/packages/react-i18n/) from `@ttoss/react-i18n`. English and Portuguese (pt-BR) messages ship in `i18n/lang`.
 
 `maplibre-gl` must be 6.4.1 or later. MapLibre 6 starts its web worker from `maplibre-gl-worker.mjs` next to its own module; when your bundler does not serve that file there (webpack and Vite do not), emit `maplibre-gl/dist/maplibre-gl-worker.mjs` as an asset and pass its URL to `setWorkerUrl` from `maplibre-gl` before the first map mounts.
 

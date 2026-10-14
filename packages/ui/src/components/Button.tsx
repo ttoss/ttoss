@@ -1,4 +1,5 @@
-import { Icon, IconType } from '@ttoss/react-icons';
+import type { IconType } from '@ttoss/react-icons';
+import { Icon } from '@ttoss/react-icons';
 import * as React from 'react';
 import {
   Button as ButtonUi,

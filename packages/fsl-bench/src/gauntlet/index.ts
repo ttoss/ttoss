@@ -46,7 +46,7 @@ const renderInChild = async ({
     'renderChild.ts'
   );
 
-  let stdout = '';
+  let stdout: string;
 
   try {
     const result = await execFileAsync(

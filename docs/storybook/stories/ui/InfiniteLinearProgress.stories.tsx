@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react-webpack5';
+import type { Meta, Story } from '@storybook/react-webpack5';
 import { InfiniteLinearProgress } from '@ttoss/ui';
 
 export default {

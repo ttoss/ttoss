@@ -42,28 +42,27 @@ const getFlexDirection = (layout: WizardLayout) => {
   }
 };
 
-/**
- * Renders a multi-step wizard with step navigation, localized action labels,
- * and support for completion, cancellation, and step changes.
- *
- * @param props - Wizard configuration and step content.
- * @param props.steps - The ordered steps displayed in the wizard.
- * @param props.onComplete - Called when the user finishes the last step.
- * @param props.onCancel - Called when the user cancels the wizard.
- * @param props.onStepChange - Called when the current step changes.
- */
-export const Wizard = ({
-  steps,
-  layout = 'top',
-  variant = 'spotlight-accent',
-  onComplete,
-  onCancel,
-  onStepChange,
-  initialStep = 0,
-  allowStepClick = true,
-  labels,
-}: WizardProps) => {
+const useButtonLabels = (labels: WizardProps['labels']) => {
   const { intl } = useI18n();
+
+  return React.useMemo(() => {
+    return {
+      previous: labels?.previous ?? intl.formatMessage(messages.previous),
+      next: labels?.next ?? intl.formatMessage(messages.next),
+      finish: labels?.finish ?? intl.formatMessage(messages.finish),
+      cancel: labels?.cancel ?? intl.formatMessage(messages.cancel),
+    };
+  }, [intl, labels]);
+};
+
+const useWizardNavigation = ({
+  steps,
+  initialStep,
+  onComplete,
+  onStepChange,
+}: Pick<WizardProps, 'steps' | 'onComplete' | 'onStepChange'> & {
+  initialStep: number;
+}) => {
   const [currentStep, setCurrentStep] = React.useState(initialStep);
   const stepValidationRef = React.useRef<
     (() => boolean | Promise<boolean>) | null
@@ -72,14 +71,6 @@ export const Wizard = ({
   const totalSteps = steps.length;
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === totalSteps - 1;
-  const buttonLabels = React.useMemo(() => {
-    return {
-      previous: labels?.previous ?? intl.formatMessage(messages.previous),
-      next: labels?.next ?? intl.formatMessage(messages.next),
-      finish: labels?.finish ?? intl.formatMessage(messages.finish),
-      cancel: labels?.cancel ?? intl.formatMessage(messages.cancel),
-    };
-  }, [intl, labels]);
 
   const getStepStatus = React.useCallback(
     ({ stepIndex }: { stepIndex: number }): WizardStepStatus => {
@@ -161,7 +152,7 @@ export const Wizard = ({
     []
   );
 
-  const contextValue = React.useMemo(() => {
+  return React.useMemo(() => {
     return {
       currentStep,
       totalSteps,
@@ -184,6 +175,97 @@ export const Wizard = ({
     getStepStatus,
     setStepValidation,
   ]);
+};
+
+const WizardNavigation = ({
+  variant,
+  onCancel,
+  labels,
+  isFirstStep,
+  isLastStep,
+  goToPrevious,
+  goToNext,
+}: {
+  variant: NonNullable<WizardProps['variant']>;
+  onCancel: WizardProps['onCancel'];
+  labels: WizardProps['labels'];
+  isFirstStep: boolean;
+  isLastStep: boolean;
+  goToPrevious: () => void;
+  goToNext: () => Promise<void>;
+}) => {
+  const buttonLabels = useButtonLabels(labels);
+
+  return (
+    <Flex
+      sx={{
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        gap: '3',
+      }}
+    >
+      <Flex sx={{ gap: '3' }}>
+        {onCancel && (
+          <Button
+            variant="secondary"
+            onClick={onCancel}
+            aria-label={buttonLabels.cancel}
+          >
+            {buttonLabels.cancel}
+          </Button>
+        )}
+      </Flex>
+
+      <Flex sx={{ gap: '3' }}>
+        <Button
+          variant="secondary"
+          onClick={goToPrevious}
+          disabled={isFirstStep}
+          aria-label={buttonLabels.previous}
+        >
+          {buttonLabels.previous}
+        </Button>
+        <Button
+          variant={getWizardPrimaryButtonVariant(variant)}
+          onClick={goToNext}
+          aria-label={isLastStep ? buttonLabels.finish : buttonLabels.next}
+        >
+          {isLastStep ? buttonLabels.finish : buttonLabels.next}
+        </Button>
+      </Flex>
+    </Flex>
+  );
+};
+
+/**
+ * Renders a multi-step wizard with step navigation, localized action labels,
+ * and support for completion, cancellation, and step changes.
+ *
+ * @param props - Wizard configuration and step content.
+ * @param props.steps - The ordered steps displayed in the wizard.
+ * @param props.onComplete - Called when the user finishes the last step.
+ * @param props.onCancel - Called when the user cancels the wizard.
+ * @param props.onStepChange - Called when the current step changes.
+ */
+export const Wizard = ({
+  steps,
+  layout = 'top',
+  variant = 'spotlight-accent',
+  onComplete,
+  onCancel,
+  onStepChange,
+  initialStep = 0,
+  allowStepClick = true,
+  labels,
+}: WizardProps) => {
+  const contextValue = useWizardNavigation({
+    steps,
+    initialStep,
+    onComplete,
+    onStepChange,
+  });
+
+  const { currentStep, getStepStatus, goToStep } = contextValue;
 
   return (
     <WizardContext.Provider value={contextValue}>
@@ -217,45 +299,15 @@ export const Wizard = ({
           </Box>
 
           {/* Navigation buttons */}
-          <Flex
-            sx={{
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              gap: '3',
-            }}
-          >
-            <Flex sx={{ gap: '3' }}>
-              {onCancel && (
-                <Button
-                  variant="secondary"
-                  onClick={onCancel}
-                  aria-label={buttonLabels.cancel}
-                >
-                  {buttonLabels.cancel}
-                </Button>
-              )}
-            </Flex>
-
-            <Flex sx={{ gap: '3' }}>
-              <Button
-                variant="secondary"
-                onClick={goToPrevious}
-                disabled={isFirstStep}
-                aria-label={buttonLabels.previous}
-              >
-                {buttonLabels.previous}
-              </Button>
-              <Button
-                variant={getWizardPrimaryButtonVariant(variant)}
-                onClick={goToNext}
-                aria-label={
-                  isLastStep ? buttonLabels.finish : buttonLabels.next
-                }
-              >
-                {isLastStep ? buttonLabels.finish : buttonLabels.next}
-              </Button>
-            </Flex>
-          </Flex>
+          <WizardNavigation
+            variant={variant}
+            onCancel={onCancel}
+            labels={labels}
+            isFirstStep={contextValue.isFirstStep}
+            isLastStep={contextValue.isLastStep}
+            goToPrevious={contextValue.goToPrevious}
+            goToNext={contextValue.goToNext}
+          />
         </Flex>
       </Flex>
     </WizardContext.Provider>

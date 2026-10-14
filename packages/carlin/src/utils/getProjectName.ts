@@ -1,6 +1,7 @@
+import { pascalCase } from 'change-case';
+
 import { getEnvVar } from './environmentVariables';
 import { getPackageName } from './packageJson';
-import { pascalCase } from 'change-case';
 
 /**
  * This variable is used to determine the name of the whole project. If the
@@ -28,7 +29,7 @@ export const getProjectName = () => {
 
   try {
     return pascalCase(name.split(/[@/]/)[1]);
-  } catch (err) {
+  } catch {
     return pascalCase(name);
   }
 };

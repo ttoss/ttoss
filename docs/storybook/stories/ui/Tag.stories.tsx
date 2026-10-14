@@ -1,5 +1,6 @@
-import { Meta, StoryFn } from '@storybook/react-webpack5';
-import { Tag, TagProps } from '@ttoss/ui';
+import type { Meta, StoryFn } from '@storybook/react-webpack5';
+import type { TagProps } from '@ttoss/ui';
+import { Tag } from '@ttoss/ui';
 
 export default {
   title: 'UI/Tag',

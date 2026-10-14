@@ -1,14 +1,7 @@
-import * as React from 'react';
-
 const size = 12;
 
 type Statuses =
-  | 'Sorting'
-  | 'Ready to Start'
-  | 'Working'
-  | 'Blocked'
-  | 'Canceled'
-  | 'Closed';
+  'Sorting' | 'Ready to Start' | 'Working' | 'Blocked' | 'Canceled' | 'Closed';
 
 const colors: { [status in Statuses]: string } = {
   Sorting: 'rgb(181, 188, 194)',

@@ -32,6 +32,25 @@ import ttossEslintConfigRelay from '@ttoss/eslint-config/relay';
 export default [...ttossEslintConfig, ...ttossEslintConfigRelay];
 ```
 
+## ESLint 10
+
+This config requires ESLint 10. `eslint-plugin-react`, `eslint-plugin-import` and `eslint-plugin-jsx-a11y` do not run on it ([eslint-plugin-react#3977](https://github.com/jsx-eslint/eslint-plugin-react/issues/3977)), so they are replaced by [`@eslint-react/eslint-plugin`](https://eslint-react.xyz/), [`eslint-plugin-import-x`](https://github.com/un-ts/eslint-plugin-import-x) and [`eslint-plugin-jsx-a11y-x`](https://github.com/es-tooling/eslint-plugin-jsx-a11y-x). When upgrading, rename the rules in your `eslint-disable` comments:
+
+| Before                      | After                                             |
+| --------------------------- | ------------------------------------------------- |
+| `import/*`                  | `import-x/*`                                      |
+| `jsx-a11y/*`                | `jsx-a11y-x/*`                                    |
+| `react/display-name`        | `@eslint-react/no-missing-component-display-name` |
+| `react/jsx-key`             | `@eslint-react/no-missing-key`                    |
+| `react/no-children-prop`    | `@eslint-react/jsx-no-children-prop`              |
+| `react/no-unknown-property` | `@eslint-react/dom-no-unknown-property`           |
+| `react/jsx-no-target-blank` | `@eslint-react/dom-no-unsafe-target-blank`        |
+| `react/prop-types`          | removed — TypeScript checks props                 |
+
+The full mapping is in [`config.js`](https://github.com/ttoss/ttoss/blob/main/packages/eslint-config/config.js). ESLint 10 also resolves the config file closest to each linted file, so a nested `eslint.config.*` now applies when linting from the repository root.
+
+`react-refresh/only-export-components` is no longer part of this config. Fast Refresh only exists in an app's dev server, and libraries export contexts, hooks and metadata next to their components by design. Apps with HMR (Vite, Next.js) can add [`eslint-plugin-react-refresh`](https://github.com/ArnaudBarre/eslint-plugin-react-refresh) to their own config; remove any `eslint-disable react-refresh/...` comments otherwise.
+
 ## TypeScript 7
 
 TypeScript 7 is the native compiler, and its npm package no longer exposes the

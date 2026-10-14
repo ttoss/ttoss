@@ -1,5 +1,6 @@
-import { ComponentMeta, Story } from '@storybook/react-webpack5';
-import { Flex, HelpText, HelpTextProps } from '@ttoss/ui';
+import type { ComponentMeta, Story } from '@storybook/react-webpack5';
+import type { HelpTextProps } from '@ttoss/ui';
+import { Flex, HelpText } from '@ttoss/ui';
 
 export default {
   title: 'UI/HelpText',

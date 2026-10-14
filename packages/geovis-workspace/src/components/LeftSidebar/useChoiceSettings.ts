@@ -127,10 +127,13 @@ export const useChoiceSettings = (
   // The last value each choice published, to tell the app's writes from ours.
   const published = React.useRef<Record<string, string>>({});
 
-  const publish = ({ menuId, value }: { menuId: string; value: string }) => {
-    published.current[menuId] = value;
-    setSelection({ menuId, value });
-  };
+  const publish = React.useCallback(
+    ({ menuId, value }: { menuId: string; value: string }) => {
+      published.current[menuId] = value;
+      setSelection({ menuId, value });
+    },
+    [setSelection]
+  );
 
   const resolved = choices.map((control) => {
     const picked = picks[control.menuId] ?? initialPick({ control, selection });
@@ -141,7 +144,9 @@ export const useChoiceSettings = (
   });
 
   // Guarded writes only, for the reason `useSettingValue` gives: `selection`
-  // and `setSelection` change identity every render.
+  // and `setSelection` change identity every render. The effect reconciles
+  // after every render: `resolved` is rebuilt on each one, so listing it keeps
+  // that cadence while naming everything the reconciliation reads.
   React.useEffect(() => {
     for (const { control, effective } of resolved) {
       const current = selection[control.menuId];
@@ -158,7 +163,7 @@ export const useChoiceSettings = (
         publish({ menuId: control.menuId, value: effective });
       }
     }
-  });
+  }, [resolved, selection, sections, publish]);
 
   return {
     effective: (menuId) => {

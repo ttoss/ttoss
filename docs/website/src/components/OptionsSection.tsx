@@ -43,10 +43,11 @@ export const OptionsSection = ({
                 : alias;
 
               const optionChild = React.Children.map(children, (child) => {
-                if (React.isValidElement(child)) {
-                  if (child.props.option === option) {
-                    return child;
-                  }
+                if (
+                  React.isValidElement(child) &&
+                  child.props.option === option
+                ) {
+                  return child;
                 }
 
                 return null;

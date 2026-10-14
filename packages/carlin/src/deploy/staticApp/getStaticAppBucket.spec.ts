@@ -1,5 +1,7 @@
 import { DescribeStackResourceCommand } from '@aws-sdk/client-cloudformation';
 
+import { getStaticAppBucket } from './getStaticAppBucket';
+
 const mockWorkingStackName = 'mockWorkingStackName';
 
 const mockWorkingStackBucketName = 'mockWorkingStackBucketName';
@@ -14,38 +16,40 @@ const notWorkingStackName = [
 
 const MockDescribeStackResourceCommand = DescribeStackResourceCommand;
 
-jest.mock('@aws-sdk/client-cloudformation', () => ({
-  ...(jest.requireActual('@aws-sdk/client-cloudformation') as any),
-  CloudFormationClient: jest.fn(() => ({
-    send: jest.fn((input: unknown) => {
-      if (input instanceof MockDescribeStackResourceCommand) {
-        const {
-          input: { StackName },
-        } = input;
+jest.mock('@aws-sdk/client-cloudformation', () => {
+  return {
+    ...jest.requireActual<object>('@aws-sdk/client-cloudformation'),
+    CloudFormationClient: jest.fn(() => {
+      return {
+        send: jest.fn((input: unknown) => {
+          if (input instanceof MockDescribeStackResourceCommand) {
+            const {
+              input: { StackName },
+            } = input;
 
-        return new Promise((resolve, reject) => {
-          if (StackName === mockWorkingStackName) {
-            resolve({
-              StackResourceDetail: {
-                PhysicalResourceId: mockWorkingStackBucketName,
-              },
+            return new Promise((resolve, reject) => {
+              if (StackName === mockWorkingStackName) {
+                resolve({
+                  StackResourceDetail: {
+                    PhysicalResourceId: mockWorkingStackBucketName,
+                  },
+                });
+              } else if (
+                StackName === mockWorkingStackNameWithoutPhysicalResourceId
+              ) {
+                resolve({ StackResourceDetail: {} });
+              } else {
+                reject();
+              }
             });
-          } else if (
-            StackName === mockWorkingStackNameWithoutPhysicalResourceId
-          ) {
-            resolve({ StackResourceDetail: {} });
-          } else {
-            reject();
           }
-        });
-      }
 
-      return null;
+          return null;
+        }),
+      };
     }),
-  })),
-}));
-
-import { getStaticAppBucket } from './getStaticAppBucket';
+  };
+});
 
 test('should return the bucket name', async () => {
   return expect(

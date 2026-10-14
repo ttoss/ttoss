@@ -11,6 +11,34 @@ export type FormFieldCPFProps<
 > = FormFieldProps<TFieldValues, TName> &
   Omit<PatternFormatProps, 'name' | 'format'>;
 
+const REPEATED_DIGIT_CPFS = [
+  '00000000000',
+  '11111111111',
+  '22222222222',
+  '33333333333',
+  '44444444444',
+  '55555555555',
+  '66666666666',
+  '77777777777',
+  '88888888888',
+  '99999999999',
+];
+
+/**
+ * Computes the CPF check digit that follows the first `length` digits.
+ */
+const getCpfCheckDigit = ({ cpf, length }: { cpf: string; length: number }) => {
+  let soma = 0;
+  for (let i = 0; i < length; i++) {
+    soma += parseInt(cpf.charAt(i)) * (length + 1 - i);
+  }
+  const resto = (soma * 10) % 11;
+  if (resto === 10 || resto === 11) {
+    return 0;
+  }
+  return resto;
+};
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isCpfValid = (cpf: any) => {
   if (cpf?.length != 11) {
@@ -18,43 +46,20 @@ export const isCpfValid = (cpf: any) => {
   }
 
   if (
-    cpf == '00000000000' ||
-    cpf == '11111111111' ||
-    cpf == '22222222222' ||
-    cpf == '33333333333' ||
-    cpf == '44444444444' ||
-    cpf == '55555555555' ||
-    cpf == '66666666666' ||
-    cpf == '77777777777' ||
-    cpf == '88888888888' ||
-    cpf == '99999999999'
+    REPEATED_DIGIT_CPFS.some((repeated) => {
+      return cpf == repeated;
+    })
   ) {
     return false;
   }
 
   // Valida primeiro dígito verificador
-  let soma = 0;
-  for (let i = 0; i < 9; i++) {
-    soma += parseInt(cpf.charAt(i)) * (10 - i);
-  }
-  let resto = (soma * 10) % 11;
-  if (resto === 10 || resto === 11) {
-    resto = 0;
-  }
-  if (resto != parseInt(cpf.charAt(9))) {
+  if (getCpfCheckDigit({ cpf, length: 9 }) != parseInt(cpf.charAt(9))) {
     return false;
   }
 
   // Valida segundo dígito verificador
-  soma = 0;
-  for (let i = 0; i < 10; i++) {
-    soma += parseInt(cpf.charAt(i)) * (11 - i);
-  }
-  resto = (soma * 10) % 11;
-  if (resto === 10 || resto === 11) {
-    resto = 0;
-  }
-  if (resto != parseInt(cpf.charAt(10))) {
+  if (getCpfCheckDigit({ cpf, length: 10 }) != parseInt(cpf.charAt(10))) {
     return false;
   }
 

@@ -13,10 +13,11 @@
  * are marked external: the probe measures THIS package's shakeability, not
  * the cost of its dependencies. Run with `pnpm run verify:treeshake`.
  */
-import { build } from 'esbuild';
 import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+import { build } from 'esbuild';
 
 const pkgRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -62,23 +63,25 @@ const leaked = COMPOSITE_MARKERS.filter((marker) => {
   return output.toLowerCase().includes(marker.toLowerCase());
 });
 
-console.log(`entry:  ${entry.replace(`${pkgRoot}/`, '')}`);
-console.log(`bundle: ${bytes} bytes (minified, externals excluded)`);
-console.log(`budget: ${BUDGET_BYTES} bytes`);
+process.stdout.write(`entry:  ${entry.replace(`${pkgRoot}/`, '')}\n`);
+process.stdout.write(`bundle: ${bytes} bytes (minified, externals excluded)\n`);
+process.stdout.write(`budget: ${BUDGET_BYTES} bytes\n`);
 
 let failed = false;
 if (leaked.length > 0) {
-  console.error(
-    `FAIL: composite code leaked into a Button-only bundle: ${leaked.join(', ')}`
+  process.stderr.write(
+    `FAIL: composite code leaked into a Button-only bundle: ${leaked.join(', ')}\n`
   );
   failed = true;
 }
 if (bytes > BUDGET_BYTES) {
-  console.error(`FAIL: bundle exceeds budget by ${bytes - BUDGET_BYTES} bytes`);
+  process.stderr.write(
+    `FAIL: bundle exceeds budget by ${bytes - BUDGET_BYTES} bytes\n`
+  );
   failed = true;
 }
 
 if (failed) {
   process.exit(1);
 }
-console.log('OK: Button-only import tree-shakes cleanly.');
+process.stdout.write('OK: Button-only import tree-shakes cleanly.\n');

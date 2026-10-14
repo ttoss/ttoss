@@ -1,5 +1,6 @@
+import fs from 'node:fs';
+
 import findUpSync from 'findup-sync';
-import fs from 'fs';
 
 export const readPackageJson = () => {
   const packageJsonDir = findUpSync('package.json');

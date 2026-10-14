@@ -1,3 +1,11 @@
+import type { CloudFormationTemplate } from '@ttoss/cloudformation';
+import {
+  addDefaults,
+  type CloudFormationParams,
+  CRITICAL_RESOURCES_TYPES,
+} from 'src/deploy/addDefaults.cloudformation';
+import { getCurrentBranch, getEnvironment, getProjectName } from 'src/utils';
+
 const projectName = 'MyProjectNameForTesting';
 
 jest.mock('../../src/utils', () => {
@@ -8,14 +16,6 @@ jest.mock('../../src/utils', () => {
     getCurrentBranch: jest.fn().mockReturnValue('main'),
   };
 });
-
-import type { CloudFormationTemplate } from '@ttoss/cloudformation';
-import {
-  addDefaults,
-  type CloudFormationParams,
-  CRITICAL_RESOURCES_TYPES,
-} from 'src/deploy/addDefaults.cloudformation';
-import { getCurrentBranch, getEnvironment, getProjectName } from 'src/utils';
 
 beforeEach(() => {
   (getEnvironment as jest.Mock).mockReturnValue(undefined);

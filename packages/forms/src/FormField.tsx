@@ -62,6 +62,24 @@ type FormFieldCompleteProps<
   ) => React.ReactElement;
 } & FormFieldProps<TFieldValues, TName>;
 
+const getErrorNameToDisplay = <TName extends string, TAuxName extends string>({
+  name,
+  hasError,
+  hasAuxiliaryError,
+  auxiliaryCheckbox,
+}: {
+  name: TName;
+  hasError: boolean;
+  hasAuxiliaryError: boolean;
+  auxiliaryCheckbox?: { name: TAuxName };
+}) => {
+  if (hasError) {
+    return name;
+  }
+
+  return hasAuxiliaryError && auxiliaryCheckbox ? auxiliaryCheckbox.name : name;
+};
+
 export const FormField = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
@@ -186,11 +204,12 @@ export const FormField = <
    * Determine which error to display: FormField error takes precedence,
    * then show auxiliaryCheckbox error if present.
    */
-  const errorNameToDisplay = hasError
-    ? name
-    : hasAuxiliaryError && auxiliaryCheckbox
-      ? auxiliaryCheckbox.name
-      : name;
+  const errorNameToDisplay = getErrorNameToDisplay({
+    name,
+    hasError,
+    hasAuxiliaryError,
+    auxiliaryCheckbox,
+  });
 
   return (
     <Flex

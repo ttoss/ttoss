@@ -34,7 +34,6 @@ const AVAILABLE_YEARS = [
 
 type LegendPosition = 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right';
 
-/* eslint-disable react/prop-types */
 export const GenderDominanceBivariate: StoryFn<{
   year: Year;
   legendEnabled: boolean;
@@ -203,7 +202,6 @@ export const GenderDominanceBivariate: StoryFn<{
     </div>
   );
 };
-/* eslint-enable react/prop-types */
 
 GenderDominanceBivariate.argTypes = {
   year: {

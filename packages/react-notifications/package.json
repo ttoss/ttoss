@@ -22,15 +22,19 @@
     ".": "./src/index.ts"
   },
   "files": [
-    "dist"
+    "dist",
+    "i18n"
   ],
   "scripts": {
     "build": "tsdown",
+    "i18n": "ttoss-i18n",
     "test": "jest --projects tests/unit"
   },
   "devDependencies": {
     "@ttoss/components": "workspace:^",
     "@ttoss/config": "workspace:^",
+    "@ttoss/i18n-cli": "workspace:^",
+    "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
@@ -41,6 +45,7 @@
   },
   "peerDependencies": {
     "@ttoss/components": "workspace:^",
+    "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "react": ">=16.8.0"

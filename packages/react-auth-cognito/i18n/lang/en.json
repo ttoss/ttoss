@@ -356,5 +356,10 @@
     "module": "@ttoss/forms",
     "defaultMessage": ",",
     "description": "Thousand separator for number formatting (e.g., \",\" for 1,000 or \".\" for 1.000)"
+  },
+  "xtdZ4H": {
+    "module": "@ttoss/react-notifications",
+    "defaultMessage": "Close",
+    "description": "Accessible label of the button that dismisses the notifications modal."
   }
 }

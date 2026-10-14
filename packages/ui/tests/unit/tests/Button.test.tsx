@@ -1,4 +1,8 @@
+// Distinct subpath exports; import-x sees one module because they share a
+// single `data.d.ts` for types.
+// eslint-disable-next-line import-x/no-duplicates
 import alertIcon from '@iconify-icons/mdi-light/alert';
+// eslint-disable-next-line import-x/no-duplicates
 import arrowLeftIcon from '@iconify-icons/mdi-light/arrow-left';
 import { render, screen } from '@ttoss/test-utils/react';
 

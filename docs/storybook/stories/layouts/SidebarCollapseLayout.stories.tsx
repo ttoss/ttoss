@@ -117,7 +117,6 @@ const terezinhaLogo = (
 type Story = StoryObj<typeof SidebarCollapseLayoutTemplate>;
 
 export const WithoutSidebarButton: Story = {
-  name: 'Without Sidebar Button',
   render: SidebarCollapseLayoutTemplate,
   args: {
     showSidebarButton: false,
@@ -125,7 +124,6 @@ export const WithoutSidebarButton: Story = {
 };
 
 export const WithSidebarButton: Story = {
-  name: 'With Sidebar Button',
   render: SidebarCollapseLayoutTemplate,
   args: {
     showSidebarButton: true,
@@ -133,7 +131,6 @@ export const WithSidebarButton: Story = {
 };
 
 export const WithSidebarSlot: Story = {
-  name: 'With Sidebar Slot',
   render: SidebarCollapseLayoutTemplate,
   args: {
     showSidebarButton: false,
@@ -151,7 +148,6 @@ export const WithSidebarButtonAndSlot: Story = {
 };
 
 export const WithLargeContent: Story = {
-  name: 'With Large Content',
   render: SidebarCollapseLayoutTemplate,
   args: {
     showSidebarButton: true,
@@ -196,7 +192,6 @@ const mockNotifications: Notification[] = [
 ];
 
 export const WithNotificationsMenu: Story = {
-  name: 'With Notifications Menu',
   render: (args) => {
     return (
       <SidebarCollapseLayout>
@@ -240,7 +235,6 @@ export const WithNotificationsMenu: Story = {
 };
 
 export const WithHeaderNotifications: Story = {
-  name: 'With Header Notifications',
   render: (args) => {
     return (
       <NotificationsProvider>

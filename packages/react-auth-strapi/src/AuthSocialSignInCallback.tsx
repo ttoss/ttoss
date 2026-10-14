@@ -49,7 +49,7 @@ const exchangeSocialSignInCallback = async ({
     );
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
-      throw new Error(TIMEOUT_ERROR_MESSAGE);
+      throw new Error(TIMEOUT_ERROR_MESSAGE, { cause: error });
     }
     throw error;
   } finally {

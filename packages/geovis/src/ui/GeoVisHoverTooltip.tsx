@@ -1,8 +1,22 @@
+import { defineMessages, useI18n } from '@ttoss/react-i18n';
 import type * as React from 'react';
 import ReactDOM from 'react-dom';
 
 import type { MapClickInfo, MapHoverInfo } from './contexts';
 import { useGeoVisHover } from './contexts';
+
+const messages = defineMessages({
+  feature: {
+    defaultMessage: 'Feature #{feature_id}',
+    description:
+      'Map hover tooltip heading: the identifier of the hovered map feature.',
+  },
+  noData: {
+    defaultMessage: 'No data',
+    description:
+      'Map hover tooltip: shown instead of a value when the feature has no data.',
+  },
+});
 
 const defaultFormatValue = (value: number | string): string => {
   return String(value);
@@ -38,7 +52,10 @@ export interface GeoVisHoverTooltipProps {
   style?: React.CSSProperties;
   /** Pixel offset from the cursor; defaults to `{ x: 12, y: 12 }`. */
   offset?: { x: number; y: number };
-  /** Label shown when `info.value` is `null` (no `mapData` for the feature). */
+  /**
+   * Label shown when `info.value` is `null` (no `mapData` for the feature).
+   * Defaults to the translated "No data".
+   */
   emptyValueLabel?: string;
   /**
    * Custom content rendered inside the tooltip container. Takes precedence over
@@ -68,13 +85,21 @@ export interface GeoVisHoverTooltipProps {
  * `MapHoverInfo.point` already carries viewport-absolute coordinates, so the
  * tooltip is positioned correctly without any additional offset math.
  */
-const renderTooltipBody = (
-  info: MapHoverInfo | MapClickInfo,
-  children: React.ReactNode | undefined,
-  render: ((info: MapHoverInfo) => React.ReactNode) | undefined,
-  formatValue: (value: number | string) => string,
-  emptyValueLabel: string
-): React.ReactNode => {
+const renderTooltipBody = ({
+  info,
+  children,
+  render,
+  formatValue,
+  emptyValueLabel,
+  featureLabel,
+}: {
+  info: MapHoverInfo | MapClickInfo;
+  children: React.ReactNode | undefined;
+  render: ((info: MapHoverInfo) => React.ReactNode) | undefined;
+  formatValue: (value: number | string) => string;
+  emptyValueLabel: string;
+  featureLabel: string;
+}): React.ReactNode => {
   if (children != null) {
     return children;
   }
@@ -83,7 +108,7 @@ const renderTooltipBody = (
   }
   return (
     <>
-      <div style={{ fontWeight: 600 }}>Feature #{String(info.featureId)}</div>
+      <div style={{ fontWeight: 600 }}>{featureLabel}</div>
       <div>
         {info.value == null ? emptyValueLabel : formatValue(info.value)}
       </div>
@@ -97,9 +122,10 @@ export const GeoVisHoverTooltip = ({
   className,
   style,
   offset = { x: 12, y: 12 },
-  emptyValueLabel = 'No data',
+  emptyValueLabel,
   children,
 }: GeoVisHoverTooltipProps) => {
+  const { intl } = useI18n();
   const hoveredMapFeature = useGeoVisHover();
 
   const activeInfo = hoveredMapFeature;
@@ -115,13 +141,16 @@ export const GeoVisHoverTooltip = ({
 
   return ReactDOM.createPortal(
     <div className={className} role="tooltip" style={mergedStyle}>
-      {renderTooltipBody(
-        activeInfo,
+      {renderTooltipBody({
+        info: activeInfo,
         children,
         render,
         formatValue,
-        emptyValueLabel
-      )}
+        emptyValueLabel: emptyValueLabel ?? intl.formatMessage(messages.noData),
+        featureLabel: intl.formatMessage(messages.feature, {
+          feature_id: String(activeInfo.featureId),
+        }),
+      })}
     </div>,
     document.body
   );

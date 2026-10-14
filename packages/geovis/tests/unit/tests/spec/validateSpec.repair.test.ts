@@ -17,15 +17,13 @@ const applyRepairPath = (
 
   const clone = structuredClone(spec);
   let cursor: Record<string, unknown> = clone;
-  let arrayKey: string | null = null;
-  let arrayId: string | null = null;
 
   for (let i = 0; i < segments.length; i += 1) {
     const segment = segments[i];
     const isArrayContainer = Array.isArray(cursor[segment]);
     if (isArrayContainer) {
-      arrayKey = segment;
-      arrayId = segments[i + 1];
+      const arrayKey = segment;
+      const arrayId = segments[i + 1];
       const arr = cursor[segment] as Array<Record<string, unknown>>;
       const idField =
         arrayKey === 'layers'

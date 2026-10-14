@@ -1,11 +1,10 @@
 import { cleanup, render, screen, userEvent } from '@ttoss/test-utils/react';
 import Modal from 'react-modal';
 import { NotificationsHeader } from 'src/NotificationsHeader';
-import {
-  Notification,
-  NotificationsProvider,
-  useNotifications,
-} from 'src/Provider';
+import type { Notification } from 'src/Provider';
+import { useNotifications } from 'src/Provider';
+
+import { NotificationsTestProvider } from '../NotificationsTestProvider';
 
 Modal.setAppElement(document.createElement('div'));
 
@@ -45,7 +44,7 @@ describe('Notifications Header Test', () => {
           viewType: 'header',
         }}
       />,
-      { wrapper: NotificationsProvider }
+      { wrapper: NotificationsTestProvider }
     );
 
     expect(screen.getByRole('button')).toBeInTheDocument();
@@ -65,7 +64,7 @@ describe('Notifications Header Test', () => {
           viewType: 'modal',
         }}
       />,
-      { wrapper: NotificationsProvider }
+      { wrapper: NotificationsTestProvider }
     );
 
     expect(screen.getByRole('button')).toBeInTheDocument();

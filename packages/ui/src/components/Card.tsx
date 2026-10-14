@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { Box, BoxProps, Card as CardUi, type CardProps } from 'theme-ui';
+import type * as React from 'react';
+import { Box, type BoxProps, Card as CardUi, type CardProps } from 'theme-ui';
 
 export type { CardProps };
 

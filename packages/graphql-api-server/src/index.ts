@@ -1,6 +1,7 @@
-import { App, Router, cors } from '@ttoss/http-server';
-import { BuildSchemaInput, buildSchema } from '@ttoss/graphql-api';
 import { CognitoJwtVerifier } from '@ttoss/auth-core/amazon-cognito';
+import type { BuildSchemaInput } from '@ttoss/graphql-api';
+import { buildSchema } from '@ttoss/graphql-api';
+import { App, cors, Router } from '@ttoss/http-server';
 import { createYoga } from 'graphql-yoga';
 
 export { Router };
@@ -19,6 +20,50 @@ export type CreateServerInput = {
 } & BuildSchemaInput;
 
 export type ServerContext = App.Context;
+
+const createJwtVerifier = ({
+  authenticationType,
+  userPoolConfig,
+}: Pick<CreateServerInput, 'authenticationType' | 'userPoolConfig'>) => {
+  if (authenticationType === 'AMAZON_COGNITO_USER_POOLS') {
+    if (!userPoolConfig) {
+      throw new Error(
+        'userPoolConfig is required when using AMAZON_COGNITO_USER_POOLS authenticationType'
+      );
+    }
+    return CognitoJwtVerifier.create({
+      tokenUse: 'access',
+      ...userPoolConfig,
+    });
+  }
+
+  return null;
+};
+
+/**
+ * Verify the JWT token and set `ctx.identity`. Returns `false` if the token
+ * is invalid.
+ */
+const authenticate = async ({
+  ctx,
+  authenticationType,
+  jwtVerifier,
+}: {
+  ctx: ServerContext;
+  authenticationType?: AuthenticationType;
+  jwtVerifier: ReturnType<typeof createJwtVerifier>;
+}) => {
+  try {
+    if (authenticationType === 'AMAZON_COGNITO_USER_POOLS' && jwtVerifier) {
+      const token = ctx.headers.authorization?.replace('Bearer ', '');
+      const identity = await jwtVerifier.verify(token || '');
+      ctx.identity = identity;
+    }
+    return true;
+  } catch {
+    return false;
+  }
+};
 
 export const createServer = ({
   authenticationType,
@@ -45,21 +90,7 @@ export const createServer = ({
     cors: false,
   });
 
-  const jwtVerifier = (() => {
-    if (authenticationType === 'AMAZON_COGNITO_USER_POOLS') {
-      if (!userPoolConfig) {
-        throw new Error(
-          'userPoolConfig is required when using AMAZON_COGNITO_USER_POOLS authenticationType'
-        );
-      }
-      return CognitoJwtVerifier.create({
-        tokenUse: 'access',
-        ...userPoolConfig,
-      });
-    }
-
-    return null;
-  })();
+  const jwtVerifier = createJwtVerifier({ authenticationType, userPoolConfig });
 
   app.use(async (ctx, next) => {
     /**
@@ -77,18 +108,13 @@ export const createServer = ({
      * If the request is not a GraphiQL request, verify the JWT token, else
      * set Unauthorized status code and return.
      */
-    if (!isGraphiqlRequest) {
-      try {
-        if (authenticationType === 'AMAZON_COGNITO_USER_POOLS' && jwtVerifier) {
-          const token = ctx.headers.authorization?.replace('Bearer ', '');
-          const identity = await jwtVerifier.verify(token || '');
-          ctx.identity = identity;
-        }
-      } catch {
-        ctx.status = 401;
-        ctx.body = 'Unauthorized';
-        return;
-      }
+    if (
+      !isGraphiqlRequest &&
+      !(await authenticate({ ctx, authenticationType, jwtVerifier }))
+    ) {
+      ctx.status = 401;
+      ctx.body = 'Unauthorized';
+      return;
     }
 
     /**
@@ -108,9 +134,9 @@ export const createServer = ({
     /**
      * Set headers
      */
-    response.headers.forEach((value, key) => {
+    for (const [key, value] of response.headers.entries()) {
       ctx.append(key, value);
-    });
+    }
 
     ctx.body = response.body;
   });

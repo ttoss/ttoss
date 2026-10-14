@@ -2,11 +2,13 @@
  * @jest-environment jsdom
  */
 
-import { act, render, renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import { useDismissGeoVisClick, useGeoVisClick } from 'src/react/contexts';
 import { GeoVisProvider, useGeoVis } from 'src/react/GeoVisProvider';
 import type { VisualizationSpec } from 'src/spec/types';
+
+import { render } from '../renderWithI18n';
 
 // ---------------------------------------------------------------------------
 // Mock plumbing — mirrors GeoVisHoverTooltip.test.tsx exactly
@@ -162,8 +164,7 @@ const triggerClick = (
   }
 ) => {
   const handler = map.__handlers.get(`click:${layerId}`) as
-    | MapClickHandler
-    | undefined;
+    MapClickHandler | undefined;
   if (!handler)
     throw new Error(`click handler missing for key click:${layerId}`);
   act(() => {
@@ -371,8 +372,7 @@ describe('GeoVisClickContext', () => {
     });
 
     const genericHandler = mockCurrentMap.__handlers.get('click:*') as
-      | MapClickHandler
-      | undefined;
+      MapClickHandler | undefined;
 
     if (!genericHandler) {
       throw new Error('Generic click:* handler not registered on map');

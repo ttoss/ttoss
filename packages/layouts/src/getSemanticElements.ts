@@ -32,8 +32,7 @@ export const getSematicElements = ({
   React.Children.forEach(children, (child) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const displayName = (child as any)?.type?.displayName as
-      | SemanticComponents
-      | undefined;
+      SemanticComponents | undefined;
 
     if (!displayName) {
       return;

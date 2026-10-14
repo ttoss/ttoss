@@ -16,11 +16,12 @@ describe('LockedOverlay', () => {
       title: 'Feature Locked',
       description: 'This feature requires additional permissions',
     },
-    children: <div>{overlayContentText}</div>,
   };
 
+  const content = <div>{overlayContentText}</div>;
+
   test('should render when isOpen is true', () => {
-    render(<LockedOverlay {...defaultProps} />);
+    render(<LockedOverlay {...defaultProps}>{content}</LockedOverlay>);
 
     expect(screen.getByText('Feature Locked')).toBeInTheDocument();
     expect(
@@ -30,7 +31,11 @@ describe('LockedOverlay', () => {
   });
 
   test('should not render when isOpen is false', () => {
-    render(<LockedOverlay {...defaultProps} isOpen={false} />);
+    render(
+      <LockedOverlay {...defaultProps} isOpen={false}>
+        {content}
+      </LockedOverlay>
+    );
 
     expect(screen.queryByText('Feature Locked')).not.toBeInTheDocument();
     expect(screen.queryByText(overlayContentText)).not.toBeInTheDocument();
@@ -41,7 +46,9 @@ describe('LockedOverlay', () => {
       <LockedOverlay
         {...defaultProps}
         header={{ ...defaultProps.header, variant: 'accent' }}
-      />
+      >
+        {content}
+      </LockedOverlay>
     );
 
     expect(screen.getByText('Feature Locked')).toBeInTheDocument();
@@ -66,7 +73,11 @@ describe('LockedOverlay', () => {
       },
     ];
 
-    render(<LockedOverlay {...defaultProps} actions={actions} />);
+    render(
+      <LockedOverlay {...defaultProps} actions={actions}>
+        {content}
+      </LockedOverlay>
+    );
 
     expect(screen.getByText('Upgrade Now')).toBeInTheDocument();
     expect(screen.getByText('Learn More')).toBeInTheDocument();
@@ -83,7 +94,11 @@ describe('LockedOverlay', () => {
       },
     ];
 
-    render(<LockedOverlay {...defaultProps} actions={actions} />);
+    render(
+      <LockedOverlay {...defaultProps} actions={actions}>
+        {content}
+      </LockedOverlay>
+    );
 
     const button = screen.getByText('Click Me');
     fireEvent.click(button);
@@ -92,7 +107,7 @@ describe('LockedOverlay', () => {
   });
 
   test('should render without actions', () => {
-    render(<LockedOverlay {...defaultProps} />);
+    render(<LockedOverlay {...defaultProps}>{content}</LockedOverlay>);
 
     expect(screen.getByText(overlayContentText)).toBeInTheDocument();
     // Verify no buttons are rendered when actions are not provided
@@ -103,7 +118,11 @@ describe('LockedOverlay', () => {
   test('should call onRequestClose when overlay is clicked', () => {
     const mockClose = jest.fn();
 
-    render(<LockedOverlay {...defaultProps} onRequestClose={mockClose} />);
+    render(
+      <LockedOverlay {...defaultProps} onRequestClose={mockClose}>
+        {content}
+      </LockedOverlay>
+    );
 
     fireEvent.click(screen.getByTestId('lockedoverlay-overlay'));
     expect(mockClose).toHaveBeenCalledTimes(1);
@@ -112,27 +131,35 @@ describe('LockedOverlay', () => {
   test('should not call onRequestClose when clicking inside content', () => {
     const mockClose = jest.fn();
 
-    render(<LockedOverlay {...defaultProps} onRequestClose={mockClose} />);
+    render(
+      <LockedOverlay {...defaultProps} onRequestClose={mockClose}>
+        {content}
+      </LockedOverlay>
+    );
 
     fireEvent.click(screen.getByText(overlayContentText));
     expect(mockClose).toHaveBeenCalledTimes(0);
   });
 
   test('should not close when onRequestClose is not provided', () => {
-    render(<LockedOverlay {...defaultProps} />);
+    render(<LockedOverlay {...defaultProps}>{content}</LockedOverlay>);
 
     expect(screen.getByText(overlayContentText)).toBeInTheDocument();
   });
 
   test('should render with custom zIndex', () => {
-    render(<LockedOverlay {...defaultProps} zIndex={9999} />);
+    render(
+      <LockedOverlay {...defaultProps} zIndex={9999}>
+        {content}
+      </LockedOverlay>
+    );
 
     const overlay = screen.getByTestId('lockedoverlay-overlay');
     expect(overlay).toBeInTheDocument();
   });
 
   test('should render with default zIndex of 1', () => {
-    render(<LockedOverlay {...defaultProps} />);
+    render(<LockedOverlay {...defaultProps}>{content}</LockedOverlay>);
 
     expect(screen.getByTestId('lockedoverlay-overlay')).toBeInTheDocument();
   });
@@ -143,7 +170,11 @@ describe('LockedOverlay', () => {
       padding: '20px',
     };
 
-    render(<LockedOverlay {...defaultProps} sx={customStyle} />);
+    render(
+      <LockedOverlay {...defaultProps} sx={customStyle}>
+        {content}
+      </LockedOverlay>
+    );
 
     expect(screen.getByText(overlayContentText)).toBeInTheDocument();
   });
@@ -167,7 +198,9 @@ describe('LockedOverlay', () => {
         {...defaultProps}
         firstButton={firstButton}
         secondButton={secondButton}
-      />
+      >
+        {content}
+      </LockedOverlay>
     );
 
     expect(screen.getByText('First Button')).toBeInTheDocument();
@@ -196,14 +229,22 @@ describe('LockedOverlay', () => {
       },
     ];
 
-    render(<LockedOverlay {...defaultProps} actions={actions} />);
+    render(
+      <LockedOverlay {...defaultProps} actions={actions}>
+        {content}
+      </LockedOverlay>
+    );
 
     expect(screen.getByText('Primary Action')).toBeInTheDocument();
     expect(screen.getByText('Secondary Action')).toBeInTheDocument();
   });
 
   test('should render with empty actions array', () => {
-    render(<LockedOverlay {...defaultProps} actions={[]} />);
+    render(
+      <LockedOverlay {...defaultProps} actions={[]}>
+        {content}
+      </LockedOverlay>
+    );
 
     expect(screen.getByText(overlayContentText)).toBeInTheDocument();
     const buttons = screen.queryAllByRole('button');
@@ -231,7 +272,7 @@ describe('LockedOverlay', () => {
   });
 
   test('should use position absolute for overlay positioning', () => {
-    render(<LockedOverlay {...defaultProps} />);
+    render(<LockedOverlay {...defaultProps}>{content}</LockedOverlay>);
 
     const overlay = screen.getByTestId('lockedoverlay-overlay');
     expect(overlay).toBeInTheDocument();

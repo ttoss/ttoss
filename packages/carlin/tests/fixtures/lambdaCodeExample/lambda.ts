@@ -1,5 +1,6 @@
-import { common } from './commonModule/common';
 import type { APIGatewayProxyHandler } from 'aws-lambda';
+
+import { common } from './commonModule/common';
 
 export const lambdaCodeExampleHandler: APIGatewayProxyHandler = async () => {
   return {

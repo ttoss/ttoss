@@ -1,6 +1,5 @@
-import { Meta, StoryFn } from '@storybook/react-webpack5';
-import { Box, Flex, Heading } from '@ttoss/ui';
-import { Label, Select, useTheme } from '@ttoss/ui';
+import type { Meta, StoryFn } from '@storybook/react-webpack5';
+import { Box, Flex, Heading, Label, Select, useTheme } from '@ttoss/ui';
 import * as React from 'react';
 
 export default {

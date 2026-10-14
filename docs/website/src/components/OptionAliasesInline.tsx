@@ -1,5 +1,5 @@
-import * as React from 'react';
 import Link from '@docusaurus/Link';
+import type * as React from 'react';
 
 const Wrapper = ({
   children,

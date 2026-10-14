@@ -16,9 +16,10 @@
  *   ONLY       Substring filter on the story id (e.g. ONLY=overlay)
  *   WIDTH      Viewport width (default 1280)
  */
-import { chromium } from 'playwright';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
+
+import { chromium } from 'playwright';
 
 const SB_URL = process.env.SB_URL ?? 'http://localhost:6007';
 const OUT_DIR = path.resolve(
@@ -103,9 +104,9 @@ const fetchIndex = async () => {
     );
   }
   const { entries } = await res.json();
-  return Object.values(entries)
-    .filter((e) => e.type === 'story')
-    .filter((e) => !ONLY || e.id.includes(ONLY));
+  return Object.values(entries).filter((e) => {
+    return e.type === 'story' && (!ONLY || e.id.includes(ONLY));
+  });
 };
 
 const captureStory = async ({ page, story, mode }) => {
@@ -115,7 +116,9 @@ const captureStory = async ({ page, story, mode }) => {
 
   await page.goto(url, { waitUntil: 'load' });
   await page.waitForSelector('#storybook-root > *', { timeout: 20_000 });
-  await page.evaluate(() => document.fonts.ready);
+  await page.evaluate(() => {
+    return document.fonts.ready;
+  });
 
   if (OPENS_ON_CLICK.test(story.id)) {
     const trigger = page.locator('#storybook-root button').first();
@@ -135,15 +138,27 @@ const captureStory = async ({ page, story, mode }) => {
       const rects = [
         ...document.querySelectorAll(`#storybook-root > *, ${surfaceSelector}`),
       ]
-        .map((el) => el.getBoundingClientRect())
-        .filter((r) => r.width > 0 && r.height > 0);
+        .map((el) => {
+          return el.getBoundingClientRect();
+        })
+        .filter((r) => {
+          return r.width > 0 && r.height > 0;
+        });
 
       if (rects.length === 0) {
         return null;
       }
 
-      const right = Math.max(...rects.map((r) => r.right));
-      const bottom = Math.max(...rects.map((r) => r.bottom));
+      const right = Math.max(
+        ...rects.map((r) => {
+          return r.right;
+        })
+      );
+      const bottom = Math.max(
+        ...rects.map((r) => {
+          return r.bottom;
+        })
+      );
 
       return {
         x: 0,
@@ -170,129 +185,19 @@ const captureStory = async ({ page, story, mode }) => {
   return { buffer, clip };
 };
 
-const escape = (value) =>
-  String(value).replace(
-    /[&<>"]/g,
-    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]
-  );
+const escape = (value) => {
+  return String(value).replace(/[&<>"]/g, (c) => {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+  });
+};
 
 /** Escapes, then promotes the backtick spans the section briefs are written with. */
-const prose = (value) => escape(value).replace(/`([^`]+)`/g, '<code>$1</code>');
+const prose = (value) => {
+  return escape(value).replace(/`([^`]+)`/g, '<code>$1</code>');
+};
 
-/**
- * Writes `index.html` beside the frames: every story as one row, light and dark
- * side by side, grouped by review round. With `INLINE=1` the images are
- * embedded as data URIs so the file travels on its own.
- */
-const renderSheet = async ({ manifest, inline }) => {
-  const byId = new Map();
-  for (const shot of manifest) {
-    const entry = byId.get(shot.id) ?? {
-      id: shot.id,
-      title: shot.title,
-      name: shot.name,
-    };
-    entry[shot.mode] = shot;
-    byId.set(shot.id, entry);
-  }
-  const stories = [...byId.values()];
-  const entityOf = (story) => story.title.split('/')[0];
-
-  const src = async (shot) => {
-    if (!shot?.file) {
-      return null;
-    }
-    if (!inline) {
-      return escape(shot.file);
-    }
-    const bytes = await fs.readFile(path.join(OUT_DIR, shot.file));
-    return `data:image/jpeg;base64,${bytes.toString('base64')}`;
-  };
-
-  // The mode label sits above the frame rather than over it: a corner badge
-  // covered a Meter's own value readout, which is exactly the kind of detail
-  // this sheet exists to show.
-  const frame = async (shot, mode) => {
-    const url = await src(shot);
-    if (!url) {
-      return `<figure class="frame missing"><figcaption>${mode}</figcaption><span>${escape(
-        shot?.error ?? 'not captured'
-      )}</span></figure>`;
-    }
-    return `<figure class="frame"><figcaption>${mode}</figcaption><img loading="lazy" alt="${escape(
-      `${shot.title} / ${shot.name} — ${mode}`
-    )}" src="${url}" /></figure>`;
-  };
-
-  const sections = [];
-  const placed = new Set();
-
-  for (const section of SECTIONS) {
-    const entities = [section.entity].flat();
-    const members = stories.filter((s) => entities.includes(entityOf(s)));
-    members.forEach((s) => placed.add(s.id));
-    if (members.length === 0) {
-      continue;
-    }
-
-    const rows = [];
-    for (const story of members) {
-      rows.push(
-        `<article class="story"><h3>${escape(
-          // A single-family section already names the family in its heading.
-          entities.length > 1
-            ? story.title
-            : story.title.split('/').slice(1).join('/')
-        )} <span>${escape(
-          story.name
-        )}</span><button class="zoom" type="button">1:1</button></h3><div class="pair">${await frame(
-          story.light,
-          'light'
-        )}${await frame(story.dark, 'dark')}</div></article>`
-      );
-    }
-
-    sections.push(
-      `<section id="${section.id}"><header><p class="eyebrow">${escape(
-        section.label.replace(' — ', ' · ')
-      )} <span>· ${members.length * 2} frames</span></p><p class="brief">${prose(
-        section.look
-      )}</p></header>${rows.join('')}</section>`
-    );
-  }
-
-  const orphans = stories.filter((s) => !placed.has(s.id));
-  if (orphans.length > 0) {
-    const rows = [];
-    for (const story of orphans) {
-      rows.push(
-        `<article class="story"><h3>${escape(story.title)} <span>${escape(
-          story.name
-        )}</span><button class="zoom" type="button">1:1</button></h3><div class="pair">${await frame(
-          story.light,
-          'light'
-        )}${await frame(story.dark, 'dark')}</div></article>`
-      );
-    }
-    sections.push(
-      `<section id="unmapped"><header><p class="eyebrow">Not mapped to a section <span>· ${
-        orphans.length * 2
-      } frames</span></p><p class="brief">Stories whose entity is not named above — the section map in <code>scripts/visual-signoff.mjs</code> has drifted from the catalog.</p></header>${rows.join(
-        ''
-      )}</section>`
-    );
-  }
-
-  const nav = SECTIONS.map(
-    (s) => `<a href="#${s.id}">${escape(s.label.split(' — ')[0])}</a>`
-  ).join('');
-
-  // The chrome is deliberately achromatic and never sets a corner radius: this
-  // page exists so someone can judge colour and geometry, so every hue and
-  // every curve on it belongs to a frame, not to the sheet around them. For the
-  // same reason the chrome avoids Inter, which is the specimens' own face.
-  const html = `<title>FSL P3 — visual sign-off sheet</title>
-<style>
+/** The sheet's stylesheet — see `renderHtml` for why the chrome looks as it does. */
+const SHEET_STYLE = `<style>
   :root {
     color-scheme: light dark;
     --ground:#ffffff; --ink:#111111; --dim:#6a6a6a; --rule:#d7d7d7; --well:#f6f6f6;
@@ -342,12 +247,143 @@ const renderSheet = async ({ manifest, inline }) => {
   .frame figcaption { font:400 .62rem/1 var(--mono); letter-spacing:.16em; text-transform:uppercase; color:var(--dim); padding:.35rem .55rem; border-bottom:1px solid var(--rule); }
   .frame img { display:block; width:100%; height:auto; }
   .missing { display:grid; place-items:center; min-height:80px; color:var(--dim); font:400 .78rem/1.4 var(--mono); padding:1rem; text-align:center; }
-</style>
+</style>`;
+
+/** Toggles a row between two-up and stacked full width. */
+const SHEET_SCRIPT = `<script>
+  document.addEventListener('click', (event) => {
+    const button = event.target.closest('.zoom');
+    if (button) {
+      button.closest('.story').classList.toggle('wide');
+    }
+  });
+</script>`;
+
+/** Folds the per-mode manifest into one entry per story, keyed by mode. */
+const groupShots = (manifest) => {
+  const byId = new Map();
+  for (const shot of manifest) {
+    const { id, title, name } = shot;
+    const entry = byId.get(id) ?? { id, title, name };
+    entry[shot.mode] = shot;
+    byId.set(id, entry);
+  }
+  return [...byId.values()];
+};
+
+const entityOf = (story) => {
+  return story.title.split('/')[0];
+};
+
+const entitiesOf = (section) => {
+  return [section.entity].flat();
+};
+
+const imageSrc = async ({ shot, inline }) => {
+  if (!shot?.file) {
+    return null;
+  }
+  if (!inline) {
+    return escape(shot.file);
+  }
+  const bytes = await fs.readFile(path.join(OUT_DIR, shot.file));
+  return `data:image/jpeg;base64,${bytes.toString('base64')}`;
+};
+
+// The mode label sits above the frame rather than over it: a corner badge
+// covered a Meter's own value readout, which is exactly the kind of detail
+// this sheet exists to show.
+const renderFrame = async ({ shot, mode, inline }) => {
+  const url = await imageSrc({ shot, inline });
+  if (!url) {
+    return `<figure class="frame missing"><figcaption>${mode}</figcaption><span>${escape(
+      shot?.error ?? 'not captured'
+    )}</span></figure>`;
+  }
+  return `<figure class="frame"><figcaption>${mode}</figcaption><img loading="lazy" alt="${escape(
+    `${shot.title} / ${shot.name} — ${mode}`
+  )}" src="${url}" /></figure>`;
+};
+
+/**
+ * One `<section>` of the sheet: a header, then every member as a row with its
+ * modes side by side. `eyebrow` and `brief` are HTML. Empty groups render nothing.
+ */
+const renderGroup = async ({ group, inline }) => {
+  const { id, eyebrow, brief, members, stripEntity } = group;
+  if (members.length === 0) {
+    return null;
+  }
+
+  const rows = [];
+  for (const story of members) {
+    const frames = [];
+    for (const mode of MODES) {
+      frames.push(await renderFrame({ shot: story[mode], mode, inline }));
+    }
+    const heading = stripEntity
+      ? story.title.split('/').slice(1).join('/')
+      : story.title;
+    rows.push(
+      `<article class="story"><h3>${escape(heading)} <span>${escape(
+        story.name
+      )}</span><button class="zoom" type="button">1:1</button></h3><div class="pair">${frames.join('')}</div></article>`
+    );
+  }
+
+  return `<section id="${id}"><header><p class="eyebrow">${eyebrow} <span>· ${
+    members.length * 2
+  } frames</span></p><p class="brief">${brief}</p></header>${rows.join('')}</section>`;
+};
+
+const renderSections = async ({ stories, inline }) => {
+  const groups = [];
+  for (const section of SECTIONS) {
+    const entities = entitiesOf(section);
+    const group = {
+      id: section.id,
+      eyebrow: escape(section.label.replace(' — ', ' · ')),
+      brief: prose(section.look),
+      members: stories.filter((s) => {
+        return entities.includes(entityOf(s));
+      }),
+      // A single-family section already names the family in its heading.
+      stripEntity: entities.length <= 1,
+    };
+    groups.push(await renderGroup({ group, inline }));
+  }
+
+  const mapped = new Set(SECTIONS.flatMap(entitiesOf));
+  const unmapped = {
+    id: 'unmapped',
+    eyebrow: 'Not mapped to a section',
+    brief:
+      'Stories whose entity is not named above — the section map in <code>scripts/visual-signoff.mjs</code> has drifted from the catalog.',
+    members: stories.filter((s) => {
+      return !mapped.has(entityOf(s));
+    }),
+    stripEntity: false,
+  };
+  groups.push(await renderGroup({ group: unmapped, inline }));
+
+  // Every rendered group is a non-empty string; empty groups are `null`.
+  return groups.filter(Boolean);
+};
+
+// The chrome is deliberately achromatic and never sets a corner radius: this
+// page exists so someone can judge colour and geometry, so every hue and
+// every curve on it belongs to a frame, not to the sheet around them. For the
+// same reason the chrome avoids Inter, which is the specimens' own face.
+const renderHtml = ({ storyCount, sections }) => {
+  const nav = SECTIONS.map((s) => {
+    return `<a href="#${s.id}">${escape(s.label.split(' — ')[0])}</a>`;
+  }).join('');
+
+  return `<title>FSL P3 — visual sign-off sheet</title>
+${SHEET_STYLE}
 <div class="wrap">
 <div class="masthead">
-  <p class="stamp">fsl Storybook · Chromium ${WIDTH}px · light + dark · ${
-    stories.length * 2
-  } frames</p>
+  <p class="stamp">fsl Storybook · Chromium ${WIDTH}px · light + dark · ${storyCount * 2} frames</p>
   <h1>FSL P3 — visual sign-off sheet</h1>
   <p class="lede">Every story in the catalog, both colour modes side by side, in the order of the P3 review rounds, with what each round changed stated beside the frames it touched. Two-up halves each frame’s scale — <strong>1:1</strong> on a row stacks its two modes at full width when something needs a closer look.</p>
   <p class="caveat">This sheet is evidence, not a verdict. The rounds closed their findings and <code>FRICTION.md</code> is at zero open — that is a separate fact from the owner’s visual sign-off, which no generated artefact can perform. Anything wrong that you see here becomes a new <code>FRICTION.md</code> entry, numbered from the highest <code>F-###</code> in the file.</p>
@@ -355,19 +391,61 @@ const renderSheet = async ({ manifest, inline }) => {
 <nav>${nav}</nav>
 ${sections.join('')}
 </div>
-<script>
-  document.addEventListener('click', (event) => {
-    const button = event.target.closest('.zoom');
-    if (button) {
-      button.closest('.story').classList.toggle('wide');
-    }
-  });
-</script>
+${SHEET_SCRIPT}
 `;
+};
+
+/**
+ * Writes `index.html` beside the frames: every story as one row, light and dark
+ * side by side, grouped by review round. With `INLINE=1` the images are
+ * embedded as data URIs so the file travels on its own.
+ */
+const renderSheet = async ({ manifest, inline }) => {
+  const stories = groupShots(manifest);
+  const html = renderHtml({
+    storyCount: stories.length,
+    sections: await renderSections({ stories, inline }),
+  });
 
   const file = path.join(OUT_DIR, inline ? 'sheet-inline.html' : 'index.html');
   await fs.writeFile(file, html);
-  console.log(`sheet → ${file}`);
+  process.stdout.write(`sheet → ${file}\n`);
+};
+
+const renderSheets = async (manifest) => {
+  await renderSheet({ manifest, inline: false });
+  if (process.env.INLINE === '1') {
+    await renderSheet({ manifest, inline: true });
+  }
+};
+
+/** Captures every story in one colour mode, appending to `manifest`. */
+const captureMode = async ({ browser, mode, stories, manifest }) => {
+  const context = await browser.newContext({
+    viewport: { width: WIDTH, height: 900 },
+    deviceScaleFactor: 1,
+    colorScheme: mode,
+    reducedMotion: 'reduce',
+  });
+  const page = await context.newPage();
+
+  for (const story of stories) {
+    const file = `${story.id}--${mode}.jpg`;
+    const shot = { id: story.id, title: story.title, name: story.name, mode };
+    try {
+      const { buffer } = await captureStory({ page, story, mode });
+      await fs.writeFile(path.join(OUT_DIR, file), buffer);
+      manifest.push({ ...shot, file, bytes: buffer.length });
+      process.stdout.write(
+        `  ✓ ${file} (${(buffer.length / 1024).toFixed(0)}kB)\n`
+      );
+    } catch (error) {
+      process.stdout.write(`  ✗ ${file} — ${error.message}\n`);
+      manifest.push({ ...shot, error: String(error.message) });
+    }
+  }
+
+  await context.close();
 };
 
 const main = async () => {
@@ -377,10 +455,7 @@ const main = async () => {
     const manifest = JSON.parse(
       await fs.readFile(path.join(OUT_DIR, 'manifest.json'), 'utf8')
     );
-    await renderSheet({ manifest, inline: false });
-    if (process.env.INLINE === '1') {
-      await renderSheet({ manifest, inline: true });
-    }
+    await renderSheets(manifest);
     return;
   }
 
@@ -388,7 +463,7 @@ const main = async () => {
   if (stories.length === 0) {
     throw new Error(`No stories matched ONLY=${ONLY}`);
   }
-  console.log(`${stories.length} stories × ${MODES.length} modes`);
+  process.stdout.write(`${stories.length} stories × ${MODES.length} modes\n`);
 
   await fs.mkdir(OUT_DIR, { recursive: true });
 
@@ -403,41 +478,7 @@ const main = async () => {
 
   try {
     for (const mode of MODES) {
-      const context = await browser.newContext({
-        viewport: { width: WIDTH, height: 900 },
-        deviceScaleFactor: 1,
-        colorScheme: mode,
-        reducedMotion: 'reduce',
-      });
-      const page = await context.newPage();
-
-      for (const story of stories) {
-        const file = `${story.id}--${mode}.jpg`;
-        try {
-          const { buffer } = await captureStory({ page, story, mode });
-          await fs.writeFile(path.join(OUT_DIR, file), buffer);
-          manifest.push({
-            id: story.id,
-            title: story.title,
-            name: story.name,
-            mode,
-            file,
-            bytes: buffer.length,
-          });
-          console.log(`  ✓ ${file} (${(buffer.length / 1024).toFixed(0)}kB)`);
-        } catch (error) {
-          console.log(`  ✗ ${file} — ${error.message}`);
-          manifest.push({
-            id: story.id,
-            title: story.title,
-            name: story.name,
-            mode,
-            error: String(error.message),
-          });
-        }
-      }
-
-      await context.close();
+      await captureMode({ browser, mode, stories, manifest });
     }
   } finally {
     await browser.close();
@@ -448,14 +489,13 @@ const main = async () => {
     `${JSON.stringify(manifest, null, 2)}\n`
   );
 
-  await renderSheet({ manifest, inline: false });
-  if (process.env.INLINE === '1') {
-    await renderSheet({ manifest, inline: true });
-  }
+  await renderSheets(manifest);
 
-  const failed = manifest.filter((m) => m.error);
-  console.log(
-    `\n${manifest.length - failed.length} captured, ${failed.length} failed → ${OUT_DIR}`
+  const failed = manifest.filter((m) => {
+    return m.error;
+  });
+  process.stdout.write(
+    `\n${manifest.length - failed.length} captured, ${failed.length} failed → ${OUT_DIR}\n`
   );
   if (failed.length > 0) {
     process.exitCode = 1;

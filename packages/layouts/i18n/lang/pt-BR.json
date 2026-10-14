@@ -1,0 +1,14 @@
+{
+  "3tsiA5": {
+    "defaultMessage": "Abrir barra lateral",
+    "description": "Accessible label of the button that expands the layout sidebar."
+  },
+  "PgOiBP": {
+    "defaultMessage": "Fechar barra lateral",
+    "description": "Accessible label of the button that collapses the layout sidebar."
+  },
+  "cQ3gQg": {
+    "defaultMessage": "Barra lateral",
+    "description": "Accessible name of the layout sidebar region."
+  }
+}

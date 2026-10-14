@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import type { Notification } from '@ttoss/components';
 import { NotificationsMenu } from '@ttoss/components';

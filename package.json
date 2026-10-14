@@ -45,6 +45,7 @@
     "@types/node": "^24.19.2",
     "carlin": "workspace:^",
     "eslint": "^10.12.0",
+    "eslint-plugin-react-refresh": "^0.5.7",
     "husky": "^9.1.7",
     "lint-staged": "^17.6.0",
     "playwright": "1.64.0",

@@ -2,13 +2,8 @@
 // import { API, Auth, graphqlOperation } from 'aws-amplify';
 import { post } from 'aws-amplify/api';
 import { fetchAuthSession } from 'aws-amplify/auth';
-import {
-  Environment,
-  FetchFunction,
-  Network,
-  RecordSource,
-  Store,
-} from 'relay-runtime';
+import type { FetchFunction } from 'relay-runtime';
+import { Environment, Network, RecordSource, Store } from 'relay-runtime';
 
 import { encodeCredentials } from './encodeCredentials';
 
@@ -18,31 +13,31 @@ export {
   type ICredentials,
 } from './encodeCredentials';
 
-export const fetchQuery: FetchFunction = async (operation, variables) => {
-  let credentials: string | undefined;
-
+const getCredentials = async (): Promise<string | undefined> => {
   try {
-    const authSession = await fetchAuthSession();
+    const { credentials, identityId } = await fetchAuthSession();
 
-    if (
-      authSession.credentials &&
-      authSession.identityId &&
-      authSession.credentials?.sessionToken
-    ) {
-      credentials = encodeCredentials({
-        accessKeyId: authSession.credentials?.accessKeyId,
-        identityId: authSession.identityId,
-        sessionToken: authSession.credentials?.sessionToken,
-        secretAccessKey: authSession.credentials?.secretAccessKey,
-        expiration: authSession.credentials?.expiration,
+    if (credentials && identityId && credentials.sessionToken) {
+      return encodeCredentials({
+        accessKeyId: credentials.accessKeyId,
+        identityId,
+        sessionToken: credentials.sessionToken,
+        secretAccessKey: credentials.secretAccessKey,
+        expiration: credentials.expiration,
         authenticated: true,
       });
     }
+
+    return undefined;
   } catch (error: any) {
     // eslint-disable-next-line no-console
     console.error(error?.message);
-    credentials = undefined;
+    return undefined;
   }
+};
+
+export const fetchQuery: FetchFunction = async (operation, variables) => {
+  const credentials = await getCredentials();
 
   try {
     const headers: { [key: string]: string } = {};

@@ -29,7 +29,7 @@ const Template: Story = () => {
   React.useEffect(() => {
     formMethods.setError('cartao1', { message: 'Value is required' });
     formMethods.setError('cartao2', { message: 'Value is required' });
-  }, []);
+  }, [formMethods]);
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>

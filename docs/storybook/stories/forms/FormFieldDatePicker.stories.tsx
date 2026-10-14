@@ -211,7 +211,7 @@ export const WithValidation: StoryFn = () => {
   React.useEffect(() => {
     // Trigger validation to show error state
     formMethods.trigger('dateRange');
-  }, []);
+  }, [formMethods]);
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>

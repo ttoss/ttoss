@@ -1,7 +1,8 @@
 import { camelCase } from 'change-case';
-import { hideBin } from 'yargs/helpers';
-import { pipelines } from './pipelines';
 import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
+
+import { pipelines } from './pipelines';
 
 export const options = {
   cpu: {

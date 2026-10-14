@@ -3,106 +3,119 @@ import * as React from 'react';
 export type ScriptStatus = 'idle' | 'loading' | 'ready' | 'error';
 
 /**
+ * Scripts whose `data-status` attribute is kept in sync with their load and
+ * error events. Tracking lives on the element (not on a hook instance) so a
+ * later instance reading the attribute sees the real status even if the
+ * instance that created the script has unmounted.
+ */
+const trackedScripts = new WeakSet<HTMLScriptElement>();
+
+const findScript = (src: string) => {
+  return document.querySelector<HTMLScriptElement>(`script[src="${src}"]`);
+};
+
+const trackScriptStatus = (script: HTMLScriptElement) => {
+  if (trackedScripts.has(script)) {
+    return;
+  }
+
+  trackedScripts.add(script);
+
+  const setAttributeFromEvent = (event: Event) => {
+    script.setAttribute(
+      'data-status',
+      event.type === 'load' ? 'ready' : 'error'
+    );
+  };
+
+  script.addEventListener('load', setAttributeFromEvent);
+  script.addEventListener('error', setAttributeFromEvent);
+};
+
+/**
+ * Fetch the existing script element by src (it may have been added by
+ * another instance of this hook) or create it.
+ */
+const getOrCreateScript = (src: string) => {
+  const existingScript = findScript(src);
+
+  if (existingScript) {
+    return existingScript;
+  }
+
+  const script = document.createElement('script');
+  script.src = src;
+  script.async = true;
+  script.setAttribute('data-status', 'loading');
+  trackScriptStatus(script);
+  document.body.appendChild(script);
+
+  return script;
+};
+
+/**
  * https://usehooks.com/useScript/
  *
- * @param src: string - the url of the script to load.
+ * The script element is an external store: its `data-status` attribute is the
+ * snapshot and its load/error events are the change notifications.
+ *
+ * @param src: string - the url of the script to load. A falsy value is
+ * allowed while waiting on data needed to build the URL; status is `idle`.
  * @returns status: Status
  */
 export const useScript = (src: string) => {
-  /**
-   * Keep track of script status ("idle", "loading", "ready", "error")
-   */
-  const [status, setStatus] = React.useState<ScriptStatus>(
-    src ? 'loading' : 'idle'
-  );
-
-  React.useEffect(
-    () => {
-      /**
-       * Allow falsy src value if waiting on other data needed for
-       * constructing the script URL passed to this hook.
-       */
+  const subscribe = React.useCallback(
+    (onStoreChange: () => void) => {
       if (!src) {
-        setStatus('idle');
-        return;
+        return () => {};
       }
 
-      /**
-       * Fetch existing script element by src.
-       * It may have been added by another instance of this hook.
-       */
-      let script: HTMLScriptElement | null = document.querySelector(
-        `script[src="${src}"]`
-      );
-
-      if (!script) {
-        /**
-         * Create script element and set its src.
-         */
-        script = document.createElement('script');
-        script.src = src;
-        script.async = true;
-        script.setAttribute('data-status', 'loading');
-
-        /**
-         * Add script to document body
-         */
-        document.body.appendChild(script);
-
-        /**
-         * Store status in attribute on script.
-         * This can be read by other instances of this hook.
-         */
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const setAttributeFromEvent = (event: any) => {
-          if (script) {
-            script.setAttribute(
-              'data-status',
-              event.type === 'load' ? 'ready' : 'error'
-            );
-          }
-        };
-        script.addEventListener('load', setAttributeFromEvent);
-        script.addEventListener('error', setAttributeFromEvent);
-      } else {
-        /**
-         * Grab existing script status from attribute and set to state.
-         */
-        setStatus(
-          (script.getAttribute('data-status') as ScriptStatus) || 'error'
-        );
-      }
+      const script = getOrCreateScript(src);
 
       /**
-       * Script event handler to update status in state
-       * Note: Even if the script already exists we still need to add
-       * event handlers to update the state for *this* hook instance.
+       * Scripts not created by this hook get their attribute tracked too,
+       * registered before the listener below so the snapshot read on change
+       * already reflects the event.
        */
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const setStateFromEvent = (event: any) => {
-        setStatus(event.type === 'load' ? 'ready' : 'error');
-      };
+      trackScriptStatus(script);
 
-      /**
-       * Add event listeners.
-       */
-      script.addEventListener('load', setStateFromEvent);
-      script.addEventListener('error', setStateFromEvent);
+      script.addEventListener('load', onStoreChange);
+      script.addEventListener('error', onStoreChange);
 
-      /**
-       * Remove event listeners on cleanup.
-       */
       return () => {
-        if (script) {
-          script.removeEventListener('load', setStateFromEvent);
-          script.removeEventListener('error', setStateFromEvent);
-        }
+        script.removeEventListener('load', onStoreChange);
+        script.removeEventListener('error', onStoreChange);
       };
     },
-    /**
-     * Only re-run effect if script src changes.
-     */
     [src]
+  );
+
+  const getSnapshot = (): ScriptStatus => {
+    if (!src) {
+      return 'idle';
+    }
+
+    const script = findScript(src);
+
+    if (!script) {
+      return 'loading';
+    }
+
+    return (script.getAttribute('data-status') as ScriptStatus) || 'error';
+  };
+
+  /**
+   * The server never has the script element, so it reports the status the
+   * client starts from before the script is added.
+   */
+  const getServerSnapshot = (): ScriptStatus => {
+    return src ? 'loading' : 'idle';
+  };
+
+  const status = React.useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    getServerSnapshot
   );
 
   return { status };

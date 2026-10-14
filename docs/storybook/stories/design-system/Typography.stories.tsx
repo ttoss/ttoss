@@ -1,5 +1,6 @@
-import { Meta, Story } from '@storybook/react-webpack5';
-import { Flex, Label, Select, Text, TextProps, useTheme } from '@ttoss/ui';
+import type { Meta, Story } from '@storybook/react-webpack5';
+import type { TextProps } from '@ttoss/ui';
+import { Flex, Label, Select, Text, useTheme } from '@ttoss/ui';
 import * as React from 'react';
 
 type TypographyProps = {

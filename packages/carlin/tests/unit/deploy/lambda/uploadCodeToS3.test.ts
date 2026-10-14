@@ -1,3 +1,14 @@
+import fs from 'node:fs';
+
+import AdmZip from 'adm-zip';
+
+import { buildLambdaCode } from '../../../../src/deploy/lambda/buildLambdaCode';
+import {
+  uploadCodeToS3,
+  zipFileName,
+} from '../../../../src/deploy/lambda/uploadCodeToS3';
+import * as deployS3 from '../../../../src/deploy/s3';
+
 jest.mock('../../../src/deploy/s3', () => {
   return {
     uploadFileToS3: jest.fn(),
@@ -11,15 +22,6 @@ jest.mock('../../../src/deploy/baseStack/getBaseStackResource', () => {
     getBaseStackResource: jest.fn().mockResolvedValue(bucketNameMock),
   };
 });
-
-import * as deployS3 from '../../../../src/deploy/s3';
-import { buildLambdaCode } from '../../../../src/deploy/lambda/buildLambdaCode';
-import {
-  uploadCodeToS3,
-  zipFileName,
-} from '../../../../src/deploy/lambda/uploadCodeToS3';
-import AdmZip from 'adm-zip';
-import fs from 'node:fs';
 
 const outdir1 = 'tests/dist/uploadCodeToS3-1';
 

@@ -1,5 +1,6 @@
+import type { ScheduledHandler } from 'aws-lambda';
+
 import { CICD_FOLDER_NAME } from '../config';
-import { ScheduledHandler } from 'aws-lambda';
 import { executeTasks } from './executeTasks';
 import { shConditionalCommands } from './shConditionalCommands';
 

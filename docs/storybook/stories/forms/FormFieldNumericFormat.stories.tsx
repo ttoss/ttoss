@@ -29,7 +29,7 @@ const Template: Story = () => {
   React.useEffect(() => {
     formMethods.setError('real', { message: 'Value is required' });
     formMethods.setError('dolar', { message: 'Value is required' });
-  }, []);
+  }, [formMethods]);
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>

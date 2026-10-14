@@ -1,7 +1,7 @@
-import { IAM_PATH, createRolesTemplate } from '../../src';
+import { createRolesTemplate, IAM_PATH, type IAMRoleResource } from '../../src';
 
 test('should add Resource and Output to template', () => {
-  const AppSyncLambdaFunctionIAMRole: any = {
+  const AppSyncLambdaFunctionIAMRole: IAMRoleResource = {
     Type: 'AWS::IAM::Role',
     Properties: {
       AssumeRolePolicyDocument: {
@@ -33,7 +33,7 @@ test('should add Resource and Output to template', () => {
   });
 
   expect(
-    template.Resources.AppSyncLambdaFunctionIAMRole.Properties.Path
+    template.Resources.AppSyncLambdaFunctionIAMRole.Properties?.Path
   ).toEqual(IAM_PATH);
 
   expect(template.Outputs?.AppSyncLambdaFunctionIAMRoleArn).toMatchObject({

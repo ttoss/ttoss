@@ -37,11 +37,9 @@ describe('Wizard styles', () => {
     });
 
     const primaryBackground = primaryStepList.background as
-      | ((theme: unknown) => string | undefined)
-      | undefined;
+      ((theme: unknown) => string | undefined) | undefined;
     const accentBackground = accentStepList.background as
-      | ((theme: unknown) => string | undefined)
-      | undefined;
+      ((theme: unknown) => string | undefined) | undefined;
 
     expect(primaryStepList.width).toBe('100%');
     expect(primaryStepList.backgroundSize).toBe('400% 400%');

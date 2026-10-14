@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/react-webpack5';
+import type { Meta } from '@storybook/react-webpack5';
 import { Icon } from '@ttoss/react-icons';
 import { BrutalIcons, BruttalTheme } from '@ttoss/theme/Bruttal';
 import { Box, Button, IconButton, Input, Text } from '@ttoss/ui';

@@ -1,5 +1,6 @@
-import { Meta, StoryObj } from '@storybook/react-webpack5';
-import { Flex, TooltipIcon, TooltipIconProps } from '@ttoss/ui';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { TooltipIconProps } from '@ttoss/ui';
+import { Flex, TooltipIcon } from '@ttoss/ui';
 import { action } from 'storybook/actions';
 
 type Story = StoryObj<typeof TooltipIcon>;

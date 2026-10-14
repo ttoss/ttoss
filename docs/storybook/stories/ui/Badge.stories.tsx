@@ -1,5 +1,6 @@
-import { ComponentMeta, Story } from '@storybook/react-webpack5';
-import { Badge, BadgeProps, Flex } from '@ttoss/ui';
+import type { ComponentMeta, Story } from '@storybook/react-webpack5';
+import type { BadgeProps } from '@ttoss/ui';
+import { Badge, Flex } from '@ttoss/ui';
 import * as React from 'react';
 
 export default {

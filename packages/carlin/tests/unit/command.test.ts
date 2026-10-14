@@ -1,12 +1,3 @@
-jest.mock('./../../src/deploy/cloudformation', () => {
-  return {
-    deployCloudFormation: jest.fn(),
-    destroyCloudFormation: jest.fn(),
-  };
-});
-
-jest.mock('./../../src/deploy/readDockerfile');
-
 import { faker } from '@ttoss/test-utils/faker';
 import yargs from 'yargs';
 
@@ -23,6 +14,15 @@ import {
 } from '../../src/deploy/stackName';
 import * as deployStaticAppModule from '../../src/deploy/staticApp/deployStaticApp';
 import { getEnvVar } from '../../src/utils/environmentVariables';
+
+jest.mock('./../../src/deploy/cloudformation', () => {
+  return {
+    deployCloudFormation: jest.fn(),
+    destroyCloudFormation: jest.fn(),
+  };
+});
+
+jest.mock('./../../src/deploy/readDockerfile');
 
 const cli = yargs().command(commandModule.deployCommand);
 

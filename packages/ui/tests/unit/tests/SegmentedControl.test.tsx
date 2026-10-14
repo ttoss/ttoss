@@ -172,3 +172,38 @@ test('should apply size lg', () => {
   const container = screen.getByText('Option 1').closest('[data-size="lg"]');
   expect(container).toBeInTheDocument();
 });
+
+test('should follow value prop changes', () => {
+  const options = ['Option 1', 'Option 2', 'Option 3'];
+
+  const { rerender } = render(
+    <SegmentedControl options={options} value="Option 1" />
+  );
+
+  rerender(<SegmentedControl options={options} value="Option 2" />);
+
+  expect(
+    screen.getByText('Option 2').closest('.rc-segmented-item')
+  ).toHaveClass('rc-segmented-item-selected');
+  expect(
+    screen.getByText('Option 1').closest('.rc-segmented-item')
+  ).not.toHaveClass('rc-segmented-item-selected');
+});
+
+test('should keep the last value when value prop is removed', () => {
+  const options = ['Option 1', 'Option 2', 'Option 3'];
+
+  const { rerender } = render(
+    <SegmentedControl
+      options={options}
+      defaultValue="Option 1"
+      value="Option 3"
+    />
+  );
+
+  rerender(<SegmentedControl options={options} defaultValue="Option 1" />);
+
+  expect(
+    screen.getByText('Option 3').closest('.rc-segmented-item')
+  ).toHaveClass('rc-segmented-item-selected');
+});

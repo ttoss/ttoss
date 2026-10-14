@@ -7,11 +7,11 @@ import {
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
+import { EnvironmentsPage } from 'src/pages/EnvironmentsPage';
 import {
-  EnvironmentsPage,
   EVENT_LABELS,
   validateEnvironmentName,
-} from 'src/pages/EnvironmentsPage';
+} from 'src/pages/EnvironmentsPage.helpers';
 import { resetWorkspace, useWorkspace } from 'src/store';
 
 beforeEach(() => {

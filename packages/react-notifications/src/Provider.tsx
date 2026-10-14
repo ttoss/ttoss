@@ -108,7 +108,7 @@ export const NotificationsProvider = (props: NotificationsProviderProps) => {
         return false;
       });
 
-      // eslint-disable-next-line unicorn/no-array-for-each
+      // eslint-disable-next-line unicorn/no-for-each
       toastNotifications.forEach((notification) => {
         toast(notification.message, {
           ...notification.toast,
@@ -133,11 +133,15 @@ export const NotificationsProvider = (props: NotificationsProviderProps) => {
           }
         );
 
+        const newIds = new Set(
+          nonToastNewNotifications.map((notification) => {
+            return notification.id;
+          })
+        );
+
         const oldNotifications = prevNotifications.filter(
           (prevNotification) => {
-            return !nonToastNewNotifications.some((newNotification) => {
-              return newNotification.id === prevNotification.id;
-            });
+            return !newIds.has(prevNotification.id);
           }
         );
 

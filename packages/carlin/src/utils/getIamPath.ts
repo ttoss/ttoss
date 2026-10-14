@@ -1,3 +1,5 @@
 import { NAME } from '../config';
 
-export const getIamPath = () => `/${NAME}/`;
+export const getIamPath = () => {
+  return `/${NAME}/`;
+};

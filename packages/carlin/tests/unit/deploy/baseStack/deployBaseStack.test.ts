@@ -1,5 +1,3 @@
-jest.mock('src/deploy/cloudformation.core');
-
 import {
   BASE_STACK_BUCKET_LOGICAL_NAME,
   BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_ARN,
@@ -8,8 +6,10 @@ import {
   BASE_STACK_LAMBDA_LAYER_BUILDER_LOGICAL_NAME,
   BASE_STACK_NAME,
 } from 'src/deploy/baseStack/config';
-import { deploy } from 'src/deploy/cloudformation.core';
 import { deployBaseStack } from 'src/deploy/baseStack/deployBaseStack';
+import { deploy } from 'src/deploy/cloudformation.core';
+
+jest.mock('src/deploy/cloudformation.core');
 
 test('should create base resources', async () => {
   await deployBaseStack();

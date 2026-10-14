@@ -1,12 +1,12 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { PLANS, USAGE } from 'src/data';
+import { BillingPage } from 'src/pages/BillingPage';
 import {
-  BillingPage,
   cardLast4,
   formatPrice,
   validateCardNumber,
-} from 'src/pages/BillingPage';
+} from 'src/pages/BillingPage.helpers';
 import { resetWorkspace } from 'src/store';
 
 beforeEach(() => {

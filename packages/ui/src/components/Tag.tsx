@@ -1,5 +1,6 @@
-import { Box, ThemeUIStyleObject } from '@ttoss/ui';
-import * as React from 'react';
+import type { ThemeUIStyleObject } from '@ttoss/ui';
+import { Box } from '@ttoss/ui';
+import type * as React from 'react';
 
 export type TagVariant =
   | 'accent'

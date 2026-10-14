@@ -9,6 +9,40 @@ export type HeroProps = {
   ctaLabel?: string;
 };
 
+const getAlignmentStyles = ({
+  isCentered,
+  imageSrc,
+}: {
+  isCentered: boolean;
+  imageSrc: string;
+}) => {
+  if (isCentered) {
+    return {
+      content: {
+        alignItems: 'center',
+        backgroundImage: `url(${imageSrc})`,
+        width: '100%',
+        minHeight: '80vh',
+        justifyContent: 'center',
+      },
+      textColor: 'white',
+      button: { background: 'white', color: 'black' },
+    };
+  }
+
+  return {
+    content: {
+      alignItems: 'start',
+      backgroundImage: undefined,
+      width: undefined,
+      minHeight: undefined,
+      justifyContent: undefined,
+    },
+    textColor: undefined,
+    button: { background: 'black', color: undefined },
+  };
+};
+
 export const Hero = ({
   alignment,
   headerText,
@@ -18,6 +52,7 @@ export const Hero = ({
   ctaLabel,
 }: HeroProps) => {
   const isCentered = alignment === 'center';
+  const alignmentStyles = getAlignmentStyles({ isCentered, imageSrc });
 
   return (
     <Flex
@@ -30,15 +65,11 @@ export const Hero = ({
       <Flex
         sx={{
           flexDirection: 'column',
-          alignItems: isCentered ? 'center' : 'start',
-          backgroundImage: isCentered ? `url(${imageSrc})` : undefined,
-          width: isCentered ? '100%' : undefined,
-          minHeight: isCentered ? '80vh' : undefined,
-          justifyContent: isCentered ? 'center' : undefined,
+          ...alignmentStyles.content,
         }}
       >
         <Heading
-          sx={{ fontSize: '48px', color: isCentered ? 'white' : undefined }}
+          sx={{ fontSize: '48px', color: alignmentStyles.textColor }}
           as="h1"
         >
           {headerText}
@@ -46,7 +77,7 @@ export const Hero = ({
         <Text
           sx={{
             fontSize: '24px',
-            color: isCentered ? 'white' : undefined,
+            color: alignmentStyles.textColor,
             marginTop: '54px',
             marginBottom: '71px',
           }}
@@ -56,8 +87,7 @@ export const Hero = ({
         </Text>
         <Button
           sx={{
-            background: isCentered ? 'white' : 'black',
-            color: isCentered ? 'black' : undefined,
+            ...alignmentStyles.button,
             borderRadius: '10px',
             fontSize: '16px',
           }}

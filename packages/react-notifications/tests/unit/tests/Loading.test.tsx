@@ -6,7 +6,8 @@ import {
   userEvent,
 } from '@ttoss/test-utils/react';
 import { useNotifications } from 'src/index';
-import { NotificationsProvider } from 'src/Provider';
+
+import { NotificationsTestProvider } from '../NotificationsTestProvider';
 
 test('should set loading', () => {
   const { result } = renderHook(
@@ -14,7 +15,7 @@ test('should set loading', () => {
       return useNotifications();
     },
     {
-      wrapper: NotificationsProvider,
+      wrapper: NotificationsTestProvider,
     }
   );
 
@@ -53,7 +54,7 @@ test('should render progress bar', async () => {
     );
   };
 
-  render(<Component />, { wrapper: NotificationsProvider });
+  render(<Component />, { wrapper: NotificationsTestProvider });
 
   expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
 

@@ -1,7 +1,11 @@
 import type { Status } from './ecsTaskReport.handler';
 
 export const compileCommands = (commands: string[]) => {
-  return commands.map((c) => c.replace(/;$/, '')).join(' && ');
+  return commands
+    .map((c) => {
+      return c.replace(/;$/, '');
+    })
+    .join(' && ');
 };
 
 const approvedStatus: Status = 'Approved';

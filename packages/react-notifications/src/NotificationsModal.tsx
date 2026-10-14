@@ -1,10 +1,20 @@
 import { Modal } from '@ttoss/components';
+import { defineMessages, useI18n } from '@ttoss/react-i18n';
 import { CloseButton } from '@ttoss/ui';
 
 import { NotificationsBox } from './NotificationsBox';
 import { useNotifications } from './Provider';
 
+const messages = defineMessages({
+  close: {
+    defaultMessage: 'Close',
+    description:
+      'Accessible label of the button that dismisses the notifications modal.',
+  },
+});
+
 export const NotificationsModal = () => {
+  const { intl } = useI18n();
   const { notifications, clearNotifications, defaultViewType } =
     useNotifications();
 
@@ -32,7 +42,7 @@ export const NotificationsModal = () => {
       }}
     >
       <CloseButton
-        aria-label="Close"
+        aria-label={intl.formatMessage(messages.close)}
         sx={{ alignSelf: 'flex-end' }}
         onClick={() => {
           clearNotifications();
