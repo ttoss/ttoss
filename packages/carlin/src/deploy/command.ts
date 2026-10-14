@@ -10,6 +10,7 @@ import { printStackOutputsAfterDeploy } from './cloudformation.core';
 import { deployLambdaLayerCommand } from './lambdaLayer/command';
 import { readDockerfile } from './readDockerfile';
 import { reportToGitHubPR } from './reportToGitHubPR';
+import { setRoleArn } from './roleArn';
 import { getStackName, setPreDefinedStackName } from './stackName';
 import { deployStaticAppCommand } from './staticApp/command';
 import { deployVMCommand } from './vm/command';
@@ -189,6 +190,11 @@ export const options = {
     describe:
       'A list of parameters that will be passed to CloudFormation Parameters when deploying.',
   },
+  'role-arn': {
+    describe:
+      'ARN of the IAM role CloudFormation uses to create, update, and delete stacks (the CloudFormation service role). The caller needs iam:PassRole on it.',
+    type: 'string',
+  },
   'skip-deploy': {
     alias: 'skip',
     default: false,
@@ -221,6 +227,10 @@ export const examples: ReadonlyArray<[string, string?]> = [
     'Use Node.js 20.x runtime for Lambda functions.',
   ],
   [
+    'carlin deploy --role-arn arn:aws:iam::123456789012:role/CloudFormationExecutionRole',
+    'CloudFormation creates the stack resources with this role.',
+  ],
+  [
     'carlin deploy --destroy --stack-name StackToBeDeleted',
     'Destroy a specific stack.',
   ],
@@ -243,6 +253,13 @@ export const deployCommand: CommandModule<
         if (stackName) {
           setPreDefinedStackName(stackName);
         }
+      })
+      /**
+       * Every stack operation, including those of the deploy subcommands,
+       * reads the CloudFormation service role from here.
+       */
+      .middleware(({ roleArn }) => {
+        setRoleArn(roleArn);
       })
       /**
        * Set lambdaImage if lambdaDockerfile exists.

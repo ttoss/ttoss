@@ -393,6 +393,14 @@ Paths match exactly, and a leading slash is optional. A mapped path with no file
 in the build folder fails the deploy rather than being ignored, so a typo can't
 leave a file with the wrong type unnoticed.
 
+### --role-arn
+
+CloudFormation service role for the stack, as in [`deploy`](/docs/carlin/commands/deploy#service-role). Uploading files to S3 and invalidating CloudFront still use the caller's own credentials.
+
+```bash
+carlin deploy static-app --role-arn arn:aws:iam::123456789012:role/CloudFormationExecutionRole
+```
+
 ### --region
 
 :::note

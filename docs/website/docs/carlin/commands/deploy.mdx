@@ -37,6 +37,18 @@ Changing the stack name targets a different CloudFormation stack. Use explicit s
 
 ::::
 
+### Service Role
+
+By default, CloudFormation manages the stack resources with the credentials that run <Carlin />. `--role-arn` (config key `roleArn`, or `CARLIN_ROLE_ARN`) hands that work to a [CloudFormation service role](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-servicerole.html): carlin passes it as `RoleARN` on every CreateStack, UpdateStack, and DeleteStack call it makes, including those of `deploy static-app`, `deploy base-stack`, `deploy lambda-layer`, and `deploy cicd`.
+
+```bash
+carlin deploy --role-arn arn:aws:iam::123456789012:role/CloudFormationExecutionRole
+```
+
+This splits permissions in CI. The deploying identity, such as a GitHub Actions OIDC role, needs `cloudformation:*` on its stacks, `cloudformation:ValidateTemplate` (which takes no resource ARN), and `iam:PassRole` on the service role. The service role trusts `cloudformation.amazonaws.com` and holds the permissions for everything the template declares, including reading Lambda code from the base stack bucket. Work carlin does outside CloudFormation still uses the caller's own credentials: uploading Lambda code, large templates, and static files to S3, emptying buckets before a destroy, and invalidating CloudFront.
+
+A stack remembers its service role, so later updates and deletes without `--role-arn` still use it. Pass a different `--role-arn` to change it.
+
 ## Lambda
 
 Carlin automatically handles Lambda functions in your CloudFormation templates by building and deploying code to S3. When Lambda functions are detected, Carlin analyzes `Handler` properties in `AWS::Lambda::Function` and `AWS::Serverless::Function` resources, builds the code, and uploads it to S3.
@@ -262,6 +274,7 @@ carlin deploy -t src/cloudformation.template1.yml
 carlin deploy -e Production
 carlin deploy --lambda-runtime nodejs20.x
 carlin deploy --lambda-format cjs
+carlin deploy --role-arn arn:aws:iam::123456789012:role/CloudFormationExecutionRole
 carlin deploy --destroy --stack-name StackToBeDeleted
 ```
 
@@ -283,6 +296,7 @@ After deployment, outputs are saved to `.carlin/$STACK_NAME.json` and `.carlin/l
 | `--stack-name`                   | Explicit CloudFormation stack name.                            |
 | `--parameters`, `-p`             | CloudFormation parameters as an object or parameter array.     |
 | `--destroy`                      | Destroy the selected stack.                                    |
+| `--role-arn`                     | CloudFormation service role for every stack operation.         |
 | `--lambda-format`                | Lambda bundle format: `esm` or `cjs`.                          |
 | `--lambda-runtime`               | Lambda runtime: `nodejs20.x`, `nodejs22.x`, or `nodejs24.x`.   |
 | `--lambda-source-maps`           | Ship a source map and set `NODE_OPTIONS=--enable-source-maps`. |

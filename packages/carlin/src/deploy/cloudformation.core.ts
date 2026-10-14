@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- already over the limit; split it in a dedicated refactor */
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
@@ -34,6 +35,7 @@ import { addDefaults } from './addDefaults.cloudformation';
 import { BASE_STACK_BUCKET_TEMPLATES_FOLDER } from './baseStack/config';
 import { getBaseStackResource } from './baseStack/getBaseStackResource';
 import { LATEST_DEPLOY_OUTPUTS_FILENAME } from './config';
+import { getRoleArnParam } from './roleArn';
 import { emptyS3Directory, uploadFileToS3 } from './s3';
 
 const logPrefix = 'cloudformation';
@@ -165,7 +167,6 @@ export const describeStackEvents = async ({
 
   for (const { LogicalResourceId, ResourceStatusReason } of events) {
     log.event(LogicalResourceId, ResourceStatusReason);
-    continue;
   }
 
   return events;
@@ -292,7 +293,9 @@ export const printStackOutputsAfterDeploy = async ({
 
 export const deleteStack = async ({ stackName }: { stackName: string }) => {
   log.info(logPrefix, `Deleting stack ${stackName}...`);
-  await cloudformation().send(new DeleteStackCommand({ StackName: stackName }));
+  await cloudformation().send(
+    new DeleteStackCommand({ StackName: stackName, ...getRoleArnParam() })
+  );
   try {
     await cloudFormationV2()
       .waitFor('stackDeleteComplete', { StackName: stackName })
@@ -312,7 +315,9 @@ export const createStack = async ({
 }) => {
   const { StackName: stackName = '' } = params;
   log.info(logPrefix, `Creating stack ${stackName}...`);
-  await cloudformation().send(new CreateStackCommand(params));
+  await cloudformation().send(
+    new CreateStackCommand({ ...params, ...getRoleArnParam() })
+  );
   try {
     await cloudFormationV2()
       .waitFor('stackCreateComplete', { StackName: stackName })
@@ -334,7 +339,9 @@ export const updateStack = async ({
   const { StackName: stackName = '' } = params;
   log.info(logPrefix, `Updating stack ${stackName}...`);
   try {
-    await cloudformation().send(new UpdateStackCommand(params));
+    await cloudformation().send(
+      new UpdateStackCommand({ ...params, ...getRoleArnParam() })
+    );
     await cloudFormationV2()
       .waitFor('stackUpdateComplete', { StackName: stackName })
       .promise();

@@ -511,3 +511,50 @@ describe('viewer request function option', () => {
     expect(argv.viewerRequestFunctionCode).toEqual(viewerRequestFunctionCode);
   });
 });
+
+describe('role-arn option', () => {
+  const roleArn = 'arn:aws:iam::123456789012:role/CloudFormationExecutionRole';
+
+  afterEach(() => {
+    delete process.env.CARLIN_ROLE_ARN;
+  });
+
+  test('should not set a CloudFormation service role by default', async () => {
+    const argv = await parseCli('deploy', {});
+    expect(argv.roleArn).toBeUndefined();
+    expect(getEnvVar('ROLE_ARN')).toBeUndefined();
+  });
+
+  test('should accept role-arn option', async () => {
+    const argv = await parseCli(`deploy --role-arn=${roleArn}`, {});
+    expect(argv.roleArn).toEqual(roleArn);
+    expect(getEnvVar('ROLE_ARN')).toEqual(roleArn);
+  });
+
+  test('should accept roleArn from the config', async () => {
+    const argv = await parseCli('deploy', { roleArn });
+    expect(argv.roleArn).toEqual(roleArn);
+    expect(getEnvVar('ROLE_ARN')).toEqual(roleArn);
+  });
+
+  test('should accept CARLIN_ROLE_ARN environment variable', async () => {
+    process.env.CARLIN_ROLE_ARN = roleArn;
+    const argv = await parseCli('deploy', {});
+    expect(argv.roleArn).toEqual(roleArn);
+    expect(getEnvVar('ROLE_ARN')).toEqual(roleArn);
+  });
+
+  test.each(['static-app', 'base-stack'])(
+    'should reach the stack operations of deploy %s',
+    async (subcommand) => {
+      await parseCli(`deploy ${subcommand} --role-arn=${roleArn}`, {});
+      expect(getEnvVar('ROLE_ARN')).toEqual(roleArn);
+    }
+  );
+
+  test('should clear a service role set by an earlier parse', async () => {
+    await parseCli(`deploy --role-arn=${roleArn}`, {});
+    await parseCli('deploy', {});
+    expect(getEnvVar('ROLE_ARN')).toBeUndefined();
+  });
+});
