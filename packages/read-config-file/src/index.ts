@@ -1,8 +1,32 @@
 import fs from 'node:fs';
 
-import yaml from 'js-yaml';
+import {
+  binaryTag,
+  CORE_SCHEMA,
+  load as loadYaml,
+  mergeTag,
+  omapTag,
+  pairsTag,
+  setTag,
+  timestampTag,
+} from 'js-yaml';
 
 import { loadConfig } from './loadConfig';
+
+/**
+ * js-yaml 5 defaults to the plain YAML 1.2 Core schema. Extend it with the
+ * tags js-yaml 4's `DEFAULT_SCHEMA` supported (merge keys `<<`, timestamps,
+ * binary, omap, pairs and set) so existing YAML config files keep parsing the
+ * same way.
+ */
+const YAML_SCHEMA = CORE_SCHEMA.withTags(
+  mergeTag,
+  timestampTag,
+  binaryTag,
+  omapTag,
+  pairsTag,
+  setTag
+);
 
 type ConfigInput = {
   configFilePath: string;
@@ -18,7 +42,7 @@ export const readConfigFileSync = <ConfigFile = unknown>({
 
   if (extension === 'yaml' || extension === 'yml') {
     const file = fs.readFileSync(configFilePath, 'utf8');
-    return yaml.load(file) as ConfigFile;
+    return loadYaml(file, { schema: YAML_SCHEMA }) as ConfigFile;
   }
 
   if (extension === 'json') {

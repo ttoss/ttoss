@@ -46,6 +46,13 @@ const config = await readConfigFile({
 });
 ```
 
+## YAML Config Files
+
+YAML is parsed with [js-yaml](https://github.com/nodeca/js-yaml)'s Core schema
+extended with the YAML 1.1 extras js-yaml 4 enabled by default: merge keys
+(`<<: *anchor`), timestamps (parsed into `Date`), `!!binary`, `!!omap`,
+`!!pairs` and `!!set`.
+
 ## Notes
 
 - `readConfigFile` supports async config functions.
