@@ -1,7 +1,7 @@
-import log from 'npmlog';
 import type { CommandModule, InferredOptionTypes } from 'yargs';
 
 import { addGroupToOptions } from '../../utils';
+import { log } from '../../utils/log';
 import { options } from './command.options';
 import { deployVM } from './deployVM';
 

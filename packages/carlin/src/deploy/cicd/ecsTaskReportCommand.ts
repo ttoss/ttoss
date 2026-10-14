@@ -1,6 +1,6 @@
 import { CommandModule, InferredOptionTypes } from 'yargs';
 import AWS from 'aws-sdk';
-import log from 'npmlog';
+import { log } from '../../utils/log';
 
 import type { Event, Status } from './lambdas/ecsTaskReport.handler';
 

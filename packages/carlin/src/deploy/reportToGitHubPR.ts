@@ -2,8 +2,8 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 
 import { glob } from 'glob';
-import log from 'npmlog';
 
+import { log } from '../utils/log';
 import { LATEST_DEPLOY_OUTPUTS_FILENAME } from './config';
 
 const logPrefix = 'report';

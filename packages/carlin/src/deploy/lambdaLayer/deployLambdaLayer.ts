@@ -1,6 +1,6 @@
 import type { CloudFormationTemplate } from '@ttoss/cloudformation';
 import AWS from 'aws-sdk';
-import log from 'npmlog';
+import { log } from '../../utils/log';
 
 import { DEFAULT_NODE_RUNTIME } from '../../config';
 import { waitCodeBuildFinish } from '../../utils';

@@ -1,14 +1,16 @@
-import { CommandModule, InferredOptionTypes } from 'yargs';
+import type { CommandModule, InferredOptionTypes } from 'yargs';
+
 import { NAME } from '../../config';
 import { addGroupToOptions } from '../../utils';
-import { deployCicd } from './deployCicd';
+import { log } from '../../utils/log';
 import { options } from './command.options';
+import { deployCicd } from './deployCicd';
 import { readSSHKey } from './readSSHKey';
-import log from 'npmlog';
 
 const logPrefix = 'deploy-cicd';
 
 export const deployCicdCommand: CommandModule<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   any,
   InferredOptionTypes<typeof options>
 > = {
@@ -24,6 +26,7 @@ export const deployCicdCommand: CommandModule<
       deployCicd({
         ...rest,
         sshKey: readSSHKey(rest['ssh-key']),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
     }
   },

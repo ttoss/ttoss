@@ -22,7 +22,7 @@ import {
 } from '@aws-sdk/client-cloudformation';
 import type { CloudFormationTemplate } from '@ttoss/cloudformation';
 import AWS from 'aws-sdk';
-import log from 'npmlog';
+import { log } from '../utils/log';
 
 import {
   getEnvironment,
@@ -37,8 +37,6 @@ import { LATEST_DEPLOY_OUTPUTS_FILENAME } from './config';
 import { emptyS3Directory, uploadFileToS3 } from './s3';
 
 const logPrefix = 'cloudformation';
-log.addLevel('event', 10000, { fg: 'yellow' });
-log.addLevel('output', 10000, { fg: 'blue' });
 
 /**
  * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-limits.html

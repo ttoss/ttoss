@@ -1,5 +1,5 @@
 import AWS from 'aws-sdk';
-import log from 'npmlog';
+import { log } from '../../utils/log';
 
 const CLOUDFRONT_DISTRIBUTION_ID = 'CloudFrontDistributionId';
 

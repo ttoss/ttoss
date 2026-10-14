@@ -3,7 +3,7 @@ import {
   findAndReadCloudFormationTemplate,
 } from '@ttoss/cloudformation';
 import type AWS from 'aws-sdk';
-import log from 'npmlog';
+import { log } from '../utils/log';
 
 import { getEnvironment, getPackageName, getProjectName } from '../utils';
 import {
@@ -22,8 +22,6 @@ import { getStackName } from './stackName';
 import { handleDeployError, handleDeployInitialization } from './utils';
 
 const logPrefix = 'cloudformation';
-log.addLevel('event', 10000, { fg: 'yellow' });
-log.addLevel('output', 10000, { fg: 'blue' });
 
 export const defaultTemplatePaths = ['ts', 'js', 'yaml', 'yml', 'json'].map(
   (extension) => {
