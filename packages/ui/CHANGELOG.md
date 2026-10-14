@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 6.12.0 (2026-10-14)
+
+### Features
+
+- **geovis,geovis-workspace:** 3D polygon extrusion, a view-mode choi… ([#1308](https://github.com/ttoss/ttoss/issues/1308)) ([8ecea5c](https://github.com/ttoss/ttoss/commit/8ecea5c8167762c009c8c62c9d0dc004519e021e))
+
 ## [6.11.1](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.11.0...@ttoss/ui@6.11.1) (2026-10-06)
 
 ### Bug Fixes
