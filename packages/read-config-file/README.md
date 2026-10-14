@@ -48,10 +48,9 @@ const config = await readConfigFile({
 
 ## YAML Config Files
 
-YAML is parsed with [js-yaml](https://github.com/nodeca/js-yaml)'s Core schema
-extended with the YAML 1.1 extras js-yaml 4 enabled by default: merge keys
-(`<<: *anchor`), timestamps (parsed into `Date`), `!!binary`, `!!omap`,
-`!!pairs` and `!!set`.
+YAML is parsed with [js-yaml](https://github.com/nodeca/js-yaml)'s YAML 1.2
+Core schema plus merge keys (`<<: *anchor`). Unquoted dates such as
+`2010-09-09` stay strings.
 
 ## Notes
 
