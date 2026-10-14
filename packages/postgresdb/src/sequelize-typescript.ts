@@ -1,11 +1,14 @@
 /**
  * Exports the necessary classes from the sequelize-typescript package.
  */
-import pgvector from 'pgvector/sequelize';
-import type { DataType as DataTypeInterface, SyncOptions } from 'sequelize';
-import { DataType as SequelizeDataType, Sequelize } from 'sequelize-typescript';
+/**
+ * Registers the VECTOR, HALFVEC and SPARSEVEC data types on Sequelize. Since
+ * pgvector 0.3 the import itself registers them; `registerType` is deprecated.
+ */
+import 'pgvector/sequelize';
 
-pgvector.registerType(Sequelize);
+import type { DataType as DataTypeInterface, SyncOptions } from 'sequelize';
+import { DataType as SequelizeDataType } from 'sequelize-typescript';
 
 export type { SyncOptions };
 export type { ModelCtor, SequelizeOptions } from 'sequelize-typescript';
