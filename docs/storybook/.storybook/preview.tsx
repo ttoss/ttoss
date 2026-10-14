@@ -11,9 +11,32 @@ const themesNames = themesObjects
   .sort();
 
 /**
+ * maplibre-gl 6 starts its worker from a file next to its own module, which
+ * webpack does not emit. Point it at the copy `.storybook/main.ts` emits as an
+ * asset, before any map story mounts a map.
+ */
+const configureMapLibreWorker = async ({ title }: { title: string }) => {
+  if (!/^geovis/i.test(title)) {
+    return {};
+  }
+  const [{ getWorkerUrl, setWorkerUrl }, { default: workerUrl }] =
+    await Promise.all([
+      import('maplibre-gl'),
+      import('maplibre-gl/dist/maplibre-gl-worker.mjs') as Promise<{
+        default: string;
+      }>,
+    ]);
+  if (!getWorkerUrl()) {
+    setWorkerUrl(workerUrl);
+  }
+  return {};
+};
+
+/**
  * https://storybook.js.org/docs/essentials/toolbars-and-globals
  */
 const preview: Preview = {
+  loaders: [configureMapLibreWorker],
   globalTypes: {
     theme: {
       description: 'Global theme for components',
