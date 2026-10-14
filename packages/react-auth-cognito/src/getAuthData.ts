@@ -7,6 +7,20 @@ import {
 
 export type { AuthData };
 
+const getTokens = (
+  session: Awaited<ReturnType<typeof fetchAuthSession>> | null
+): NonNullable<AuthData['tokens']> => {
+  const idToken = session?.tokens?.idToken?.toString() ?? '';
+  const accessToken = session?.tokens?.accessToken?.toString() ?? '';
+  const refreshToken = '';
+
+  return {
+    idToken,
+    accessToken,
+    refreshToken,
+  };
+};
+
 export const getAuthData = async ({
   includeTokens,
 }: {
@@ -19,21 +33,13 @@ export const getAuthData = async ({
     fetchUserAttributes(),
   ]);
 
-  const idToken = session?.tokens?.idToken?.toString() ?? '';
-  const accessToken = session?.tokens?.accessToken?.toString() ?? '';
-  const refreshToken = '';
-
   return {
     user: {
       id: currentUser.userId,
       email: user.email ?? '',
       emailVerified: user.email_verified === 'true',
     },
-    tokens: {
-      idToken,
-      accessToken,
-      refreshToken,
-    },
+    tokens: getTokens(session),
     isAuthenticated: true,
   };
 };

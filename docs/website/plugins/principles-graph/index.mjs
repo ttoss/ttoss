@@ -34,130 +34,151 @@ const extractShortName = (heading) => {
   return heading;
 };
 
+const PRINCIPLE_PREFIX = '### The Principle of ';
+
+const COROLLARY_PREFIX = '#### The Corollary of ';
+
 /**
- * Parses the markdown content and extracts principles and corollaries
+ * Returns the node type and heading text of a principle/corollary heading
+ * line, or `null` for any other line
  */
-const parsePrinciples = (markdownContent) => {
+const parseNodeHeading = (line) => {
+  if (line.startsWith(PRINCIPLE_PREFIX)) {
+    return { type: 'principle', heading: line.replace('### ', '').trim() };
+  }
+
+  if (line.startsWith(COROLLARY_PREFIX)) {
+    return { type: 'corollary', heading: line.replace('#### ', '').trim() };
+  }
+
+  return null;
+};
+
+/**
+ * First pass: extracts all principles and corollaries, plus the parent link
+ * between each corollary and the principle above it
+ */
+const extractNodes = (lines) => {
   const nodes = [];
   const links = [];
 
-  const lines = markdownContent.split('\n');
   let currentGroup = '';
   let currentPrinciple = null;
 
-  // First pass: extract all principles and corollaries
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-
+  for (const line of lines) {
     // Detect group headings (## The ... of ...)
     if (line.startsWith('## The ')) {
       currentGroup = line.replace('## ', '').trim();
       continue;
     }
 
-    // Detect principle headings (### The Principle of ...)
-    if (line.startsWith('### The Principle of ')) {
-      const heading = line.replace('### ', '').trim();
-      const id = generateAnchor(heading);
-      const label = extractShortName(heading);
+    const nodeHeading = parseNodeHeading(line);
 
-      currentPrinciple = {
-        id,
-        label,
-        type: 'principle',
-        group: currentGroup,
-        fullText: heading,
-      };
-
-      nodes.push(currentPrinciple);
+    if (!nodeHeading) {
       continue;
     }
 
-    // Detect corollary headings (#### The Corollary of ...)
-    if (line.startsWith('#### The Corollary of ')) {
-      const heading = line.replace('#### ', '').trim();
-      const id = generateAnchor(heading);
-      const label = extractShortName(heading);
+    const { type, heading } = nodeHeading;
 
-      const corollary = {
-        id,
-        label,
-        type: 'corollary',
-        group: currentGroup,
-        fullText: heading,
-      };
+    const node = {
+      id: generateAnchor(heading),
+      label: extractShortName(heading),
+      type,
+      group: currentGroup,
+      fullText: heading,
+    };
 
-      nodes.push(corollary);
+    nodes.push(node);
 
+    if (type === 'principle') {
+      currentPrinciple = node;
+    } else if (currentPrinciple) {
       // Create parent link between corollary and its principle
-      if (currentPrinciple) {
-        links.push({
-          source: currentPrinciple.id,
-          target: id,
-          type: 'parent',
-        });
-      }
+      links.push({
+        source: currentPrinciple.id,
+        target: node.id,
+        type: 'parent',
+      });
     }
   }
+
+  return { nodes, links };
+};
+
+/**
+ * For each line, the ID of the closest principle/corollary heading at or above
+ * it (`null` before the first one)
+ */
+const getContextNodeIds = (lines) => {
+  let contextNodeId = null;
+
+  return lines.map((line) => {
+    const nodeHeading = parseNodeHeading(line);
+
+    if (nodeHeading) {
+      contextNodeId = generateAnchor(nodeHeading.heading);
+    }
+
+    return contextNodeId;
+  });
+};
+
+/**
+ * Adds a reference link unless it is a self-reference, points to an unknown
+ * node, or duplicates an existing parent/reference link
+ */
+const addReferenceLink = ({ nodes, links, source, target }) => {
+  const hasNode = (id) => {
+    return nodes.some((n) => {
+      return n.id === id;
+    });
+  };
+
+  if (source === target || !hasNode(source) || !hasNode(target)) {
+    return;
+  }
+
+  const isLinked = links.some((l) => {
+    return (
+      l.source === source &&
+      l.target === target &&
+      (l.type === 'parent' || l.type === 'reference')
+    );
+  });
+
+  if (!isLinked) {
+    links.push({ source, target, type: 'reference' });
+  }
+};
+
+/**
+ * Parses the markdown content and extracts principles and corollaries
+ */
+const parsePrinciples = (markdownContent) => {
+  const lines = markdownContent.split('\n');
+
+  const { nodes, links } = extractNodes(lines);
 
   // Second pass: extract references between principles/corollaries
   const refRegex = /\[([^\]]+)\]\((?:[^)#]+)?#([^)]+)\)/g;
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
+  const contextNodeIds = getContextNodeIds(lines);
 
-    // Determine the current node context
-    let contextNodeId = null;
+  for (const [i, line] of lines.entries()) {
+    const contextNodeId = contextNodeIds[i];
 
-    for (let j = i; j >= 0; j--) {
-      const prevLine = lines[j];
-      if (prevLine.startsWith('### The Principle of ')) {
-        contextNodeId = generateAnchor(prevLine.replace('### ', '').trim());
-        break;
-      } else if (prevLine.startsWith('#### The Corollary of ')) {
-        contextNodeId = generateAnchor(prevLine.replace('#### ', '').trim());
-        break;
-      }
+    if (!contextNodeId) {
+      continue;
     }
 
-    if (!contextNodeId) continue;
-
     // Find all references in this line
-    let match;
-    while ((match = refRegex.exec(line)) !== null) {
-      const targetId = match[2];
-
-      const sourceNode = nodes.find((n) => {
-        return n.id === contextNodeId;
+    for (const match of line.matchAll(refRegex)) {
+      addReferenceLink({
+        nodes,
+        links,
+        source: contextNodeId,
+        target: match[2],
       });
-      const targetNode = nodes.find((n) => {
-        return n.id === targetId;
-      });
-
-      if (sourceNode && targetNode && contextNodeId !== targetId) {
-        const isParentLink = links.some((l) => {
-          return (
-            l.source === contextNodeId &&
-            l.target === targetId &&
-            l.type === 'parent'
-          );
-        });
-        const isDuplicateRef = links.some((l) => {
-          return (
-            l.source === contextNodeId &&
-            l.target === targetId &&
-            l.type === 'reference'
-          );
-        });
-
-        if (!isParentLink && !isDuplicateRef) {
-          links.push({
-            source: contextNodeId,
-            target: targetId,
-            type: 'reference',
-          });
-        }
-      }
     }
   }
 

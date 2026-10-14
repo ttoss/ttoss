@@ -1,4 +1,10 @@
-import { render, screen, userEvent, waitFor } from '@ttoss/test-utils/react';
+import {
+  fireEvent,
+  render,
+  screen,
+  userEvent,
+  waitFor,
+} from '@ttoss/test-utils/react';
 import {
   FileUploader,
   type FileUploaderProps,
@@ -420,5 +426,77 @@ describe('FileUploader', () => {
 
     // Verify files are not displayed
     expect(screen.queryByText('document.pdf')).not.toBeInTheDocument();
+  });
+  describe('drag and drop', () => {
+    const getDropzone = (container: HTMLElement) => {
+      return container.querySelector('input[type="file"]')
+        ?.parentElement as HTMLElement;
+    };
+
+    test('should upload dropped files and toggle drag over state', async () => {
+      const { container } = render(<FileUploader {...defaultProps} />);
+      const dropzone = getDropzone(container);
+      const file = createMockFile('dropped.txt', 1024);
+
+      fireEvent.dragOver(dropzone);
+      fireEvent.dragLeave(dropzone);
+      fireEvent.drop(dropzone, { dataTransfer: { files: [file] } });
+
+      await waitFor(() => {
+        expect(mockOnUpload).toHaveBeenCalledWith(file, expect.any(Function));
+      });
+    });
+
+    test('should ignore files larger than maxSize', () => {
+      const { container } = render(
+        <FileUploader {...defaultProps} maxSize={100} />
+      );
+
+      fireEvent.drop(getDropzone(container), {
+        dataTransfer: { files: [createMockFile('big.txt', 1024)] },
+      });
+
+      expect(mockOnUpload).not.toHaveBeenCalled();
+    });
+
+    test('should accept at most maxFiles files and then ignore drops', async () => {
+      const { container } = render(
+        <FileUploader {...defaultProps} maxFiles={1} />
+      );
+      const dropzone = getDropzone(container);
+      const first = createMockFile('first.txt', 10);
+      const second = createMockFile('second.txt', 10);
+
+      fireEvent.drop(dropzone, { dataTransfer: { files: [first, second] } });
+
+      await waitFor(() => {
+        expect(screen.getByText('Maximum files reached')).toBeInTheDocument();
+      });
+
+      fireEvent.dragOver(dropzone);
+      fireEvent.click(dropzone);
+      fireEvent.drop(dropzone, { dataTransfer: { files: [second] } });
+
+      expect(mockOnUpload).toHaveBeenCalledTimes(1);
+      expect(mockOnUpload).toHaveBeenCalledWith(first, expect.any(Function));
+    });
+
+    test('should ignore drops when disabled', () => {
+      const { container } = render(<FileUploader {...defaultProps} disabled />);
+      const dropzone = getDropzone(container);
+
+      fireEvent.dragOver(dropzone);
+      fireEvent.drop(dropzone, {
+        dataTransfer: { files: [createMockFile('file.txt', 10)] },
+      });
+
+      expect(mockOnUpload).not.toHaveBeenCalled();
+    });
+  });
+
+  test('should render the error message', () => {
+    render(<FileUploader {...defaultProps} error="Upload failed" />);
+
+    expect(screen.getByText('Upload failed')).toBeInTheDocument();
   });
 });

@@ -180,12 +180,7 @@ const DateMetricContent = ({ metric }: { metric: DateMetric }) => {
   );
 };
 
-/**
- * Renders the content for a percentage metric.
- */
-const PercentageMetricContent = ({ metric }: { metric: PercentageMetric }) => {
-  const { intl } = useI18n();
-
+const getPercentageMetricState = ({ metric }: { metric: PercentageMetric }) => {
   const percentage =
     metric.max === null || metric.max <= 0
       ? null
@@ -203,6 +198,60 @@ const PercentageMetricContent = ({ metric }: { metric: PercentageMetric }) => {
     percentage >= metric.showAlertThreshold;
 
   const isOverLimit = percentage !== null && percentage >= 100;
+
+  return { percentage, formatValue, showAlert, isOverLimit };
+};
+
+const PercentageMetricAlert = ({ isOverLimit }: { isOverLimit: boolean }) => {
+  const { intl } = useI18n();
+
+  if (!isOverLimit) {
+    return (
+      <Flex
+        sx={{
+          alignItems: 'center',
+          gap: '1',
+          color: 'feedback.text.caution.default',
+        }}
+      >
+        <Icon icon="fluent:warning-24-regular" />
+        <Text sx={{ fontWeight: 'medium' }}>
+          {intl.formatMessage(messages.nearLimit)}
+        </Text>
+      </Flex>
+    );
+  }
+
+  return (
+    <Flex
+      sx={{
+        alignItems: 'center',
+        gap: '1',
+        color: 'feedback.text.negative.default',
+      }}
+    >
+      <Icon icon="fluent:warning-24-regular" />
+      <Text
+        sx={{
+          fontWeight: 'medium',
+          color: 'feedback.text.negative.default',
+        }}
+      >
+        {intl.formatMessage(messages.reachedLimit)}
+      </Text>
+    </Flex>
+  );
+};
+
+/**
+ * Renders the content for a percentage metric.
+ */
+const PercentageMetricContent = ({ metric }: { metric: PercentageMetric }) => {
+  const { intl } = useI18n();
+
+  const { percentage, formatValue, showAlert, isOverLimit } =
+    getPercentageMetricState({ metric });
+
   const maxText =
     metric.max !== null
       ? formatValue(metric.max)
@@ -269,40 +318,7 @@ const PercentageMetricContent = ({ metric }: { metric: PercentageMetric }) => {
             : intl.formatMessage(messages.unlimited)}
         </Text>
 
-        {showAlert && !isOverLimit && (
-          <Flex
-            sx={{
-              alignItems: 'center',
-              gap: '1',
-              color: 'feedback.text.caution.default',
-            }}
-          >
-            <Icon icon="fluent:warning-24-regular" />
-            <Text sx={{ fontWeight: 'medium' }}>
-              {intl.formatMessage(messages.nearLimit)}
-            </Text>
-          </Flex>
-        )}
-
-        {showAlert && isOverLimit && (
-          <Flex
-            sx={{
-              alignItems: 'center',
-              gap: '1',
-              color: 'feedback.text.negative.default',
-            }}
-          >
-            <Icon icon="fluent:warning-24-regular" />
-            <Text
-              sx={{
-                fontWeight: 'medium',
-                color: 'feedback.text.negative.default',
-              }}
-            >
-              {intl.formatMessage(messages.reachedLimit)}
-            </Text>
-          </Flex>
-        )}
+        {showAlert && <PercentageMetricAlert isOverLimit={isOverLimit} />}
       </Flex>
     </>
   );

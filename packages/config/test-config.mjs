@@ -5,4 +5,4 @@ const config = tsdownConfig({
   format: ['cjs', 'esm'],
 });
 
-console.log('Resolved config:', JSON.stringify(config, null, 2));
+process.stdout.write(`Resolved config: ${JSON.stringify(config, null, 2)}\n`);

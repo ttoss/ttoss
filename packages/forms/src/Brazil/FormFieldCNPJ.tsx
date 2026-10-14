@@ -11,6 +11,35 @@ export type FormFieldCNPJProps<
 > = FormFieldProps<TFieldValues, TName> &
   Omit<PatternFormatProps, 'name' | 'format'>;
 
+const REPEATED_DIGIT_CNPJS = [
+  '00000000000000',
+  '11111111111111',
+  '22222222222222',
+  '33333333333333',
+  '44444444444444',
+  '55555555555555',
+  '66666666666666',
+  '77777777777777',
+  '88888888888888',
+  '99999999999999',
+];
+
+/**
+ * Computes a CNPJ check digit (DV) from the digits that precede it.
+ */
+const getCnpjCheckDigit = ({ numbers }: { numbers: string }) => {
+  const size = numbers.length;
+  let soma = 0;
+  let pos = size - 7;
+  for (let i = size; i >= 1; i--) {
+    soma += Number(numbers.charAt(size - i)) * pos--;
+    if (pos < 2) {
+      pos = 9;
+    }
+  }
+  return soma % 11 < 2 ? 0 : 11 - (soma % 11);
+};
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isCnpjValid = (cnpj: any) => {
   if (cnpj?.length != 14) {
@@ -18,49 +47,27 @@ export const isCnpjValid = (cnpj: any) => {
   }
 
   if (
-    cnpj == '00000000000000' ||
-    cnpj == '11111111111111' ||
-    cnpj == '22222222222222' ||
-    cnpj == '33333333333333' ||
-    cnpj == '44444444444444' ||
-    cnpj == '55555555555555' ||
-    cnpj == '66666666666666' ||
-    cnpj == '77777777777777' ||
-    cnpj == '88888888888888' ||
-    cnpj == '99999999999999'
+    REPEATED_DIGIT_CNPJS.some((repeated) => {
+      return cnpj == repeated;
+    })
   ) {
     return false;
   }
 
   // Valida DVs
-  let size = cnpj.length - 2;
-  let numbers = cnpj.substring(0, size);
+  const size = cnpj.length - 2;
   const digits = cnpj.substring(size);
-  let soma = 0;
-  let pos = size - 7;
-  for (let i = size; i >= 1; i--) {
-    soma += numbers.charAt(size - i) * pos--;
-    if (pos < 2) {
-      pos = 9;
-    }
-  }
-  let result = soma % 11 < 2 ? 0 : 11 - (soma % 11);
-  if (result != digits.charAt(0)) {
+
+  if (
+    getCnpjCheckDigit({ numbers: cnpj.substring(0, size) }) != digits.charAt(0)
+  ) {
     return false;
   }
 
-  size = size + 1;
-  numbers = cnpj.substring(0, size);
-  soma = 0;
-  pos = size - 7;
-  for (let i = size; i >= 1; i--) {
-    soma += numbers.charAt(size - i) * pos--;
-    if (pos < 2) {
-      pos = 9;
-    }
-  }
-  result = soma % 11 < 2 ? 0 : 11 - (soma % 11);
-  if (result != digits.charAt(1)) {
+  if (
+    getCnpjCheckDigit({ numbers: cnpj.substring(0, size + 1) }) !=
+    digits.charAt(1)
+  ) {
     return false;
   }
 

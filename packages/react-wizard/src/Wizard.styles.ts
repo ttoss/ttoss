@@ -30,11 +30,7 @@ type ThemeWithColors = {
 };
 
 export type WizardVariant =
-  | 'spotlight-accent'
-  | 'spotlight-primary'
-  | 'primary'
-  | 'secondary'
-  | 'accent';
+  'spotlight-accent' | 'spotlight-primary' | 'primary' | 'secondary' | 'accent';
 
 type WizardVariantStyles = {
   accentColor: string;
@@ -50,33 +46,77 @@ const gradientFlow = keyframes({
   '100%': { backgroundPosition: '0% 50%' },
 });
 
-const getAccentGradientBackground = (t: unknown) => {
-  const theme = t as ThemeWithColors;
+/**
+ * Reads a nested color from the theme, returning `undefined` when any segment
+ * of the path is missing.
+ */
+const getThemeColor = ({
+  theme,
+  path,
+}: {
+  theme: ThemeWithColors;
+  path: string;
+}): string | undefined => {
+  return path.split('.').reduce<unknown>((current, key) => {
+    return (current as Record<string, unknown> | undefined)?.[key];
+  }, theme.colors) as string | undefined;
+};
 
-  const start =
-    theme.colors?.action?.background?.accent?.default ||
-    theme.colors?.input?.background?.accent?.default;
+/**
+ * Returns the first truthy color among `paths`, mirroring an `a || b` chain.
+ */
+const getFirstThemeColor = ({
+  theme,
+  paths,
+}: {
+  theme: ThemeWithColors;
+  paths: string[];
+}): string | undefined => {
+  return paths
+    .map((path) => {
+      return getThemeColor({ theme, path });
+    })
+    .find(Boolean);
+};
+
+const buildGradientBackground = ({
+  theme,
+  startPaths,
+  middlePaths,
+}: {
+  theme: ThemeWithColors;
+  startPaths: string[];
+  middlePaths: string[];
+}) => {
+  const start = getFirstThemeColor({ theme, paths: startPaths });
 
   if (!start) return undefined;
 
-  const middle =
-    theme.colors?.action?.background?.accent?.active ||
-    theme.colors?.input?.background?.accent?.active ||
-    start;
+  const middle = getFirstThemeColor({ theme, paths: middlePaths }) || start;
 
   return `linear-gradient(270deg, ${start}, ${middle}, ${start})`;
 };
 
+const getAccentGradientBackground = (t: unknown) => {
+  return buildGradientBackground({
+    theme: t as ThemeWithColors,
+    startPaths: [
+      'action.background.accent.default',
+      'input.background.accent.default',
+    ],
+    middlePaths: [
+      'action.background.accent.active',
+      'input.background.accent.active',
+    ],
+  });
+};
+
 const getPrimaryGradientBackground = (t: unknown) => {
-  const theme = t as ThemeWithColors;
-
-  const start = theme.colors?.action?.background?.primary?.default;
-
-  if (!start) return undefined;
-
-  const middle = theme.colors?.action?.background?.secondary?.default || start;
-
-  return `linear-gradient(270deg, ${start}, ${middle}, ${start})`;
+  return buildGradientBackground({
+    theme: t as ThemeWithColors,
+    startPaths: ['action.background.primary.default'],
+    middlePaths: ['action.background.secondary.default'],
+  });
 };
 
 const getVariantStyles = (

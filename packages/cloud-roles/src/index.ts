@@ -15,15 +15,16 @@ export const createRolesTemplate = ({
   path?: string;
   resources: { [key: string]: IAMRoleResource };
 }): /**
- * To fix The inferred type of 'template' cannot be named without a reference to '.pnpm/@ttoss+cloudformation@0.7.1
+ * Explicit return type avoids "The inferred type of 'template' cannot be
+ * named without a reference to '.pnpm/@ttoss+cloudformation'".
  * https://github.com/ttoss/ttoss/issues/349
  */
-any => {
-  Object.values(resources).forEach((resource) => {
+CloudFormationTemplate => {
+  for (const resource of Object.values(resources)) {
     if (!resource.Properties.Path) {
       resource.Properties.Path = path;
     }
-  });
+  }
 
   const outputs: Outputs = Object.keys(resources).reduce((acc, key) => {
     const newKey = key + 'Arn';

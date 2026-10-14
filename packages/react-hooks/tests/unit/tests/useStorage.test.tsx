@@ -109,9 +109,9 @@ const WithMultipleSetterCallback = () => {
   );
 };
 
-const CountRenders = ({ counter }: { counter: { value: number } }) => {
+const CountRenders = ({ onRender }: { onRender: () => void }) => {
   const [data, setData] = useStorage('username', 'foo');
-  counter.value++;
+  onRender();
   return (
     <>
       <p>{data}</p>
@@ -305,12 +305,12 @@ describe('useStorage using default storage (localStorage)', () => {
   });
 
   test('triggers a re-render only the needed amount of times', () => {
-    const counter = { value: 0 };
-    expect(counter.value).toBe(0);
-    const { container } = render(<CountRenders counter={counter} />);
-    expect(counter.value).toBe(1);
+    const onRender = jest.fn();
+    expect(onRender).not.toHaveBeenCalled();
+    const { container } = render(<CountRenders onRender={onRender} />);
+    expect(onRender).toHaveBeenCalledTimes(1);
     fireEvent.click(container.querySelector('#stability'));
-    expect(counter.value).toBe(2);
+    expect(onRender).toHaveBeenCalledTimes(2);
     expect(localStorage.getItem('username')).toEqual(JSON.stringify('foobar'));
   });
 });
