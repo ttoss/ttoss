@@ -32,24 +32,16 @@ import type { Plan } from '../data';
 import { PLANS, USAGE } from '../data';
 import { setPaymentMethod, setPlan, useWorkspace } from '../store';
 import { toasts } from '../toasts';
+import {
+  cardLast4,
+  formatPrice,
+  validateCardNumber,
+} from './BillingPage.helpers';
 
 const EXPIRY_MONTHS = Array.from({ length: 12 }, (_, index) => {
   return String(index + 1).padStart(2, '0');
 });
 const EXPIRY_YEARS = ['2026', '2027', '2028', '2029', '2030'];
-
-/** The digits of a card number — what the summary and the store keep. */
-export const cardLast4 = (cardNumber: string): string => {
-  return cardNumber.replace(/\D/g, '').slice(-4);
-};
-
-export const validateCardNumber = (value: string): string | null => {
-  const digits = value.replace(/[\s-]/g, '');
-  if (!/^\d{13,19}$/.test(digits)) {
-    return 'Enter the 13–19 digits on the front of the card.';
-  }
-  return null;
-};
 
 /**
  * The payment wizard — forms item G's consumer, exercising both halves at
@@ -239,10 +231,6 @@ const PaymentMethodCard = () => {
       </Stack>
     </Surface>
   );
-};
-
-export const formatPrice = (price: number): string => {
-  return price === 0 ? 'Free' : `$${price}`;
 };
 
 const CurrentPlanCard = ({ plan }: { plan: Plan }) => {

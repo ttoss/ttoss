@@ -1,11 +1,8 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DEPLOYS, KPIS } from 'src/data';
-import {
-  DashboardPage,
-  formatAge,
-  formatDuration,
-} from 'src/pages/DashboardPage';
+import { DashboardPage } from 'src/pages/DashboardPage';
+import { formatAge, formatDuration } from 'src/pages/DashboardPage.helpers';
 
 describe('formatDuration', () => {
   test.each([

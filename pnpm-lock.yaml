@@ -48,6 +48,9 @@ importers:
       eslint:
         specifier: ^10.12.0
         version: 10.12.0(jiti@2.6.1)
+      eslint-plugin-react-refresh:
+        specifier: ^0.5.7
+        version: 0.5.7(eslint@10.12.0(jiti@2.6.1))
       husky:
         specifier: ^9.1.7
         version: 9.1.7
@@ -926,9 +929,6 @@ importers:
       eslint-plugin-react-namespace-import:
         specifier: ^1.0.5
         version: 1.0.5(eslint@10.12.0(jiti@2.6.1))
-      eslint-plugin-react-refresh:
-        specifier: ^0.5.7
-        version: 0.5.7(eslint@10.12.0(jiti@2.6.1))
       eslint-plugin-relay:
         specifier: ^2.1.0
         version: 2.1.0

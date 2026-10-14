@@ -12,7 +12,6 @@ import preferArrowFunctions from 'eslint-plugin-prefer-arrow-functions';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactNamespaceImport from 'eslint-plugin-react-namespace-import';
-import reactRefresh from 'eslint-plugin-react-refresh';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import sonarjs from 'eslint-plugin-sonarjs';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
@@ -83,7 +82,6 @@ export default defineConfig(
       formatjs,
       'prefer-arrow-functions': preferArrowFunctions,
       'react-namespace-import': reactNamespaceImport,
-      'react-refresh': reactRefresh,
       'simple-import-sort': simpleImportSort,
       sonarjs,
       unicorn: eslintPluginUnicorn,
@@ -186,15 +184,14 @@ export default defineConfig(
       ],
 
       // ── React ─────────────────────────────────────────────────────────────
-      // Enforce React best practices, including component purity and refresh safety.
+      // Enforce React best practices, including component purity.
       // https://react.dev/learn/keeping-components-pure
+      //
+      // react-refresh/only-export-components is deliberately not here: Fast
+      // Refresh only exists in an app's dev server, while libraries ship
+      // contexts, hooks and metadata next to their components by design. Apps
+      // with HMR enable eslint-plugin-react-refresh in their own config.
       'react-namespace-import/no-namespace-import': 'error',
-      'react-refresh/only-export-components': [
-        'warn',
-        {
-          allowConstantExport: true,
-        },
-      ],
 
       // ── Redundant and dead code (SonarJS) ─────────────────────────────────
       // Catch duplicated logic and assignments that are never read. ESLint sees

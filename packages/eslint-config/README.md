@@ -49,6 +49,8 @@ This config requires ESLint 10. `eslint-plugin-react`, `eslint-plugin-import` an
 
 The full mapping is in [`config.js`](https://github.com/ttoss/ttoss/blob/main/packages/eslint-config/config.js). ESLint 10 also resolves the config file closest to each linted file, so a nested `eslint.config.*` now applies when linting from the repository root.
 
+`react-refresh/only-export-components` is no longer part of this config. Fast Refresh only exists in an app's dev server, and libraries export contexts, hooks and metadata next to their components by design. Apps with HMR (Vite, Next.js) can add [`eslint-plugin-react-refresh`](https://github.com/ArnaudBarre/eslint-plugin-react-refresh) to their own config; remove any `eslint-disable react-refresh/...` comments otherwise.
+
 ## TypeScript 7
 
 TypeScript 7 is the native compiler, and its npm package no longer exposes the

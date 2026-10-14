@@ -36,7 +36,7 @@ import type { Member, Role } from '../data';
 import { timezoneLabel, TIMEZONES } from '../data';
 import { inviteMember, removeMember, useWorkspace } from '../store';
 import { toasts } from '../toasts';
-import { validateEmail } from './LoginPage';
+import { validateEmail } from './LoginPage.helpers';
 
 /** Where northline is headquartered — the invite form's starting zone. */
 const DEFAULT_TIMEZONE = 'Europe/Lisbon';

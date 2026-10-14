@@ -20,6 +20,7 @@ import * as React from 'react';
 
 import type { Deploy, DeployStatus } from '../data';
 import { DEPLOYS, KPIS, WEEKLY_DEPLOYS } from '../data';
+import { formatAge, formatDuration } from './DashboardPage.helpers';
 
 const STATUS_BADGE: Record<
   DeployStatus,
@@ -28,20 +29,6 @@ const STATUS_BADGE: Record<
   ready: { label: 'Ready', evaluation: 'positive' },
   building: { label: 'Building', evaluation: 'caution' },
   failed: { label: 'Failed', evaluation: 'negative' },
-};
-
-export const formatDuration = (seconds: number | null): string => {
-  if (seconds === null) {
-    return '—';
-  }
-  return `${seconds}s`;
-};
-
-export const formatAge = (minutesAgo: number): string => {
-  if (minutesAgo < 60) {
-    return `${minutesAgo}m ago`;
-  }
-  return `${Math.round(minutesAgo / 60)}h ago`;
 };
 
 /**

@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { formText, SettingsPage, validateSlug } from 'src/pages/SettingsPage';
+import { SettingsPage } from 'src/pages/SettingsPage';
+import { formText, validateSlug } from 'src/pages/SettingsPage.helpers';
 import { resetWorkspace, useWorkspace } from 'src/store';
 
 beforeEach(() => {

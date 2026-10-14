@@ -58,14 +58,12 @@ import { Icon } from '../Icon';
 // justify it, and this is the second component to reach that same answer.
 // ---------------------------------------------------------------------------
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const selectMeta = {
   displayName: 'Select',
   entity: 'Selection',
   structure: 'root',
 } as const satisfies ComponentMeta<'Selection'>;
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const selectItemMeta = {
   displayName: 'SelectItem',
   entity: 'Selection',
