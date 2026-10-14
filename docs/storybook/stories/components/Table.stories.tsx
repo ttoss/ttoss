@@ -2,9 +2,9 @@ import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import {
   createColumnHelper,
   flexRender,
-  getCoreRowModel,
   Table,
-  useReactTable,
+  tableFeatures,
+  useTable,
 } from '@ttoss/components';
 import * as React from 'react';
 
@@ -59,9 +59,11 @@ const defaultData: Person[] = [
   },
 ];
 
-const columnHelper = createColumnHelper<Person>();
+const features = tableFeatures({});
 
-const columns = [
+const columnHelper = createColumnHelper<typeof features, Person>();
+
+const columns = columnHelper.columns([
   columnHelper.accessor('firstName', {
     cell: (info) => {
       return info.getValue();
@@ -118,17 +120,17 @@ const columns = [
       return info.column.id;
     },
   }),
-];
+]);
 
 const RenderTable = () => {
   const [data] = React.useState(() => {
     return [...defaultData];
   });
 
-  const table = useReactTable({
+  const table = useTable({
+    features,
     data,
     columns,
-    getCoreRowModel: getCoreRowModel(),
   });
 
   return (
@@ -157,7 +159,7 @@ const RenderTable = () => {
         {table.getRowModel().rows.map((row) => {
           return (
             <Table.Row key={row.id}>
-              {row.getVisibleCells().map((cell) => {
+              {row.getAllCells().map((cell) => {
                 return (
                   <Table.Cell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

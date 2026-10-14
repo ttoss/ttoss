@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
-import { JsonEditor } from '@ttoss/components';
+import { JsonEditor, JsonViewer } from '@ttoss/components';
 import { useTheme } from '@ttoss/ui';
 import * as React from 'react';
 
@@ -8,7 +8,7 @@ type Story = StoryObj<typeof JsonEditor>;
 const ThemeJsonTemplate = () => {
   const { theme } = useTheme();
 
-  return <JsonEditor data={theme} />;
+  return <JsonViewer data={theme} />;
 };
 
 const BasicExample = () => {
@@ -62,7 +62,8 @@ export const ThemeJson: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Displaying the current theme configuration as JSON.',
+        story:
+          'Displaying the current theme configuration as read-only JSON with `JsonViewer`.',
       },
     },
   },
