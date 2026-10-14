@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.6.0 (2026-10-14)
+
+### Bug Fixes
+
+- **deps:** bump vulnerable and deprecated dependencies within existing ranges ([#1324](https://github.com/ttoss/ttoss/issues/1324)) ([a633312](https://github.com/ttoss/ttoss/commit/a633312f71bc515cf15135f2a1caae6835a4d155))
+
+### Features
+
+- **geovis,geovis-workspace:** 3D polygon extrusion, a view-mode choi… ([#1308](https://github.com/ttoss/ttoss/issues/1308)) ([8ecea5c](https://github.com/ttoss/ttoss/commit/8ecea5c8167762c009c8c62c9d0dc004519e021e))
+
 ## [0.5.1](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb-cli@0.5.0...@ttoss/postgresdb-cli@0.5.1) (2026-10-01)
 
 **Note:** Version bump only for package @ttoss/postgresdb-cli
