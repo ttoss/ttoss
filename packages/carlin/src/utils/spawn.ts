@@ -1,10 +1,6 @@
 import childProcess from 'node:child_process';
 import { stdout } from 'node:process';
 
-import log from 'npmlog';
-
-log.heading = 'exec';
-
 export const spawn = (cmd: string) => {
   return new Promise((resolve, reject) => {
     const [cmdName, ...cmdArgs] = cmd.split(' ');

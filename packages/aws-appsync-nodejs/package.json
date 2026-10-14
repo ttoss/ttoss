@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/aws-appsync-nodejs",
-  "version": "1.11.0",
+  "version": "2.0.0",
   "description": "",
   "keywords": [],
   "repository": {
@@ -25,16 +25,16 @@
   },
   "dependencies": {
     "@aws-crypto/sha256-js": "^5.2.0",
-    "@aws-sdk/credential-provider-node": "^3.503.1",
-    "@smithy/protocol-http": "^3.1.1",
-    "@smithy/signature-v4": "^2.1.1"
+    "@aws-sdk/credential-provider-node": "^3.972.86",
+    "@smithy/protocol-http": "^5.6.2",
+    "@smithy/signature-v4": "^5.7.4"
   },
   "devDependencies": {
-    "@aws-sdk/types": "^3.502.0",
+    "@aws-sdk/types": "^3.974.6",
     "@ttoss/config": "workspace:^",
     "@types/jest": "^30.0.0",
-    "jest": "^30.4.2",
-    "tsdown": "^0.22.2"
+    "jest": "^30.5.2",
+    "tsdown": "^0.23.1"
   },
   "publishConfig": {
     "access": "public",

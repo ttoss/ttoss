@@ -1,5 +1,4 @@
 import { faker } from '@ttoss/test-utils/faker';
-import AWS from 'aws-sdk';
 import * as deepmerge from 'deepmerge';
 import dotenv from 'dotenv';
 import { getConfigFileOptions, loadDotEnv } from 'src/cli';
@@ -87,7 +86,6 @@ describe('testing AWS region', () => {
   ])('%#: %p', async (command, result) => {
     const argv = await parseCli(command, {});
     expect(argv.region).toEqual(result);
-    expect(AWS.config.region).toEqual(result);
     expect(await cloudformation().config.region()).toEqual(result);
     expect(getEnvVar('REGION')).toEqual(result);
   });
@@ -332,6 +330,7 @@ describe('dotenv loading', () => {
     expect(dotenv.config).toHaveBeenCalledTimes(1);
     expect(dotenv.config).toHaveBeenCalledWith({
       path: expect.stringContaining('.env.Production'),
+      quiet: true,
     });
   });
 
@@ -347,8 +346,9 @@ describe('dotenv loading', () => {
     expect(dotenv.config).toHaveBeenCalledTimes(2);
     expect(dotenv.config).toHaveBeenNthCalledWith(1, {
       path: expect.stringContaining('.env.Production'),
+      quiet: true,
     });
-    expect(dotenv.config).toHaveBeenNthCalledWith(2);
+    expect(dotenv.config).toHaveBeenNthCalledWith(2, { quiet: true });
   });
 
   test('loads base .env when no environment is specified', () => {
@@ -357,7 +357,7 @@ describe('dotenv loading', () => {
     loadDotEnv();
 
     expect(dotenv.config).toHaveBeenCalledTimes(1);
-    expect(dotenv.config).toHaveBeenCalledWith();
+    expect(dotenv.config).toHaveBeenCalledWith({ quiet: true });
   });
 });
 

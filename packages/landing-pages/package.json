@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/landing-pages",
-  "version": "0.18.0",
+  "version": "0.19.0",
   "description": "Package for creating landing pages.",
   "keywords": [
     "React",
@@ -29,7 +29,7 @@
     "test": "echo jest"
   },
   "dependencies": {
-    "@iconify/react": "^4.1.1",
+    "@iconify/react": "^6.0.2",
     "react-collapse": "^5.1.1"
   },
   "devDependencies": {
@@ -38,10 +38,10 @@
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "@types/jest": "^30.0.0",
-    "@types/react": "^19.2.14",
+    "@types/react": "^19.3.0",
     "@types/react-collapse": "^5.0.4",
-    "jest": "^30.4.2",
-    "tsdown": "^0.22.2"
+    "jest": "^30.5.2",
+    "tsdown": "^0.23.1"
   },
   "peerDependencies": {
     "@ttoss/react-icons": "workspace:^",

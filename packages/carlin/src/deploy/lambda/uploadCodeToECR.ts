@@ -1,10 +1,10 @@
-import AWS from 'aws-sdk';
+import { CodeBuildClient, StartBuildCommand } from '@aws-sdk/client-codebuild';
 
 import { AWS_DEFAULT_REGION } from '../../config';
 import { getPackageVersion, waitCodeBuildFinish } from '../../utils';
 import { getBaseStackResource } from '../baseStack/getBaseStackResource';
 
-const codeBuild = new AWS.CodeBuild({ region: AWS_DEFAULT_REGION });
+const codeBuild = new CodeBuildClient({ region: AWS_DEFAULT_REGION });
 
 export const uploadCodeToECR = async ({
   bucket,
@@ -35,8 +35,8 @@ export const uploadCodeToECR = async ({
     'RUN npm install',
   ].join('\n');
 
-  const { build } = await codeBuild
-    .startBuild({
+  const { build } = await codeBuild.send(
+    new StartBuildCommand({
       environmentVariablesOverride: [
         {
           name: 'DOCKERFILE',
@@ -59,7 +59,7 @@ export const uploadCodeToECR = async ({
       sourceLocationOverride: `${bucket}/${key}`,
       sourceTypeOverride: 'S3',
     })
-    .promise();
+  );
 
   if (!build?.id) {
     throw new Error('Cannot start build.');

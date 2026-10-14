@@ -172,10 +172,10 @@ Deploy base stack to each AWS region you use:
 
 ```bash
 # US East
-AWS_REGION=us-east-1 carlin deploy base-stack
+carlin deploy base-stack --region us-east-1
 
 # Europe
-AWS_REGION=eu-west-1 carlin deploy base-stack
+carlin deploy base-stack --region eu-west-1
 ```
 
 Each region gets an independent `CarlinBaseStack` with region-specific resources.

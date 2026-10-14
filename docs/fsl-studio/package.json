@@ -1,6 +1,6 @@
 {
   "name": "@docs/fsl-studio",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "description": "FSL Studio — a theme workbench wrapped around a real product: Meridian, a fictional deploy platform built exclusively with @ttoss/fsl-ui on @ttoss/fsl-theme.",
   "repository": {
@@ -22,22 +22,22 @@
     "@fontsource-variable/inter": "^5.3.0",
     "@ttoss/fsl-theme": "workspace:^",
     "@ttoss/fsl-ui": "workspace:^",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
   },
   "devDependencies": {
-    "@testing-library/react": "^16.3.2",
-    "@testing-library/user-event": "^14.6.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.8",
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@types/jest-axe": "^3.5.9",
-    "@types/node": "^24.12.0",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.0.2",
-    "@vitejs/plugin-react-swc": "^4.3.1",
-    "jest": "^30.4.2",
-    "jest-axe": "^10.0.0",
+    "@types/node": "^24.19.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react-swc": "^4.3.3",
+    "jest": "^30.5.2",
+    "jest-axe": "^11.0.0",
     "typescript": "~6.0.3",
-    "vite": "^8.0.16"
+    "vite": "^8.3.4"
   }
 }

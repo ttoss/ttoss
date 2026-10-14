@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-auth-core",
-  "version": "0.14.5",
+  "version": "0.15.0",
   "description": "Core authentication components and abstractions for React apps.",
   "keywords": [
     "React",
@@ -33,10 +33,10 @@
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
-    "react-error-boundary": "^6.1.0"
+    "react-error-boundary": "^6.1.6"
   },
   "devDependencies": {
-    "@jest/globals": "^29.7.0",
+    "@jest/globals": "^30.5.2",
     "@ttoss/components": "workspace:^",
     "@ttoss/config": "workspace:^",
     "@ttoss/forms": "workspace:^",
@@ -45,10 +45,10 @@
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
-    "@types/react": "^19.2.14",
-    "jest": "^30.4.2",
-    "react": "^19.2.6",
-    "tsdown": "^0.22.2"
+    "@types/react": "^19.3.0",
+    "jest": "^30.5.2",
+    "react": "^19.3.0",
+    "tsdown": "^0.23.1"
   },
   "peerDependencies": {
     "@ttoss/components": "workspace:^",

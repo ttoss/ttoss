@@ -488,13 +488,18 @@ describe('serve middleware', () => {
     expect(response.headers['content-type']).toContain('text/plain');
   });
 
-  test('should prevent directory traversal attacks', async () => {
-    const app = new App();
-    app.use(serve(tempDir));
+  test.each(['/../../../etc/passwd', '/../test.txt', '/%2e%2e/test.txt'])(
+    'should reject directory traversal %s with 403',
+    async (traversalPath) => {
+      const app = new App();
+      // Serve `nested/`, so `../test.txt` names a real file outside the root.
+      app.use(serve(path.join(tempDir, 'nested')));
 
-    const response = await request(app.callback()).get('/../../../etc/passwd');
+      const response = await request(app.callback()).get(traversalPath);
 
-    // koa-static returns 404 for malformed paths, not 403
-    expect(response.status).toBe(404);
-  });
+      // koa-send's resolve-path rejects paths escaping the root as Forbidden.
+      expect(response.status).toBe(403);
+      expect(response.text).not.toContain('Hello from static file');
+    }
+  );
 });

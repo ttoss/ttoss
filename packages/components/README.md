@@ -178,12 +178,20 @@ import { InstallPwa } from '@ttoss/components';
 
 ### JsonEditor
 
-JSON editor component. Re-exports from [json-edit-react](https://carlosdevpereira.github.io/json-edit-react/). [Docs](https://storybook.ttoss.dev/?path=/docs/components-jsoneditor--docs)
+JSON editor and viewer. Re-exports `JsonEditor` and `JsonViewer` from [json-edit-react](https://github.com/CarlosNZ/json-edit-react) v2. [Docs](https://storybook.ttoss.dev/?path=/docs/components-jsoneditor--docs)
 
 ```tsx
 import { JsonEditor } from '@ttoss/components';
 
 <JsonEditor data={jsonData} setData={setJsonData} />;
+```
+
+`setData` is required since json-edit-react v2. For read-only display, use `JsonViewer`:
+
+```tsx
+import { JsonViewer } from '@ttoss/components';
+
+<JsonViewer data={jsonData} />;
 ```
 
 ### JsonView
@@ -390,19 +398,26 @@ import { SpotlightCard } from '@ttoss/components';
 
 ### Table
 
-Flexible tables with sorting and pagination. Uses [TanStack Table](https://tanstack.com/table/latest). [Docs](https://storybook.ttoss.dev/?path=/docs/components-table--docs)
+Table primitives (`Table.Head`, `Table.Body`, `Table.Row`, `Table.Header`, `Table.Cell`, `Table.Caption`, `Table.Footer`) plus the [TanStack Table v9](https://tanstack.com/table/latest) helpers `useTable`, `tableFeatures`, `createColumnHelper`, `flexRender` and `FlexRender`. [Docs](https://storybook.ttoss.dev/?path=/docs/components-table--docs)
 
 ```tsx
-import { Table, useReactTable, createColumnHelper } from '@ttoss/components';
+import {
+  Table,
+  createColumnHelper,
+  flexRender,
+  tableFeatures,
+  useTable,
+} from '@ttoss/components';
 
-const table = useReactTable({
-  data,
-  columns: [
-    columnHelper.accessor('name', { header: 'Name' }),
-    columnHelper.accessor('email', { header: 'Email' }),
-  ],
-  getCoreRowModel: getCoreRowModel(),
-});
+// Keep `features` and `columns` stable (module scope or memoized).
+const features = tableFeatures({});
+const columnHelper = createColumnHelper<typeof features, Person>();
+const columns = columnHelper.columns([
+  columnHelper.accessor('name', { header: 'Name' }),
+  columnHelper.accessor('email', { header: 'Email' }),
+]);
+
+const table = useTable({ features, columns, data });
 
 <Table>
   <Table.Head>
@@ -419,7 +434,7 @@ const table = useReactTable({
   <Table.Body>
     {table.getRowModel().rows.map((row) => (
       <Table.Row key={row.id}>
-        {row.getVisibleCells().map((cell) => (
+        {row.getAllCells().map((cell) => (
           <Table.Cell key={cell.id}>
             {flexRender(cell.column.columnDef.cell, cell.getContext())}
           </Table.Cell>
@@ -429,6 +444,8 @@ const table = useReactTable({
   </Table.Body>
 </Table>;
 ```
+
+Sorting, filtering, pagination and other features are opt-in: register them in `tableFeatures` (e.g. `rowSortingFeature` with `createSortedRowModel()` from `@tanstack/react-table`). Migrating from v8: `useReactTable` → `useTable`, `getCoreRowModel()` is no longer needed, and `createColumnHelper` takes the features type as its first generic. See the [TanStack Table migration guide](https://tanstack.com/table/latest/docs/framework/react/guide/migrating).
 
 ### Tabs
 

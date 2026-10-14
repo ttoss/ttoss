@@ -10,7 +10,7 @@
  */
 
 import { act, render, waitFor } from '@testing-library/react';
-import maplibregl from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl';
 import * as React from 'react';
 import { GeoVisProvider, useGeoVis } from 'src/react/GeoVisProvider';
 import type { VisualizationSpec } from 'src/spec/types';
@@ -47,7 +47,7 @@ jest.mock('maplibre-gl', () => {
       getElement: jest.fn().mockReturnValue(el),
     };
   });
-  return { __esModule: true, default: { Marker } };
+  return { __esModule: true, Marker };
 });
 
 /** Returns the mocked `Marker` constructor. Import is resolved after the mock. */

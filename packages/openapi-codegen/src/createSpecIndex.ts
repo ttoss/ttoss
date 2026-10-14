@@ -6,8 +6,7 @@
 
 import fs from 'node:fs';
 
-import { load } from 'js-yaml';
-
+import { loadYamlFile } from './loadYamlFile';
 import type {
   CliOpenApiSpec,
   OpenApiParameterFull,
@@ -224,7 +223,7 @@ export const createSpecIndex = (): SpecIndex => {
     const cached = specs.get(specPath);
     if (cached) return cached;
 
-    const spec = load(fs.readFileSync(specPath, 'utf8')) as CliOpenApiSpec;
+    const spec = loadYamlFile(specPath) as CliOpenApiSpec;
     specs.set(specPath, spec);
     return spec;
   };

@@ -1,8 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
-import log from 'npmlog';
-
+import { log } from '../../utils/log';
 import { deployLambdaLayer } from '../lambdaLayer/deployLambdaLayer';
 
 const logPrefix = 'lambda';

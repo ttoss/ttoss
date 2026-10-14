@@ -1,5 +1,4 @@
-import { z } from 'zod';
-
+import { toJSONSchema } from '../toJSONSchema';
 import { intentSchema } from './schema';
 
 /**
@@ -10,5 +9,5 @@ import { intentSchema } from './schema';
  * the document can never drift from what `validateIntent` actually accepts.
  */
 export const getIntentJSONSchema = (): Record<string, unknown> => {
-  return z.toJSONSchema(intentSchema, { target: 'draft-2020-12' });
+  return toJSONSchema(intentSchema);
 };

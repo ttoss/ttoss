@@ -1,9 +1,8 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
-import log from 'npmlog';
-
 import { startCodeBuildBuild, waitCodeBuildFinish } from '../../utils';
+import { log } from '../../utils/log';
 import { deploy, getStackOutput } from '../cloudformation.core';
 import { deployLambdaCode } from '../lambda/deployLambdaCode';
 import { handleDeployError, handleDeployInitialization } from '../utils';

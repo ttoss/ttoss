@@ -1,9 +1,5 @@
 import childProcess from 'node:child_process';
 
-import log from 'npmlog';
-
-log.heading = 'exec';
-
 export const exec = (cmd: string) => {
   return new Promise((resolve, reject) => {
     childProcess.exec(cmd, (error, stdout, stderr) => {

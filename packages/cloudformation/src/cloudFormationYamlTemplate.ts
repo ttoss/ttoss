@@ -1,11 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import yaml from 'js-yaml';
+import {
+  CORE_SCHEMA,
+  defineScalarTag,
+  defineSequenceTag,
+  dump,
+  load,
+  mergeTag,
+  type TagDefinition,
+} from 'js-yaml';
 
 import type { CloudFormationTemplate } from './CloudFormationTemplate';
 
 export interface TagAndType {
   tag: string;
-  options: yaml.TypeConstructorOptions;
+  options: {
+    kind: 'scalar' | 'sequence';
+    construct: (data: any) => any;
+  };
 }
 
 const cloudFormationTypes: TagAndType[] = [
@@ -110,19 +121,46 @@ const cloudFormationTypes: TagAndType[] = [
   },
 ];
 
-const getYamlTypes = (tagAndTypeArr: TagAndType[]) => {
-  return tagAndTypeArr.map(({ tag, options }) => {
-    return new yaml.Type(tag, options);
+/**
+ * The tags are load-only: dumping writes the intrinsic functions as plain
+ * mappings (`Ref: SomeRef`), which CloudFormation also accepts.
+ */
+const getYamlTag = ({ tag, options }: TagAndType): TagDefinition => {
+  if (options.kind === 'scalar') {
+    return defineScalarTag(tag, {
+      resolve: (source) => {
+        return options.construct(source);
+      },
+      identify: () => {
+        return false;
+      },
+    });
+  }
+
+  return defineSequenceTag<unknown[], unknown>(tag, {
+    create: () => {
+      return [];
+    },
+    addItem: (carrier, item) => {
+      carrier.push(item);
+    },
+    finalize: (carrier) => {
+      return options.construct(carrier);
+    },
+    identify: () => {
+      return false;
+    },
   });
 };
 
 /**
  * Transform CloudFormation directives in objects. For example, transform
- * !Ref Something in { Ref: Something }.
+ * !Ref Something in { Ref: Something }. Merge keys (`<<`) are supported.
  */
 export const getSchema = (tagAndTypeArr: TagAndType[] = []) => {
-  return yaml.DEFAULT_SCHEMA.extend(
-    getYamlTypes([...tagAndTypeArr, ...cloudFormationTypes])
+  return CORE_SCHEMA.withTags(
+    mergeTag,
+    [...tagAndTypeArr, ...cloudFormationTypes].map(getYamlTag)
   );
 };
 
@@ -135,7 +173,7 @@ export const getSchema = (tagAndTypeArr: TagAndType[] = []) => {
 export const dumpToYamlCloudFormationTemplate = (
   cloudFormationTemplate: CloudFormationTemplate
 ) => {
-  return yaml.dump(cloudFormationTemplate, { schema: getSchema() });
+  return dump(cloudFormationTemplate);
 };
 
 /**
@@ -149,5 +187,5 @@ export const loadCloudFormationTemplate = (
   template: string,
   tagAndTypeArr: TagAndType[] = []
 ) => {
-  return yaml.load(template, { schema: getSchema(tagAndTypeArr) });
+  return load(template, { schema: getSchema(tagAndTypeArr) });
 };

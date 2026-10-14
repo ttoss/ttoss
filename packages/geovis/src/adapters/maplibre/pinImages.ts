@@ -1,5 +1,5 @@
 import { buildIcon, loadIcon } from '@ttoss/react-icons';
-import type maplibregl from 'maplibre-gl';
+import type * as maplibregl from 'maplibre-gl';
 
 import type { ImageSpec, PinImage, VisualizationSpec } from '../../spec/types';
 

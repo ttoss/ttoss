@@ -1,5 +1,4 @@
-import log from 'npmlog';
-
+import { log } from '../utils/log';
 import { getStackName, setPreDefinedStackName } from './stackName';
 
 export const deployErrorLogs = ({

@@ -1,4 +1,4 @@
-import type maplibregl from 'maplibre-gl';
+import type * as maplibregl from 'maplibre-gl';
 
 import type { SetViewOptions } from '../../runtime/adapter';
 import type { GeoJSONBoundingBox } from '../../spec/types';

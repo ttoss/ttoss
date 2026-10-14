@@ -1,9 +1,12 @@
-import AWS from 'aws-sdk';
+import { ECSClient, RunTaskCommand } from '@aws-sdk/client-ecs';
 
 import { getProcessEnvVariable } from './getProcessEnvVariable';
 import { compileCommands } from './shConditionalCommands';
 
-const ecs = new AWS.ECS({ apiVersion: '2014-11-13', maxRetries: 3 });
+/**
+ * Three retries, as the AWS SDK v2 `maxRetries: 3` this client replaced.
+ */
+const ecs = new ECSClient({ maxAttempts: 4 });
 
 export const executeTasks = async ({
   commands = [],
@@ -30,8 +33,8 @@ export const executeTasks = async ({
     ...commands,
   ]);
 
-  const response = await ecs
-    .runTask({
+  const response = await ecs.send(
+    new RunTaskCommand({
       taskDefinition: getProcessEnvVariable('ECS_TASK_DEFINITION'),
       cluster: getProcessEnvVariable('ECS_CLUSTER_ARN'),
       count: 1,
@@ -74,7 +77,7 @@ export const executeTasks = async ({
       },
       tags,
     })
-    .promise();
+  );
 
   return response;
 };

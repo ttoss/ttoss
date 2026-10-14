@@ -11,42 +11,67 @@ jest.mock('src/DashboardProvider', () => {
   };
 });
 
+type MockLayoutItem = { i: string; x: number; y: number; w: number; h: number };
+
+type MockConstraint = {
+  name: string;
+  constrainPosition?: (
+    item: MockLayoutItem,
+    x: number,
+    y: number,
+    context: Record<string, unknown>
+  ) => { x: number; y: number };
+};
+
+const mockGridProps: {
+  width?: number;
+  constraints?: MockConstraint[];
+  dragConfig?: { handle?: string };
+} = {};
+
 jest.mock('react-grid-layout', () => {
   const React = jest.requireActual('react');
 
   const Responsive = ({
     children,
+    width,
+    constraints,
+    dragConfig,
     onLayoutChange,
-    onDrag,
+    onDragStart,
     onDragStop,
   }: {
     children: React.ReactNode;
-    onLayoutChange?: (layout: Array<Record<string, unknown>>) => void;
-    onDrag?: (
-      layout: Array<Record<string, unknown>>,
-      oldItem: Record<string, unknown>,
-      newItem: Record<string, unknown>
-    ) => void;
-    onDragStop?: (
-      layout: Array<Record<string, unknown>>,
-      oldItem: Record<string, unknown>,
-      newItem: Record<string, unknown>
-    ) => void;
+    width: number;
+    constraints?: MockConstraint[];
+    dragConfig?: { handle?: string };
+    onLayoutChange?: (layout: MockLayoutItem[]) => void;
+    onDragStart?: () => void;
+    onDragStop?: () => void;
   }) => {
+    mockGridProps.width = width;
+    mockGridProps.constraints = constraints;
+    mockGridProps.dragConfig = dragConfig;
+
     React.useEffect(() => {
       const movedItem = { i: 'card-1', x: 5, y: 6, w: 4, h: 2 };
+      onDragStart?.();
       onLayoutChange?.([movedItem]);
-      onDrag?.([], movedItem, { ...movedItem });
-      onDragStop?.([], movedItem, { ...movedItem });
-    }, [onLayoutChange, onDrag, onDragStop]);
+      onDragStop?.();
+    }, [onLayoutChange, onDragStart, onDragStop]);
 
     return <div data-testid="mock-grid">{children}</div>;
   };
 
   return {
     Responsive,
-    WidthProvider: (component: unknown) => {
-      return component;
+    useContainerWidth: () => {
+      return {
+        width: 1024,
+        mounted: true,
+        containerRef: { current: null },
+        measureWidth: () => {},
+      };
     },
   };
 });
@@ -113,6 +138,10 @@ describe('DashboardGrid in edit mode', () => {
       expect(onLayoutChange).toHaveBeenCalled();
     });
     expect(onLayoutChange.mock.calls[0][0][0]).toMatchObject({ x: 6, w: 4 });
+    expect(mockGridProps.width).toBe(1024);
+    expect(mockGridProps.dragConfig).toEqual({
+      handle: '.dashboard-card-drag-handle',
+    });
 
     fireEvent.change(screen.getByDisplayValue('Group'), {
       target: { value: 'Updated group' },
@@ -139,5 +168,32 @@ describe('DashboardGrid in edit mode', () => {
     });
 
     expect(onLayoutChange).not.toHaveBeenCalled();
+    expect(mockGridProps.constraints).toBeUndefined();
+  });
+
+  test('should snap dragged cards to allowed columns via a layout constraint', () => {
+    render(
+      <DashboardGrid
+        loading={false}
+        selectedTemplate={selectedTemplate}
+        isEditMode={true}
+      />
+    );
+
+    const constraints = mockGridProps.constraints ?? [];
+    expect(
+      constraints.map((constraint) => {
+        return constraint.name;
+      })
+    ).toEqual(['snapToAllowedColumns', 'gridBounds', 'minMaxSize']);
+
+    const item = { i: 'card-1', x: 0, y: 0, w: 4, h: 2 };
+    const snap = (layoutItem: MockLayoutItem, x: number, y: number) => {
+      return constraints[0].constrainPosition?.(layoutItem, x, y, {});
+    };
+    expect(snap(item, 5, 3)).toEqual({ x: 6, y: 3 });
+    expect(snap(item, 1, 0)).toEqual({ x: 0, y: 0 });
+    // A full-width card can only start at column 0.
+    expect(snap({ ...item, w: 12 }, 7, 1)).toEqual({ x: 0, y: 1 });
   });
 });

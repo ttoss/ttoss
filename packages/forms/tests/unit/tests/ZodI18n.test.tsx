@@ -94,7 +94,7 @@ describe('configureZodI18n', () => {
     configureZodI18n({ locale: 'pt-BR', formatMessage });
 
     expect(z.number().safeParse('x').error?.issues[0].message).toBe(
-      'Tipo inválido: esperado número, recebido string'
+      'Entrada inválida: esperava um número, recebeu um texto'
     );
   });
 
@@ -184,7 +184,7 @@ test('Form renders Zod errors in the I18nProvider locale', async () => {
   // The pt-BR catalog loads asynchronously; Zod follows once it has.
   await waitFor(() => {
     expect(z.number().safeParse('x').error?.issues[0].message).toMatch(
-      /^Tipo inválido/
+      /^Entrada inválida: esperava um número/
     );
   });
 

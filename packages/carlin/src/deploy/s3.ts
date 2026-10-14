@@ -14,9 +14,9 @@ import {
 import { Upload } from '@aws-sdk/lib-storage';
 import { glob } from 'glob';
 import mime from 'mime-types';
-import log from 'npmlog';
 
 import { getEnvVar } from '../utils';
+import { log } from '../utils/log';
 
 const logPrefix = 's3';
 

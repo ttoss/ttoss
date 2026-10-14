@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/theme",
-  "version": "2.15.0",
+  "version": "3.0.0",
   "description": "Theme for packages.",
   "keywords": [],
   "repository": {
@@ -37,9 +37,9 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "jest": "^30.4.2",
-    "theme-ui": "^0.17.2",
-    "tsdown": "^0.22.2"
+    "jest": "^30.5.2",
+    "theme-ui": "^0.17.4",
+    "tsdown": "^0.23.1"
   },
   "peerDependencies": {
     "@ttoss/react-icons": "workspace:^"

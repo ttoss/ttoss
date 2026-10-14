@@ -1,6 +1,6 @@
 {
   "name": "@docs/fsl-storybook",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "description": "FSL Storybook — the dedicated component catalog for @ttoss/fsl-ui and @ttoss/fsl-theme: every public component with variant stories, organized by FSL entity, browsable in both modes and themes, with a machine-readable AI surface (component manifests + llms.txt).",
   "repository": {
@@ -24,20 +24,20 @@
     "@fontsource-variable/inter": "^5.3.0",
     "@ttoss/fsl-theme": "workspace:^",
     "@ttoss/fsl-ui": "workspace:^",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
   },
   "devDependencies": {
     "@fluentui/storybook-llms-extractor": "^0.0.4",
-    "@storybook/addon-a11y": "^10.5.3",
-    "@storybook/addon-docs": "^10.5.3",
-    "@storybook/addon-mcp": "^0.7.0",
-    "@storybook/react-vite": "^10.5.3",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.0.2",
-    "eslint-plugin-storybook": "10.4.1",
-    "storybook": "^10.5.3",
+    "@storybook/addon-a11y": "^10.6.2",
+    "@storybook/addon-docs": "^10.6.2",
+    "@storybook/addon-mcp": "^10.6.2",
+    "@storybook/react-vite": "^10.6.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "eslint-plugin-storybook": "10.6.2",
+    "storybook": "^10.6.2",
     "typescript": "~6.0.3",
-    "vite": "^8.0.16"
+    "vite": "^8.3.4"
   }
 }

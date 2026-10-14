@@ -1,5 +1,12 @@
-import AWS from 'aws-sdk';
-import log from 'npmlog';
+import type { Output } from '@aws-sdk/client-cloudformation';
+import {
+  CloudFrontClient,
+  CreateInvalidationCommand,
+  type CreateInvalidationCommandInput,
+} from '@aws-sdk/client-cloudfront';
+
+import { CLOUDFRONT_REGION } from '../../config';
+import { log } from '../../utils/log';
 
 const CLOUDFRONT_DISTRIBUTION_ID = 'CloudFrontDistributionId';
 
@@ -8,7 +15,7 @@ const logPrefix = 'static-app';
 export const invalidateCloudFront = async ({
   outputs,
 }: {
-  outputs?: AWS.CloudFormation.Outputs;
+  outputs?: Output[];
 }) => {
   log.info(logPrefix, 'Invalidating CloudFront...');
 
@@ -24,7 +31,7 @@ export const invalidateCloudFront = async ({
   if (cloudFrontDistributionIDOutput?.OutputValue) {
     const distributionId = cloudFrontDistributionIDOutput.OutputValue;
 
-    const params: AWS.CloudFront.CreateInvalidationRequest = {
+    const params: CreateInvalidationCommandInput = {
       DistributionId: distributionId,
       InvalidationBatch: {
         CallerReference: new Date().toISOString(),
@@ -35,10 +42,13 @@ export const invalidateCloudFront = async ({
       },
     };
 
-    const cloudFront = new AWS.CloudFront();
+    /**
+     * CloudFront is a global service whose API is signed in us-east-1.
+     */
+    const cloudFront = new CloudFrontClient({ region: CLOUDFRONT_REGION });
 
     try {
-      await cloudFront.createInvalidation(params).promise();
+      await cloudFront.send(new CreateInvalidationCommand(params));
       log.info(
         logPrefix,
         `CloudFront Distribution ID ${distributionId} invalidated with success.`

@@ -84,15 +84,11 @@ const NavigationControlMock = jest.fn().mockImplementation(() => {
   return {};
 });
 
-const maplibreglStub = {
+// maplibre-gl 6 ships named exports only (no default export), so the stub
+// mirrors that: a stray default import resolves to `undefined` here too.
+module.exports = {
+  __esModule: true,
   Map: MapMock,
   Marker: MarkerMock,
   NavigationControl: NavigationControlMock,
-};
-
-export default maplibreglStub;
-module.exports = {
-  __esModule: true,
-  default: maplibreglStub,
-  ...maplibreglStub,
 };

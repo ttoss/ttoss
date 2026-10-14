@@ -70,6 +70,16 @@ test.each([
   });
 });
 
+test('should read YAML merge keys and keep unquoted dates as strings', () => {
+  const configFilePath = getConfigFilePath('configMerge.yml');
+  expect(readConfigFileSync({ configFilePath })).toEqual({
+    defaults: { region: 'us-east-1', version: '2010-09-09' },
+    environments: {
+      Production: { region: 'sa-east-1', version: '2010-09-09' },
+    },
+  });
+});
+
 test('read config when importing package', async () => {
   const configFilePath = getConfigFilePath('importingPackage.ts');
   const config = await readConfigFile({ configFilePath });

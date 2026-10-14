@@ -1,8 +1,7 @@
-import { spawn } from 'node:child_process';
+import { type ChildProcess, spawn } from 'node:child_process';
 import { chmodSync, createReadStream, existsSync, statSync } from 'node:fs';
 
-import log from 'npmlog';
-
+import { log } from '../../utils/log';
 import { generateSSHCommand, generateSSHCommandWithPwd } from './VMconnection';
 
 /**
@@ -63,6 +62,136 @@ export interface DeployVMParams {
 
 const logPrefix = 'deploy-vm';
 
+/**
+ * SSH requires private keys to have restricted permissions (400 or 600 only).
+ * Fix them when `fixPermissions` is set, otherwise throw.
+ */
+const ensureKeyPermissions = ({
+  keyPath,
+  fixPermissions,
+}: {
+  keyPath: string;
+  fixPermissions: boolean;
+}) => {
+  const stats = statSync(keyPath);
+  // Extract only permission bits (last 9 bits) using bitwise AND with octal 777
+  // This masks out file type bits, leaving only user/group/other permissions
+  const permissions = stats.mode & 0o777;
+
+  // 0o400 = read-only by owner (r--------)
+  // 0o600 = read-write by owner (rw-------)
+  if (permissions === 0o400 || permissions === 0o600) {
+    log.info(logPrefix, `SSH key permissions OK: ${permissions.toString(8)}`);
+    return;
+  }
+
+  const permissionStr = permissions.toString(8);
+
+  if (fixPermissions) {
+    log.info(
+      logPrefix,
+      `Fixing SSH key permissions: ${keyPath} (${permissionStr} → 400)`
+    );
+    chmodSync(keyPath, 0o400);
+    log.info(logPrefix, `Permissions set to 400 (read-only by owner)`);
+    return;
+  }
+
+  log.error(
+    logPrefix,
+    `SSH key permissions too open: ${permissionStr} (octal)`
+  );
+  log.error(logPrefix, `SSH requires permissions 400 or 600`);
+  log.error(logPrefix, `Fix manually: chmod 400 ${keyPath}`);
+  log.error(logPrefix, `Or run with: --fix-permissions`);
+  throw new Error(
+    `Invalid SSH key permissions: ${permissionStr}. Expected 400 or 600.`
+  );
+};
+
+/**
+ * Check and fix SSH key permissions. Only invalid permissions stop the
+ * deployment; failing to read them is a warning.
+ */
+const checkKeyPermissions = ({
+  keyPath,
+  fixPermissions,
+}: {
+  keyPath: string;
+  fixPermissions: boolean;
+}) => {
+  try {
+    ensureKeyPermissions({ keyPath, fixPermissions });
+  } catch (error: unknown) {
+    if (!(error instanceof Error)) {
+      log.warn(
+        logPrefix,
+        'Warning: Could not check key permissions: Unknown error'
+      );
+      return;
+    }
+
+    if (error.message.includes('Invalid SSH key permissions')) {
+      throw error; // Re-throw permission errors
+    }
+
+    log.warn(
+      logPrefix,
+      `Warning: Could not check key permissions: ${error.message}`
+    );
+  }
+};
+
+const getSSHCommand = ({
+  userName,
+  host,
+  keyPath,
+  password,
+  port,
+}: Pick<
+  DeployVMParams,
+  'userName' | 'host' | 'keyPath' | 'password' | 'port'
+>) => {
+  if (keyPath) {
+    return {
+      sshCommand: generateSSHCommand({ userName, host, keyPath, port }),
+      sshPassword: undefined,
+    };
+  }
+
+  // Explicit type narrowing: password must be defined due to earlier validation
+  if (!password) {
+    throw new Error(
+      'Password authentication selected but no password was provided.'
+    );
+  }
+
+  const result = generateSSHCommandWithPwd({ userName, host, password, port });
+
+  return { sshCommand: result.command, sshPassword: result.password };
+};
+
+const validateStdin = (
+  stdin: ChildProcess['stdin']
+): stdin is NonNullable<ChildProcess['stdin']> => {
+  if (!stdin) {
+    log.error(logPrefix, 'SSH process stdin is null or undefined');
+    return false;
+  }
+
+  if (stdin.destroyed) {
+    log.error(logPrefix, 'SSH process stdin has been destroyed');
+    return false;
+  }
+
+  if (!stdin.writable) {
+    log.error(logPrefix, 'SSH process stdin is not writable');
+    return false;
+  }
+
+  return true;
+};
+
 export const deployVM = async ({
   userName,
   host,
@@ -88,113 +217,21 @@ export const deployVM = async ({
       throw new Error(`SSH key not found at ${keyPath}`);
     }
 
-    // Check and fix SSH key permissions if using key authentication
     if (keyPath) {
-      try {
-        const stats = statSync(keyPath);
-        // Extract only permission bits (last 9 bits) using bitwise AND with octal 777
-        // This masks out file type bits, leaving only user/group/other permissions
-        const permissions = stats.mode & 0o777;
-
-        // SSH requires private keys to have restricted permissions (400 or 600 only)
-        // 0o400 = read-only by owner (r--------)
-        // 0o600 = read-write by owner (rw-------)
-        const isSecure = permissions === 0o400 || permissions === 0o600;
-
-        if (!isSecure) {
-          const permissionStr = permissions.toString(8);
-          const fixCommand = `chmod 400 ${keyPath}`;
-
-          if (fixPermissions) {
-            log.info(
-              logPrefix,
-              `Fixing SSH key permissions: ${keyPath} (${permissionStr} → 400)`
-            );
-            chmodSync(keyPath, 0o400);
-            log.info(logPrefix, `Permissions set to 400 (read-only by owner)`);
-          } else {
-            log.error(
-              logPrefix,
-              `SSH key permissions too open: ${permissionStr} (octal)`
-            );
-            log.error(logPrefix, `SSH requires permissions 400 or 600`);
-            log.error(logPrefix, `Fix manually: ${fixCommand}`);
-            log.error(logPrefix, `Or run with: --fix-permissions`);
-            throw new Error(
-              `Invalid SSH key permissions: ${permissionStr}. Expected 400 or 600.`
-            );
-          }
-        } else {
-          log.info(
-            logPrefix,
-            `SSH key permissions OK: ${permissions.toString(8)}`
-          );
-        }
-      } catch (error: unknown) {
-        if (error instanceof Error) {
-          if (error.message.includes('Invalid SSH key permissions')) {
-            throw error; // Re-throw permission errors
-          }
-          log.warn(
-            logPrefix,
-            `Warning: Could not check key permissions: ${error.message}`
-          );
-        } else {
-          log.warn(
-            logPrefix,
-            'Warning: Could not check key permissions: Unknown error'
-          );
-        }
-      }
+      checkKeyPermissions({ keyPath, fixPermissions });
     }
 
-    let sshCommand: string[];
-    let sshPassword: string | undefined;
-
-    if (keyPath) {
-      sshCommand = generateSSHCommand({ userName, host, keyPath, port });
-    } else {
-      // Explicit type narrowing: password must be defined due to earlier validation
-      if (!password) {
-        throw new Error(
-          'Password authentication selected but no password was provided.'
-        );
-      }
-
-      const result = generateSSHCommandWithPwd({
-        userName,
-        host,
-        password,
-        port,
-      });
-      sshCommand = result.command;
-      sshPassword = result.password;
-    }
+    const { sshCommand, sshPassword } = getSSHCommand({
+      userName,
+      host,
+      keyPath,
+      password,
+      port,
+    });
 
     const sshProcess = spawn(sshCommand[0], sshCommand.slice(1), {
       stdio: ['pipe', 'inherit', 'inherit'],
     });
-
-    const validateStdin = (
-      stdin: typeof sshProcess.stdin
-    ): stdin is NonNullable<typeof stdin> => {
-      if (!stdin) {
-        log.error(logPrefix, 'SSH process stdin is null or undefined');
-        return false;
-      }
-
-      if (stdin.destroyed) {
-        log.error(logPrefix, 'SSH process stdin has been destroyed');
-        return false;
-      }
-
-      if (!stdin.writable) {
-        log.error(logPrefix, 'SSH process stdin is not writable');
-        return false;
-      }
-
-      return true;
-    };
 
     // Validate stdin is available and writable
     if (!validateStdin(sshProcess.stdin)) {

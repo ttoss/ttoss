@@ -214,7 +214,7 @@ export default defineConfig(
       // ── Unicorn ───────────────────────────────────────────────────────────
       // Enforce modern JavaScript best practices and Node.js idioms.
       // https://github.com/sindresorhus/eslint-plugin-unicorn
-      'unicorn/no-array-for-each': 'error',
+      'unicorn/no-for-each': 'error',
       'unicorn/catch-error-name': 'error',
       'unicorn/prefer-node-protocol': 'error',
     },

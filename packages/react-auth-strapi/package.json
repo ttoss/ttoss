@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-auth-strapi",
-  "version": "0.11.10",
+  "version": "0.12.0",
   "description": "Authentication components and abstractions for React apps using Strapi.",
   "keywords": [
     "React",
@@ -33,7 +33,7 @@
     "test": "jest --projects tests/unit"
   },
   "devDependencies": {
-    "@jest/globals": "^29.7.0",
+    "@jest/globals": "^30.5.2",
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "@ttoss/react-auth-core": "workspace:^",
@@ -41,10 +41,10 @@
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
-    "@types/react": "^19.2.14",
-    "jest": "^30.4.2",
-    "react": "^19.2.6",
-    "tsdown": "^0.22.2"
+    "@types/react": "^19.3.0",
+    "jest": "^30.5.2",
+    "react": "^19.3.0",
+    "tsdown": "^0.23.1"
   },
   "peerDependencies": {
     "@ttoss/react-auth-core": "workspace:^",

@@ -79,6 +79,7 @@ const listen = async (url: string) => {
       'Content-Type': 'application/json',
       Accept: 'application/json, text/event-stream',
       'Mcp-Method': 'subscriptions/listen',
+      'MCP-Protocol-Version': '2026-07-28',
     },
     body: JSON.stringify(listenBody),
   });

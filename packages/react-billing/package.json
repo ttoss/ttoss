@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-billing",
-  "version": "0.10.8",
+  "version": "0.11.0",
   "description": "Billing UI components for React apps.",
   "keywords": [
     "React",
@@ -32,16 +32,16 @@
     "@ttoss/ui": "workspace:^"
   },
   "devDependencies": {
-    "@jest/globals": "^29.7.0",
+    "@jest/globals": "^30.5.2",
     "@ttoss/components": "workspace:^",
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "@types/react": "^19.2.14",
-    "jest": "^30.4.2",
-    "react": "^19.2.6",
-    "tsdown": "^0.22.2"
+    "@types/react": "^19.3.0",
+    "jest": "^30.5.2",
+    "react": "^19.3.0",
+    "tsdown": "^0.23.1"
   },
   "peerDependencies": {
     "@ttoss/components": "workspace:^",

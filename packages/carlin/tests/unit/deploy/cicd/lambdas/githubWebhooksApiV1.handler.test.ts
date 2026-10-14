@@ -1,27 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
-// const putObjectMock = jest.fn().mockReturnValue({ promise: jest.fn() });
-
-import AWS from 'aws-sdk';
-
-import { executeTasks } from './executeTasks';
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { mockClient } from 'aws-sdk-client-mock';
+import { executeTasks } from 'src/deploy/cicd/lambdas/executeTasks';
 import {
   githubWebhooksApiV1Handler,
   webhooks,
-} from './githubWebhooksApiV1.handler';
+} from 'src/deploy/cicd/lambdas/githubWebhooksApiV1.handler';
 
-jest.mock('aws-sdk', () => {
-  return {
-    ECS: jest.fn(),
-    S3: jest.fn().mockReturnValue({
-      putObject: jest.fn().mockReturnValue({ promise: jest.fn() }),
-    }),
-  };
-});
+const s3Mock = mockClient(S3Client);
 
-// const executeTasksMock = jest.fn();
-
-jest.mock('./executeTasks', () => {
+jest.mock('src/deploy/cicd/lambdas/executeTasks', () => {
   return {
     executeTasks: jest.fn(),
     shConditionalCommands: jest.fn(),
@@ -44,12 +32,21 @@ const xHubSignature = 'xHubSignature';
 
 const webhooksReceiveMock = jest.spyOn(webhooks, 'receive');
 
-const s3 = new AWS.S3();
+const expectSinglePutObject = ({ key }: { key: string }) => {
+  const calls = s3Mock.commandCalls(PutObjectCommand);
+  expect(calls).toHaveLength(1);
+  expect(calls[0].args[0].input).toEqual({
+    Body: expect.any(Buffer),
+    Bucket: 'base-stack',
+    Key: key,
+  });
+};
 
 beforeEach(() => {
   delete process.env.PIPELINES_JSON;
   delete process.env.TRIGGER_PIPELINES_OBJECT_KEY_PREFIX;
   delete process.env.BASE_STACK_BUCKET_NAME;
+  s3Mock.reset();
 });
 
 afterEach(() => {
@@ -109,15 +106,7 @@ test('should execute main handler only one time per webhook', async () => {
     body: JSON.stringify({ ref: 'refs/heads/main' }),
   });
 
-  expect(s3.putObject).toHaveBeenCalledWith(
-    expect.objectContaining({
-      Body: expect.any(Buffer),
-      Bucket: 'base-stack',
-      Key: 'some/prefix/main.zip',
-    })
-  );
-
-  expect(s3.putObject().promise).toHaveBeenCalledTimes(1);
+  expectSinglePutObject({ key: 'some/prefix/main.zip' });
 });
 
 test('should call S3 putObject for tag', async () => {
@@ -136,15 +125,7 @@ test('should call S3 putObject for tag', async () => {
     body: JSON.stringify(body),
   });
 
-  expect(s3.putObject).toHaveBeenCalledWith(
-    expect.objectContaining({
-      Body: expect.any(Buffer),
-      Bucket: 'base-stack',
-      Key: 'some/prefix/main.zip',
-    })
-  );
-
-  expect(s3.putObject().promise).toHaveBeenCalledTimes(1);
+  expectSinglePutObject({ key: 'some/prefix/main.zip' });
 
   expect(response).toMatchObject({ body: '{"ok":true}', statusCode: 200 });
 });
@@ -165,15 +146,7 @@ test('should call S3 putObject for main', async () => {
     body: JSON.stringify(body),
   });
 
-  expect(s3.putObject).toHaveBeenCalledWith(
-    expect.objectContaining({
-      Body: expect.any(Buffer),
-      Bucket: 'base-stack',
-      Key: 'some/prefix/tag.zip',
-    })
-  );
-
-  expect(s3.putObject().promise).toHaveBeenCalledTimes(1);
+  expectSinglePutObject({ key: 'some/prefix/tag.zip' });
 
   expect(response).toMatchObject({ body: '{"ok":true}', statusCode: 200 });
 });

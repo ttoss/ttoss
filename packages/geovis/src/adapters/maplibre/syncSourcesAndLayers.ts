@@ -1,4 +1,4 @@
-import type maplibregl from 'maplibre-gl';
+import type * as maplibregl from 'maplibre-gl';
 
 import type { VisualizationSpec } from '../../spec/types';
 import { planCrossfades, runCrossfades } from './crossfade';
@@ -139,8 +139,8 @@ const writePaintProperty = (
   }
   map.setPaintProperty(
     layer.id,
-    property,
-    value as maplibregl.StyleSpecification
+    property as keyof maplibregl.AllPaintProperties,
+    value as maplibregl.AllPaintProperties[keyof maplibregl.AllPaintProperties]
   );
 };
 
@@ -172,7 +172,7 @@ const upsertCompanionOutline = (
     visible,
   } = outline;
   const visibility = visible ? 'visible' : 'none';
-  const widthExpr = [
+  const widthExpr: maplibregl.ExpressionSpecification = [
     'case',
     ['boolean', ['feature-state', stateKey], false],
     lineWidth,

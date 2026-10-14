@@ -523,6 +523,8 @@ const similar = await db.Document.findAll({
 
 For advanced vector operations and indexing, see the [pgvector documentation](https://github.com/pgvector/pgvector#readme).
 
+The `pgvector` Node.js package ships ESM only. If your tests run Jest in CommonJS mode, let `babel-jest` transform it with `transformIgnorePatterns: ['/node_modules/(?!(\\.pnpm/)?pgvector)']`.
+
 ## Monorepo Usage
 
 Share models across packages with this setup:

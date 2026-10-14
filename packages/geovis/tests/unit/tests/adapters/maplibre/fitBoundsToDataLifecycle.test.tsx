@@ -35,7 +35,7 @@
  */
 
 import { act, render, waitFor } from '@testing-library/react';
-import maplibregl from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl';
 import * as React from 'react';
 import { GeoVisCanvas } from 'src/react/GeoVisCanvas';
 import { GeoVisProvider } from 'src/react/GeoVisProvider';

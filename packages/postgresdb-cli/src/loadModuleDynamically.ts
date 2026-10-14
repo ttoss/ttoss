@@ -23,7 +23,7 @@ export const loadModuleDynamically = async <T = Record<string, unknown>>({
   // Load environment-specific .env file if environment is provided
   if (environment) {
     const envPath = path.resolve(process.cwd(), `.env.${environment}`);
-    config({ path: envPath, override: true });
+    config({ path: envPath, override: true, quiet: true });
     // eslint-disable-next-line no-console
     console.info(`Loaded environment variables from .env.${environment}`);
   }

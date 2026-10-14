@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/graphql-api-server",
-  "version": "0.15.6",
+  "version": "0.16.0",
   "description": "GraphQL API Server",
   "keywords": [
     "api",
@@ -32,16 +32,16 @@
   "dependencies": {
     "@ttoss/auth-core": "workspace:^",
     "@ttoss/http-server": "workspace:^",
-    "graphql-yoga": "^5.10.4"
+    "graphql-yoga": "^5.24.4"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@ttoss/graphql-api": "workspace:^",
-    "@types/supertest": "^6.0.2",
-    "graphql": "^16.11.0",
-    "jest": "^30.4.2",
-    "supertest": "^7.2.2",
-    "tsdown": "^0.22.2"
+    "@types/supertest": "^7.2.1",
+    "graphql": "^17.0.2",
+    "jest": "^30.5.2",
+    "supertest": "^7.3.1",
+    "tsdown": "^0.23.1"
   },
   "peerDependencies": {
     "@ttoss/graphql-api": "workspace:^",

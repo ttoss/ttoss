@@ -14,6 +14,8 @@ You will also need to install the following peer dependencies:
 pnpm add maplibre-gl @ttoss/ui
 ```
 
+`maplibre-gl` must be 6.4.1 or later. MapLibre 6 starts its web worker from `maplibre-gl-worker.mjs` next to its own module; when your bundler does not serve that file there (webpack and Vite do not), emit `maplibre-gl/dist/maplibre-gl-worker.mjs` as an asset and pass its URL to `setWorkerUrl` from `maplibre-gl` before the first map mounts.
+
 ## Getting Started
 
 Wrap your application (or a section of it) with `GeoVisProvider`, passing a `VisualizationSpec`:
@@ -1054,9 +1056,7 @@ map and its overlays; the reference apps anchor sidebars at `z-index: 2`.
 ```typescript
 const spec: VisualizationSpec = {
   engine: 'maplibre',
-  sources: [
-    /* ... */
-  ],
+  sources: [/* ... */],
   layers: [
     { id: 'states-line', sourceId: 'states', geometry: 'line' },
     { id: 'kitchens-pts', sourceId: 'kitchens', geometry: 'point' },

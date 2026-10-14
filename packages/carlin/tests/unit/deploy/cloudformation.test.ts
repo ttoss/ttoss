@@ -27,15 +27,6 @@ jest.mock('src/deploy/cloudformation.core', () => {
     ...jest.requireActual('src/deploy/cloudformation.core'),
     deploy: jest.fn(),
     validateTemplate: jest.fn(),
-    cloudFormationV2: jest.fn().mockReturnValue({
-      validateTemplate: jest.fn(() => {
-        return {
-          promise: () => {
-            return Promise.resolve();
-          },
-        };
-      }),
-    }),
   };
 });
 

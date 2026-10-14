@@ -1,4 +1,4 @@
-import type maplibregl from 'maplibre-gl';
+import type * as maplibregl from 'maplibre-gl';
 
 import type { VisualizationSpec } from '../../spec/types';
 import { extrusionTransitionMs } from './extrusionLifecycle';
@@ -53,8 +53,8 @@ export const setPaintWhenReady = (
     if (!map.getLayer(layerId)) return false;
     map.setPaintProperty(
       layerId,
-      property,
-      value as maplibregl.StyleSpecification
+      property as keyof maplibregl.AllPaintProperties,
+      value as maplibregl.AllPaintProperties[keyof maplibregl.AllPaintProperties]
     );
     return true;
   };

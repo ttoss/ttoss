@@ -16,8 +16,7 @@ import {
 // const logPrefix = 'addDefaultsCloudFormation';
 
 export type CloudFormationParams =
-  | CreateStackCommandInput
-  | UpdateStackCommandInput;
+  CreateStackCommandInput | UpdateStackCommandInput;
 
 export type Args = {
   params: CloudFormationParams;
@@ -184,10 +183,12 @@ const addRetainToCriticalResources: TemplateModifier = async (template) => {
   const environment = getEnvironment();
 
   for (const [, resource] of Object.entries(template.Resources)) {
-    if (CRITICAL_RESOURCES_TYPES.includes(resource.Type)) {
-      if (!resource.DeletionPolicy && environment) {
-        resource.DeletionPolicy = 'Retain';
-      }
+    if (
+      CRITICAL_RESOURCES_TYPES.includes(resource.Type) &&
+      !resource.DeletionPolicy &&
+      environment
+    ) {
+      resource.DeletionPolicy = 'Retain';
     }
   }
 };

@@ -6,11 +6,20 @@ import * as typescriptPlugin from '@graphql-codegen/typescript';
 import { Command } from 'commander';
 import * as esbuild from 'esbuild';
 import { parse } from 'graphql';
-import log from 'npmlog';
 
 import pkg from '../package.json';
 
 const logPrefix = 'graphql-api';
+
+/**
+ * Logs to stderr as `info <prefix> <message>`, keeping stdout free.
+ */
+const log = {
+  info: (prefix: string, message: string) => {
+    // eslint-disable-next-line no-console
+    console.error(`info ${prefix} ${message}`);
+  },
+};
 
 const importSchemaComposer = async ({
   external = [],

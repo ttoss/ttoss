@@ -1,4 +1,3 @@
-// /* eslint-disable import/first */
 // import * as faker from 'faker';
 
 // const deployMock = jest.fn();

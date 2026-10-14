@@ -2,14 +2,22 @@ import 'react-grid-layout/css/styles.css';
 
 import { Box, Flex, Global, Spinner } from '@ttoss/ui';
 import * as React from 'react';
-import { type Layout, Responsive, WidthProvider } from 'react-grid-layout';
+import {
+  type Layout,
+  type LayoutItem,
+  Responsive,
+  useContainerWidth,
+} from 'react-grid-layout';
+import {
+  gridBounds,
+  type LayoutConstraint,
+  minMaxSize,
+} from 'react-grid-layout/core';
 
 import type { DashboardTemplate } from './Dashboard';
 import { type DashboardCard as DashboardCardProps } from './DashboardCard';
 import { buildGridItems } from './DashboardGridItems';
 import { useDashboard } from './DashboardProvider';
-
-const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const ALLOWED_X_COLUMNS = [0, 3, 6, 9];
 
@@ -57,6 +65,22 @@ const BREAKPOINTS = {
 };
 const COLS = { xs: 2, sm: 2, md: 12, lg: 12, xl: 12, '2xl': 12 };
 
+/**
+ * Snaps dragged cards to the allowed x columns while dragging. react-grid-layout
+ * v2 treats callback arguments as read-only, so snapping is a layout constraint
+ * (applied before the default grid-bounds and min/max-size constraints).
+ */
+const snapToAllowedColumns: LayoutConstraint = {
+  name: 'snapToAllowedColumns',
+  constrainPosition: (item, x, y) => {
+    return { x: snapXToAllowedColumns(x, item.w ?? 1, COLS_NUM), y };
+  },
+};
+
+const EDIT_MODE_CONSTRAINTS = [snapToAllowedColumns, gridBounds, minMaxSize];
+
+const DRAG_CONFIG = { handle: '.dashboard-card-drag-handle' };
+
 const buildLayout = (template: DashboardTemplate, isEditMode: boolean) => {
   const base = template.grid.map((item) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -84,7 +108,7 @@ const buildSlotLayout = (
   });
   if (!selectedItem) return base;
   const slotY = selectedItem.y + selectedItem.h;
-  const slotItem: Layout = {
+  const slotItem: LayoutItem = {
     i: `${SLOT_KEY}:${slotIndex}`,
     x: 0,
     y: slotY,
@@ -94,7 +118,7 @@ const buildSlotLayout = (
     isResizable: false,
     static: true,
   };
-  const insertAndShift = (items: Layout[]) => {
+  const insertAndShift = (items: Layout) => {
     const shifted = items.map((item) => {
       if (item.y >= slotY) return { ...item, y: item.y + slotH };
       return item;
@@ -142,7 +166,7 @@ const getCardClickable = (
   return clickableCardFilter ? clickableCardFilter(card) : true;
 };
 
-const snapLayout = (current: Layout[]): Layout[] => {
+const snapLayout = (current: Layout): LayoutItem[] => {
   return current.map((item) => {
     const w = item.w ?? 1;
     return { ...item, x: snapXToAllowedColumns(item.x, w, COLS_NUM), w };
@@ -151,18 +175,13 @@ const snapLayout = (current: Layout[]): Layout[] => {
 
 const useDragHandlers = (
   isEditMode: boolean,
-  onLayoutChange: (l: Layout[]) => void
+  onLayoutChange: (l: Layout) => void
 ) => {
   const isDraggingRef = React.useRef(false);
-  const handleLayoutChange = (current: Layout[]) => {
+  const handleLayoutChange = (current: Layout) => {
     if (isEditMode) onLayoutChange(snapLayout(current));
   };
-  const snapDrag = (_l: Layout[], _o: Layout, newItem: Layout) => {
-    if (isEditMode)
-      newItem.x = snapXToAllowedColumns(newItem.x, newItem.w ?? 1, COLS_NUM);
-  };
-  const handleDragStop = (l: Layout[], o: Layout, newItem: Layout) => {
-    snapDrag(l, o, newItem);
+  const handleDragStop = () => {
     setTimeout(() => {
       isDraggingRef.current = false;
     }, 0);
@@ -173,7 +192,6 @@ const useDragHandlers = (
   return {
     isDraggingRef,
     handleLayoutChange,
-    snapDrag,
     handleDragStop,
     onDragStart,
   };
@@ -249,10 +267,9 @@ type ActiveGridProps = {
   selectedCardKeys: string[];
   renderCardDetail?: DashboardGridProps['renderCardDetail'];
   makeClose: (key: string) => () => void;
-  handleLayoutChange: (l: Layout[]) => void;
-  snapDrag: (_l: Layout[], _o: Layout, newItem: Layout) => void;
+  handleLayoutChange: (l: Layout) => void;
   onDragStart: () => void;
-  handleDragStop: (l: Layout[], o: Layout, newItem: Layout) => void;
+  handleDragStop: () => void;
 };
 
 const ActiveGrid = ({
@@ -268,46 +285,51 @@ const ActiveGrid = ({
   renderCardDetail,
   makeClose,
   handleLayoutChange,
-  snapDrag,
   onDragStart,
   handleDragStop,
 }: ActiveGridProps) => {
+  const { width, containerRef, mounted } = useContainerWidth();
   return (
-    <ResponsiveGridLayout
-      className="layout"
-      layouts={layouts}
-      breakpoints={BREAKPOINTS}
-      cols={COLS}
-      rowHeight={32}
-      margin={[10, 10]}
-      containerPadding={[0, 0]}
-      onLayoutChange={handleLayoutChange}
-      onDrag={snapDrag}
-      onDragStart={onDragStart}
-      onDragStop={handleDragStop}
-      draggableHandle=".dashboard-card-drag-handle"
-    >
-      {buildGridItems({
-        template: selectedTemplate,
-        currency,
-        isEditMode,
-        isCardClickable,
-        handleCardClick,
-        onRemove: removeCard,
-        onTitleChange: (key, title) => {
-          return updateCard(key, { title });
-        },
-      })}
-      {selectedCardKeys.map((key, index) => {
-        return renderSlotChild(
-          selectedTemplate,
-          key,
-          renderCardDetail,
-          makeClose,
-          index
-        );
-      })}
-    </ResponsiveGridLayout>
+    <div ref={containerRef}>
+      {mounted && (
+        <Responsive
+          className="layout"
+          width={width}
+          layouts={layouts}
+          breakpoints={BREAKPOINTS}
+          cols={COLS}
+          rowHeight={32}
+          margin={[10, 10]}
+          containerPadding={[0, 0]}
+          constraints={isEditMode ? EDIT_MODE_CONSTRAINTS : undefined}
+          onLayoutChange={handleLayoutChange}
+          onDragStart={onDragStart}
+          onDragStop={handleDragStop}
+          dragConfig={DRAG_CONFIG}
+        >
+          {buildGridItems({
+            template: selectedTemplate,
+            currency,
+            isEditMode,
+            isCardClickable,
+            handleCardClick,
+            onRemove: removeCard,
+            onTitleChange: (key, title) => {
+              return updateCard(key, { title });
+            },
+          })}
+          {selectedCardKeys.map((key, index) => {
+            return renderSlotChild(
+              selectedTemplate,
+              key,
+              renderCardDetail,
+              makeClose,
+              index
+            );
+          })}
+        </Responsive>
+      )}
+    </div>
   );
 };
 
@@ -325,13 +347,8 @@ export const DashboardGrid = ({
   ...rest
 }: DashboardGridProps) => {
   const { onLayoutChange, removeCard, updateCard } = useDashboard();
-  const {
-    isDraggingRef,
-    handleLayoutChange,
-    snapDrag,
-    handleDragStop,
-    onDragStart,
-  } = useDragHandlers(isEditMode, onLayoutChange);
+  const { isDraggingRef, handleLayoutChange, handleDragStop, onDragStart } =
+    useDragHandlers(isEditMode, onLayoutChange);
   const { isClickable: isCardClickable, handleCardClick } = useCardClickHandler(
     {
       isEditMode,
@@ -410,7 +427,6 @@ export const DashboardGrid = ({
           renderCardDetail={renderCardDetail}
           makeClose={makeClose}
           handleLayoutChange={handleLayoutChange}
-          snapDrag={snapDrag}
           onDragStart={onDragStart}
           handleDragStop={handleDragStop}
         />

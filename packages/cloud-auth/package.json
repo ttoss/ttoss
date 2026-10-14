@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/cloud-auth",
-  "version": "0.18.0",
+  "version": "0.19.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
@@ -24,8 +24,8 @@
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@types/jest": "^30.0.0",
-    "jest": "^30.4.2",
-    "tsdown": "^0.22.2",
+    "jest": "^30.5.2",
+    "tsdown": "^0.23.1",
     "typescript": "~6.0.3"
   },
   "publishConfig": {

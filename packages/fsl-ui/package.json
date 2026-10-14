@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/fsl-ui",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Semantic, token-native component library for the ttoss ecosystem. Built on React Aria Components with @ttoss/fsl-theme tokens.",
   "repository": {
     "type": "git",
@@ -26,29 +26,29 @@
     "verify:treeshake": "node scripts/verify-treeshake.mjs"
   },
   "dependencies": {
-    "@iconify-icon/react": "^2.2.0",
+    "@iconify-icon/react": "^3.0.4",
     "@iconify/icons-lucide": "^1.2.135",
     "@ttoss/fsl-theme": "workspace:^",
-    "react-aria-components": "~1.19.0"
+    "react-aria-components": "~1.22.1"
   },
   "devDependencies": {
-    "@hookform/resolvers": "^5.2.2",
-    "@testing-library/react": "^16.3.2",
-    "@testing-library/user-event": "^14.6.1",
+    "@hookform/resolvers": "^5.9.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.8",
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@types/jest-axe": "^3.5.9",
-    "@types/node": "^24.12.0",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.0.2",
+    "@types/node": "^24.19.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "esbuild": "^0.28.2",
-    "jest": "^30.4.2",
-    "jest-axe": "^10.0.0",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6",
-    "react-hook-form": "^7.71.1",
-    "tsdown": "^0.22.2",
-    "zod": "^4.4.3"
+    "jest": "^30.5.2",
+    "jest-axe": "^11.0.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-hook-form": "^7.90.0",
+    "tsdown": "^0.23.1",
+    "zod": "^4.6.7"
   },
   "peerDependencies": {
     "react": ">=18",

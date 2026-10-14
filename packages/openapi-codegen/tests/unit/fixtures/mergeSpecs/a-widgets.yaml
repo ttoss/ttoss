@@ -34,6 +34,13 @@ components:
       properties:
         id:
           type: string
+        createdAt: &timestamp
+          type: string
+          format: date
+          example: 2024-01-02
+        updatedAt:
+          <<: *timestamp
+          description: Last update
   responses:
     WidgetList:
       description: A list of widgets

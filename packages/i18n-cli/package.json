@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/i18n-cli",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
@@ -23,7 +23,7 @@
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
-    "@formatjs/cli-lib": "^8.5.1",
+    "@formatjs/cli-lib": "^10.0.10",
     "fast-glob": "^3.3.3",
     "minimist": "^1.2.8"
   },
@@ -31,9 +31,9 @@
     "@ttoss/config": "workspace:^",
     "@types/jest": "^30.0.0",
     "@types/minimist": "^1.2.5",
-    "jest": "^30.4.2",
+    "jest": "^30.5.2",
     "ts-node": "^10.9.2",
-    "tsdown": "^0.22.2"
+    "tsdown": "^0.23.1"
   },
   "publishConfig": {
     "access": "public",

@@ -1,4 +1,4 @@
-import type maplibregl from 'maplibre-gl';
+import type * as maplibregl from 'maplibre-gl';
 
 /** Default duration of an extruded layer's rise and fall, in milliseconds. */
 export const DEFAULT_EXTRUSION_TRANSITION_MS = 600;

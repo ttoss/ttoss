@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import log from 'npmlog';
 import type { CommandModule, InferredOptionTypes } from 'yargs';
 
 import { addGroupToOptions, getAwsAccountId } from '../utils';
+import { log } from '../utils/log';
 import { deployBaseStackCommand } from './baseStack/command';
 import { deployCicdCommand } from './cicd/command';
 import { deployCloudFormation, destroyCloudFormation } from './cloudformation';

@@ -1,5 +1,4 @@
 // Mock the dependencies
-import log from 'npmlog';
 import type { Argv, CommandModule } from 'yargs';
 import yargs from 'yargs';
 
@@ -7,6 +6,7 @@ import * as commandModule from '../../../../src/deploy/vm/command';
 import { options } from '../../../../src/deploy/vm/command.options';
 // Import after mocking
 import { deployVM } from '../../../../src/deploy/vm/deployVM';
+import { log } from '../../../../src/utils/log';
 
 jest.mock('../../../../src/deploy/vm/deployVM', () => {
   return {
@@ -14,7 +14,7 @@ jest.mock('../../../../src/deploy/vm/deployVM', () => {
   };
 });
 
-jest.mock('npmlog');
+jest.mock('../../../../src/utils/log');
 
 // Mock command.options to allow customization while reusing real values
 jest.mock('../../../../src/deploy/vm/command.options', () => {
@@ -34,8 +34,8 @@ jest.mock('../../../../src/deploy/vm/command.options', () => {
 const deployVMCommand = commandModule.deployVMCommand;
 
 // Type casting for typed access to mocks
-const mockLogInfo = log.info as jest.MockedFunction<typeof log.info>;
-const mockLogError = log.error as jest.MockedFunction<typeof log.error>;
+const mockLogInfo = jest.mocked(log.info);
+const mockLogError = jest.mocked(log.error);
 
 const mockDeployVM = deployVM as jest.MockedFunction<typeof deployVM>;
 
