@@ -44,6 +44,6 @@
     "react": "^19.3.0",
     "react-aria-components": "~1.22.1",
     "react-dom": "^19.3.0",
-    "typescript": "~7.0.2"
+    "typescript": "~6.0.3"
   }
 }
