@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/logger",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "A simple module to configure and send notifications to services like Discord from your applications.",
   "keywords": [],
   "repository": {

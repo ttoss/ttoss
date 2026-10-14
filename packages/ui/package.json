@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/ui",
-  "version": "6.12.0",
+  "version": "7.0.0",
   "description": "Primitive layout, typographic, and other components for styling applications.",
   "keywords": [
     "React",
