@@ -181,12 +181,13 @@ export const loadDotEnv = () => {
   if (environment) {
     const result = dotenv.config({
       path: path.resolve(process.cwd(), `.env.${environment}`),
+      quiet: true,
     });
     if (result.error) {
-      dotenv.config();
+      dotenv.config({ quiet: true });
     }
   } else {
-    dotenv.config();
+    dotenv.config({ quiet: true });
   }
 };
 

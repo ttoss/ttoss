@@ -584,9 +584,6 @@ importers:
       '@ttoss/test-utils':
         specifier: workspace:^
         version: link:../test-utils
-      '@types/adm-zip':
-        specifier: ^0.6.0
-        version: 0.6.0
       '@types/aws-lambda':
         specifier: ^8.10.164
         version: 8.10.164
@@ -596,15 +593,9 @@ importers:
       '@types/findup-sync':
         specifier: ^4.0.5
         version: 4.0.5
-      '@types/glob':
-        specifier: ^9.0.0
-        version: 9.0.0
       '@types/jest':
         specifier: ^30.0.0
         version: 30.0.0
-      '@types/js-yaml':
-        specifier: ^4.0.9
-        version: 4.0.9
       '@types/mime-types':
         specifier: ^3.0.1
         version: 3.0.1
@@ -717,9 +708,6 @@ importers:
       '@types/jest':
         specifier: ^30.0.0
         version: 30.0.0
-      '@types/js-yaml':
-        specifier: ^4.0.9
-        version: 4.0.9
       '@types/node':
         specifier: ^24.19.2
         version: 24.19.2
@@ -740,7 +728,7 @@ importers:
         version: 9.3.1(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@theme-ui/css':
         specifier: ^0.17.4
-        version: 0.17.4(@emotion/react@11.14.0(react@19.3.0))
+        version: 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))
       '@types/react-modal':
         specifier: ^3.16.3
         version: 3.16.3
@@ -2361,9 +2349,6 @@ importers:
       '@types/jest':
         specifier: ^30.0.0
         version: 30.0.0
-      '@types/js-yaml':
-        specifier: ^4.0.9
-        version: 4.0.9
       '@types/react':
         specifier: ^19.3.0
         version: 19.3.0
@@ -7942,10 +7927,6 @@ packages:
   '@types/accepts@1.3.7':
     resolution: {integrity: sha512-Pay9fq2lM2wXPWbteBsRAGiWH2hig4ZE2asK+mm7kUzlxRTfL961rj89I6zV/E3PcIkDqyuBEcMxFT7rccugeQ==}
 
-  '@types/adm-zip@0.6.0':
-    resolution: {integrity: sha512-4BJwT30zsKqyYk+PgJS+LQzVrLh0bHragg9etHGg679uuBbNDbSaLsJy+DaJQZM8AvESHB+t3ruVzbrn6BUsMQ==}
-    deprecated: This is a stub types definition. adm-zip provides its own type definitions, so you do not need this installed.
-
   '@types/aria-query@5.0.4':
     resolution: {integrity: sha512-rfT93uj5s0PRL7EzccGMs3brplhcrghnDoV26NqKhCAS1hVo+WdNsPvE/yb6ilfr5hi2MEk6d5EWJTKdxg8jVw==}
 
@@ -8137,10 +8118,6 @@ packages:
 
   '@types/geojson@7946.0.16':
     resolution: {integrity: sha512-6C8nqWur3j98U6+lXDfTUWIfgvZU+EumvpHKcYjujKH7woYyLj2sUmff0tRhrqM7BohUw7Pz3ZB1jj2gW9Fvmg==}
-
-  '@types/glob@9.0.0':
-    resolution: {integrity: sha512-00UxlRaIUvYm4R4W9WYkN8/J+kV8fmOQ7okeH6YFtGWFMt3odD45tpG5yA5wnL7HE6lLgjaTW5n14ju2hl2NNA==}
-    deprecated: This is a stub types definition. glob provides its own type definitions, so you do not need this installed.
 
   '@types/google.maps@3.66.6':
     resolution: {integrity: sha512-F+m8NwLXXDf43/GsxmyceugqpBtKMaQGM/raqyINTG+r7fFgCXKxTZJ6Aw4QeMwUkIJwDtYVeUhndq3RFNkuDA==}
@@ -23663,7 +23640,7 @@ snapshots:
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.3.0)(react@19.3.0)
       '@theme-ui/core': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.3.0))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))
       deepmerge: 4.3.1
       react: 19.3.0
 
@@ -23674,7 +23651,7 @@ snapshots:
       '@styled-system/should-forward-prop': 5.1.5
       '@styled-system/space': 5.1.2
       '@theme-ui/core': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.3.0))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))
       '@theme-ui/theme-provider': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       '@types/styled-system': 5.1.25
       react: 19.3.0
@@ -23682,11 +23659,11 @@ snapshots:
   '@theme-ui/core@0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.3.0)(react@19.3.0)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.3.0))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))
       deepmerge: 4.3.1
       react: 19.3.0
 
-  '@theme-ui/css@0.17.4(@emotion/react@11.14.0(react@19.3.0))':
+  '@theme-ui/css@0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.3.0)(react@19.3.0)
       csstype: 3.2.3
@@ -23695,13 +23672,13 @@ snapshots:
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.3.0)(react@19.3.0)
       '@theme-ui/core': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.3.0))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))
       react: 19.3.0
 
   '@theme-ui/match-media@0.17.4(@theme-ui/core@0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0))(@theme-ui/css@0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)))(react@19.3.0)':
     dependencies:
       '@theme-ui/core': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.3.0))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))
       react: 19.3.0
 
   '@theme-ui/theme-provider@0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
@@ -23709,7 +23686,7 @@ snapshots:
       '@emotion/react': 11.14.0(@types/react@19.3.0)(react@19.3.0)
       '@theme-ui/color-modes': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       '@theme-ui/core': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.3.0))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))
       react: 19.3.0
 
   '@tmcp/adapter-valibot@0.1.6(tmcp@1.20.0(typescript@6.0.3))(valibot@1.5.0(typescript@6.0.3))':
@@ -23771,10 +23748,6 @@ snapshots:
   '@types/accepts@1.3.7':
     dependencies:
       '@types/node': 24.19.2
-
-  '@types/adm-zip@0.6.0':
-    dependencies:
-      adm-zip: 0.6.1
 
   '@types/aria-query@5.0.4': {}
 
@@ -24029,10 +24002,6 @@ snapshots:
       '@types/node': 24.19.2
 
   '@types/geojson@7946.0.16': {}
-
-  '@types/glob@9.0.0':
-    dependencies:
-      glob: 13.0.6
 
   '@types/google.maps@3.66.6': {}
 
@@ -33610,7 +33579,7 @@ snapshots:
       '@theme-ui/color-modes': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       '@theme-ui/components': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(@theme-ui/theme-provider@0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0))(react@19.3.0)
       '@theme-ui/core': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.3.0))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))
       '@theme-ui/global': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       '@theme-ui/theme-provider': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react: 19.3.0

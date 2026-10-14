@@ -330,6 +330,7 @@ describe('dotenv loading', () => {
     expect(dotenv.config).toHaveBeenCalledTimes(1);
     expect(dotenv.config).toHaveBeenCalledWith({
       path: expect.stringContaining('.env.Production'),
+      quiet: true,
     });
   });
 
@@ -345,8 +346,9 @@ describe('dotenv loading', () => {
     expect(dotenv.config).toHaveBeenCalledTimes(2);
     expect(dotenv.config).toHaveBeenNthCalledWith(1, {
       path: expect.stringContaining('.env.Production'),
+      quiet: true,
     });
-    expect(dotenv.config).toHaveBeenNthCalledWith(2);
+    expect(dotenv.config).toHaveBeenNthCalledWith(2, { quiet: true });
   });
 
   test('loads base .env when no environment is specified', () => {
@@ -355,7 +357,7 @@ describe('dotenv loading', () => {
     loadDotEnv();
 
     expect(dotenv.config).toHaveBeenCalledTimes(1);
-    expect(dotenv.config).toHaveBeenCalledWith();
+    expect(dotenv.config).toHaveBeenCalledWith({ quiet: true });
   });
 });
 

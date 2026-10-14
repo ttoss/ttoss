@@ -66,13 +66,10 @@
   },
   "devDependencies": {
     "@ttoss/test-utils": "workspace:^",
-    "@types/adm-zip": "^0.6.0",
     "@types/aws-lambda": "^8.10.164",
     "@types/deep-equal": "^1.0.4",
     "@types/findup-sync": "^4.0.5",
-    "@types/glob": "^9.0.0",
     "@types/jest": "^30.0.0",
-    "@types/js-yaml": "^4.0.9",
     "@types/mime-types": "^3.0.1",
     "@types/node": "^24.19.2",
     "@types/semver": "^7.8.0",
