@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.19.2](https://github.com/ttoss/ttoss/compare/%40ttoss%2Freact-dashboard%400.19.1...%40ttoss%2Freact-dashboard%400.19.2) (2026-10-15)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
 ## [0.19.1](https://github.com/ttoss/ttoss/compare/%40ttoss%2Freact-dashboard%400.19.0...%40ttoss%2Freact-dashboard%400.19.1) (2026-10-14)
 
 **Note:** Version bump only for package @ttoss/react-dashboard

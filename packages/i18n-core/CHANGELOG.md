@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.2](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fi18n-core%400.9.1...%40ttoss%2Fi18n-core%400.9.2) (2026-10-15)
+
+### Bug Fixes
+
+- **i18n-core:** keep formatjs's default onError when none is given ([#1284](https://github.com/ttoss/ttoss/issues/1284)) ([e9dc9e6](https://github.com/ttoss/ttoss/commit/e9dc9e62de2c0fdc8cf6cc144442893dd5cfcc76)), closes [oneclickads/monorepo#4439](https://github.com/oneclickads/monorepo/issues/4439)
+
 ## [0.9.1](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fi18n-core%400.9.0...%40ttoss%2Fi18n-core%400.9.1) (2026-10-14)
 
 **Note:** Version bump only for package @ttoss/i18n-core

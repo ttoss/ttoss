@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.3](https://github.com/ttoss/ttoss/compare/%40ttoss%2Freact-i18n%403.0.2...%40ttoss%2Freact-i18n%403.0.3) (2026-10-15)
+
+**Note:** Version bump only for package @ttoss/react-i18n
+
 ## [3.0.2](https://github.com/ttoss/ttoss/compare/%40ttoss%2Freact-i18n%403.0.1...%40ttoss%2Freact-i18n%403.0.2) (2026-10-14)
 
 ### Bug Fixes
