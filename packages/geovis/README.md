@@ -139,6 +139,15 @@ Consumers previously wrapped their spec with a `FitBoundsToBbox` helper (Storybo
 
 If the spec already sets `view.center`/`view.zoom` explicitly (e.g. a saved camera preset), leave it as-is — auto-fit only activates when both are omitted.
 
+### Navigation control and the home view
+
+The MapLibre adapter adds a navigation control to the top-right corner: zoom in, zoom out and a compass. Dragging the compass rotates and tilts the map. Clicking it flies the camera back to the map's **home view** in 800 ms, rather than only turning it north:
+
+- with `view.center`/`view.zoom` declared, to that view — `pitch` and `bearing` included, so a tilted, turned map returns tilted and turned (a missing `center` or `zoom` keeps the current one);
+- without them, to a fresh fit of the data, as on mount (see [Auto fit-to-data](#auto-fit-to-data)); while URL sources are still being fetched and there is no box yet, only the angles return.
+
+The home view is the `view` the app's spec declares. A camera move made through `setView` — or a `dispatch` action compiled to it, such as a search result — moves the map without replacing it, so the compass returns to where the spec says the map starts. The compass's tooltip says so: _Drag to rotate map, click to return to the initial view_.
+
 ### `LegendSpec`
 
 Each entry in `spec.legends` (or `layer.legends`) defines one choropleth legend.

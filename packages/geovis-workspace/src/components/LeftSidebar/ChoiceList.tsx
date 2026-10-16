@@ -73,9 +73,50 @@ const RowText = ({
 };
 
 /**
- * One row of a `list` choice: icon, label and sublabel, with a check on the
- * chosen one. The check repeats what the tint says, so the state still reads
- * where the tint cannot be told apart.
+ * The option's `count`, in the numeric face on a small pill: tinted with the
+ * row while it is the chosen one, grey otherwise.
+ */
+const CountPill = ({ count, on }: { count: number | string; on: boolean }) => {
+  return (
+    <Box
+      as="span"
+      data-testid="choice-count"
+      sx={{
+        flexShrink: 0,
+        fontFamily: FONT_MONO,
+        fontSize: '11px',
+        fontWeight: 500,
+        lineHeight: 1.4,
+        paddingX: '6px',
+        paddingY: '1px',
+        borderRadius: '4px',
+        color: on ? COLOR.primaryDark : COLOR.textFaint,
+        backgroundColor: on ? COLOR.primaryTintStrong : COLOR.fill,
+      }}
+    >
+      {count}
+    </Box>
+  );
+};
+
+/** The check on the chosen option, repeating what the tint says. */
+const Check = () => {
+  return (
+    <Box
+      data-testid="choice-check"
+      sx={{ display: 'flex', flexShrink: 0, color: COLOR.primary }}
+    >
+      <Icon icon="lucide:check" style={{ fontSize: '12px' }} />
+    </Box>
+  );
+};
+
+/**
+ * One row of a `list` choice: icon, label and sublabel, with the option's
+ * `count` on the right, or — without one — a check on the chosen row. The
+ * check repeats what the tint says, so the state still reads where the tint
+ * cannot be told apart; a count pill takes the tint itself, so it does the
+ * same.
  */
 export const ChoiceListRow = ({
   option,
@@ -121,14 +162,88 @@ export const ChoiceListRow = ({
         labelWeight={appearance.labelWeight}
       />
 
-      {on ? (
+      {option.count !== undefined ? (
+        <CountPill count={option.count} on={on} />
+      ) : on ? (
+        <Check />
+      ) : null}
+    </Box>
+  );
+};
+
+/**
+ * One button of a `grid` choice: a compact cell with the label on the left —
+ * cut with an ellipsis, whole on hover, so every row keeps its height — and a
+ * check on the chosen one.
+ */
+export const ChoiceGridButton = ({
+  option,
+  on,
+  disabled,
+  onPick,
+}: {
+  option: GeovisWorkspaceSidebarChoiceOption;
+  on: boolean;
+  disabled: boolean;
+  onPick: () => void;
+}) => {
+  const appearance = rowAppearance({ on, disabled });
+
+  return (
+    <Box
+      as="button"
+      {...({
+        type: 'button',
+        role: 'radio',
+        disabled,
+        title: option.label,
+      } as object)}
+      aria-checked={on}
+      aria-disabled={disabled ? 'true' : undefined}
+      onClick={onPick}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px',
+        minWidth: 0,
+        height: '34px',
+        paddingX: '10px',
+        borderRadius: '8px',
+        textAlign: 'left',
+        fontSize: '12px',
+        fontWeight: appearance.labelWeight,
+        color: appearance.labelColor,
+        border: '1px solid',
+        borderColor: appearance.borderColor,
+        backgroundColor: appearance.backgroundColor,
+        cursor: appearance.cursor,
+        opacity: appearance.opacity,
+        transition: 'background-color 0.15s ease, border-color 0.15s ease',
+        '&:hover': appearance.hover,
+      }}
+    >
+      {option.icon ? (
         <Box
-          data-testid="choice-check"
-          sx={{ display: 'flex', flexShrink: 0, color: COLOR.primary }}
+          sx={{ display: 'flex', flexShrink: 0, color: appearance.iconColor }}
         >
-          <Icon icon="lucide:check" style={{ fontSize: '12px' }} />
+          <Icon icon={option.icon} style={{ fontSize: '12px' }} />
         </Box>
       ) : null}
+
+      <Box
+        as="span"
+        sx={{
+          flex: 1,
+          minWidth: 0,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {option.label}
+      </Box>
+
+      {on ? <Check /> : null}
     </Box>
   );
 };

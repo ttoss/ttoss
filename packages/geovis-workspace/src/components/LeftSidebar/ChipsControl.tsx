@@ -51,8 +51,7 @@ const Chip = ({
         type: 'button',
         title: fill ? option.label : undefined,
       } as object)}
-      // The accent says "on" to the eye; this says it to assistive tech, which
-      // matters most where one chip must always be on.
+      // The accent says "on" to the eye; this says it to assistive tech.
       aria-pressed={active}
       onClick={onToggle}
       sx={{
@@ -186,8 +185,7 @@ export const ChipsControl = ({
         })}
       </ChipsLayout>
 
-      {/* A required set can never be emptied, so it offers no way to. */}
-      {selected.length > 0 && !control.required ? (
+      {selected.length > 0 ? (
         <Box
           as="button"
           {...({ type: 'button' } as object)}
