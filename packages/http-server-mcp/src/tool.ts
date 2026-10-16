@@ -105,6 +105,61 @@ const isStandardSchema = (
   return '~standard' in schema;
 };
 
+type ValidationResult = Awaited<
+  ReturnType<StandardSchemaWithJSON['~standard']['validate']>
+>;
+
+/**
+ * Enforces a closed schema while naming each undeclared argument. The SDK's
+ * own `additionalProperties: false` issue carries no path, so the argument to
+ * drop goes unnamed; the rest of the schema is checked with it left open.
+ */
+const namingUndeclared = ({
+  schema,
+  standard,
+}: {
+  schema: JsonObjectSchema;
+  standard: StandardSchemaWithJSON;
+}): StandardSchemaWithJSON => {
+  const { additionalProperties: _closed, ...openSchema } = schema;
+  const open = fromJsonSchema(openSchema as JsonSchemaType);
+  const declared = new Set(Object.keys(schema.properties ?? {}));
+
+  const withUndeclared = ({
+    value,
+    result,
+  }: {
+    value: unknown;
+    result: ValidationResult;
+  }): ValidationResult => {
+    // The SDK refuses non-object arguments before any tool schema runs.
+    const undeclared = Object.keys(Object(value)).filter((key) => {
+      return !declared.has(key);
+    });
+    if (undeclared.length === 0) return result;
+    return {
+      issues: [
+        ...undeclared.map((key) => {
+          return { message: 'is not an argument of this tool', path: [key] };
+        }),
+        ...(result.issues ?? []),
+      ],
+    };
+  };
+
+  return {
+    '~standard': {
+      ...standard['~standard'],
+      validate: async (value: unknown) => {
+        return withUndeclared({
+          value,
+          result: await open['~standard'].validate(value),
+        });
+      },
+    },
+  } as StandardSchemaWithJSON;
+};
+
 /**
  * Converts a JSON Schema into the Standard Schema `registerTool` accepts.
  *
@@ -125,6 +180,9 @@ const fromJsonObjectSchema = ({
   // recursive `JsonSchemaType`. The runtime shape is the same JSON Schema
   // object either way — only the static type is looser here.
   const standard = fromJsonSchema(schema as JsonSchemaType);
+  if (validate && schema.additionalProperties === false) {
+    return namingUndeclared({ schema, standard });
+  }
   if (validate) return standard;
   return {
     '~standard': {

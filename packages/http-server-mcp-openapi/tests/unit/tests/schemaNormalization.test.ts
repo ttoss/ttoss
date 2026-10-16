@@ -330,7 +330,10 @@ describe('server-managed body properties pinned by the spec', () => {
         },
       },
     });
-    expect(only.inputSchema).toEqual({ type: 'object' });
+    expect(only.inputSchema).toEqual({
+      type: 'object',
+      additionalProperties: false,
+    });
     expect(only.body!({})).toEqual({ wait: true });
   });
 
