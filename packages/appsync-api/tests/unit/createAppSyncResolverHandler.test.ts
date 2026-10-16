@@ -425,3 +425,129 @@ describe('testing context enrichment via createContext', () => {
     );
   });
 });
+
+describe('connection count from the AppSync selection set', () => {
+  const resolveAuthors = async (info: Record<string, unknown>) => {
+    const handler = createAppSyncResolverHandler({ schemaComposer });
+
+    const event = {
+      info: { parentTypeName: 'Query', fieldName: 'authors', ...info },
+      arguments: { first: 2 },
+      source: {},
+    } as any;
+
+    return handler(event, {} as any, jest.fn());
+  };
+
+  const edgesList = ['edges', 'edges/node', 'edges/node/id'];
+
+  test.each([
+    {
+      case: 'selection set without the resolved field',
+      selectionSetGraphQL:
+        '{\n  count\n  edges {\n    node {\n      id\n    }\n  }\n}',
+      selectionSetList: ['count', ...edgesList],
+    },
+    {
+      case: 'selection set wrapped in the resolved field',
+      selectionSetGraphQL:
+        '{\n  authors(first: $first) {\n    count\n    edges {\n      node {\n        id\n      }\n    }\n  }\n}',
+      selectionSetList: ['count', ...edgesList],
+    },
+    {
+      case: 'aliased count',
+      selectionSetGraphQL:
+        '{\n  total: count\n  edges {\n    node {\n      id\n    }\n  }\n}',
+      selectionSetList: ['total', ...edgesList],
+    },
+    {
+      case: 'count selected through a named fragment spread',
+      selectionSetGraphQL: '{\n  ...AuthorsList_authors\n}',
+      selectionSetList: ['count', ...edgesList],
+    },
+    {
+      case: 'count selected through a nested named fragment spread',
+      selectionSetGraphQL:
+        '{\n  edges {\n    node {\n      id\n    }\n  }\n  ... on AuthorConnection {\n    ...AuthorsCount\n  }\n}',
+      selectionSetList: ['count', ...edgesList],
+    },
+    {
+      case: 'named fragment spread beside an inline fragment',
+      selectionSetGraphQL:
+        '{\n  ...AuthorsCount\n  ... on AuthorConnection {\n    edges {\n      node {\n        id\n      }\n    }\n  }\n}',
+      selectionSetList: ['count', ...edgesList],
+    },
+  ])(
+    'should return the total count, $case',
+    async ({ selectionSetGraphQL, selectionSetList }) => {
+      const response = await resolveAuthors({
+        selectionSetGraphQL,
+        selectionSetList,
+      });
+
+      expect(response.count).toEqual(AUTHORS.length);
+      expect(response.edges).toHaveLength(2);
+    }
+  );
+
+  test('should not run the count query when count is not selected', async () => {
+    const response = await resolveAuthors({
+      selectionSetGraphQL: '{\n  edges {\n    node {\n      id\n    }\n  }\n}',
+      selectionSetList: edgesList,
+    });
+
+    expect(response.count).toEqual(0);
+    expect(response.edges).toHaveLength(2);
+  });
+
+  test('should still resolve when the selection set cannot be parsed', async () => {
+    const response = await resolveAuthors({
+      selectionSetGraphQL: '{\n  count\n  edges {',
+      selectionSetList: ['count', ...edgesList],
+    });
+
+    expect(response.edges).toHaveLength(2);
+  });
+
+  test('should keep the AppSync info fields for middlewares', async () => {
+    const infos: any[] = [];
+
+    const handler = createAppSyncResolverHandler({
+      schemaComposer,
+      middlewares: [
+        async (resolve: any, root: any, args: any, context: any, info: any) => {
+          infos.push(info);
+          return resolve(root, args, context, info);
+        },
+      ],
+    });
+
+    const selectionSetList = ['count', ...edgesList];
+
+    await handler(
+      {
+        info: {
+          parentTypeName: 'Query',
+          fieldName: 'authors',
+          variables: { first: 2 },
+          selectionSetGraphQL: '{\n  count\n}',
+          selectionSetList,
+        },
+        arguments: { first: 2 },
+        source: {},
+      } as any,
+      {} as any,
+      jest.fn()
+    );
+
+    expect(infos[0]).toMatchObject({
+      parentTypeName: 'Query',
+      fieldName: 'authors',
+      variables: { first: 2 },
+      selectionSetList,
+      variableValues: { first: 2 },
+    });
+    expect(infos[0].parentType.name).toEqual('Query');
+    expect(infos[0].returnType.toString()).toEqual('AuthorConnection');
+  });
+});
