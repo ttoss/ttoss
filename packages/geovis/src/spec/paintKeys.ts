@@ -6,6 +6,7 @@ import type {
   LinePaint,
   RasterPaint,
   SymbolPaint,
+  VisualizationLayer,
 } from './types';
 
 /*
@@ -79,4 +80,25 @@ export const PAINT_KEYS: Record<GeoVisGeometryType, ReadonlyArray<string>> = {
   raster: Object.keys(RASTER),
   heatmap: Object.keys(HEATMAP),
   symbol: Object.keys(SYMBOL),
+};
+
+/**
+ * The `paint` keys one layer accepts. An extruded polygon (`extrusion` set) is
+ * a prism with no outline, so its `lineColor` has no counterpart and is not
+ * accepted. The extrusion test mirrors `isExtrudedLayer` in
+ * `adapters/maplibre/layerTranslation.ts`; kept here because `spec/` must not
+ * import the adapter. Keep the two in step.
+ *
+ * @example
+ * paintKeysFor({ geometry: 'polygon', extrusion: {} }); // ['fillColor', 'fillOpacity']
+ */
+export const paintKeysFor = (
+  layer: Pick<VisualizationLayer, 'geometry' | 'extrusion'>
+): ReadonlyArray<string> => {
+  if (layer.geometry === 'polygon' && layer.extrusion !== undefined) {
+    return PAINT_KEYS.polygon.filter((key) => {
+      return key !== 'lineColor';
+    });
+  }
+  return PAINT_KEYS[layer.geometry];
 };
