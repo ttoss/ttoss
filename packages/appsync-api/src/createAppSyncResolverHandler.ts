@@ -8,6 +8,8 @@ import type {
 } from 'aws-lambda';
 import { getNullableType, type GraphQLObjectType, isEnumType } from 'graphql';
 
+import { buildResolveInfo } from './buildResolveInfo';
+
 export type AppSyncResolverHandler<
   TArguments,
   TResult,
@@ -145,7 +147,7 @@ export const createAppSyncResolverHandler = ({
       source,
       argsWithEnumValues,
       context,
-      info as any
+      buildResolveInfo({ info, schema, parentType, field }) as any
     );
 
     if (response instanceof Error) {
