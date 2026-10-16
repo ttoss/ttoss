@@ -23,6 +23,11 @@ import type {
 } from '../../spec/types';
 import { applySetView } from './applySetView';
 import { applyBasemapLabelsVisibility } from './basemapLabels';
+import {
+  COMPASS_LOCALE,
+  HomeNavigationControl,
+  type HomeViewSource,
+} from './compassHome';
 import { attachFitToData } from './fitBoundsToData';
 import { toMaplibreLayer } from './layerTranslation';
 import { reapplyLegendDrivenFillPaint } from './legendFillPaint';
@@ -99,9 +104,11 @@ const bboxEqual = (
 };
 
 // Constructs the MapLibre instance with the spec's initial (static) camera.
+// `getHome` feeds the compass, which flies back to the declared view.
 const createMap = (
   spec: VisualizationSpec,
-  container: HTMLElement
+  container: HTMLElement,
+  getHome: () => HomeViewSource | undefined
 ): { map: maplibregl.Map; style: MapLibreStyle } => {
   const view = spec.view ?? {};
   const style = resolveStyle(spec);
@@ -114,17 +121,21 @@ const createMap = (
     minZoom: view.maxZoomOut,
     pitch: view.pitch ?? 0,
     bearing: view.bearing ?? 0,
+    locale: COMPASS_LOCALE,
     ...(spec.attributionControlEnabled === false
       ? { attributionControl: false as const }
       : {}),
   });
   map.addControl(
-    new maplibregl.NavigationControl({
-      visualizePitch: true,
-      visualizeRoll: true,
-      showZoom: true,
-      showCompass: true,
-    })
+    new HomeNavigationControl(
+      {
+        visualizePitch: true,
+        visualizeRoll: true,
+        showZoom: true,
+        showCompass: true,
+      },
+      getHome
+    )
   );
   silenceNonCancelableTouchMove(map);
   return { map, style };
@@ -315,7 +326,11 @@ const mountView = (
   syncFit: (vs: ViewState, s: VisualizationSpec) => void
 ): MountedView => {
   // Stage 1: synchronous placeholder camera (explicit view, or [0,0]/zoom 1).
-  const { map, style } = createMap(spec, container);
+  // The compass reads the view's state at click time: `updateView` replaces
+  // its spec in place, so the home view follows the declared one.
+  const { map, style } = createMap(spec, container, () => {
+    return state.views.get(viewId);
+  });
   const viewState: ViewState = {
     map,
     spec,

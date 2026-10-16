@@ -1045,3 +1045,39 @@ describe('createMapLibreAdapter — attributionControlEnabled', () => {
     expect(mountWith(false)).toMatchObject({ attributionControl: false });
   });
 });
+
+describe('compass home view source', () => {
+  // The compass reads its home view at click time, through the getter the
+  // adapter hands the navigation control.
+  const mountAdapter = () => {
+    const map = makeMapMock();
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    const spec = makeSpec();
+    const mounted = adapter.mount(makeContainer(), spec, 'v');
+    const control = map.addControl.mock.calls[0]?.[0] as {
+      getSource: () => { spec: unknown } | undefined;
+    };
+    return { adapter, control, mounted, spec };
+  };
+
+  test('reads the mounted spec', () => {
+    const { control, spec } = mountAdapter();
+    expect(control.getSource()?.spec).toBe(spec);
+  });
+
+  test('follows a spec update', () => {
+    const { adapter, control, spec } = mountAdapter();
+    const next = { ...spec, view: { ...spec.view, zoom: 12 } };
+    adapter.update(next);
+    expect(control.getSource()?.spec).toBe(next);
+  });
+
+  test('is undefined once the view is destroyed', () => {
+    const { control, mounted } = mountAdapter();
+    mounted.destroy();
+    expect(control.getSource()).toBeUndefined();
+  });
+});
