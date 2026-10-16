@@ -7,7 +7,12 @@ import type {
   GeovisWorkspaceSidebarChoiceSetting,
 } from '../../context/GeovisWorkspaceContext';
 import { useGeovisWorkspace } from '../../hooks/useGeovisWorkspace';
-import { ChoiceListRow, ChoiceSingleCard } from './ChoiceList';
+import { resolveColumns } from './ChipsControl';
+import {
+  ChoiceGridButton,
+  ChoiceListRow,
+  ChoiceSingleCard,
+} from './ChoiceList';
 import { COLOR, FONT_MONO } from './theme';
 import { ChoiceSettingsContext } from './useChoiceSettings';
 import { isGateOpen, useSidebarSections } from './useSections';
@@ -224,10 +229,36 @@ const DisabledHint = ({ hint }: { hint: string }) => {
   );
 };
 
+/** The radio group's own layout: a column of rows, or a grid of cells. */
+const groupSx = ({
+  layout,
+  optionCount,
+}: {
+  layout: GeovisWorkspaceSidebarChoiceSetting['layout'];
+  optionCount: number;
+}) => {
+  if (layout === 'list') {
+    return { display: 'flex', flexDirection: 'column' as const, gap: '4px' };
+  }
+  // Cards share one row; a grid wraps its options into the declared columns.
+  const columns =
+    typeof layout === 'object'
+      ? resolveColumns(layout.columns)
+      : Math.max(1, optionCount);
+  return {
+    display: 'grid',
+    // `minmax(0, 1fr)`, not `1fr`: a bare `1fr` floors at the content's
+    // width, so one long label would widen its column past the others.
+    gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+    gap: '6px',
+  };
+};
+
 /**
- * A choice among a few options: side by side as cards, or — `layout: 'list'`
- * — one row each, top to bottom, which turns into a read-only card when the
- * list declares a single option.
+ * A choice among a few options: side by side as cards; — `layout: 'list'` —
+ * one row each, top to bottom, which turns into a read-only card when the
+ * list declares a single option; or — `layout: { kind: 'grid', columns }` —
+ * compact buttons in equal columns.
  *
  * Presentational: which option is on, and what a pick does, come from the
  * sidebar's lifted choice state (`useChoiceSettings`). That state publishes
@@ -270,7 +301,9 @@ export const ChoiceSettingControl = ({
     return !available && option.disabledHint ? [option.disabledHint] : [];
   });
 
-  const list = control.layout === 'list';
+  const { layout } = control;
+  const list = layout === 'list';
+  const grid = typeof layout === 'object' && layout.kind === 'grid';
 
   if (list && options.length === 1) {
     return <ChoiceSingleCard option={options[0]} />;
@@ -281,27 +314,21 @@ export const ChoiceSettingControl = ({
       <Box
         role="radiogroup"
         aria-label={label}
-        sx={
-          list
-            ? { display: 'flex', flexDirection: 'column', gap: '4px' }
-            : {
-                display: 'grid',
-                gridTemplateColumns: `repeat(${Math.max(1, options.length)}, minmax(0, 1fr))`,
-                gap: '6px',
-              }
-        }
+        sx={groupSx({ layout, optionCount: options.length })}
       >
         {availability.map(({ option, available }) => {
-          if (list) {
+          const pick = () => {
+            choices.pick({ menuId, value: option.value });
+          };
+          if (list || grid) {
+            const Row = list ? ChoiceListRow : ChoiceGridButton;
             return (
-              <ChoiceListRow
+              <Row
                 key={option.value}
                 option={option}
                 on={option.value === effective}
                 disabled={!available}
-                onPick={() => {
-                  choices.pick({ menuId, value: option.value });
-                }}
+                onPick={pick}
               />
             );
           }
@@ -312,9 +339,7 @@ export const ChoiceSettingControl = ({
               on={option.value === effective}
               disabled={!available}
               glyphColors={control.glyphColors ?? DEFAULT_GLYPH_COLORS}
-              onPick={() => {
-                choices.pick({ menuId, value: option.value });
-              }}
+              onPick={pick}
             />
           );
         })}

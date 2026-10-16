@@ -387,26 +387,23 @@ are grouped wherever they show — the bars' tooltips, the `unitLabel` readout a
 the compact HUD — using the locale declared on `I18nProvider`, whether or not a
 message bundle was loaded for it, while the keys stay ungrouped because they are
 years),
-`chips` (`{ kind, menuId?, options, multiple?, defaultSelected?, layout?, required? }` — `layout`
+`chips` (`{ kind, menuId?, options, multiple?, defaultSelected?, layout? }` — `layout`
 is `{ kind: 'wrap' }` by default, each chip as wide as its label and wrapping
 onto the next line, or `{ kind: 'grid', columns }` for equal-width columns whose
 chips cut an overlong label with an ellipsis and show it whole on hover; with a
 `menuId` the active ids reach `selection[menuId]` joined by commas, `''` when
 none are active, which is both what the one-string-per-key selection holds and
 what a permalink needs, and the chips show whatever that key holds — an app that
-rewrites it, fitting it to new options or restoring a permalink, sees them
-follow; without one the selection stays visual-only. `required: true` keeps at
-least one chip active: the last one cannot be toggled off, no "clear" action or
-tab badge is offered, and the first option lights when nothing else does. With
-`multiple: false` that makes the chips a required single choice — a variations
-menu in chip form, as for an age band — while `multiple: true` keeps several
-selectable but never none),
+rewrites it, restoring a permalink say, sees them follow; without one the
+selection stays visual-only),
 `locator` (`{ kind, menuId?, placeholder?, minChars?, options }`, each option
 `{ id, label, sublabel?, value?, feature?, view?, animation?, viewPresetId? }` —
 `value` is an already-formatted readout shown after the label in the results
-and, larger, on the selected card), or
+and, larger, on the selected card),
 `variations` (`{ kind, menuId, variations, defaultValue?, closeOnSelect?, resetViewOnChange? }`,
-resetting the camera the same way a body does).
+resetting the camera the same way a body does), or
+`choice` — the same control as in a `settings` block (below), for a required
+single choice such as the geographic level or the age band a map is drawn at.
 
 A **`settings`** body (`kind: 'settings'`) has `blocks` — each block
 `{ id, title, icon?, collapsible?, defaultOpen?, hint?, shownWhen?, control }`, where
@@ -414,7 +411,7 @@ A **`settings`** body (`kind: 'settings'`) has `blocks` — each block
 (`{ kind, menuId, stops?, min?, max?, step?, defaultValue, unit?, endLabels?, stepButtons? }`),
 a `colorRamp` (`{ kind, menuId, options, defaultValue? }`), a `toggle`
 (`{ kind, menuId, icon?, defaultValue }`), a `choice`
-(`{ kind, menuId, options, defaultValue?, glyphColors? }`), or a `bearing`
+(`{ kind, menuId, options, defaultValue?, glyphColors?, layout? }`), or a `bearing`
 (`{ kind, menuId, defaultValue?, step? }`). All publish to
 `selection[menuId]` as strings — a slider its number, a ramp the chosen option's
 `id`, a toggle `'true'`/`'false'`, a choice the chosen option's `value`, a bearing
@@ -436,10 +433,15 @@ rather than disabled, because while the choice is off they have nothing to
 adjust; the value stays in the selection, so the block returns as it was left.
 
 A `choice` lays its `options` — each
-`{ value, label, sublabel?, glyph?, enabledWhen?, disabledHint? }` — side by side
-as cards, or with `layout: 'list'` one row each, top to bottom, with the option's
-`icon`, `label` and `sublabel` and a check on the chosen one; a list declaring a
-single option renders it as a read-only card instead. `glyph: 'flat' | 'extruded'` draws a strip of map cells lying flat or
+`{ value, label, sublabel?, glyph?, enabledWhen?, disabledHint?, icon?, unit?, count? }` — side by side
+as cards; with `layout: 'list'` one row each, top to bottom, with the option's
+`icon`, `label` and `sublabel`, and its `count` on the right in the numeric face
+or, without one, a check on the chosen row (a list declaring a single option
+renders it as a read-only card instead); or with
+`layout: { kind: 'grid', columns }` as compact buttons in equal columns, the
+label on the left (cut with an ellipsis, whole on hover) and a check on the
+chosen one. See [Storybook](https://storybook.ttoss.dev/) → _Geovis Workspace /
+ChoiceFilters_ for a list and a grid in a `filters` block. `glyph: 'flat' | 'extruded'` draws a strip of map cells lying flat or
 standing as prisms, in `glyphColors` (pass the active ramp to preview the map);
 a card with neither glyph nor sublabel is a compact button, as for a camera
 pitch. An option's `enabledWhen` keeps it available only while another menu holds

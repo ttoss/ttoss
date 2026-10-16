@@ -286,8 +286,8 @@ export interface GeovisWorkspaceSidebarChipsFilter {
    * the selection local (visual-only).
    *
    * With a `menuId` the chips show what the shared selection holds, as a
-   * variations menu does: an app that rewrites the value — fitting it to new
-   * options, restoring a permalink — sees the chips follow, rather than having
+   * variations menu does: an app that rewrites the value — restoring a
+   * permalink, say — sees the chips follow, rather than having
    * them publish their own copy back over it.
    *
    * A delimited string rather than an array because
@@ -303,19 +303,6 @@ export interface GeovisWorkspaceSidebarChipsFilter {
   defaultSelected?: string[];
   /** How the chips are arranged. Defaults to `{ kind: 'wrap' }`. */
   layout?: GeovisWorkspaceSidebarChipsLayout;
-  /**
-   * Keeps at least one chip active: the last active chip cannot be toggled
-   * off, and the "clear" action is not offered. When nothing is active — no
-   * `defaultSelected`, or a value naming no current option — the first option
-   * is. Defaults to `false`.
-   *
-   * With `multiple: false` this makes the chips a required single choice, like
-   * a variations menu: picking a chip moves the selection, picking the active
-   * one does nothing. With `multiple: true` several stay selectable, but never
-   * none. Either way the tab carries no count badge — a count that can never
-   * reach zero says nothing.
-   */
-  required?: boolean;
 }
 
 /** One selectable entry in a {@link GeovisWorkspaceSidebarLocatorFilter}. */
@@ -488,7 +475,8 @@ export type GeovisWorkspaceSidebarFilterControl =
   | GeovisWorkspaceSidebarTimelineFilter
   | GeovisWorkspaceSidebarChipsFilter
   | GeovisWorkspaceSidebarLocatorFilter
-  | GeovisWorkspaceSidebarVariationsFilter;
+  | GeovisWorkspaceSidebarVariationsFilter
+  | GeovisWorkspaceSidebarChoiceSetting;
 
 /** A headed block wrapping one filter control. */
 export interface GeovisWorkspaceSidebarFilterBlock {
@@ -713,15 +701,52 @@ export interface GeovisWorkspaceSidebarChoiceOption {
    * so the reader knows what the value is counted in without opening the row.
    */
   unit?: string;
+  /**
+   * Short figure on the row's right, in the numeric face — how many areas a
+   * geographic level divides the map into, say. Drawn only in the `list`
+   * layout, in place of the check: the row's tint already says it is chosen.
+   */
+  count?: number | string;
 }
 
 /**
- * A choice among a few named alternatives, laid out side by side as cards —
- * `2D` / `3D`, or a camera pitch of `30°` / `45°` / `60°`.
+ * How a {@link GeovisWorkspaceSidebarChoiceSetting} lays its options out.
+ *
+ * - `'cards'` — side by side, each with its `glyph`: a few short
+ *   alternatives read at a glance, like `2D` / `3D` or a camera pitch.
+ * - `'list'` — one row each, top to bottom, with its `icon`, `label`,
+ *   `sublabel` and `count`, and a check on the chosen one when it has no
+ *   `count`: alternatives whose names and ranges need the width, like the
+ *   dataset an extrusion's height reads, or the geographic level of a map.
+ * - `{ kind: 'grid', columns }` — compact buttons in equal columns, the label
+ *   on the left and a check on the chosen one: short labels read as a set,
+ *   like age bands. `columns` is floored and clamped to at least 1.
+ *
+ * The grid is an object, as the chips' is, so `columns` exists only where it
+ * means something; the two strings stay strings, so existing configs keep
+ * working.
+ */
+export type GeovisWorkspaceSidebarChoiceLayout =
+  | 'cards'
+  | 'list'
+  | {
+      kind: 'grid';
+      /** Number of columns. */
+      columns: number;
+    };
+
+/**
+ * A choice among a few named alternatives — exactly one of them always chosen
+ * — laid out side by side as cards (`2D` / `3D`, a camera pitch of `30°` /
+ * `45°` / `60°`), as a list of rows, or as a grid of compact buttons.
  *
  * Its own control rather than a slider with stops: the options are read at a
  * glance, all of them on screen at once, and each can carry its own drawing and
  * its own availability gate.
+ *
+ * It renders in a `settings` block and in a `filters` block alike: a required
+ * single choice is the same control wherever it sits — the camera's view mode
+ * in the settings, the geographic level or the age band in the filters.
  */
 export interface GeovisWorkspaceSidebarChoiceSetting {
   kind: 'choice';
@@ -737,13 +762,8 @@ export interface GeovisWorkspaceSidebarChoiceSetting {
    */
   glyphColors?: string[];
   /**
-   * How the options are laid out. Defaults to `'cards'`.
-   *
-   * - `'cards'` — side by side, each with its `glyph`: a few short
-   *   alternatives read at a glance, like `2D` / `3D` or a camera pitch.
-   * - `'list'` — one row each, top to bottom, with its `icon`, `label` and
-   *   `sublabel`, and a check on the chosen one: alternatives whose names and
-   *   ranges need the width, like the dataset an extrusion's height reads.
+   * How the options are laid out (see {@link GeovisWorkspaceSidebarChoiceLayout}).
+   * Defaults to `'cards'`.
    *
    * A `list` declaring a single option has nothing to choose, so it renders
    * that option as a read-only card rather than a one-row radio group — the
@@ -751,7 +771,7 @@ export interface GeovisWorkspaceSidebarChoiceSetting {
    * options, not available ones: a list whose other rows are gated shut keeps
    * its shape, so it does not change form whenever a gate moves.
    */
-  layout?: 'cards' | 'list';
+  layout?: GeovisWorkspaceSidebarChoiceLayout;
 }
 
 /**
