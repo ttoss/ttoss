@@ -1,4 +1,4 @@
-import { PAINT_KEYS } from './paintKeys';
+import { paintKeysFor } from './paintKeys';
 import type { GeoVisIssue, RepairOption } from './result';
 import type { VisualizationLayer, VisualizationSpec } from './types';
 
@@ -49,7 +49,7 @@ const repairsFor = ({
 /** One issue per `paint` key the layer's geometry does not accept. */
 const validateLayerPaint = (layer: VisualizationLayer): GeoVisIssue[] => {
   const paint = (layer.paint ?? {}) as Record<string, unknown>;
-  const allowed = PAINT_KEYS[layer.geometry];
+  const allowed = paintKeysFor(layer);
 
   return Object.keys(paint)
     .filter((key) => {
