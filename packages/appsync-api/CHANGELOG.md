@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.34.2](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fappsync-api%400.34.1...%40ttoss%2Fappsync-api%400.34.2) (2026-10-16)
+
+### Bug Fixes
+
+- **appsync-api:** give resolvers a projection-capable info so connection count works ([#1335](https://github.com/ttoss/ttoss/issues/1335)) ([fbbbc03](https://github.com/ttoss/ttoss/commit/fbbbc03ba0d8e0374e251fd25b8368faa7737293))
+
 ## [0.34.1](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fappsync-api%400.34.0...%40ttoss%2Fappsync-api%400.34.1) (2026-10-15)
 
 **Note:** Version bump only for package @ttoss/appsync-api
