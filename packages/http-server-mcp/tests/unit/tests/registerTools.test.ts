@@ -428,6 +428,54 @@ describe('registerTools', () => {
     });
 
     describe('with validateArguments: true', () => {
+      test('a closed schema with no properties refuses every argument', async () => {
+        const res = await callWith(
+          buildApp({ type: 'object', additionalProperties: false }, true),
+          { prefix: '/reports' }
+        );
+
+        expect(res.body.result?.isError).toBe(true);
+        expect(res.body.result?.content?.[0]?.text).toContain(
+          'prefix: is not an argument of this tool'
+        );
+      });
+
+      test('a closed schema lets a call of declared arguments through', async () => {
+        const res = await callWith(
+          buildApp(
+            {
+              type: 'object',
+              properties: { value: { type: 'string' } },
+              additionalProperties: false,
+            },
+            true
+          ),
+          { value: 'a' }
+        );
+
+        expect(res.body.result?.isError).toBeFalsy();
+        expect(res.body.result?.content?.[0]?.text).toBe('{"value":"a"}');
+      });
+
+      test('a closed schema names the argument it does not declare', async () => {
+        const res = await callWith(
+          buildApp(
+            {
+              type: 'object',
+              properties: { value: { type: 'string' } },
+              additionalProperties: false,
+            },
+            true
+          ),
+          { value: 'a', prefix: '/reports' }
+        );
+
+        expect(res.body.result?.isError).toBe(true);
+        expect(res.body.result?.content?.[0]?.text).toContain(
+          'prefix: is not an argument of this tool'
+        );
+      });
+
       test('a schema without `nullable` rejects an explicit null for that field', async () => {
         const res = await callWith(buildApp(stringSchema, true), {
           value: null,

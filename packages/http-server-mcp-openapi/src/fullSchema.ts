@@ -218,5 +218,6 @@ export const buildFullInputSchema = (args: {
     type: 'object',
     properties,
     ...(required.length > 0 ? { required: [...new Set(required)] } : {}),
+    additionalProperties: false,
   } as JsonObjectSchema;
 };

@@ -504,6 +504,26 @@ describe('openApiToTools deferred', () => {
     expect(calls).toEqual([]);
   });
 
+  test('call refuses an argument the operation does not declare, naming it', async () => {
+    const calls: ResolvedRequest[] = [];
+    const app = buildDeferred(calls);
+
+    const result = await callDeferred({
+      app,
+      name: 'call',
+      args: {
+        name: 'get-agent',
+        arguments: { agentId: 'a1', agent_id: 'a1' },
+      },
+    });
+
+    expect(result.isError).toBe(true);
+    expect(result.structuredContent?.issues).toEqual([
+      'agent_id: is not an argument of this tool',
+    ]);
+    expect(calls).toHaveLength(0);
+  });
+
   test('call rejects arguments the generated schema does not accept', async () => {
     const calls: ResolvedRequest[] = [];
     const app = buildDeferred(calls);

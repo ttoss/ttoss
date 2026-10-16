@@ -166,9 +166,7 @@ export const buildInputSchema = (
   const allParams = [...modelPathParams, ...modelQueryParams, ...bodyProps];
 
   if (allParams.length === 0) {
-    return {
-      type: 'object',
-    };
+    return { type: 'object', additionalProperties: false };
   }
 
   const requiredFields = [
@@ -213,6 +211,7 @@ export const buildInputSchema = (
     type: 'object',
     properties,
     ...(requiredFields.length > 0 ? { required: requiredFields } : {}),
+    additionalProperties: false,
   };
 };
 

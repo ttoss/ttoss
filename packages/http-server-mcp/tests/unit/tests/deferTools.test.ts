@@ -509,6 +509,71 @@ describe('registerTools defer', () => {
       });
     });
 
+    test('names each argument a closed JSON Schema does not declare', async () => {
+      const app = buildApp({
+        tools: [
+          tool({
+            name: 'list-files',
+            validateArguments: true,
+            inputSchema: {
+              type: 'object',
+              properties: { path_prefix: { type: 'string' } },
+              additionalProperties: false,
+            },
+          }),
+        ],
+      });
+
+      const result = await callTool({
+        app,
+        name: 'call',
+        args: {
+          name: 'list-files',
+          arguments: { prefix: '/reports', limit: 5 },
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(result.structuredContent).toEqual({
+        error: 'Invalid arguments for "list-files".',
+        issues: [
+          'prefix: is not an argument of this tool',
+          'limit: is not an argument of this tool',
+        ],
+        inputSchema: expect.objectContaining({ additionalProperties: false }),
+      });
+    });
+
+    test('reports undeclared arguments beside the other issues', async () => {
+      const app = buildApp({
+        tools: [
+          tool({
+            name: 'list-files',
+            validateArguments: true,
+            inputSchema: {
+              type: 'object',
+              properties: { path_prefix: { type: 'string' } },
+              additionalProperties: false,
+            },
+          }),
+        ],
+      });
+
+      const result = await callTool({
+        app,
+        name: 'call',
+        args: {
+          name: 'list-files',
+          arguments: { path_prefix: 7, prefix: '/reports' },
+        },
+      });
+
+      expect(result.structuredContent?.issues).toEqual([
+        'prefix: is not an argument of this tool',
+        expect.stringMatching(/path_prefix/),
+      ]);
+    });
+
     test('formats the issue paths of any Standard Schema', async () => {
       const inputSchema = {
         '~standard': {

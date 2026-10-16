@@ -297,7 +297,10 @@ describe('openApiToToolDefinitions', () => {
       const [tool] = openApiToToolDefinitions({
         spec: { paths: { '/ping': { get: { operationId: 'ping' } } } },
       });
-      expect(tool.inputSchema).toEqual({ type: 'object' });
+      expect(tool.inputSchema).toEqual({
+        type: 'object',
+        additionalProperties: false,
+      });
     });
 
     test('handles a spec with no paths', () => {
