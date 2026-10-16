@@ -125,10 +125,12 @@ export const Sidebar = ({
             zIndex: 'overlay',
             height: 'full',
             transition: 'width 0.5s ease, opacity 0.5s ease',
-            borderColor: 'display.border.muted.default',
             backgroundColor: 'navigation.background.muted.default',
             overflowY: 'auto',
             ...getDesktopOpenStateSx(isSidebarOpen),
+            // After the spread: its `borderRight` shorthand carries no color,
+            // so placed earlier it resets this to the text color.
+            borderColor: 'display.border.muted.default',
             ...boxProps.sx,
           }}
         >
