@@ -8,13 +8,19 @@ import type {
 import { useGeovisWorkspace } from '../../hooks/useGeovisWorkspace';
 import { isGateOpen, settingsControls } from './useSections';
 
-/** Every `choice` setting in the sidebar's settings bodies. */
+/** Every `choice` in the sidebar, in its settings and its filters bodies. */
 const findChoices = (
   sections: GeovisWorkspaceSidebarSection[]
 ): GeovisWorkspaceSidebarChoiceSetting[] => {
   return sections.flatMap((section) => {
-    if (section.body.kind !== 'settings') return [];
-    return settingsControls(section.body.blocks).flatMap((control) => {
+    if (section.body.kind === 'variations') return [];
+    const controls =
+      section.body.kind === 'settings'
+        ? settingsControls(section.body.blocks)
+        : section.body.blocks.map((block) => {
+            return block.control;
+          });
+    return controls.flatMap((control) => {
       return control.kind === 'choice' ? [control] : [];
     });
   });
@@ -182,7 +188,7 @@ export const useChoiceSettings = (
 
 /**
  * Shares the lifted choice state with the controls inside the tabs. Provided by
- * the left sidebar, the only place settings tabs render.
+ * the left sidebar, the only place settings and filters tabs render.
  */
 export const ChoiceSettingsContext =
   React.createContext<ChoiceSettingsState | null>(null);

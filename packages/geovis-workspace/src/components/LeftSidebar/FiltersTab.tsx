@@ -5,6 +5,7 @@ import type {
   GeovisWorkspaceSidebarFilterControl,
 } from '../../context/GeovisWorkspaceContext';
 import { ChipsControl } from './ChipsControl';
+import { ChoiceSettingControl } from './ChoiceSettingControl';
 import { FilterBlockSection } from './FilterBlockSection';
 import { LocatorControl } from './LocatorControl';
 import { TimelineControl } from './TimelineControl';
@@ -32,17 +33,20 @@ type LiftedState = {
  * error instead of silently routing the new kind into the locator.
  *
  * @param params.control - The block's control.
+ * @param params.title - The block's title, naming a choice's radio group.
  * @param params.lifted - State owned above the tab (timeline, chips).
  * @returns The control's element.
  *
  * @example
- * <BlockControl control={{ kind: 'locator', options: [] }} lifted={lifted} />
+ * <BlockControl control={{ kind: 'locator', options: [] }} title="Município" lifted={lifted} />
  */
 const BlockControl = ({
   control,
+  title,
   lifted,
 }: {
   control: GeovisWorkspaceSidebarFilterControl;
+  title: string;
   lifted: LiftedState;
 }) => {
   if (control.kind === 'timeline') {
@@ -74,12 +78,18 @@ const BlockControl = ({
     return <VariationsControl control={control} />;
   }
 
+  // Its state is lifted with the settings' choices (`useChoiceSettings`), so a
+  // choice reads the same wherever it sits.
+  if (control.kind === 'choice') {
+    return <ChoiceSettingControl control={control} label={title} />;
+  }
+
   return <LocatorControl control={control} />;
 };
 
 /**
  * The "Filtros" tab: a stack of headed blocks (timeline, chips, locator,
- * variations). Timeline value and play/pause are lifted; the chips selection is
+ * variations, choice). Timeline value and play/pause are lifted; the chips selection is
  * lifted so the tab-bar badge can count it. A variations block reads the shared
  * selection directly, so several of them can share one tab.
  */
@@ -128,7 +138,11 @@ export const FiltersTab = ({
             collapsible={block.collapsible}
             defaultOpen={block.defaultOpen}
           >
-            <BlockControl control={block.control} lifted={lifted} />
+            <BlockControl
+              control={block.control}
+              title={block.title}
+              lifted={lifted}
+            />
           </FilterBlockSection>
         );
       })}

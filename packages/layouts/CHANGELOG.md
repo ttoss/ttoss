@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.16.3](https://github.com/ttoss/ttoss/compare/%40ttoss%2Flayouts%400.16.2...%40ttoss%2Flayouts%400.16.3) (2026-10-16)
+
+### Bug Fixes
+
+- **layouts:** keep the muted border color on the open desktop sidebar ([#1333](https://github.com/ttoss/ttoss/issues/1333)) ([725d836](https://github.com/ttoss/ttoss/commit/725d836c90b02911e5c2ac559f2d207741b248d1))
+
 ## [0.16.2](https://github.com/ttoss/ttoss/compare/%40ttoss%2Flayouts%400.16.1...%40ttoss%2Flayouts%400.16.2) (2026-10-15)
 
 **Note:** Version bump only for package @ttoss/layouts
