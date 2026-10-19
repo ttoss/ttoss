@@ -91,6 +91,15 @@ export const handler = createAppSyncResolverHandler({
 
 Every resolver then receives `context.userId` without having to derive it individually.
 
+### Resolver `info` and projection
+
+Resolvers receive AppSync's own `info` (`fieldName`, `parentTypeName`, `variables`, `selectionSetList`, `selectionSetGraphQL`) extended with the `GraphQLResolveInfo` fields graphql-compose reads: `fieldNodes`, `fragments`, `returnType`, `parentType`, `schema` and `variableValues`. `fieldNodes` is parsed from `selectionSetGraphQL`, so a resolver's `projection` reflects the client's selection. This is what lets `composeWithConnection` run its count resolver when the client selects `count`.
+
+Two AppSync limits carry over:
+
+- AppSync does not expand named fragment spreads in `selectionSetGraphQL`. Each spread is replaced by the fields `selectionSetList` lists at the same path, and `selectionSetList` names aliased fields by their alias, so a field selected only through a spread is projected under its alias.
+- If `selectionSetGraphQL` is missing or cannot be parsed, the resolver gets the plain AppSync `info` and an empty `projection`.
+
 ### Middlewares
 
 You can use [`graphql-middleware`](https://github.com/dimatill/graphql-middleware)-compatible middlewares via the `middlewares` option. Each middleware wraps the resolver — code before `resolve()` runs **before** the resolver, code after runs **after**.

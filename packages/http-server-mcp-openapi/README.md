@@ -69,6 +69,9 @@ Each OpenAPI operation with an `operationId` and a supported HTTP method
 | operation `description`   | tool description, newlines flattened          |
 | operation `tags`          | tool `tags`, for the deferred `search` filter |
 
+Every `inputSchema` is closed (`additionalProperties: false`): the request is
+built from declared arguments only, so with `validateArguments` an undeclared
+one is refused, named, rather than dropped unseen.
 Path params are always required strings, carrying their own `description`; a
 call missing one is refused before `callApi` runs, whatever
 `validateArguments` says. Query and body params carry their

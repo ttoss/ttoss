@@ -307,6 +307,7 @@ describe("schemaDetail: 'full'", () => {
         },
       },
       required: ['item_id', 'status'],
+      additionalProperties: false,
     });
   });
 
@@ -333,7 +334,11 @@ describe("schemaDetail: 'full'", () => {
       tools.find((tool) => {
         return tool.name === 'list-items';
       })!.inputSchema
-    ).toEqual({ type: 'object', properties: {} });
+    ).toEqual({
+      type: 'object',
+      properties: {},
+      additionalProperties: false,
+    });
   });
 
   test('still builds the request from the arguments', () => {

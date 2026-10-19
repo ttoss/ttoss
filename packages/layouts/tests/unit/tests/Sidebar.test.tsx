@@ -107,3 +107,28 @@ test('mobile drawer renders the sidebar button without a drawer slot', async () 
   expect(screen.getByText('Sidebar')).toBeInTheDocument();
   expect(screen.getAllByTestId('sidebar-button')).toHaveLength(2);
 });
+
+test('open desktop sidebar keeps the muted border color on its right border', () => {
+  jest.mocked(useIsDesktop).mockReturnValue({ isDesktop: true });
+
+  renderLayout();
+
+  const sidebar = screen.getByRole('complementary');
+  const rule = Array.from(document.styleSheets)
+    .flatMap((sheet) => {
+      return Array.from(sheet.cssRules).map((cssRule) => {
+        return cssRule.cssText;
+      });
+    })
+    .find((cssText) => {
+      return sidebar.className.split(' ').some((className) => {
+        return cssText.startsWith(`.${className} `);
+      });
+    });
+
+  // `border-right` without a color resets `border-right-color`, so the color
+  // must be declared after it.
+  expect(
+    rule?.lastIndexOf('border-color: display.border.muted.default')
+  ).toBeGreaterThan(rule?.lastIndexOf('border-right:') ?? Infinity);
+});

@@ -781,6 +781,8 @@ Registers `Tool`s on an MCP server. See [Tools](#tools).
 
 By default, a JSON Schema `inputSchema` is **advertised but not enforced**: it round-trips verbatim over `tools/list` so clients know what to send, while arguments reach your handler unchecked. Set `validateArguments: true` to reject mismatched calls before the handler runs.
 
+A schema with `additionalProperties: false` refuses every argument it does not declare, and names each one (`prefix: is not an argument of this tool`), so a misspelled argument is an error the caller can fix rather than one dropped unseen.
+
 Enable it once you're confident `inputSchema` describes every value the tool genuinely accepts. Schemas derived from an OpenAPI document are a common source of _incomplete_ ones — a field a client may send as `null` to clear it, or one that accepts several shapes, is easily emitted as a bare `{ type: 'string' }`. Validating against a schema like that rejects calls the underlying API would have accepted. To describe those cases accurately, use `{ type: ['string', 'null'] }` for a nullable field and forward `oneOf`/`anyOf` verbatim rather than collapsing to one type.
 
 ### `defineTool(params)`

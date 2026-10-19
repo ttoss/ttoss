@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fhttp-server-mcp-openapi%400.9.2...%40ttoss%2Fhttp-server-mcp-openapi%400.10.0) (2026-10-16)
+
+### Features
+
+- **http-server-mcp-openapi:** refuse undeclared tool arguments, naming each ([#1330](https://github.com/ttoss/ttoss/issues/1330)) ([a549594](https://github.com/ttoss/ttoss/commit/a5495941298525b983d7f89d1fae5a1d33230653))
+
 ## [0.9.2](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fhttp-server-mcp-openapi%400.9.1...%40ttoss%2Fhttp-server-mcp-openapi%400.9.2) (2026-10-15)
 
 **Note:** Version bump only for package @ttoss/http-server-mcp-openapi

@@ -183,6 +183,7 @@ describe('server-managed path and query parameters', () => {
         dryRun: { type: 'boolean', description: '' },
       },
       required: ['itemId'],
+      additionalProperties: false,
     });
   });
 
@@ -270,7 +271,10 @@ describe('server-managed path and query parameters', () => {
         },
       },
     });
-    expect(tool.inputSchema).toEqual({ type: 'object' });
+    expect(tool.inputSchema).toEqual({
+      type: 'object',
+      additionalProperties: false,
+    });
     expect(tool.query?.({ org: 'o1' })).toBe('?org=o1');
   });
 
@@ -428,6 +432,7 @@ describe('$ref into sibling documents', () => {
         color: { type: 'string', description: '' },
       },
       required: ['tagId'],
+      additionalProperties: false,
     });
     expect(tool.acceptedBodyFields).toEqual(['label', 'color']);
   });
