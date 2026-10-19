@@ -394,6 +394,39 @@ test('chips seed from a controlled selection, over defaultSelected', async () =>
   });
 });
 
+test('chips follow a value the app rewrites, as a restored permalink does', async () => {
+  const { rerender } = renderPreview(
+    { variables: { produtos: 'x' } },
+    publishingChipsPreview
+  );
+  await openFiltros();
+  expect(screen.getByRole('button', { name: /Chip X/ })).toHaveAttribute(
+    'aria-pressed',
+    'true'
+  );
+
+  rerender(
+    <GeovisWorkspace
+      config={{
+        leftSidebar: { initialState: 'open', ...publishingChipsPreview },
+      }}
+      visualizationSpec={visualizationSpec}
+      variables={{ produtos: 'y,z' }}
+    />
+  );
+
+  expect(screen.getByRole('button', { name: /Chip X/ })).toHaveAttribute(
+    'aria-pressed',
+    'false'
+  );
+  expect(screen.getByRole('button', { name: /Chip Y/ })).toHaveAttribute(
+    'aria-pressed',
+    'true'
+  );
+  const filtros = screen.getByRole('button', { name: 'Filtros' });
+  expect(within(filtros).getByText('2')).toBeInTheDocument();
+});
+
 test('chips without a menuId keep the selection to themselves', async () => {
   const onVariableChange = jest.fn();
   renderPreview({ onVariableChange });

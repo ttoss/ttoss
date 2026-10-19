@@ -435,9 +435,7 @@ export const LeftSidebar = () => {
       <TabBar
         sections={sections}
         activeId={activeSection?.id}
-        // A required set is never empty, so a count on its tab would only ever
-        // repeat the obvious; it goes, the way a gated section's does.
-        chipCount={chips?.required ? 0 : chipsState.selected.length}
+        chipCount={chipsState.selected.length}
         chipsSectionId={chipsSection?.id}
         disabledIds={disabledIds}
         onSelect={setActiveSectionId}

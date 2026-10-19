@@ -128,10 +128,31 @@ const findSettingDefault = ({
   return undefined;
 };
 
+// The default of a variations or choice control inside a `filters` body that
+// drives `menuId`; a choice without one falls back to its first option.
+const findFilterDefault = ({
+  sections,
+  menuId,
+}: {
+  sections: GeovisWorkspaceSidebarSection[];
+  menuId: string;
+}): string | undefined => {
+  for (const { block } of findFilterBlocks(sections)) {
+    if (block.control.menuId !== menuId) continue;
+    if (block.control.kind === 'variations') {
+      return block.control.defaultValue;
+    }
+    if (block.control.kind === 'choice') {
+      return block.control.defaultValue ?? block.control.options[0]?.value;
+    }
+  }
+  return undefined;
+};
+
 /**
  * Resolves a menu's effective value: the shared selection, falling back to the
  * `defaultValue` of whichever declaration drives that menu — a variations body,
- * a variations control inside a `filters` body, or a settings control.
+ * a variations or choice control inside a `filters` body, or a settings control.
  *
  * The fallback is what keeps a gate stable on first paint — a consumer that
  * does not seed through `getInitialSelection` would otherwise read `undefined`
@@ -162,13 +183,9 @@ export const resolveMenuValue = ({
     return selected;
   }
 
-  for (const { block } of findFilterBlocks(sections)) {
-    if (
-      block.control.kind === 'variations' &&
-      block.control.menuId === menuId
-    ) {
-      return block.control.defaultValue;
-    }
+  const filterDefault = findFilterDefault({ sections, menuId });
+  if (filterDefault !== undefined) {
+    return filterDefault;
   }
 
   for (const section of sections) {
