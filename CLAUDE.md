@@ -75,17 +75,9 @@ After modifying any package, in this order:
 
 ## React Package Architecture
 
-All React packages follow a **context-first** pattern — applications configure once at the root via providers; packages consume via hooks. Never pass style, theme, translation, or notification callbacks as props.
+**Context-first**: applications configure once at the root via providers and packages consume via hooks, so never pass style, theme, translation, or notification callbacks as props. Foundation packages are always `peerDependencies`, never `dependencies`: `@ttoss/ui` (`Box`, `Button`, `Flex`, `Text`, `sx` prop), `@ttoss/theme` (design tokens), `@ttoss/react-i18n` (`useI18n()` / `defineMessages`), `@ttoss/react-notifications` (`useNotifications()`), `@ttoss/forms`.
 
-**Foundation packages** (always `peerDependencies`, never `dependencies`):
-
-- `@ttoss/ui` — core components (`Box`, `Button`, `Flex`, `Text`, etc.) with `sx` prop for theme tokens — **legacy** alongside `@ttoss/forms` (owner ruling 2026-07-26): maintain existing consumers only; new UI work targets `@ttoss/fsl-ui` + `@ttoss/fsl-theme`, which take no form-library dependency
-- `@ttoss/theme` — design tokens (colors, spacing, typography)
-- `@ttoss/react-i18n` — i18n via `useI18n()` / `defineMessages`
-- `@ttoss/react-notifications` — notifications via `useNotifications()`
-- `@ttoss/forms` — form management with validation (legacy — see `@ttoss/ui` note)
-
-Application root sets up providers once; all ttoss packages inherit automatically.
+`@ttoss/ui` and `@ttoss/forms` are **legacy** (owner ruling 2026-07-26): maintain existing consumers only; new UI work targets `@ttoss/fsl-ui` + `@ttoss/fsl-theme`, which take no form-library dependency.
 
 ## Internationalization (i18n)
 
@@ -103,62 +95,10 @@ After any `defineMessages` change, run `pnpm run -w i18n` from the monorepo root
 
 Use **Zod** for all new form validation schemas. Only maintain existing Yup schemas — do not create new ones with Yup.
 
-## Storybook Stories
+## Storybook
 
-Required for any new or modified React component, form field, or UI element:
+Every new or modified React component, form field, or UI element needs stories (default plus variants with `tags: ['autodocs']`) at `docs/storybook/stories/PACKAGE_NAME/ComponentName.stories.tsx`. Verify with `pnpm storybook`.
 
-- Location: `docs/storybook/stories/PACKAGE_NAME/ComponentName.stories.tsx`
-- Must include a default story and variant stories with `tags: ['autodocs']`
-- Run `pnpm storybook` to verify stories render correctly before finishing
+## Path-specific guidance
 
-## Chakra UI (`packages/ui/src/chakra/`)
-
-Recipes and slot recipes must contain **only color tokens** — never spacing, sizing, typography, border-width, layout, or other non-color properties. Use Chakra UI defaults for everything except color.
-
-Use ttoss semantic color tokens from these categories: `navigation`, `display`, `action`, `input`, `feedback`.
-
-New recipes go in `packages/ui/src/chakra/recipes/`; slot recipes in `packages/ui/src/chakra/slotRecipes/`. Both are auto-integrated by `ChakraThemeProvider.tsx`.
-
-## `@ttoss/fsl-theme`
-
-Before proposing architectural changes, consult `packages/fsl-theme/CONTRIBUTING.md` for the ADR workflow and review protocol. When code diverges from a spec or "obvious best practice", treat it as **evidence of an unstated invariant** — not a bug — until proven otherwise. Investigate before changing.
-
-Documentation artifacts are orthogonal: JSDoc answers "how do I use this right now?"; `README.md` answers "how do I integrate it?"; `CONTRIBUTING.md` answers "how do I modify it safely?"; `CHANGELOG.md` answers "what changed?".
-
-## FSL Studio (`docs/fsl-studio`)
-
-The Studio's product definition, binding decisions, and slice route live in `docs/fsl-studio/BLUEPRINT.md` — read it before any Studio work, and work one slice at a time. Binding rules: consume tokens via component props first, `vars` second, never the resolved theme object for styling; zero hand-rolled layout CSS; log every gap in `docs/fsl-studio/FRICTION.md`; visually verify every delivery in a real browser, light and dark.
-
-## `@ttoss/carlin`
-
-- Source: `packages/carlin/src/` — Tests: `packages/carlin/tests/` (never in `src/`)
-- Every code change requires a corresponding test; new CLI options must have tests in `tests/unit/cli.test.ts` covering default values and custom values
-- Documentation in `docs/website/docs/carlin/` must be updated with every code change
-
-## Documentation (`docs/`)
-
-**Less is more.** Every sentence must earn its place. When in doubt, cut it out.
-
-- Prefer flowing paragraphs over fragmented bullet lists; use lists only for actionable steps or items readers reference individually
-- Use **Mermaid diagrams** to visualize processes, workflows, architectures, and relationships instead of text descriptions
-- For React/UI components, link to [Storybook](https://storybook.ttoss.dev/) instead of embedding per-component code snippets
-- Do not duplicate content that exists elsewhere — link to it
-- All documentation must be in English
-- Internal Docusaurus links: omit numeric folder prefixes (e.g., use `/docs/product/product-development/principles`, not `/docs/product/03-product-development/02-principles`)
-- Blog posts require `<!-- truncate -->` after the introduction
-
-## Path-Specific Instruction Files
-
-Detailed guidelines live in `.github/instructions/`:
-
-| File                                          | Applies to                                                  |
-| --------------------------------------------- | ----------------------------------------------------------- |
-| `general.instructions.md`                     | Entire repo — linting, i18n workflow, code style            |
-| `packages.instructions.md`                    | `packages/**` — testing, coverage, README, Storybook        |
-| `react-packages-architecture.instructions.md` | `**/*.tsx` — context-based pattern                          |
-| `forms.instructions.md`                       | `**/*.ts`, `**/*.tsx` — Zod vs Yup                          |
-| `chakra-ui.instructions.md`                   | `packages/ui/src/chakra/**` — recipe token rules            |
-| `fsl-theme.instructions.md`                   | `packages/fsl-theme/**` — ADR workflow, divergence protocol |
-| `fsl-tests.instructions.md`                   | `packages/fsl-theme/**/*.test.*` — test decision framework  |
-| `carlin.instructions.md`                      | `packages/carlin/**` — CLI testing, docs requirement        |
-| `docs.instructions.md`                        | `**/*.md`, `**/*.mdx` — documentation standards             |
+Nested `CLAUDE.md` files (`packages/ui`, `packages/carlin`, `packages/fsl-theme`, `docs`, `docs/fsl-studio`) load when you read files there. `.github/instructions/` holds more path-specific guidance (written for Copilot; Claude reads it on demand).
