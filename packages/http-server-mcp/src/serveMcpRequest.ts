@@ -5,14 +5,16 @@ import {
 import type {
   InboundClassificationOutcome,
   InboundLadderRejection,
-  McpServer,
   McpServerFactory,
+  Server,
+  ServerCapabilities,
   ServerEventBus,
   ServerNotifier,
 } from '@modelcontextprotocol/server';
 import {
   classifyInboundRequest,
   createMcpHandler,
+  McpServer,
   ProtocolErrorCode,
   SUPPORTED_PROTOCOL_VERSIONS,
 } from '@modelcontextprotocol/server';
@@ -47,6 +49,13 @@ export interface CreateMcpRequestServerParams {
    * @default 15000
    */
   keepAliveMs?: number;
+  /**
+   * Whether the host delivers a response while the handler is still writing
+   * it. `false` turns change notifications off — see
+   * {@link withoutChangeNotifications}.
+   * @default true
+   */
+  streaming?: boolean;
 }
 
 /** What {@link createMcpRequestServer} returns. */
@@ -73,6 +82,56 @@ const NO_NOTIFIER: ServerNotifier = {
   promptsChanged: () => {},
   resourcesChanged: () => {},
   resourceUpdated: () => {},
+};
+
+/**
+ * Stops the server advertising change notifications for the tools, prompts
+ * and resources it serves, keeping every other capability as registered.
+ *
+ * `McpServer` advertises `listChanged: true` for each kind the moment one is
+ * registered, and the SDK then honours a `2026-07-28` `subscriptions/listen`
+ * with an SSE stream it never ends. A host that buffers the response until the
+ * handler returns — AWS Lambda behind API Gateway — delivers nothing and kills
+ * the invocation at its timeout, and the client reopens the stream at once, so
+ * each open session keeps one invocation busy for good (measured on a
+ * production Lambda in 2026-10: one 30 s timeout per session every ~30 s).
+ * With nothing advertised the SDK acknowledges the
+ * listen and completes it in the same response. A kind with nothing
+ * registered stays unadvertised, since advertising it would answer its `list`
+ * call with "method not found".
+ */
+export const withoutChangeNotifications = <T extends McpServer | Server>(
+  product: T
+): T => {
+  const server: Server =
+    product instanceof McpServer ? product.server : (product as Server);
+  const { tools, prompts, resources } = server.getCapabilities();
+  const off: ServerCapabilities = {};
+
+  if (tools) {
+    off.tools = { listChanged: false };
+  }
+  if (prompts) {
+    off.prompts = { listChanged: false };
+  }
+  if (resources) {
+    off.resources = { listChanged: false, subscribe: false };
+  }
+
+  server.registerCapabilities(off);
+  return product;
+};
+
+/** `factory`, with each instance it builds passed through {@link withoutChangeNotifications}. */
+const servingNoChangeNotifications = (
+  factory?: McpServerFactory
+): McpServerFactory | undefined => {
+  return (
+    factory &&
+    (async (ctx) => {
+      return withoutChangeNotifications(await factory(ctx));
+    })
+  );
 };
 
 /**
@@ -196,11 +255,20 @@ export const createMcpRequestServer = ({
   sessionIdGenerator,
   bus,
   keepAliveMs,
+  streaming = true,
 }: CreateMcpRequestServerParams): McpRequestServer => {
   const isStateful = sessionIdGenerator !== undefined;
 
-  const modern = createMcpServer
-    ? createMcpHandler(createMcpServer, { legacy: 'reject', bus, keepAliveMs })
+  if (!streaming) {
+    withoutChangeNotifications(server);
+  }
+
+  const factory = streaming
+    ? createMcpServer
+    : servingNoChangeNotifications(createMcpServer);
+
+  const modern = factory
+    ? createMcpHandler(factory, { legacy: 'reject', bus, keepAliveMs })
     : undefined;
   const modernHandler = modern ? toNodeHandler(modern) : undefined;
 
