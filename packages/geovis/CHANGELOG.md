@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.30.5](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fgeovis%400.30.4...%40ttoss%2Fgeovis%400.30.5) (2026-10-20)
+
+### Bug Fixes
+
+- **geovis:** adds validation for layers[].paint[properties] format and report 'lineColor' in an extruded polygon as an invalid key ([#1332](https://github.com/ttoss/ttoss/issues/1332)) ([8b8ed85](https://github.com/ttoss/ttoss/commit/8b8ed858baee5b9563c6d0fe0a1045d352289187))
+
 ## [0.30.4](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fgeovis%400.30.3...%40ttoss%2Fgeovis%400.30.4) (2026-10-20)
 
 **Note:** Version bump only for package @ttoss/geovis
