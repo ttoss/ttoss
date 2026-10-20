@@ -30,3 +30,11 @@ times in one session. Three rules, in the order you will need them:
 
 Worked examples of each failure, with the evidence that caught them: `git log
 --grep=Guardian`.
+
+## Architectural changes
+
+Before proposing architectural changes, consult `CONTRIBUTING.md` for the ADR workflow and review protocol. When code diverges from a spec or "obvious best practice", treat it as **evidence of an unstated invariant** — not a bug — until proven otherwise. Investigate before changing.
+
+Documentation artifacts are orthogonal: JSDoc answers "how do I use this right now?"; `README.md` answers "how do I integrate it?"; `CONTRIBUTING.md` answers "how do I modify it safely?"; `CHANGELOG.md` answers "what changed?".
+
+Test-writing decisions follow `.github/instructions/fsl-tests.instructions.md`.
