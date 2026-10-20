@@ -101,4 +101,4 @@ Every new or modified React component, form field, or UI element needs stories (
 
 ## Path-specific guidance
 
-Nested `CLAUDE.md` files (`packages/ui`, `packages/carlin`, `packages/fsl-theme`, `docs`, `docs/fsl-studio`) load when you read files there. `.github/instructions/` holds more path-specific guidance (written for Copilot; Claude reads it on demand).
+Nested `CLAUDE.md` files (`packages/ui`, `packages/carlin`, `packages/fsl-theme`, `docs`, `docs/fsl-studio`) load when you read files there. `.github/instructions/` holds more path-specific guidance (written for Copilot; Claude reads it on demand). Markdown/docs standards: `docs/CLAUDE.md` and `.github/instructions/docs.instructions.md`.
