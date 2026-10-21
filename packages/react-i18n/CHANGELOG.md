@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 3.1.0 (2026-10-21)
+
+### Features
+
+- **http-server-mcp-openapi:** refuse undeclared tool arguments, naming each ([#1330](https://github.com/ttoss/ttoss/issues/1330)) ([a549594](https://github.com/ttoss/ttoss/commit/a5495941298525b983d7f89d1fae5a1d33230653))
+
 ## [3.0.3](https://github.com/ttoss/ttoss/compare/%40ttoss%2Freact-i18n%403.0.2...%40ttoss%2Freact-i18n%403.0.3) (2026-10-15)
 
 **Note:** Version bump only for package @ttoss/react-i18n

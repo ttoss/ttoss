@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.15.0 (2026-10-21)
+
+### Bug Fixes
+
+- **i18n-cli:** end the persisted JSON files with a newline ([#1342](https://github.com/ttoss/ttoss/issues/1342)) ([c7a608e](https://github.com/ttoss/ttoss/commit/c7a608e3a64c819431e461c8f9112bbac5ce36da))
+
+### Features
+
+- **http-server-mcp-openapi:** refuse undeclared tool arguments, naming each ([#1330](https://github.com/ttoss/ttoss/issues/1330)) ([a549594](https://github.com/ttoss/ttoss/commit/a5495941298525b983d7f89d1fae5a1d33230653))
+
 ## [0.14.1](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fi18n-cli%400.14.0...%40ttoss%2Fi18n-cli%400.14.1) (2026-10-14)
 
 **Note:** Version bump only for package @ttoss/i18n-cli
