@@ -3,6 +3,72 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.43.0 (2026-10-21)
+
+- feat(http-server-mcp)!: a deferred call's errors carry the schema only for invalid arguments (#1341) ([c4308e2](https://github.com/ttoss/ttoss/commit/c4308e2ea4b4f3b569b0d2797950ebebe9826640)), closes [#1341](https://github.com/ttoss/ttoss/issues/1341)
+- feat!: ESLint 10 with maintained React/import/a11y plugins, and a lint-clean monorepo (#1323) ([6efae16](https://github.com/ttoss/ttoss/commit/6efae16a0ee2e036bb9fe41c132aa8cd03fe3489)), closes [#1323](https://github.com/ttoss/ttoss/issues/1323) [jsx-eslint/eslint-plugin-react#3977](https://github.com/jsx-eslint/eslint-plugin-react/issues/3977) [#958](https://github.com/ttoss/ttoss/issues/958)
+- feat(http-server-mcp,http-server-mcp-openapi)!: one Tool type, registered directly or deferred (#1291) ([b0a6d6a](https://github.com/ttoss/ttoss/commit/b0a6d6addadaede03101a86c4a35ffa4e0ce3c8b)), closes [#1291](https://github.com/ttoss/ttoss/issues/1291) [#1290](https://github.com/ttoss/ttoss/issues/1290)
+- feat(http-server-mcp)!: require a token for tools/list by default (#1221) ([912b2bd](https://github.com/ttoss/ttoss/commit/912b2bd1cce4da3bb4add64594dda40dbdd0802c)), closes [#1221](https://github.com/ttoss/ttoss/issues/1221) [#1176](https://github.com/ttoss/ttoss/issues/1176)
+
+### Bug Fixes
+
+- **auth:** serve RFC 9728 protected-resource metadata at the path-derived location, from one shared primitive ([#1212](https://github.com/ttoss/ttoss/issues/1212)) ([174bfca](https://github.com/ttoss/ttoss/commit/174bfca15dfd7c5d5048f5fd87a5da81faf37189))
+- **deps:** bump vulnerable and deprecated dependencies within existing ranges ([#1324](https://github.com/ttoss/ttoss/issues/1324)) ([a633312](https://github.com/ttoss/ttoss/commit/a633312f71bc515cf15135f2a1caae6835a4d155))
+- **http-server-mcp,http-server-mcp-openapi:** refuse missing path args, cap search, fix hints ([#1292](https://github.com/ttoss/ttoss/issues/1292)) ([d14c075](https://github.com/ttoss/ttoss/commit/d14c0756b814b6ce2431b17bee1d16fae63aa116))
+- **http-server-mcp:** branch on all three inbound classification outcomes ([#1235](https://github.com/ttoss/ttoss/issues/1235)) ([99beea4](https://github.com/ttoss/ttoss/commit/99beea4dafa100377cb697047923d08ab26340e0))
+- **http-server-mcp:** make the handshake public on both protocol eras ([#1223](https://github.com/ttoss/ttoss/issues/1223)) ([cb611ba](https://github.com/ttoss/ttoss/commit/cb611bab1f116eae1328d07ff0c373016be0c0f4)), closes [#1222](https://github.com/ttoss/ttoss/issues/1222)
+- **http-server-mcp:** rank suggestions by strength, keep prefix matches ([#1293](https://github.com/ttoss/ttoss/issues/1293)) ([217fb47](https://github.com/ttoss/ttoss/commit/217fb4725c6dc964569b69dd93759a1aeb4b1b33))
+- **http-server-mcp:** read the message off a structured error body ([#1236](https://github.com/ttoss/ttoss/issues/1236)) ([9064b30](https://github.com/ttoss/ttoss/commit/9064b30e9b4c3748057d24b2bbbb51ec942e02b8))
+
+### chore
+
+- **deps:** update all dependencies to latest and fix breaking changes ([#1325](https://github.com/ttoss/ttoss/issues/1325)) ([6997247](https://github.com/ttoss/ttoss/commit/6997247a6f03638c1d8469eb141e6e7ace694463)), closes [#private](https://github.com/ttoss/ttoss/issues/private)
+
+### Features
+
+- **auth-core,http-server-auth,http-server-mcp:** resource indicators and scopes_supported ([#1316](https://github.com/ttoss/ttoss/issues/1316)) ([8203460](https://github.com/ttoss/ttoss/commit/82034600ba2eab429ed625f85e74296abf5bcefc))
+- **eslint-config:** enforce the quality metrics ESLint can, drop the config that does nothing ([#1211](https://github.com/ttoss/ttoss/issues/1211)) ([5673a18](https://github.com/ttoss/ttoss/commit/5673a1817b104a403466d07ac2ecd589bc4ddd49)), closes [ttoss/i18n-cli#build-config](https://github.com/ttoss/i18n-cli/issues/build-config)
+- **http-server-mcp-openapi:** cover what OpenAPI → MCP consumers re-implement ([#1255](https://github.com/ttoss/ttoss/issues/1255)) ([f585de5](https://github.com/ttoss/ttoss/commit/f585de5469d0371375140c2796f38e6524aa2c77)), closes [#1254](https://github.com/ttoss/ttoss/issues/1254) [#1253](https://github.com/ttoss/ttoss/issues/1253)
+- **http-server-mcp-openapi:** refuse undeclared tool arguments, naming each ([#1330](https://github.com/ttoss/ttoss/issues/1330)) ([a549594](https://github.com/ttoss/ttoss/commit/a5495941298525b983d7f89d1fae5a1d33230653))
+- **http-server-mcp:** gated registrar forwards title, annotations and outputSchema ([#1280](https://github.com/ttoss/ttoss/issues/1280)) ([64a8ac5](https://github.com/ttoss/ttoss/commit/64a8ac54009448c54bba85c21facf8b0e9e22bc5)), closes [#1279](https://github.com/ttoss/ttoss/issues/1279)
+- **http-server-mcp:** hold each tool description to the client limit ([#1318](https://github.com/ttoss/ttoss/issues/1318)) ([bb8f90d](https://github.com/ttoss/ttoss/commit/bb8f90d4273ec515d3de47b24af2a036731b3675))
+- **http-server-mcp:** notify and close for 2026-07-28 listen streams ([#1278](https://github.com/ttoss/ttoss/issues/1278)) ([fb17b7e](https://github.com/ttoss/ttoss/commit/fb17b7ea4ab07a322bb158beec206364f949e475))
+- **http-server-mcp:** serve MCP Apps views with registerAppResource ([#1232](https://github.com/ttoss/ttoss/issues/1232)) ([c2ea69c](https://github.com/ttoss/ttoss/commit/c2ea69cc8649f2d8eeca32d72415f3b175ae9131)), closes [#1231](https://github.com/ttoss/ttoss/issues/1231)
+- **http-server-mcp:** streaming option so a buffered host completes subscriptions/listen at once ([#1340](https://github.com/ttoss/ttoss/issues/1340)) ([28b59a3](https://github.com/ttoss/ttoss/commit/28b59a3bffa211487ad4dd88f9ffc683efb3eef8))
+- **http-server,http-server-mcp:** rate limiting and an MCP surface budget ([#1315](https://github.com/ttoss/ttoss/issues/1315)) ([58962fe](https://github.com/ttoss/ttoss/commit/58962fea89af4f8a7460be4fb8f99f674a8f75b5))
+- i18n boundary adapters (appsync-api, http-server, MCP) and LocalizedText ([#1266](https://github.com/ttoss/ttoss/issues/1266)) ([297b436](https://github.com/ttoss/ttoss/commit/297b436523c11809746ee56f8abd6a0463767935)), closes [#1262](https://github.com/ttoss/ttoss/issues/1262)
+
+### BREAKING CHANGES
+
+- @ttoss/layouts, @ttoss/react-notifications and
+  @ttoss/geovis now have @ttoss/react-i18n as a peer dependency, and their
+  components must be rendered inside an `I18nProvider` (NotificationsProvider
+  renders the modal, and GeoVisProvider renders the hover tooltip).
+- `auth.publicMethods` defaults to `['initialize']` instead of
+  `['initialize', 'tools/list']`, so an unauthenticated `tools/list` now returns
+  `401` rather than the tool catalogue. Consumers that configure `auth` and rely
+  on unauthenticated tool discovery must set
+  `publicMethods: ['initialize', 'tools/list']` explicitly. See
+  `packages/http-server-mcp/MIGRATIONS.md`. Closes [#1176](https://github.com/ttoss/ttoss/issues/1176).
+- **deps:** `DashboardGridItem` is now based on react-grid-layout
+  v2's `LayoutItem`, and `onLayoutChange` receives a `Layout` (read-only
+  array of items) instead of `Layout[]`.
+- `registerToolFromSchema`, `createGatedToolRegistrar` and
+  `registerOpenApiTools` are removed. See each package's MIGRATIONS.md.
+- **deps:** `useReactTable`, `getCoreRowModel` and `createCell` are
+  no longer exported; use `useTable({ features, columns, data })` with
+  `tableFeatures`, and `createColumnHelper<typeof features, Row>()`.
+  `JsonEditor` now requires `setData`; use `JsonViewer` for read-only data.
+- requires ESLint 10. Rules are renamed: `import/*` ->
+  `import-x/*`, `jsx-a11y/*` -> `jsx-a11y-x/*`, `react/*` ->
+  `@eslint-react/*` (see the package README for the mapping); update
+  `eslint-disable` comments accordingly.
+- **deps:** the `maplibre-gl` peer dependency is now `>=6.4.1`
+  (was `>=5.0.0`).
+- under `defer`, a `call` whose tool returns an error result
+  or throws no longer appends `{ inputSchema }` to its content. Pass
+  `defer: { schemaOnError: 'always' }` to keep it.
+
 # [0.42.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fhttp-server-mcp%400.41.0...%40ttoss%2Fhttp-server-mcp%400.42.0) (2026-10-21)
 
 - feat(http-server-mcp)!: a deferred call's errors carry the schema only for invalid arguments (#1341) ([c4308e2](https://github.com/ttoss/ttoss/commit/c4308e2ea4b4f3b569b0d2797950ebebe9826640)), closes [#1341](https://github.com/ttoss/ttoss/issues/1341)

@@ -3,6 +3,53 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.31.0 (2026-10-21)
+
+- feat!: ESLint 10 with maintained React/import/a11y plugins, and a lint-clean monorepo (#1323) ([6efae16](https://github.com/ttoss/ttoss/commit/6efae16a0ee2e036bb9fe41c132aa8cd03fe3489)), closes [#1323](https://github.com/ttoss/ttoss/issues/1323) [jsx-eslint/eslint-plugin-react#3977](https://github.com/jsx-eslint/eslint-plugin-react/issues/3977) [#958](https://github.com/ttoss/ttoss/issues/958)
+
+### Bug Fixes
+
+- **geovis:** adds validation for layers[].paint[properties] format and report 'lineColor' in an extruded polygon as an invalid key ([#1332](https://github.com/ttoss/ttoss/issues/1332)) ([8b8ed85](https://github.com/ttoss/ttoss/commit/8b8ed858baee5b9563c6d0fe0a1045d352289187))
+- **geovis:** import ajv/dist/2020 with its extension ([#1339](https://github.com/ttoss/ttoss/issues/1339)) ([72ff8c8](https://github.com/ttoss/ttoss/commit/72ff8c8bab473f85eed8533d180a62cf5333d055)), closes [#1325](https://github.com/ttoss/ttoss/issues/1325)
+- **geovis:** report spec mistakes that rendered silent defaults ([#1310](https://github.com/ttoss/ttoss/issues/1310)) ([64e5ea1](https://github.com/ttoss/ttoss/commit/64e5ea1c62ece9e958e9b0510e0cdde0f152d244)), closes [#1297](https://github.com/ttoss/ttoss/issues/1297) [#1298](https://github.com/ttoss/ttoss/issues/1298) [#1299](https://github.com/ttoss/ttoss/issues/1299) [#1300](https://github.com/ttoss/ttoss/issues/1300) [#1301](https://github.com/ttoss/ttoss/issues/1301) [#1297](https://github.com/ttoss/ttoss/issues/1297) [#1298](https://github.com/ttoss/ttoss/issues/1298) [#1299](https://github.com/ttoss/ttoss/issues/1299) [#1300](https://github.com/ttoss/ttoss/issues/1300) [#1301](https://github.com/ttoss/ttoss/issues/1301)
+- **geovis:** stop dropping spec updates while the style is still parsing ([#1239](https://github.com/ttoss/ttoss/issues/1239)) ([47069c3](https://github.com/ttoss/ttoss/commit/47069c37a502579b3d2466c85e84ffeb139f2fcc))
+
+### chore
+
+- **deps:** update all dependencies to latest and fix breaking changes ([#1325](https://github.com/ttoss/ttoss/issues/1325)) ([6997247](https://github.com/ttoss/ttoss/commit/6997247a6f03638c1d8469eb141e6e7ace694463)), closes [#private](https://github.com/ttoss/ttoss/issues/private)
+
+### Features
+
+- **eslint-config:** enforce the quality metrics ESLint can, drop the config that does nothing ([#1211](https://github.com/ttoss/ttoss/issues/1211)) ([5673a18](https://github.com/ttoss/ttoss/commit/5673a1817b104a403466d07ac2ecd589bc4ddd49)), closes [ttoss/i18n-cli#build-config](https://github.com/ttoss/i18n-cli/issues/build-config)
+- **geovis:** internal auto fit-to-data camera centering in @ttoss/geovis ([#1218](https://github.com/ttoss/ttoss/issues/1218)) ([aead868](https://github.com/ttoss/ttoss/commit/aead868b86326becce3fdfad7229a8e29cb09dce))
+- **geovis-workspace:** add a color-ramp control to the settings zone ([#1245](https://github.com/ttoss/ttoss/issues/1245)) ([87796e8](https://github.com/ttoss/ttoss/commit/87796e8d4c631c1ce6701f4effd5c285356d5698))
+- **geovis-workspace:** camera bearing dial, settings sub-blocks and … ([#1314](https://github.com/ttoss/ttoss/issues/1314)) ([39d4bf1](https://github.com/ttoss/ttoss/commit/39d4bf1da034f75383e428b2509d8746a29ad6e1))
+- **geovis,geovis-workspace:** 3D polygon extrusion, a view-mode choi… ([#1308](https://github.com/ttoss/ttoss/issues/1308)) ([8ecea5c](https://github.com/ttoss/ttoss/commit/8ecea5c8167762c009c8c62c9d0dc004519e021e))
+- **geovis:** close validateSpec coverage gaps for golden test set ([#1250](https://github.com/ttoss/ttoss/issues/1250)) ([d2129f9](https://github.com/ttoss/ttoss/commit/d2129f94f033fef9bcb24005e3171e302d4dc070))
+- **geovis:** pin icon images and a "Ver mais" panel for long layer l… ([#1264](https://github.com/ttoss/ttoss/issues/1264)) ([287e879](https://github.com/ttoss/ttoss/commit/287e8796653b65469ae60e7b7f63cd42d9476f65))
+- **geovis:** support interaction and labels on vector-tile layers ([#1234](https://github.com/ttoss/ttoss/issues/1234)) ([f7baf24](https://github.com/ttoss/ttoss/commit/f7baf24a06c358b6ad5fb0a9348174931449ec60))
+- **react-auth-core:** ErrorBoundary reports through onError; auth packages and geovis drop @ttoss/logger ([#1309](https://github.com/ttoss/ttoss/issues/1309)) ([5eca2c7](https://github.com/ttoss/ttoss/commit/5eca2c725d04e261d97589549a4d28dd816fdf8a))
+
+### BREAKING CHANGES
+
+- @ttoss/layouts, @ttoss/react-notifications and
+  @ttoss/geovis now have @ttoss/react-i18n as a peer dependency, and their
+  components must be rendered inside an `I18nProvider` (NotificationsProvider
+  renders the modal, and GeoVisProvider renders the hover tooltip).
+- **deps:** `DashboardGridItem` is now based on react-grid-layout
+  v2's `LayoutItem`, and `onLayoutChange` receives a `Layout` (read-only
+  array of items) instead of `Layout[]`.
+- **deps:** `useReactTable`, `getCoreRowModel` and `createCell` are
+  no longer exported; use `useTable({ features, columns, data })` with
+  `tableFeatures`, and `createColumnHelper<typeof features, Row>()`.
+  `JsonEditor` now requires `setData`; use `JsonViewer` for read-only data.
+- requires ESLint 10. Rules are renamed: `import/*` ->
+  `import-x/*`, `jsx-a11y/*` -> `jsx-a11y-x/*`, `react/*` ->
+  `@eslint-react/*` (see the package README for the mapping); update
+  `eslint-disable` comments accordingly.
+- **deps:** the `maplibre-gl` peer dependency is now `>=6.4.1`
+  (was `>=5.0.0`).
+
 ## [0.30.7](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fgeovis%400.30.6...%40ttoss%2Fgeovis%400.30.7) (2026-10-21)
 
 **Note:** Version bump only for package @ttoss/geovis

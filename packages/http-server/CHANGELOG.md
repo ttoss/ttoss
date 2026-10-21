@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.15.0 (2026-10-21)
+
+### chore
+
+- **deps:** update all dependencies to latest and fix breaking changes ([#1325](https://github.com/ttoss/ttoss/issues/1325)) ([6997247](https://github.com/ttoss/ttoss/commit/6997247a6f03638c1d8469eb141e6e7ace694463)), closes [#private](https://github.com/ttoss/ttoss/issues/private)
+
+### Features
+
+- **errors:** add @ttoss/errors; http-server and auth-core adopt it ([#1306](https://github.com/ttoss/ttoss/issues/1306)) ([b5b7a11](https://github.com/ttoss/ttoss/commit/b5b7a1193c9b5e231a7a8d3ef6362e9ce9e58570))
+- **http-server,http-server-mcp:** rate limiting and an MCP surface budget ([#1315](https://github.com/ttoss/ttoss/issues/1315)) ([58962fe](https://github.com/ttoss/ttoss/commit/58962fea89af4f8a7460be4fb8f99f674a8f75b5))
+- i18n boundary adapters (appsync-api, http-server, MCP) and LocalizedText ([#1266](https://github.com/ttoss/ttoss/issues/1266)) ([297b436](https://github.com/ttoss/ttoss/commit/297b436523c11809746ee56f8abd6a0463767935)), closes [#1262](https://github.com/ttoss/ttoss/issues/1262)
+- **ids,postgresdb,http-server,http-server-mcp-openapi:** public ids, atomically, in-process dispatch and full tool schemas ([#1282](https://github.com/ttoss/ttoss/issues/1282)) ([274114c](https://github.com/ttoss/ttoss/commit/274114c689488d51c03f2240b932f860d7eb72ac))
+
+### BREAKING CHANGES
+
+- **deps:** `DashboardGridItem` is now based on react-grid-layout
+  v2's `LayoutItem`, and `onLayoutChange` receives a `Layout` (read-only
+  array of items) instead of `Layout[]`.
+- **deps:** `useReactTable`, `getCoreRowModel` and `createCell` are
+  no longer exported; use `useTable({ features, columns, data })` with
+  `tableFeatures`, and `createColumnHelper<typeof features, Row>()`.
+  `JsonEditor` now requires `setData`; use `JsonViewer` for read-only data.
+- **deps:** the `maplibre-gl` peer dependency is now `>=6.4.1`
+  (was `>=5.0.0`).
+
 ## [0.14.2](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fhttp-server%400.14.1...%40ttoss%2Fhttp-server%400.14.2) (2026-10-15)
 
 **Note:** Version bump only for package @ttoss/http-server

@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.20.0 (2026-10-21)
+
+### chore
+
+- **deps:** update all dependencies to latest and fix breaking changes ([#1325](https://github.com/ttoss/ttoss/issues/1325)) ([6997247](https://github.com/ttoss/ttoss/commit/6997247a6f03638c1d8469eb141e6e7ace694463)), closes [#private](https://github.com/ttoss/ttoss/issues/private)
+
+### Features
+
+- **cloud-auth,react-auth:** add Google and Facebook sign-in ([#1214](https://github.com/ttoss/ttoss/issues/1214)) ([c593c06](https://github.com/ttoss/ttoss/commit/c593c063fbd6a60a66438c0f84d6ee299b0a5ed1))
+
+### BREAKING CHANGES
+
+- **deps:** `DashboardGridItem` is now based on react-grid-layout
+  v2's `LayoutItem`, and `onLayoutChange` receives a `Layout` (read-only
+  array of items) instead of `Layout[]`.
+- **deps:** `useReactTable`, `getCoreRowModel` and `createCell` are
+  no longer exported; use `useTable({ features, columns, data })` with
+  `tableFeatures`, and `createColumnHelper<typeof features, Row>()`.
+  `JsonEditor` now requires `setData`; use `JsonViewer` for read-only data.
+- **deps:** the `maplibre-gl` peer dependency is now `>=6.4.1`
+  (was `>=5.0.0`).
+
 ## [0.19.1](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fcloud-auth%400.19.0...%40ttoss%2Fcloud-auth%400.19.1) (2026-10-14)
 
 **Note:** Version bump only for package @ttoss/cloud-auth

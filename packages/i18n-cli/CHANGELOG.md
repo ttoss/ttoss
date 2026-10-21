@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.16.0 (2026-10-21)
+
+### Bug Fixes
+
+- **i18n-cli:** end the persisted JSON files with a newline ([#1342](https://github.com/ttoss/ttoss/issues/1342)) ([c7a608e](https://github.com/ttoss/ttoss/commit/c7a608e3a64c819431e461c8f9112bbac5ce36da))
+
+### chore
+
+- **deps:** update all dependencies to latest and fix breaking changes ([#1325](https://github.com/ttoss/ttoss/issues/1325)) ([6997247](https://github.com/ttoss/ttoss/commit/6997247a6f03638c1d8469eb141e6e7ace694463)), closes [#private](https://github.com/ttoss/ttoss/issues/private)
+
+### Features
+
+- **config,i18n-cli,i18n-core:** preserve message whitespace, render div/h1–h6, day/month dates ([#1288](https://github.com/ttoss/ttoss/issues/1288)) ([6a2cb28](https://github.com/ttoss/ttoss/commit/6a2cb28dcd41f25d800fb9cf4025a0a1c7ef3c3d))
+- **eslint-config:** enforce the quality metrics ESLint can, drop the config that does nothing ([#1211](https://github.com/ttoss/ttoss/issues/1211)) ([5673a18](https://github.com/ttoss/ttoss/commit/5673a1817b104a403466d07ac2ecd589bc4ddd49)), closes [ttoss/i18n-cli#build-config](https://github.com/ttoss/i18n-cli/issues/build-config)
+- explicit ids in *.persisted.messages files, and pt-BR for components, forms, react-auth-core ([#1267](https://github.com/ttoss/ttoss/issues/1267)) ([6333695](https://github.com/ttoss/ttoss/commit/63336959e3e06e8e0ba9d244291bc897440c74e3)), closes [#1266](https://github.com/ttoss/ttoss/issues/1266)
+- i18n Phase 0 + Phase 1 — @ttoss/i18n-core, multi-locale ttoss-i18n, canonical id pattern ([#1265](https://github.com/ttoss/ttoss/issues/1265)) ([4533535](https://github.com/ttoss/ttoss/commit/4533535869f543724ef170929e99ae723b3efb70)), closes [#1262](https://github.com/ttoss/ttoss/issues/1262) [#1262](https://github.com/ttoss/ttoss/issues/1262) [#1056](https://github.com/ttoss/ttoss/issues/1056) [#1056](https://github.com/ttoss/ttoss/issues/1056)
+
+### BREAKING CHANGES
+
+- **deps:** `DashboardGridItem` is now based on react-grid-layout
+  v2's `LayoutItem`, and `onLayoutChange` receives a `Layout` (read-only
+  array of items) instead of `Layout[]`.
+- **deps:** `useReactTable`, `getCoreRowModel` and `createCell` are
+  no longer exported; use `useTable({ features, columns, data })` with
+  `tableFeatures`, and `createColumnHelper<typeof features, Row>()`.
+  `JsonEditor` now requires `setData`; use `JsonViewer` for read-only data.
+- **deps:** the `maplibre-gl` peer dependency is now `>=6.4.1`
+  (was `>=5.0.0`).
+
 # 0.15.0 (2026-10-21)
 
 ### Bug Fixes

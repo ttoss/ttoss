@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.21.0 (2026-10-21)
+
+- feat!: ESLint 10 with maintained React/import/a11y plugins, and a lint-clean monorepo (#1323) ([6efae16](https://github.com/ttoss/ttoss/commit/6efae16a0ee2e036bb9fe41c132aa8cd03fe3489)), closes [#1323](https://github.com/ttoss/ttoss/issues/1323) [jsx-eslint/eslint-plugin-react#3977](https://github.com/jsx-eslint/eslint-plugin-react/issues/3977) [#958](https://github.com/ttoss/ttoss/issues/958)
+
+### Bug Fixes
+
+- **auth:** serve RFC 9728 protected-resource metadata at the path-derived location, from one shared primitive ([#1212](https://github.com/ttoss/ttoss/issues/1212)) ([174bfca](https://github.com/ttoss/ttoss/commit/174bfca15dfd7c5d5048f5fd87a5da81faf37189))
+
+### chore
+
+- **deps:** update all dependencies to latest and fix breaking changes ([#1325](https://github.com/ttoss/ttoss/issues/1325)) ([6997247](https://github.com/ttoss/ttoss/commit/6997247a6f03638c1d8469eb141e6e7ace694463)), closes [#private](https://github.com/ttoss/ttoss/issues/private)
+
+### Features
+
+- **auth-core,http-server-auth,http-server-mcp:** resource indicators and scopes_supported ([#1316](https://github.com/ttoss/ttoss/issues/1316)) ([8203460](https://github.com/ttoss/ttoss/commit/82034600ba2eab429ed625f85e74296abf5bcefc))
+- **errors:** add @ttoss/errors; http-server and auth-core adopt it ([#1306](https://github.com/ttoss/ttoss/issues/1306)) ([b5b7a11](https://github.com/ttoss/ttoss/commit/b5b7a1193c9b5e231a7a8d3ef6362e9ce9e58570))
+- **eslint-config:** enforce the quality metrics ESLint can, drop the config that does nothing ([#1211](https://github.com/ttoss/ttoss/issues/1211)) ([5673a18](https://github.com/ttoss/ttoss/commit/5673a1817b104a403466d07ac2ecd589bc4ddd49)), closes [ttoss/i18n-cli#build-config](https://github.com/ttoss/i18n-cli/issues/build-config)
+
+### BREAKING CHANGES
+
+- @ttoss/layouts, @ttoss/react-notifications and
+  @ttoss/geovis now have @ttoss/react-i18n as a peer dependency, and their
+  components must be rendered inside an `I18nProvider` (NotificationsProvider
+  renders the modal, and GeoVisProvider renders the hover tooltip).
+- **deps:** `DashboardGridItem` is now based on react-grid-layout
+  v2's `LayoutItem`, and `onLayoutChange` receives a `Layout` (read-only
+  array of items) instead of `Layout[]`.
+- **deps:** `useReactTable`, `getCoreRowModel` and `createCell` are
+  no longer exported; use `useTable({ features, columns, data })` with
+  `tableFeatures`, and `createColumnHelper<typeof features, Row>()`.
+  `JsonEditor` now requires `setData`; use `JsonViewer` for read-only data.
+- requires ESLint 10. Rules are renamed: `import/*` ->
+  `import-x/*`, `jsx-a11y/*` -> `jsx-a11y-x/*`, `react/*` ->
+  `@eslint-react/*` (see the package README for the mapping); update
+  `eslint-disable` comments accordingly.
+- **deps:** the `maplibre-gl` peer dependency is now `>=6.4.1`
+  (was `>=5.0.0`).
+
 ## [0.20.1](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fauth-core%400.20.0...%40ttoss%2Fauth-core%400.20.1) (2026-10-15)
 
 **Note:** Version bump only for package @ttoss/auth-core

@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 4.0.0 (2026-10-21)
+
+### Bug Fixes
+
+- **react-i18n:** keep defineMessages values untyped under react-intl 12 ([#1329](https://github.com/ttoss/ttoss/issues/1329)) ([60d8ea0](https://github.com/ttoss/ttoss/commit/60d8ea080c5d3a2a5afacbdca996d776c33312a2))
+
+### chore
+
+- **deps:** update all dependencies to latest and fix breaking changes ([#1325](https://github.com/ttoss/ttoss/issues/1325)) ([6997247](https://github.com/ttoss/ttoss/commit/6997247a6f03638c1d8469eb141e6e7ace694463)), closes [#private](https://github.com/ttoss/ttoss/issues/private)
+
+### Features
+
+- **config,i18n-cli,i18n-core:** preserve message whitespace, render div/h1–h6, day/month dates ([#1288](https://github.com/ttoss/ttoss/issues/1288)) ([6a2cb28](https://github.com/ttoss/ttoss/commit/6a2cb28dcd41f25d800fb9cf4025a0a1c7ef3c3d))
+- i18n boundary adapters (appsync-api, http-server, MCP) and LocalizedText ([#1266](https://github.com/ttoss/ttoss/issues/1266)) ([297b436](https://github.com/ttoss/ttoss/commit/297b436523c11809746ee56f8abd6a0463767935)), closes [#1262](https://github.com/ttoss/ttoss/issues/1262)
+- i18n Phase 0 + Phase 1 — @ttoss/i18n-core, multi-locale ttoss-i18n, canonical id pattern ([#1265](https://github.com/ttoss/ttoss/issues/1265)) ([4533535](https://github.com/ttoss/ttoss/commit/4533535869f543724ef170929e99ae723b3efb70)), closes [#1262](https://github.com/ttoss/ttoss/issues/1262) [#1262](https://github.com/ttoss/ttoss/issues/1262) [#1056](https://github.com/ttoss/ttoss/issues/1056) [#1056](https://github.com/ttoss/ttoss/issues/1056)
+
+### BREAKING CHANGES
+
+- **deps:** `DashboardGridItem` is now based on react-grid-layout
+  v2's `LayoutItem`, and `onLayoutChange` receives a `Layout` (read-only
+  array of items) instead of `Layout[]`.
+- **deps:** `useReactTable`, `getCoreRowModel` and `createCell` are
+  no longer exported; use `useTable({ features, columns, data })` with
+  `tableFeatures`, and `createColumnHelper<typeof features, Row>()`.
+  `JsonEditor` now requires `setData`; use `JsonViewer` for read-only data.
+- **deps:** the `maplibre-gl` peer dependency is now `>=6.4.1`
+  (was `>=5.0.0`).
+
 # 3.1.0 (2026-10-21)
 
 ### Features
