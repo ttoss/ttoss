@@ -24,8 +24,8 @@ import type {
 import { applySetView } from './applySetView';
 import { applyBasemapLabelsVisibility } from './basemapLabels';
 import {
+  addHomeNavigationControl,
   COMPASS_LOCALE,
-  HomeNavigationControl,
   type HomeViewSource,
 } from './compassHome';
 import { attachFitToData } from './fitBoundsToData';
@@ -42,6 +42,11 @@ import { applyLayerPatch, applySourcePatch } from './patchDispatch';
 import { applySelectionToMap } from './selection';
 import { toMaplibreSource } from './sourceTranslation';
 import { syncSourcesAndLayers } from './syncSourcesAndLayers';
+import {
+  reportViewChanges,
+  subscribeViewChanges,
+  type ViewChangeListeners,
+} from './viewChange';
 import { syncMapView } from './viewSync';
 
 export { toMaplibreLayer, toMaplibreSource };
@@ -126,17 +131,9 @@ const createMap = (
       ? { attributionControl: false as const }
       : {}),
   });
-  map.addControl(
-    new HomeNavigationControl(
-      {
-        visualizePitch: true,
-        visualizeRoll: true,
-        showZoom: true,
-        showCompass: true,
-      },
-      getHome
-    )
-  );
+  if (spec.navigationControlEnabled !== false) {
+    addHomeNavigationControl(map, getHome);
+  }
   silenceNonCancelableTouchMove(map);
   return { map, style };
 };
@@ -238,6 +235,8 @@ interface AdapterState {
   prevSelection: GeoVisSelection | null;
   urlFetchPromises: WeakMap<maplibregl.Map, FetchCacheMap>;
   currentUrlSpecKeyByMap: WeakMap<maplibregl.Map, string>;
+  /** `onViewChange` subscribers, notified on every view's `move`. */
+  viewListeners: ViewChangeListeners;
 }
 
 // Fetches URL-based geojson sources once per specKey, then attaches the
@@ -340,6 +339,7 @@ const mountView = (
     styleReady: false,
   };
   state.views.set(viewId, viewState);
+  reportViewChanges({ map, viewId, listeners: state.viewListeners });
   // Stage 2: attaches the async auto-fit-to-data correction (see doc above);
   // only takes effect when spec.view.center/zoom are both omitted.
   syncFit(viewState, spec);
@@ -467,6 +467,7 @@ const createMapLibreAdapter = (): EngineAdapter => {
     prevSelection: _prevSelection,
     urlFetchPromises: _urlFetchPromises,
     currentUrlSpecKeyByMap: _currentUrlSpecKeyByMap,
+    viewListeners: new Set(),
   };
 
   const syncFitClosure = (viewState: ViewState, spec: VisualizationSpec) => {
@@ -505,6 +506,9 @@ const createMapLibreAdapter = (): EngineAdapter => {
         );
       }
       _prevSelection = selection;
+    },
+    onViewChange: (listener) => {
+      return subscribeViewChanges(state.viewListeners, listener);
     },
     destroy: () => {
       destroyAll(_views);

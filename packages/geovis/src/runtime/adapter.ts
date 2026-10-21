@@ -42,6 +42,19 @@ export interface SetViewOptions extends ViewAnimation {
   maxZoom?: number;
 }
 
+/**
+ * The camera of one mounted view, as `onViewChange` reports it after every
+ * move — the user's drags and zooms as much as programmatic ones.
+ */
+export interface CameraView {
+  /** The `viewId` the view was mounted with. */
+  viewId: string;
+  center: LngLat;
+  zoom: number;
+  pitch: number;
+  bearing: number;
+}
+
 export interface EngineAdapter {
   id: 'maplibre' | 'deckgl';
   getCapabilities(): CapabilitySet;
@@ -61,6 +74,14 @@ export interface EngineAdapter {
    * still tracks selection at the runtime level either way).
    */
   setSelection?(selection: GeoVisSelection | null): void;
+  /**
+   * Subscribes to camera moves of every view this adapter mounts, including
+   * views mounted after the call. Returns the unsubscribe. Optional: an
+   * adapter without it simply reports nothing, and whatever relies on it
+   * (the split map mode keeping its two sides together) degrades to
+   * independent cameras.
+   */
+  onViewChange?(listener: (camera: CameraView) => void): () => void;
   destroy(): void;
   getNativeInstance(): unknown;
 }

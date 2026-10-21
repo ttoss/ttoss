@@ -574,6 +574,10 @@
       "type": "boolean",
       "description": "Controls whether MapLibre's attribution control (the round button in the map's bottom-right corner) is mounted. Defaults to true. Disable it only when the application renders the basemap credits elsewhere — attribution is generally a licensing requirement."
     },
+    "navigationControlEnabled": {
+      "type": "boolean",
+      "description": "Controls whether the engine's navigation control (zoom buttons and compass, top-right) is mounted. Defaults to true. Read when the map mounts."
+    },
     "__resolved": {
       "type": "boolean",
       "description": "Internal marker set by resolveSpecFromMapType to prevent double-resolution. Consumers should not set this field directly."
@@ -701,6 +705,10 @@
           }
         }
       }
+    },
+    "mapModeControl": {
+      "type": "boolean",
+      "description": "Offers the reader a \"Modo do mapa\" button (top-right) that splits the map into two synchronized maps, each showing one `control` item the reader picks. Only switches the button on; the mode and the sides are the reader's choice. Needs a `control` with at least two items whose layers exist. Defaults to false."
     },
     "control": {
       "type": "object",

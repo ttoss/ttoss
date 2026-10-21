@@ -1054,3 +1054,27 @@ describe('createRuntime — getContextPacket() (PRD-002, ADR-0004)', () => {
     expect(packet.allowedActions).not.toContain('set-view-preset');
   });
 });
+
+describe('createRuntime — onViewChange', () => {
+  test("forwards a subscription to the adapter's camera reports", () => {
+    const adapter = makeAdapter();
+    const unsubscribe = jest.fn();
+    adapter.onViewChange = jest.fn(() => {
+      return unsubscribe;
+    });
+    const runtime = createRuntime(adapter, makeSpec());
+    const listener = jest.fn();
+
+    expect(runtime.onViewChange(listener)).toBe(unsubscribe);
+    expect(adapter.onViewChange).toHaveBeenCalledWith(listener);
+  });
+
+  test('is a no-op for an adapter that reports no camera', () => {
+    const runtime = createRuntime(makeAdapter(), makeSpec());
+    const unsubscribe = runtime.onViewChange(jest.fn());
+
+    expect(() => {
+      unsubscribe();
+    }).not.toThrow();
+  });
+});
