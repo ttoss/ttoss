@@ -80,7 +80,7 @@ export const jestE2EConfig = configCreator<any>({
 });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const jestUnitConfig = configCreator<any>({
+const unitConfigCreator = configCreator<any>({
   ...defaultConfig,
   displayName: 'Unit Tests',
   collectCoverage: true,
@@ -90,3 +90,20 @@ export const jestUnitConfig = configCreator<any>({
   ],
   roots: ['<rootDir>'],
 });
+
+/**
+ * `JEST_COVERAGE=false` turns coverage off without a `--coverage=false` CLI
+ * argument. A task runner such as Turborepo hashes pass-through arguments into
+ * every task of the run, dependencies included, so the flag would invalidate
+ * their cache; an environment variable can be scoped to the test task alone.
+ * A package config that sets `collectCoverage` still wins.
+ */
+export const jestUnitConfig: typeof unitConfigCreator = (
+  config,
+  deepmergeConfig
+) => {
+  return unitConfigCreator(
+    { collectCoverage: process.env.JEST_COVERAGE !== 'false', ...config },
+    deepmergeConfig
+  );
+};

@@ -38,3 +38,42 @@ test('should transform .mjs and .cjs files, so a published build is compiled for
   expect(transform['^.+\\.mjs$']).toBe('babel-jest');
   expect(transform['^.+\\.cjs$']).toBe('babel-jest');
 });
+
+describe('JEST_COVERAGE', () => {
+  const original = process.env.JEST_COVERAGE;
+
+  afterEach(() => {
+    if (original === undefined) {
+      delete process.env.JEST_COVERAGE;
+    } else {
+      process.env.JEST_COVERAGE = original;
+    }
+  });
+
+  test('should collect coverage in unit config when unset', () => {
+    delete process.env.JEST_COVERAGE;
+    expect(jestUnitConfig().collectCoverage).toBe(true);
+  });
+
+  test('should turn coverage off in unit config when "false"', () => {
+    process.env.JEST_COVERAGE = 'false';
+    expect(jestUnitConfig().collectCoverage).toBe(false);
+  });
+
+  test('should keep coverage on for any other value', () => {
+    process.env.JEST_COVERAGE = 'true';
+    expect(jestUnitConfig().collectCoverage).toBe(true);
+  });
+
+  test('should let a package config override the environment', () => {
+    process.env.JEST_COVERAGE = 'false';
+    expect(jestUnitConfig({ collectCoverage: true }).collectCoverage).toBe(
+      true
+    );
+  });
+
+  test('should keep the rest of the unit config', () => {
+    process.env.JEST_COVERAGE = 'false';
+    expect(jestUnitConfig().displayName).toBe('Unit Tests');
+  });
+});
