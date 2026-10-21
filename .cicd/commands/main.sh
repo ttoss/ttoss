@@ -138,6 +138,9 @@ if pnpm lerna changed --since=$LATEST_TAG; then
   done
 else
   echo "No changes detected on packages, skipping publish..."
+
+  # Nothing above tested this commit, and the deploy below does not.
+  pnpm turbo run i18n build test --filter=...[$LATEST_TAG_SHA] --filter=@docs/website
 fi
 
 # Deploy after publish because there are cases in which a package is versioned
@@ -147,4 +150,9 @@ fi
 # The `...` prefix includes dependents of the changed packages so deployable
 # workspaces like `@docs/storybook` are redeployed when a package they consume
 # changes — not only when their own files change.
-pnpm turbo run build test deploy --filter=...[$LATEST_TAG_SHA] --filter=@docs/website
+#
+# No `test` here: this commit's tests already ran, before `lerna version` or in
+# the branch without a publish. The bumped package.json files change the test
+# hashes, so asking for `test` again re-ran the suites of every released
+# package and its dependents.
+pnpm turbo run build deploy --filter=...[$LATEST_TAG_SHA] --filter=@docs/website
