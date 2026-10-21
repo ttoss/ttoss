@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.1.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Ftest-utils%407.0.0...%40ttoss%2Ftest-utils%407.1.0) (2026-10-21)
+
+### Features
+
+- **test-utils:** setUserEventOptions sets the defaults of userEvent.setup() ([#1349](https://github.com/ttoss/ttoss/issues/1349)) ([f4be540](https://github.com/ttoss/ttoss/commit/f4be54075db0eff99fe75e68c6d8d8e21985e30b))
+
 # 7.0.0 (2026-10-21)
 
 - feat!: ESLint 10 with maintained React/import/a11y plugins, and a lint-clean monorepo (#1323) ([6efae16](https://github.com/ttoss/ttoss/commit/6efae16a0ee2e036bb9fe41c132aa8cd03fe3489)), closes [#1323](https://github.com/ttoss/ttoss/issues/1323) [jsx-eslint/eslint-plugin-react#3977](https://github.com/jsx-eslint/eslint-plugin-react/issues/3977) [#958](https://github.com/ttoss/ttoss/issues/958)

@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.1](https://github.com/ttoss/ttoss/compare/%40ttoss%2Freact-auth-cognito%405.0.0...%40ttoss%2Freact-auth-cognito%405.0.1) (2026-10-21)
+
+**Note:** Version bump only for package @ttoss/react-auth-cognito
+
 # 5.0.0 (2026-10-21)
 
 - feat!: ESLint 10 with maintained React/import/a11y plugins, and a lint-clean monorepo (#1323) ([6efae16](https://github.com/ttoss/ttoss/commit/6efae16a0ee2e036bb9fe41c132aa8cd03fe3489)), closes [#1323](https://github.com/ttoss/ttoss/issues/1323) [jsx-eslint/eslint-plugin-react#3977](https://github.com/jsx-eslint/eslint-plugin-react/issues/3977) [#958](https://github.com/ttoss/ttoss/issues/958)

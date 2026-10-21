@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.14.1](https://github.com/ttoss/ttoss/compare/%40ttoss%2Freact-icons%400.14.0...%40ttoss%2Freact-icons%400.14.1) (2026-10-21)
+
+**Note:** Version bump only for package @ttoss/react-icons
+
 # 0.14.0 (2026-10-21)
 
 ### chore
