@@ -90,7 +90,7 @@ CodeBuild project for creating Lambda layers from `package.json` dependencies.
 **Example**:
 
 ```bash
-carlin deploy --lambda-externals aws-sdk,@aws-sdk/client-s3
+carlin deploy --lambda-external @aws-sdk/client-s3
 # Triggers base stack CodeBuild to create layer with specified packages
 ```
 

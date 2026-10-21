@@ -17,7 +17,7 @@ export const deployLambdaLayers = async ({
 
   log.info(
     logPrefix,
-    `--lambda-externals [${lambdaExternal.join(
+    `--lambda-external [${lambdaExternal.join(
       ', '
     )}] was found. Creating other layers...`
   );
