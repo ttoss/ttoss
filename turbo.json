@@ -5,20 +5,41 @@
   "tasks": {
     "build-config": {
       "dependsOn": ["^build-config"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!README.md",
+        "!CHANGELOG.md",
+        "!**/CLAUDE.md",
+        "!**/AGENTS.md"
+      ],
       "outputs": ["dist/**"]
     },
     "i18n": {
       "dependsOn": ["^i18n", "@ttoss/i18n-cli#build-config"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!README.md",
+        "!CHANGELOG.md",
+        "!**/CLAUDE.md",
+        "!**/AGENTS.md"
+      ],
       "outputs": ["i18n/**"]
     },
     "build": {
       "dependsOn": ["^build", "i18n"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!README.md",
+        "!CHANGELOG.md",
+        "!**/CLAUDE.md",
+        "!**/AGENTS.md"
+      ],
       "outputs": ["dist/**", "build/**", ".next/**", "storybook-static/**"]
     },
     "@docs/website#build": {
       "dependsOn": ["^build", "i18n"],
       "inputs": [
-        "**/*",
+        "$TURBO_DEFAULT$",
         "$TURBO_ROOT$/packages/*/README.md",
         "$TURBO_ROOT$/packages/*/src/**",
         "$TURBO_ROOT$/packages/*/package.json"
@@ -28,7 +49,7 @@
     "@docs/website#deploy": {
       "dependsOn": ["build"],
       "inputs": [
-        "**/*",
+        "$TURBO_DEFAULT$",
         "$TURBO_ROOT$/packages/*/README.md",
         "$TURBO_ROOT$/packages/*/src/**",
         "$TURBO_ROOT$/packages/*/package.json"
@@ -36,12 +57,31 @@
       "env": ["AWS_*", "CARLIN_*", "ENVIRONMENT"],
       "outputs": [".carlin/**"]
     },
+    "@docs/storybook#build": {
+      "dependsOn": ["^build", "i18n"],
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/packages/*/README.md"],
+      "outputs": ["storybook-static/**"]
+    },
     "test": {
       "dependsOn": ["i18n", "build-config"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!README.md",
+        "!CHANGELOG.md",
+        "!**/CLAUDE.md",
+        "!**/AGENTS.md"
+      ],
       "outputs": []
     },
     "@ttoss/auth-postgresdb#test": {
       "dependsOn": ["i18n", "build-config", "build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!README.md",
+        "!CHANGELOG.md",
+        "!**/CLAUDE.md",
+        "!**/AGENTS.md"
+      ],
       "outputs": []
     },
     "deploy": {
