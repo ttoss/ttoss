@@ -491,6 +491,7 @@ Pass options instead of `true` to tune it:
 - `except` — tools kept standalone, not deferred; they stay reachable through `search` too. Defaults to those linked to an [MCP Apps](#mcp-apps-interactive-uis) view, since a host finds a view through the tool's own `tools/list` entry.
 - `visible` — runs on every `search`, `describe` and `call`; a tool it rejects is absent from all three. Standalone tools stay listed.
 - `search` — replaces the default ranking, `rankTools`, e.g. with embeddings.
+- `schemaOnError` (default `'always'`) — `'invalidArguments'` attaches the input schema only to a `call` whose arguments fail it, not to the tool's own error result or a thrown error. Use it when a tool's errors are mostly refusals of the operation (a 404, a 409): a large schema on every refusal costs more context than the retry it saves.
 - `searchLimit` (default `10`), `searchMaxLimit` — the largest `limit` accepted (default `50`, or `searchLimit` when higher) — and `names` (default `search` / `describe` / `call`).
 
 A gate (below) sees each call with the tool's own name and arguments, so authorization stays per tool when deferred.

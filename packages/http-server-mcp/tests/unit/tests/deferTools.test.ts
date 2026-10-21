@@ -719,6 +719,50 @@ describe('registerTools defer', () => {
       expect(JSON.parse(result.content[1].text)).toHaveProperty('inputSchema');
       expect(value.content[0].text).toBe('plain failure');
     });
+
+    test('with schemaOnError invalidArguments, carries the schema only for invalid arguments', async () => {
+      const app = buildApp({
+        defer: { schemaOnError: 'invalidArguments' },
+        tools: [
+          tool({
+            name: 'refuses',
+            inputSchema: z.object({ id: z.string() }),
+            handler: async () => {
+              return { ...textResult('Conflict'), isError: true };
+            },
+          }),
+          tool({
+            name: 'throws',
+            handler: async () => {
+              throw new Error('Not found');
+            },
+          }),
+        ],
+      });
+
+      const refused = await callTool({
+        app,
+        name: 'call',
+        args: { name: 'refuses', arguments: { id: 'a' } },
+      });
+      const thrown = await callTool({
+        app,
+        name: 'call',
+        args: { name: 'throws', arguments: {} },
+      });
+      const invalid = await callTool({
+        app,
+        name: 'call',
+        args: { name: 'refuses', arguments: { id: 1 } },
+      });
+
+      expect(refused.isError).toBe(true);
+      expect(refused.content).toEqual([{ type: 'text', text: 'Conflict' }]);
+      expect(thrown.isError).toBe(true);
+      expect(thrown.content).toEqual([{ type: 'text', text: 'Not found' }]);
+      expect(invalid.isError).toBe(true);
+      expect(invalid.structuredContent).toHaveProperty('inputSchema');
+    });
   });
 
   describe('visible', () => {
