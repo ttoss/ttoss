@@ -99,9 +99,12 @@ export const parseOptions = ({
   };
 };
 
+// The trailing newline is what Prettier writes. Without it a fresh run and a
+// formatted checkout differ by one byte, and a build tool hashing these files
+// (turbo) misses its cache each time the two states alternate.
 const writeJson = async (file: string, data: unknown) => {
   await fs.promises.mkdir(path.dirname(file), { recursive: true });
-  await fs.promises.writeFile(file, JSON.stringify(data, undefined, 2));
+  await fs.promises.writeFile(file, `${JSON.stringify(data, undefined, 2)}\n`);
 };
 
 const readJsonIfExists = (file: string): TranslationData | undefined => {
