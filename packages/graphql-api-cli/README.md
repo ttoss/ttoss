@@ -99,7 +99,7 @@ For complex projects requiring specific external handling:
 # Custom directory with specific externals
 ttoss-graphql-api build-schema \
   --directory src/api \
-  --external graphql-compose,dataloader,aws-sdk
+  --external graphql-compose,dataloader,@aws-sdk/client-dynamodb
 ```
 
 ### CI/CD Integration
