@@ -37,7 +37,7 @@ export const baseStackTemplate = deepmerge.all([
  * website, for example.
  *
  * - **Lambda Layer builder**. This resource is a CodeBuild project that is
- * used to create Lambda Layers when [--lambda-externals](/docs/api-reference/deploy#lambda-externals)
+ * used to create Lambda Layers when [--lambda-external](/docs/carlin/commands/deploy#options)
  * has values.
  *
  * - **Lambda Image builder**. This resource is a CodeBuild project that builds

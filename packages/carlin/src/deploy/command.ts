@@ -213,7 +213,7 @@ export const examples: ReadonlyArray<[string, string?]> = [
   ],
   ['carlin deploy -e Production', 'Set environment.'],
   [
-    'carlin deploy --lambda-externals momentjs',
+    'carlin deploy --lambda-external momentjs',
     "Lambda exists. Don't bundle momentjs.",
   ],
   [
