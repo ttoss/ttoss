@@ -53,6 +53,21 @@ export default {
 };
 ```
 
+## Global user-event Options
+
+`setUserEventOptions` sets the defaults of every `userEvent.setup()` call.
+Options passed to `setup()` itself still win.
+
+```ts title="jest.setup.ts"
+import { setUserEventOptions } from '@ttoss/test-utils/react';
+
+// user-event awaits a timer between actions by default; skip it.
+setUserEventOptions({ delay: null });
+```
+
+The defaults apply to `setup()` only, not to the direct APIs
+(`userEvent.click(element)`).
+
 ## Relay Testing
 
 ```tsx
