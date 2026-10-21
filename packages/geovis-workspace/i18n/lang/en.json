@@ -351,14 +351,54 @@
     "defaultMessage": "Decrease",
     "description": "Accessible label for the button that steps a setting's slider down."
   },
+  "9RwXzX": {
+    "module": "@ttoss/geovis",
+    "defaultMessage": "Map mode",
+    "description": "Map mode control: the button label and the heading of its menu, which switches between one map and two side by side."
+  },
+  "H3hZ4p": {
+    "module": "@ttoss/geovis",
+    "defaultMessage": "One map, full screen",
+    "description": "Map mode menu: what the \"Single map\" option shows."
+  },
+  "IQKWdb": {
+    "module": "@ttoss/geovis",
+    "defaultMessage": "No layer",
+    "description": "Split map mode: a side showing no layer — the picker's label, and the list entry that empties the side."
+  },
+  "JJGB2O": {
+    "module": "@ttoss/geovis",
+    "defaultMessage": "Compare side by side",
+    "description": "Map mode menu: what the \"Split in two\" option is for."
+  },
   "Ws/Os5": {
     "module": "@ttoss/geovis",
     "defaultMessage": "Feature #{feature_id}",
     "description": "Map hover tooltip heading: the identifier of the hovered map feature."
   },
+  "Wuofl/": {
+    "module": "@ttoss/geovis",
+    "defaultMessage": "Map {side} layer: {layer}",
+    "description": "Split map mode: accessible name of a side's picker button, naming the side (A or B) and the layer it shows."
+  },
+  "jlSTFF": {
+    "module": "@ttoss/geovis",
+    "defaultMessage": "Map {side} layer",
+    "description": "Split map mode: the heading of a side's layer picker, and its accessible name. {side} is the side's letter, A (left) or B (right)."
+  },
   "lRO8cA": {
     "module": "@ttoss/geovis",
     "defaultMessage": "No data",
     "description": "Map hover tooltip: shown instead of a value when the feature has no data."
+  },
+  "qRVBJs": {
+    "module": "@ttoss/geovis",
+    "defaultMessage": "Split in two",
+    "description": "Map mode menu option: two maps side by side."
+  },
+  "sWPCP+": {
+    "module": "@ttoss/geovis",
+    "defaultMessage": "Single map",
+    "description": "Map mode menu option: one map."
   }
 }
