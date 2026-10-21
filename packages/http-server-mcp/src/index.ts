@@ -567,6 +567,19 @@ export interface McpRouterOptions {
   keepAliveMs?: number;
 
   /**
+   * Whether the host delivers a response while the handler is still writing
+   * it. Set `false` on a host that buffers the whole response — AWS Lambda
+   * behind API Gateway, or any serverless runtime without response streaming.
+   * The router then stops every instance it serves from advertising change
+   * notifications (`listChanged` for tools, prompts and resources, and
+   * `resources.subscribe`), so a `2026-07-28` `subscriptions/listen` is
+   * acknowledged and completed at once instead of being held until the
+   * platform's timeout. `notify` then reaches no client.
+   * @default true
+   */
+  streaming?: boolean;
+
+  /**
    * Base URL prepended to relative paths passed to `apiCall` (paths starting
    * with `/`). Tool handlers can then call `apiCall('GET', '/resource')` without
    * specifying a host.
@@ -688,6 +701,7 @@ export const createMcpRouter = (
     createMcpServer,
     bus,
     keepAliveMs,
+    streaming,
     apiBaseUrl,
     getApiHeaders,
     auth,
@@ -705,6 +719,7 @@ export const createMcpRouter = (
     createMcpServer,
     bus,
     keepAliveMs,
+    streaming,
   });
 
   const router = new Router();

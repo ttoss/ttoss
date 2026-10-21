@@ -38,23 +38,33 @@ import { App, bodyParser } from '@ttoss/http-server';
 import { createMcpRouter, McpServer, z } from '@ttoss/http-server-mcp';
 import { toLambdaHandler } from '@ttoss/http-server-serverless';
 
-const mcpServer = new McpServer({ name: 'my-mcp-server', version: '1.0.0' });
+const buildServer = () => {
+  const mcpServer = new McpServer({ name: 'my-mcp-server', version: '1.0.0' });
 
-mcpServer.registerTool(
-  'get-weather',
-  {
-    description: 'Get weather for a location',
-    inputSchema: { location: z.string() },
-  },
-  async ({ location }) => ({
-    content: [{ type: 'text', text: `Weather in ${location}: Sunny` }],
-  })
-);
+  mcpServer.registerTool(
+    'get-weather',
+    {
+      description: 'Get weather for a location',
+      inputSchema: { location: z.string() },
+    },
+    async ({ location }) => ({
+      content: [{ type: 'text', text: `Weather in ${location}: Sunny` }],
+    })
+  );
+
+  return mcpServer;
+};
 
 const app = new App();
 app.use(bodyParser());
-// Stateless by default — do not pass sessionIdGenerator on Lambda
-app.use(createMcpRouter(mcpServer).routes());
+app.use(
+  createMcpRouter(buildServer(), {
+    // Serves protocol revision 2026-07-28 alongside the 2025-era ones.
+    createMcpServer: buildServer,
+    // Lambda buffers the response: never hold a stream open.
+    streaming: false,
+  }).routes()
+);
 
 export const handler = toLambdaHandler(app);
 ```
@@ -93,7 +103,7 @@ Handles:
 
 - Use **stateless mode** (no `sessionIdGenerator`) — stateful mode keeps an in-memory transport that does not survive across Lambda containers.
 - Authentication via the `@ttoss/http-server-auth` or `@ttoss/http-server-mcp` `auth` option works normally and pairs naturally with API Gateway authorizers.
-- SSE streaming is not used in stateless MCP mode, so a standard API Gateway integration is sufficient.
+- **Pass `streaming: false` to `createMcpRouter`.** API Gateway hands the client the response only when the invocation returns, so a stream the server keeps open never arrives and the invocation dies at its timeout. A `2026-07-28` client opens one such stream, `subscriptions/listen`, for every session and reopens it as soon as it ends; without the option each open session keeps one invocation busy for good. See [Hosting without streaming](https://github.com/ttoss/ttoss/tree/main/packages/http-server-mcp#hosting-without-streaming-aws-lambda).
 
 ## Related packages
 
