@@ -97,15 +97,28 @@ export const cloudformation = () => {
 };
 
 /**
- * Stack waiters poll every 30 seconds by default. One hour matches the
- * timeout of the AWS SDK v2 waiters carlin used before.
+ * One hour matches the timeout of the AWS SDK v2 waiters carlin used before.
  */
 const STACK_WAITER_MAX_WAIT_TIME_IN_SECONDS = 60 * 60;
+
+/**
+ * The SDK's CloudFormation waiters default to `minDelay: 30` and
+ * `maxDelay: 120`: they check at 0s and 30s, then sleep a random 30–60s, a
+ * random 30–120s, and 120s from there on. A stack that finished right after a
+ * check sat unnoticed for up to two minutes, and a deploy that waits on another
+ * stack (`^deploy`) paid that once per stack. DescribeStacks every 5–15s stays
+ * far below CloudFormation's API limits.
+ */
+const STACK_WAITER_MIN_DELAY_IN_SECONDS = 5;
+
+const STACK_WAITER_MAX_DELAY_IN_SECONDS = 15;
 
 const getStackWaiterParams = () => {
   return {
     client: cloudformation(),
     maxWaitTime: STACK_WAITER_MAX_WAIT_TIME_IN_SECONDS,
+    minDelay: STACK_WAITER_MIN_DELAY_IN_SECONDS,
+    maxDelay: STACK_WAITER_MAX_DELAY_IN_SECONDS,
   };
 };
 
