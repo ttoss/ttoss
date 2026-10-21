@@ -89,6 +89,34 @@ describe('updateStack', () => {
     );
   });
 
+  test('should notice an update that finishes within seconds', async () => {
+    jest.useFakeTimers();
+    try {
+      cloudFormationMock.on(UpdateStackCommand).resolves({});
+      cloudFormationMock
+        .on(DescribeStacksCommand)
+        .resolvesOnce(stackWithStatus('UPDATE_IN_PROGRESS'))
+        .resolves(stackWithStatus('UPDATE_COMPLETE'));
+
+      let settled = false;
+      const update = updateStack({ params: { StackName: stackName } }).then(
+        () => {
+          settled = true;
+        }
+      );
+
+      await jest.advanceTimersByTimeAsync(5_000);
+
+      expect(settled).toBe(true);
+      expect(
+        cloudFormationMock.commandCalls(DescribeStacksCommand)
+      ).toHaveLength(2);
+      await update;
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
   test('should not throw when there are no updates', async () => {
     cloudFormationMock
       .on(UpdateStackCommand)
