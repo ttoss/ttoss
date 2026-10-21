@@ -1,8 +1,10 @@
 import { createServer, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 
+import { Server as LowLevelServer } from '@modelcontextprotocol/server';
 import { App, bodyParser } from '@ttoss/http-server';
 import { createMcpRouter, InMemoryServerEventBus, McpServer } from 'src/index';
+import { withoutChangeNotifications } from 'src/serveMcpRequest';
 
 /**
  * `2026-07-28` `subscriptions/listen` streams, over a listening server: a
@@ -24,7 +26,12 @@ const listenBody = {
   id: 1,
   method: 'subscriptions/listen',
   params: {
-    notifications: { toolsListChanged: true },
+    notifications: {
+      toolsListChanged: true,
+      promptsListChanged: true,
+      resourcesListChanged: true,
+      resourceSubscriptions: ['file:///any'],
+    },
     _meta: {
       'io.modelcontextprotocol/protocolVersion': '2026-07-28',
       'io.modelcontextprotocol/clientCapabilities': {},
@@ -195,5 +202,79 @@ describe('subscriptions/listen streams', () => {
       router.notify.resourceUpdated('file:///nothing');
     }).not.toThrow();
     await expect(router.close()).resolves.toBeUndefined();
+  });
+});
+
+// A host that buffers the response (AWS Lambda behind API Gateway) cannot
+// deliver a stream that never ends: it holds the invocation to its timeout.
+describe('streaming: false', () => {
+  const buildFullServer = () => {
+    const mcpServer = buildMcpServer();
+    mcpServer.registerPrompt('test-prompt', { description: 'A prompt' }, () => {
+      return { messages: [] };
+    });
+    mcpServer.registerResource('test-resource', 'file:///test', {}, () => {
+      return { contents: [] };
+    });
+    return mcpServer;
+  };
+
+  test('a listen is acknowledged with nothing honoured, then completed', async () => {
+    const { url } = await start({
+      createMcpServer: buildFullServer,
+      streaming: false,
+    });
+    const stream = await listen(url);
+
+    expect(await stream.next()).toMatchObject({
+      method: 'notifications/subscriptions/acknowledged',
+      params: { notifications: {} },
+    });
+    expect(await stream.next()).toMatchObject({
+      id: 1,
+      result: { resultType: 'complete' },
+    });
+    expect(await stream.next()).toBeNull();
+  });
+
+  test('the shared 2025-era instance advertises no change notification either', () => {
+    const shared = buildFullServer();
+    createMcpRouter(shared, { streaming: false });
+
+    expect(shared.server.getCapabilities()).toMatchObject({
+      tools: { listChanged: false },
+      prompts: { listChanged: false },
+      resources: { listChanged: false, subscribe: false },
+    });
+  });
+
+  test('by default the router leaves the capabilities as registered', () => {
+    const shared = buildFullServer();
+    createMcpRouter(shared, { createMcpServer: buildFullServer });
+
+    expect(shared.server.getCapabilities().tools?.listChanged).toBe(true);
+  });
+});
+
+describe('withoutChangeNotifications', () => {
+  test('advertises no kind the server does not serve', () => {
+    const capabilities =
+      withoutChangeNotifications(buildMcpServer()).server.getCapabilities();
+
+    expect(capabilities.tools).toEqual({ listChanged: false });
+    expect(capabilities.prompts).toBeUndefined();
+    expect(capabilities.resources).toBeUndefined();
+  });
+
+  // A factory may return the SDK's low-level `Server`, with no tools at all.
+  test('takes a low-level Server, and leaves an absent tools capability absent', () => {
+    const server = new LowLevelServer(
+      { name: 'test-server', version: '1.0.0' },
+      { capabilities: { prompts: { listChanged: true } } }
+    );
+
+    expect(withoutChangeNotifications(server).getCapabilities()).toEqual({
+      prompts: { listChanged: false },
+    });
   });
 });

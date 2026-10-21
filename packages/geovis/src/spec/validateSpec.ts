@@ -1,4 +1,4 @@
-import Ajv2020 from 'ajv/dist/2020';
+import Ajv2020 from 'ajv/dist/2020.js';
 
 import type { CapabilitySet } from '../runtime/adapter';
 import type { GeoVisIssue, GeoVisResult } from './result';

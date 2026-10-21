@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fhttp-server-serverless%400.5.2...%40ttoss%2Fhttp-server-serverless%400.6.0) (2026-10-21)
+
+### Features
+
+- **http-server-mcp:** streaming option so a buffered host completes subscriptions/listen at once ([#1340](https://github.com/ttoss/ttoss/issues/1340)) ([28b59a3](https://github.com/ttoss/ttoss/commit/28b59a3bffa211487ad4dd88f9ffc683efb3eef8))
+
 ## [0.5.2](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fhttp-server-serverless%400.5.1...%40ttoss%2Fhttp-server-serverless%400.5.2) (2026-10-15)
 
 **Note:** Version bump only for package @ttoss/http-server-serverless

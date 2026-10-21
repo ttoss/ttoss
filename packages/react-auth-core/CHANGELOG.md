@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.16.4](https://github.com/ttoss/ttoss/compare/%40ttoss%2Freact-auth-core%400.16.3...%40ttoss%2Freact-auth-core%400.16.4) (2026-10-21)
+
+**Note:** Version bump only for package @ttoss/react-auth-core
+
 ## [0.16.3](https://github.com/ttoss/ttoss/compare/%40ttoss%2Freact-auth-core%400.16.2...%40ttoss%2Freact-auth-core%400.16.3) (2026-10-20)
 
 **Note:** Version bump only for package @ttoss/react-auth-core

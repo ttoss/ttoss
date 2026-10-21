@@ -23,6 +23,8 @@ This command deploys AWS cloud resources from a CloudFormation template. <Carlin
 
 When a TypeScript template exports a function, carlin calls it with the CLI options plus `stackName`, `environment`, `packageName`, and `projectName`.
 
+After creating or updating the stack, carlin polls CloudFormation every 5 to 15 seconds until the stack settles, for up to an hour.
+
 ### Stack Name
 
 <Carlin /> creates automatically the CloudFormation stack name. See [Stack

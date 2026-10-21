@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.30.7](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fgeovis%400.30.6...%40ttoss%2Fgeovis%400.30.7) (2026-10-21)
+
+**Note:** Version bump only for package @ttoss/geovis
+
+## [0.30.6](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fgeovis%400.30.5...%40ttoss%2Fgeovis%400.30.6) (2026-10-21)
+
+### Bug Fixes
+
+- **geovis:** import ajv/dist/2020 with its extension ([#1339](https://github.com/ttoss/ttoss/issues/1339)) ([72ff8c8](https://github.com/ttoss/ttoss/commit/72ff8c8bab473f85eed8533d180a62cf5333d055)), closes [#1325](https://github.com/ttoss/ttoss/issues/1325)
+
 ## [0.30.5](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fgeovis%400.30.4...%40ttoss%2Fgeovis%400.30.5) (2026-10-20)
 
 ### Bug Fixes

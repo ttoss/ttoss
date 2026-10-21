@@ -484,13 +484,14 @@ registerTools({ server: fullServer, tools });
 registerTools({ server: deferredServer, tools, defer: true });
 ```
 
-A schema enters the model's context only for the tools it is about to use. `call` enforces the tool's schema as a direct call would, and its errors help the model recover: an unknown name answers suggestions (close typos first, then near-misses and tools sharing the name's words, by how much they share), and invalid arguments, a tool's own error result, or a thrown error carry the input schema, so a `call` made without `describe` corrects itself in one retry.
+A schema enters the model's context only for the tools it is about to use. `call` enforces the tool's schema as a direct call would, and its errors help the model recover: an unknown name answers suggestions (close typos first, then near-misses and tools sharing the name's words, by how much they share), and invalid arguments carry the input schema, so a `call` made without `describe` corrects itself in one retry.
 
 Pass options instead of `true` to tune it:
 
 - `except` — tools kept standalone, not deferred; they stay reachable through `search` too. Defaults to those linked to an [MCP Apps](#mcp-apps-interactive-uis) view, since a host finds a view through the tool's own `tools/list` entry.
 - `visible` — runs on every `search`, `describe` and `call`; a tool it rejects is absent from all three. Standalone tools stay listed.
 - `search` — replaces the default ranking, `rankTools`, e.g. with embeddings.
+- `schemaOnError` (default `'invalidArguments'`) — which failed calls carry the input schema. By default only arguments that fail it do: a tool's own error result or a thrown error is usually a refusal of the operation (a 404, a 409), and a large schema on every refusal costs more context than deferring saved. `'always'` attaches it to those too, for tools that do not validate their arguments and whose errors may be argument errors only the API detects.
 - `searchLimit` (default `10`), `searchMaxLimit` — the largest `limit` accepted (default `50`, or `searchLimit` when higher) — and `names` (default `search` / `describe` / `call`).
 
 A gate (below) sees each call with the tool's own name and arguments, so authorization stays per tool when deferred.
@@ -676,6 +677,7 @@ Creates a Koa router configured to handle MCP protocol requests.
   - `createMcpServer` (`McpServerFactory`) — Per-request factory serving the `2026-07-28` revision; see [Serving the `2026-07-28` revision](#serving-the-2026-07-28-revision)
   - `bus` (`ServerEventBus`) — Change-event bus `subscriptions/listen` streams subscribe to (default: in-process); see [Change notifications and shutdown](#change-notifications-and-shutdown)
   - `keepAliveMs` (`number`) — SSE keepalive interval for `2026-07-28` streams (default: `15000`)
+  - `streaming` (`boolean`) — `false` on a host that buffers the response (AWS Lambda behind API Gateway): no change notifications are advertised, so `subscriptions/listen` completes at once (default: `true`); see [Hosting without streaming](#hosting-without-streaming-aws-lambda)
   - `apiBaseUrl` (`string`) — Base URL prepended to relative paths in `apiCall`
   - `getApiHeaders` (`(ctx: Context) => Record<string, string>`) — Return headers to inject into every `apiCall` for this request
   - `auth` (`McpAuthOptions`) — OAuth/JWT authentication; see [Authentication](#authentication)
@@ -1051,6 +1053,19 @@ process.on('SIGTERM', async () => {
 ```
 
 The default bus is in-process, so `notify` reaches the streams this process holds. Behind several replicas, pass a `bus` implementing `ServerEventBus` over a shared pub/sub. Keep `keepAliveMs` below the idle timeout of anything in front of the server, or a quiet stream is cut there. 2025-era traffic is served statelessly, so it holds no stream to notify.
+
+### Hosting without streaming (AWS Lambda)
+
+A host that buffers the whole response — AWS Lambda behind API Gateway, or any runtime without response streaming — never delivers a stream that stays open: the invocation dies at its timeout, and the client reopens the stream at once. Pass `streaming: false` there:
+
+```typescript
+const mcpRouter = createMcpRouter(buildServer(), {
+  createMcpServer: buildServer,
+  streaming: false,
+});
+```
+
+The router then stops every server instance it serves from advertising change notifications: `listChanged` for tools, prompts and resources, and `resources.subscribe`. `McpServer` turns them on by default for each kind you register, which is what makes the SDK hold a `subscriptions/listen` open; with nothing advertised, a listen is acknowledged and completed in the same response. A kind you register nothing for stays unadvertised. Nothing is lost on such a host: no process outlives the request to send a notification, so `notify` and `close()` reach no client.
 
 **Supported HTTP methods:**
 

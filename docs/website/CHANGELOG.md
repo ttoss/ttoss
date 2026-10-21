@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [12.0.2](https://github.com/ttoss/ttoss/compare/%40docs%2Fwebsite%4012.0.1...%40docs%2Fwebsite%4012.0.2) (2026-10-21)
+
+### Bug Fixes
+
+- **carlin:** poll CloudFormation every 5-15s instead of up to 120s ([#1344](https://github.com/ttoss/ttoss/issues/1344)) ([fc2636c](https://github.com/ttoss/ttoss/commit/fc2636ca385e183d09e220cc3cdc4128c149a099))
+
 ## [12.0.1](https://github.com/ttoss/ttoss/compare/%40docs%2Fwebsite%4012.0.0...%40docs%2Fwebsite%4012.0.1) (2026-10-20)
 
 **Note:** Version bump only for package @docs/website
