@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 5.0.0 (2026-10-21)
+
+- feat!: ESLint 10 with maintained React/import/a11y plugins, and a lint-clean monorepo (#1323) ([6efae16](https://github.com/ttoss/ttoss/commit/6efae16a0ee2e036bb9fe41c132aa8cd03fe3489)), closes [#1323](https://github.com/ttoss/ttoss/issues/1323) [jsx-eslint/eslint-plugin-react#3977](https://github.com/jsx-eslint/eslint-plugin-react/issues/3977) [#958](https://github.com/ttoss/ttoss/issues/958)
+
+### Bug Fixes
+
+- **components,react-billing,react-wizard:** translate hardcoded UI labels ([#1319](https://github.com/ttoss/ttoss/issues/1319)) ([1e1e87d](https://github.com/ttoss/ttoss/commit/1e1e87dd69ac54502c520be595f9545e0fd28df4))
+- **components,react-billing:** spotlight card and plan card title fit a phone ([#1302](https://github.com/ttoss/ttoss/issues/1302)) ([8733e60](https://github.com/ttoss/ttoss/commit/8733e601e13a82894470e7e287daeb5f6cc978a3))
+- **components:** SpotlightCard title wraps on a phone instead of being cut ([#1312](https://github.com/ttoss/ttoss/issues/1312)) ([99364d8](https://github.com/ttoss/ttoss/commit/99364d80f5b1ee34aab030fe10b62bcbe5dd41ac))
+- **components:** write the NotificationsMenu and InstallPwa sources in English ([#1268](https://github.com/ttoss/ttoss/issues/1268)) ([7bf67c6](https://github.com/ttoss/ttoss/commit/7bf67c6b2462ffcc295126e97065150cf0bd4059))
+- Tabs onSelect leak, AuthProvider onError, TagVariant export ([#1305](https://github.com/ttoss/ttoss/issues/1305)) ([529d1c9](https://github.com/ttoss/ttoss/commit/529d1c9ad1a92318974c984c1c010ac749e89496))
+
+### chore
+
+- **deps:** update all dependencies to latest and fix breaking changes ([#1325](https://github.com/ttoss/ttoss/issues/1325)) ([6997247](https://github.com/ttoss/ttoss/commit/6997247a6f03638c1d8469eb141e6e7ace694463)), closes [#private](https://github.com/ttoss/ttoss/issues/private)
+
+### Features
+
+- **components:** make the date picker follow the I18nProvider locale ([#1275](https://github.com/ttoss/ttoss/issues/1275)) ([d877468](https://github.com/ttoss/ttoss/commit/d8774686b39aa7b1f45df282fbc65ced4a9c6197)), closes [#1262](https://github.com/ttoss/ttoss/issues/1262)
+- **eslint-config:** enforce the quality metrics ESLint can, drop the config that does nothing ([#1211](https://github.com/ttoss/ttoss/issues/1211)) ([5673a18](https://github.com/ttoss/ttoss/commit/5673a1817b104a403466d07ac2ecd589bc4ddd49)), closes [ttoss/i18n-cli#build-config](https://github.com/ttoss/i18n-cli/issues/build-config)
+- explicit ids in *.persisted.messages files, and pt-BR for components, forms, react-auth-core ([#1267](https://github.com/ttoss/ttoss/issues/1267)) ([6333695](https://github.com/ttoss/ttoss/commit/63336959e3e06e8e0ba9d244291bc897440c74e3)), closes [#1266](https://github.com/ttoss/ttoss/issues/1266)
+- i18n Phase 0 + Phase 1 — @ttoss/i18n-core, multi-locale ttoss-i18n, canonical id pattern ([#1265](https://github.com/ttoss/ttoss/issues/1265)) ([4533535](https://github.com/ttoss/ttoss/commit/4533535869f543724ef170929e99ae723b3efb70)), closes [#1262](https://github.com/ttoss/ttoss/issues/1262) [#1262](https://github.com/ttoss/ttoss/issues/1262) [#1056](https://github.com/ttoss/ttoss/issues/1056) [#1056](https://github.com/ttoss/ttoss/issues/1056)
+
+### BREAKING CHANGES
+
+- @ttoss/layouts, @ttoss/react-notifications and
+  @ttoss/geovis now have @ttoss/react-i18n as a peer dependency, and their
+  components must be rendered inside an `I18nProvider` (NotificationsProvider
+  renders the modal, and GeoVisProvider renders the hover tooltip).
+- **deps:** `DashboardGridItem` is now based on react-grid-layout
+  v2's `LayoutItem`, and `onLayoutChange` receives a `Layout` (read-only
+  array of items) instead of `Layout[]`.
+- **deps:** `useReactTable`, `getCoreRowModel` and `createCell` are
+  no longer exported; use `useTable({ features, columns, data })` with
+  `tableFeatures`, and `createColumnHelper<typeof features, Row>()`.
+  `JsonEditor` now requires `setData`; use `JsonViewer` for read-only data.
+- requires ESLint 10. Rules are renamed: `import/*` ->
+  `import-x/*`, `jsx-a11y/*` -> `jsx-a11y-x/*`, `react/*` ->
+  `@eslint-react/*` (see the package README for the mapping); update
+  `eslint-disable` comments accordingly.
+- **deps:** the `maplibre-gl` peer dependency is now `>=6.4.1`
+  (was `>=5.0.0`).
+
 ## [4.0.4](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fcomponents%404.0.3...%40ttoss%2Fcomponents%404.0.4) (2026-10-21)
 
 **Note:** Version bump only for package @ttoss/components

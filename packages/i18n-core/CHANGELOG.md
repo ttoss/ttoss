@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.10.0 (2026-10-21)
+
+### Bug Fixes
+
+- **i18n-core:** declare defineMessages and defineMessage instead of re-exporting @formatjs/intl's ([#1313](https://github.com/ttoss/ttoss/issues/1313)) ([3650bc0](https://github.com/ttoss/ttoss/commit/3650bc073593d13e3b5afa9099abea985382f995))
+- **i18n-core:** keep formatjs's default onError when none is given ([#1284](https://github.com/ttoss/ttoss/issues/1284)) ([e9dc9e6](https://github.com/ttoss/ttoss/commit/e9dc9e62de2c0fdc8cf6cc144442893dd5cfcc76)), closes [oneclickads/monorepo#4439](https://github.com/oneclickads/monorepo/issues/4439)
+
+### chore
+
+- **deps:** update all dependencies to latest and fix breaking changes ([#1325](https://github.com/ttoss/ttoss/issues/1325)) ([6997247](https://github.com/ttoss/ttoss/commit/6997247a6f03638c1d8469eb141e6e7ace694463)), closes [#private](https://github.com/ttoss/ttoss/issues/private)
+
+### Features
+
+- **config,i18n-cli,i18n-core:** preserve message whitespace, render div/h1–h6, day/month dates ([#1288](https://github.com/ttoss/ttoss/issues/1288)) ([6a2cb28](https://github.com/ttoss/ttoss/commit/6a2cb28dcd41f25d800fb9cf4025a0a1c7ef3c3d))
+- **errors,i18n-core,appsync-api:** code plus values for errors whose thrower holds no copy ([#1311](https://github.com/ttoss/ttoss/issues/1311)) ([cdd82e0](https://github.com/ttoss/ttoss/commit/cdd82e0bf41817084685891920106f2f4f26658b))
+- explicit ids in *.persisted.messages files, and pt-BR for components, forms, react-auth-core ([#1267](https://github.com/ttoss/ttoss/issues/1267)) ([6333695](https://github.com/ttoss/ttoss/commit/63336959e3e06e8e0ba9d244291bc897440c74e3)), closes [#1266](https://github.com/ttoss/ttoss/issues/1266)
+- i18n boundary adapters (appsync-api, http-server, MCP) and LocalizedText ([#1266](https://github.com/ttoss/ttoss/issues/1266)) ([297b436](https://github.com/ttoss/ttoss/commit/297b436523c11809746ee56f8abd6a0463767935)), closes [#1262](https://github.com/ttoss/ttoss/issues/1262)
+- i18n Phase 0 + Phase 1 — @ttoss/i18n-core, multi-locale ttoss-i18n, canonical id pattern ([#1265](https://github.com/ttoss/ttoss/issues/1265)) ([4533535](https://github.com/ttoss/ttoss/commit/4533535869f543724ef170929e99ae723b3efb70)), closes [#1262](https://github.com/ttoss/ttoss/issues/1262) [#1262](https://github.com/ttoss/ttoss/issues/1262) [#1056](https://github.com/ttoss/ttoss/issues/1056) [#1056](https://github.com/ttoss/ttoss/issues/1056)
+- **i18n-core:** negotiate a locale without a fallback ([#1277](https://github.com/ttoss/ttoss/issues/1277)) ([49216cf](https://github.com/ttoss/ttoss/commit/49216cf60b87f2f23db13516c2c65aa02f62deb1))
+- **i18n-core:** tell whether a reference renders in the instance's locale ([#1276](https://github.com/ttoss/ttoss/issues/1276)) ([21f046f](https://github.com/ttoss/ttoss/commit/21f046ffde3266f6a4180d0ea080f860a3a10327))
+
+### BREAKING CHANGES
+
+- **deps:** `DashboardGridItem` is now based on react-grid-layout
+  v2's `LayoutItem`, and `onLayoutChange` receives a `Layout` (read-only
+  array of items) instead of `Layout[]`.
+- **deps:** `useReactTable`, `getCoreRowModel` and `createCell` are
+  no longer exported; use `useTable({ features, columns, data })` with
+  `tableFeatures`, and `createColumnHelper<typeof features, Row>()`.
+  `JsonEditor` now requires `setData`; use `JsonViewer` for read-only data.
+- **deps:** the `maplibre-gl` peer dependency is now `>=6.4.1`
+  (was `>=5.0.0`).
+
 ## [0.9.2](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fi18n-core%400.9.1...%40ttoss%2Fi18n-core%400.9.2) (2026-10-15)
 
 ### Bug Fixes

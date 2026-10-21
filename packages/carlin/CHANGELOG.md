@@ -3,6 +3,51 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 6.0.0 (2026-10-21)
+
+- feat!: ESLint 10 with maintained React/import/a11y plugins, and a lint-clean monorepo (#1323) ([6efae16](https://github.com/ttoss/ttoss/commit/6efae16a0ee2e036bb9fe41c132aa8cd03fe3489)), closes [#1323](https://github.com/ttoss/ttoss/issues/1323) [jsx-eslint/eslint-plugin-react#3977](https://github.com/jsx-eslint/eslint-plugin-react/issues/3977) [#958](https://github.com/ttoss/ttoss/issues/958)
+
+### Bug Fixes
+
+- **carlin:** build a valid response headers policy when vary is defined ([#1206](https://github.com/ttoss/ttoss/issues/1206)) ([12abe77](https://github.com/ttoss/ttoss/commit/12abe773a8832ba046627faa9c90c859bba958ff))
+- **carlin:** compress and cache static app responses at the edge ([#1296](https://github.com/ttoss/ttoss/issues/1296)) ([565c16d](https://github.com/ttoss/ttoss/commit/565c16da12b6fdd0054e06c45a76a9fe7ac0c31e))
+- **carlin:** drop aws-sdk v2 from externals examples; name --lambda-external ([#1345](https://github.com/ttoss/ttoss/issues/1345)) ([5adb523](https://github.com/ttoss/ttoss/commit/5adb523cdb1f28cce3c87aa612797eb172491532)), closes [#1325](https://github.com/ttoss/ttoss/issues/1325)
+- **carlin:** poll CloudFormation every 5-15s instead of up to 120s ([#1344](https://github.com/ttoss/ttoss/issues/1344)) ([fc2636c](https://github.com/ttoss/ttoss/commit/fc2636ca385e183d09e220cc3cdc4128c149a099))
+- **carlin:** upload dot files and directories to S3 ([#1229](https://github.com/ttoss/ttoss/issues/1229)) ([4928aa0](https://github.com/ttoss/ttoss/commit/4928aa0a77cf57bdcf75496a947aa83be659e40f))
+- **deps:** bump vulnerable and deprecated dependencies within existing ranges ([#1324](https://github.com/ttoss/ttoss/issues/1324)) ([a633312](https://github.com/ttoss/ttoss/commit/a633312f71bc515cf15135f2a1caae6835a4d155))
+
+### chore
+
+- **deps:** update all dependencies to latest and fix breaking changes ([#1325](https://github.com/ttoss/ttoss/issues/1325)) ([6997247](https://github.com/ttoss/ttoss/commit/6997247a6f03638c1d8469eb141e6e7ace694463)), closes [#private](https://github.com/ttoss/ttoss/issues/private)
+
+### Features
+
+- **carlin:** --lambda-sourcemap ships a source map and sets NODE_OPTIONS=--enable-source-maps ([#1320](https://github.com/ttoss/ttoss/issues/1320)) ([b34ec0c](https://github.com/ttoss/ttoss/commit/b34ec0c7427cc49052e64c8d9b13560d1b6a6f6f))
+- **carlin:** add redirect-to-trailing-slash to static app deploys ([#1220](https://github.com/ttoss/ttoss/issues/1220)) ([7829480](https://github.com/ttoss/ttoss/commit/7829480a5470aa31a34075b440aed0008a9d4dc0))
+- **carlin:** rename --lambda-sourcemap to --lambda-source-maps ([#1321](https://github.com/ttoss/ttoss/issues/1321)) ([438ea02](https://github.com/ttoss/ttoss/commit/438ea02042db29a4e0979ee6cd7f45283a4ddf12))
+- **carlin:** set a file's content type explicitly with content-types ([#1261](https://github.com/ttoss/ttoss/issues/1261)) ([f9e1914](https://github.com/ttoss/ttoss/commit/f9e1914d85f74c3f519626424d63661cb5ffc50a)), closes [#1260](https://github.com/ttoss/ttoss/issues/1260)
+- **eslint-config:** enforce the quality metrics ESLint can, drop the config that does nothing ([#1211](https://github.com/ttoss/ttoss/issues/1211)) ([5673a18](https://github.com/ttoss/ttoss/commit/5673a1817b104a403466d07ac2ecd589bc4ddd49)), closes [ttoss/i18n-cli#build-config](https://github.com/ttoss/i18n-cli/issues/build-config)
+
+### BREAKING CHANGES
+
+- @ttoss/layouts, @ttoss/react-notifications and
+  @ttoss/geovis now have @ttoss/react-i18n as a peer dependency, and their
+  components must be rendered inside an `I18nProvider` (NotificationsProvider
+  renders the modal, and GeoVisProvider renders the hover tooltip).
+- **deps:** `DashboardGridItem` is now based on react-grid-layout
+  v2's `LayoutItem`, and `onLayoutChange` receives a `Layout` (read-only
+  array of items) instead of `Layout[]`.
+- **deps:** `useReactTable`, `getCoreRowModel` and `createCell` are
+  no longer exported; use `useTable({ features, columns, data })` with
+  `tableFeatures`, and `createColumnHelper<typeof features, Row>()`.
+  `JsonEditor` now requires `setData`; use `JsonViewer` for read-only data.
+- requires ESLint 10. Rules are renamed: `import/*` ->
+  `import-x/*`, `jsx-a11y/*` -> `jsx-a11y-x/*`, `react/*` ->
+  `@eslint-react/*` (see the package README for the mapping); update
+  `eslint-disable` comments accordingly.
+- **deps:** the `maplibre-gl` peer dependency is now `>=6.4.1`
+  (was `>=5.0.0`).
+
 ## [5.0.2](https://github.com/ttoss/ttoss/compare/carlin%405.0.1...carlin%405.0.2) (2026-10-21)
 
 ### Bug Fixes

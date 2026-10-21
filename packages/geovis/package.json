@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/geovis",
-  "version": "0.30.7",
+  "version": "0.31.0",
   "description": "Geovisualization components for React applications.",
   "keywords": [
     "Geovis",

@@ -3,6 +3,43 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.11.0 (2026-10-21)
+
+- feat(http-server-mcp,http-server-mcp-openapi)!: one Tool type, registered directly or deferred (#1291) ([b0a6d6a](https://github.com/ttoss/ttoss/commit/b0a6d6addadaede03101a86c4a35ffa4e0ce3c8b)), closes [#1291](https://github.com/ttoss/ttoss/issues/1291) [#1290](https://github.com/ttoss/ttoss/issues/1290)
+
+### Bug Fixes
+
+- **http-server-mcp-openapi:** resolve allOf body props instead of defaulting to string ([#1252](https://github.com/ttoss/ttoss/issues/1252)) ([ae24f59](https://github.com/ttoss/ttoss/commit/ae24f592e7d8209d67b595791ab58650c9fd3301))
+- **http-server-mcp-openapi:** serialise query params by their OpenAPI style ([#1238](https://github.com/ttoss/ttoss/issues/1238)) ([0084265](https://github.com/ttoss/ttoss/commit/0084265a3c547054613a2c247fd15c2d361b34dd))
+- **http-server-mcp,http-server-mcp-openapi:** refuse missing path args, cap search, fix hints ([#1292](https://github.com/ttoss/ttoss/issues/1292)) ([d14c075](https://github.com/ttoss/ttoss/commit/d14c0756b814b6ce2431b17bee1d16fae63aa116))
+
+### chore
+
+- **deps:** update all dependencies to latest and fix breaking changes ([#1325](https://github.com/ttoss/ttoss/issues/1325)) ([6997247](https://github.com/ttoss/ttoss/commit/6997247a6f03638c1d8469eb141e6e7ace694463)), closes [#private](https://github.com/ttoss/ttoss/issues/private)
+
+### Features
+
+- **http-server-mcp-openapi:** cover what OpenAPI → MCP consumers re-implement ([#1255](https://github.com/ttoss/ttoss/issues/1255)) ([f585de5](https://github.com/ttoss/ttoss/commit/f585de5469d0371375140c2796f38e6524aa2c77)), closes [#1254](https://github.com/ttoss/ttoss/issues/1254) [#1253](https://github.com/ttoss/ttoss/issues/1253)
+- **http-server-mcp-openapi:** nested nullable, pinned parameters, several server-managed extensions ([#1258](https://github.com/ttoss/ttoss/issues/1258)) ([060cb3c](https://github.com/ttoss/ttoss/commit/060cb3cd3a8964d866704b714d62b3cba4f0754e)), closes [#1257](https://github.com/ttoss/ttoss/issues/1257)
+- **http-server-mcp-openapi:** refuse undeclared tool arguments, naming each ([#1330](https://github.com/ttoss/ttoss/issues/1330)) ([a549594](https://github.com/ttoss/ttoss/commit/a5495941298525b983d7f89d1fae5a1d33230653))
+- **http-server-mcp-openapi:** toolMeta and toStructuredContent options for MCP Apps views ([#1285](https://github.com/ttoss/ttoss/issues/1285)) ([8d14ec4](https://github.com/ttoss/ttoss/commit/8d14ec4509ff4abcd1602b5bcac0a0fb54006fd2))
+- **ids,postgresdb,http-server,http-server-mcp-openapi:** public ids, atomically, in-process dispatch and full tool schemas ([#1282](https://github.com/ttoss/ttoss/issues/1282)) ([274114c](https://github.com/ttoss/ttoss/commit/274114c689488d51c03f2240b932f860d7eb72ac))
+- pin server-managed body properties and add whole-body CLI flags ([#1263](https://github.com/ttoss/ttoss/issues/1263)) ([521022f](https://github.com/ttoss/ttoss/commit/521022f7beca7fc0e5c63299135a4798375e07e8))
+
+### BREAKING CHANGES
+
+- **deps:** `DashboardGridItem` is now based on react-grid-layout
+  v2's `LayoutItem`, and `onLayoutChange` receives a `Layout` (read-only
+  array of items) instead of `Layout[]`.
+- `registerToolFromSchema`, `createGatedToolRegistrar` and
+  `registerOpenApiTools` are removed. See each package's MIGRATIONS.md.
+- **deps:** `useReactTable`, `getCoreRowModel` and `createCell` are
+  no longer exported; use `useTable({ features, columns, data })` with
+  `tableFeatures`, and `createColumnHelper<typeof features, Row>()`.
+  `JsonEditor` now requires `setData`; use `JsonViewer` for read-only data.
+- **deps:** the `maplibre-gl` peer dependency is now `>=6.4.1`
+  (was `>=5.0.0`).
+
 ## [0.10.2](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fhttp-server-mcp-openapi%400.10.1...%40ttoss%2Fhttp-server-mcp-openapi%400.10.2) (2026-10-21)
 
 **Note:** Version bump only for package @ttoss/http-server-mcp-openapi
