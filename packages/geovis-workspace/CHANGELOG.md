@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.24.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fgeovis-workspace%400.23.1...%40ttoss%2Fgeovis-workspace%400.24.0) (2026-10-21)
+
+### Features
+
+- **geovis:** split map mode ([#1346](https://github.com/ttoss/ttoss/issues/1346)) ([8658b3f](https://github.com/ttoss/ttoss/commit/8658b3f4f04ea4589f0f40a87d22db5e89043d7d))
+
 ## [0.23.1](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fgeovis-workspace%400.23.0...%40ttoss%2Fgeovis-workspace%400.23.1) (2026-10-21)
 
 **Note:** Version bump only for package @ttoss/geovis-workspace
