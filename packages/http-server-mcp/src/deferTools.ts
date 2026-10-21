@@ -44,6 +44,20 @@ export interface DeferToolsOptions {
    */
   searchMaxLimit?: number;
   /**
+   * Which failed `call`s carry the tool's input schema.
+   *
+   * - `'invalidArguments'` — only arguments that fail the tool's schema, so a
+   *   `call` made without `describe` corrects itself in one retry. A tool's
+   *   own error result or a thrown error is usually a refusal of the
+   *   operation (a 404, a 409), and a large schema on every refusal costs
+   *   more context than deferring saved.
+   * - `'always'` — those carry it too. For tools that do not validate their
+   *   arguments, whose errors may be argument errors only the API detects.
+   *
+   * @default 'invalidArguments'
+   */
+  schemaOnError?: 'always' | 'invalidArguments';
+  /**
    * Runs on every `search`, `describe` and `call`. A tool it rejects is
    * absent from all three; `call` answers it as an unknown name. Tools
    * `except` keeps standalone are listed on `tools/list` regardless.
@@ -106,6 +120,7 @@ interface DeferredTools {
   tools: Tool[];
   searchLimit: number;
   searchMaxLimit: number;
+  schemaOnError: NonNullable<DeferToolsOptions['schemaOnError']>;
   searchTools: NonNullable<DeferToolsOptions['search']>;
   /** The tools this request may see. */
   visibleTools: () => Tool[];
@@ -145,6 +160,7 @@ const deferredToolsOf = ({
     searchLimit,
     searchMaxLimit:
       options.searchMaxLimit ?? Math.max(DEFAULT_SEARCH_MAX_LIMIT, searchLimit),
+    schemaOnError: options.schemaOnError ?? 'invalidArguments',
     searchTools: options.search ?? rankTools,
     visibleTools: () => {
       return tools.filter(isVisible);
@@ -278,9 +294,11 @@ const describeToolOf = ({ names, find, visibleTools }: DeferredTools): Tool => {
 const runTool = async ({
   tool,
   args,
+  schemaOnError,
 }: {
   tool: Tool;
   args: unknown;
+  schemaOnError: DeferredTools['schemaOnError'];
 }): Promise<CallToolResult> => {
   const schemas = resolveToolSchemas(tool);
   const validated = await schemas.input['~standard'].validate(args);
@@ -295,28 +313,38 @@ const runTool = async ({
     });
   }
 
-  // A refusal carries the schema, so a call made without `describe`
-  // corrects itself in one retry.
-  const schemaHint = {
-    type: 'text' as const,
-    text: JSON.stringify({ inputSchema: schemas.inputJson }),
-  };
+  // Only with 'always': arguments that passed validation make a tool's own
+  // error a refusal of the operation, which its schema does not fix.
+  const schemaHint =
+    schemaOnError === 'always'
+      ? [
+          {
+            type: 'text' as const,
+            text: JSON.stringify({ inputSchema: schemas.inputJson }),
+          },
+        ]
+      : [];
   try {
     const result = await tool.handler(
       validated.value as Record<string, unknown>
     );
     return result.isError
-      ? { ...result, content: [...result.content, schemaHint] }
+      ? { ...result, content: [...result.content, ...schemaHint] }
       : result;
   } catch (error) {
     return {
-      content: [{ type: 'text', text: errorMessageOf(error) }, schemaHint],
+      content: [{ type: 'text', text: errorMessageOf(error) }, ...schemaHint],
       isError: true,
     };
   }
 };
 
-const callToolOf = ({ names, find, visibleTools }: DeferredTools): Tool => {
+const callToolOf = ({
+  names,
+  find,
+  visibleTools,
+  schemaOnError,
+}: DeferredTools): Tool => {
   return {
     name: names.call,
     description: `Run a tool found with "${names.search}". Pass its arguments as "${names.describe}" defined them.`,
@@ -344,7 +372,7 @@ const callToolOf = ({ names, find, visibleTools }: DeferredTools): Tool => {
           isError: true,
         });
       }
-      return runTool({ tool, args: args.arguments ?? {} });
+      return runTool({ tool, args: args.arguments ?? {}, schemaOnError });
     },
   };
 };
