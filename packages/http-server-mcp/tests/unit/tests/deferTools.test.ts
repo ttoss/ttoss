@@ -655,8 +655,9 @@ describe('registerTools defer', () => {
       expect(strict.structuredContent?.issues).toEqual([expect.any(String)]);
     });
 
-    test("appends the schema to the tool's own error result", async () => {
+    test("with schemaOnError always, appends the schema to the tool's own error result", async () => {
       const app = buildApp({
+        defer: { schemaOnError: 'always' },
         tools: [
           tool({
             name: 'refuses',
@@ -685,8 +686,9 @@ describe('registerTools defer', () => {
       ]);
     });
 
-    test('turns a thrown error into an error result with the schema', async () => {
+    test('with schemaOnError always, turns a thrown error into an error result with the schema', async () => {
       const app = buildApp({
+        defer: { schemaOnError: 'always' },
         tools: [
           tool({
             name: 'throws',
@@ -720,9 +722,8 @@ describe('registerTools defer', () => {
       expect(value.content[0].text).toBe('plain failure');
     });
 
-    test('with schemaOnError invalidArguments, carries the schema only for invalid arguments', async () => {
+    test('by default, carries the schema only for invalid arguments', async () => {
       const app = buildApp({
-        defer: { schemaOnError: 'invalidArguments' },
         tools: [
           tool({
             name: 'refuses',

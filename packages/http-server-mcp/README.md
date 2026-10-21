@@ -484,14 +484,14 @@ registerTools({ server: fullServer, tools });
 registerTools({ server: deferredServer, tools, defer: true });
 ```
 
-A schema enters the model's context only for the tools it is about to use. `call` enforces the tool's schema as a direct call would, and its errors help the model recover: an unknown name answers suggestions (close typos first, then near-misses and tools sharing the name's words, by how much they share), and invalid arguments, a tool's own error result, or a thrown error carry the input schema, so a `call` made without `describe` corrects itself in one retry.
+A schema enters the model's context only for the tools it is about to use. `call` enforces the tool's schema as a direct call would, and its errors help the model recover: an unknown name answers suggestions (close typos first, then near-misses and tools sharing the name's words, by how much they share), and invalid arguments carry the input schema, so a `call` made without `describe` corrects itself in one retry.
 
 Pass options instead of `true` to tune it:
 
 - `except` — tools kept standalone, not deferred; they stay reachable through `search` too. Defaults to those linked to an [MCP Apps](#mcp-apps-interactive-uis) view, since a host finds a view through the tool's own `tools/list` entry.
 - `visible` — runs on every `search`, `describe` and `call`; a tool it rejects is absent from all three. Standalone tools stay listed.
 - `search` — replaces the default ranking, `rankTools`, e.g. with embeddings.
-- `schemaOnError` (default `'always'`) — `'invalidArguments'` attaches the input schema only to a `call` whose arguments fail it, not to the tool's own error result or a thrown error. Use it when a tool's errors are mostly refusals of the operation (a 404, a 409): a large schema on every refusal costs more context than the retry it saves.
+- `schemaOnError` (default `'invalidArguments'`) — which failed calls carry the input schema. By default only arguments that fail it do: a tool's own error result or a thrown error is usually a refusal of the operation (a 404, a 409), and a large schema on every refusal costs more context than deferring saved. `'always'` attaches it to those too, for tools that do not validate their arguments and whose errors may be argument errors only the API detects.
 - `searchLimit` (default `10`), `searchMaxLimit` — the largest `limit` accepted (default `50`, or `searchLimit` when higher) — and `names` (default `search` / `describe` / `call`).
 
 A gate (below) sees each call with the tool's own name and arguments, so authorization stays per tool when deferred.

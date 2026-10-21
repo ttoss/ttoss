@@ -46,15 +46,15 @@ export interface DeferToolsOptions {
   /**
    * Which failed `call`s carry the tool's input schema.
    *
-   * - `'always'` — invalid arguments, the tool's own error result and a
-   *   thrown error all do, so a `call` made without `describe` corrects
-   *   itself in one retry.
-   * - `'invalidArguments'` — only arguments that fail the tool's schema. For
-   *   tools whose errors are mostly refusals of the operation (a 404, a 409),
-   *   where a large schema on every refusal costs more context than the
-   *   retry it saves.
+   * - `'invalidArguments'` — only arguments that fail the tool's schema, so a
+   *   `call` made without `describe` corrects itself in one retry. A tool's
+   *   own error result or a thrown error is usually a refusal of the
+   *   operation (a 404, a 409), and a large schema on every refusal costs
+   *   more context than deferring saved.
+   * - `'always'` — those carry it too. For tools that do not validate their
+   *   arguments, whose errors may be argument errors only the API detects.
    *
-   * @default 'always'
+   * @default 'invalidArguments'
    */
   schemaOnError?: 'always' | 'invalidArguments';
   /**
@@ -160,7 +160,7 @@ const deferredToolsOf = ({
     searchLimit,
     searchMaxLimit:
       options.searchMaxLimit ?? Math.max(DEFAULT_SEARCH_MAX_LIMIT, searchLimit),
-    schemaOnError: options.schemaOnError ?? 'always',
+    schemaOnError: options.schemaOnError ?? 'invalidArguments',
     searchTools: options.search ?? rankTools,
     visibleTools: () => {
       return tools.filter(isVisible);
@@ -313,8 +313,8 @@ const runTool = async ({
     });
   }
 
-  // A refusal carries the schema, so a call made without `describe`
-  // corrects itself in one retry.
+  // Only with 'always': arguments that passed validation make a tool's own
+  // error a refusal of the operation, which its schema does not fix.
   const schemaHint =
     schemaOnError === 'always'
       ? [
