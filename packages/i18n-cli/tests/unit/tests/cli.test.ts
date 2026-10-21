@@ -287,6 +287,20 @@ describe('ttoss-i18n (build)', () => {
     expect(fs.existsSync(path.join(cwd, 'i18n/manifest.json'))).toBe(false);
   });
 
+  test('writes the persisted files as Prettier formats them', async () => {
+    write(cwd, {
+      'package.json': { name: 'app' },
+      'src/messages.ts': source({ hello: { text: 'Olá' } }),
+    });
+
+    await executeI18nCli(['--source-locale', 'pt-BR'], cwd);
+
+    for (const file of ['i18n/lang/pt-BR.json', 'i18n/manifest.json']) {
+      const content = fs.readFileSync(path.join(cwd, file), 'utf8');
+      expect(content).toBe(`${JSON.stringify(read(file), null, 2)}\n`);
+    }
+  });
+
   test('merges every locale a dependency ships, own entries winning', async () => {
     write(cwd, {
       'package.json': {
