@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.41.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fhttp-server-mcp%400.40.0...%40ttoss%2Fhttp-server-mcp%400.41.0) (2026-10-21)
+
+### Features
+
+- **http-server-mcp:** streaming option so a buffered host completes subscriptions/listen at once ([#1340](https://github.com/ttoss/ttoss/issues/1340)) ([28b59a3](https://github.com/ttoss/ttoss/commit/28b59a3bffa211487ad4dd88f9ffc683efb3eef8))
+
 # [0.40.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fhttp-server-mcp%400.39.1...%40ttoss%2Fhttp-server-mcp%400.40.0) (2026-10-16)
 
 ### Features
