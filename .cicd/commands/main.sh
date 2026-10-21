@@ -13,7 +13,7 @@ fi
 # Find the most recent tagged ancestor of HEAD — the last release — the way
 # `git describe` would, but without fetching every tag. Sorting tag names
 # instead (`sort -V | tail -1`) picks the alphabetically last package's tag,
-# which can be weeks old; the `...[$LATEST_TAG_SHA]` filters below then treat
+# which can be weeks old; the `$AFFECTED` filters below then treat
 # every package changed since that release as changed, pulling the whole
 # monorepo into scope.
 #
@@ -51,6 +51,11 @@ echo "Latest release: $LATEST_TAG ($LATEST_TAG_SHA)"
 # Fetch only that one tag, so lerna finds it locally, without downloading all tags.
 git fetch origin "refs/tags/$LATEST_TAG:refs/tags/$LATEST_TAG"
 
+# The packages changed since the last release and their dependents, as turbo
+# filters. Computed once, before `lerna version` commits the bumps.
+AFFECTED=$(sh ./.cicd/commands/affectedFilters.sh "$LATEST_TAG_SHA")
+echo "Affected: $AFFECTED"
+
 # Setup NPM token.
 # Using ~/.npmrc instead of .npmrc because pnpm uses .npmrc and appending
 # the token to .npmrc will cause git uncommitted changes error.
@@ -84,9 +89,9 @@ if pnpm lerna changed --since=$LATEST_TAG; then
   # from scratch even when their source code hasn't changed.
   # https://turbo.build/repo/docs/core-concepts/caching#missing-the-cache
   #
-  # The `...` prefix includes dependents of the changed packages so consumers
+  # `$AFFECTED` includes dependents of the changed packages so consumers
   # like `@docs/storybook` are built/tested when a package they consume changes.
-  pnpm turbo run i18n build test --filter=...[$LATEST_TAG_SHA]
+  pnpm turbo run i18n build test $AFFECTED
 
   # Undo all files that were changed by the build command—this happens because
   # the build can change files with different linting rules and `pnpm run lint`
@@ -118,7 +123,7 @@ if pnpm lerna changed --since=$LATEST_TAG; then
   # files reflect the new package versions if any package embeds its own version.
   # Tests are skipped here because they already passed above and version bumps
   # do not affect test outcomes.
-  pnpm turbo run build --filter=...[$LATEST_TAG_SHA]
+  pnpm turbo run build $AFFECTED
 
   # Push changes.
   git push --follow-tags
@@ -140,14 +145,14 @@ else
   echo "No changes detected on packages, skipping publish..."
 
   # Nothing above tested this commit, and the deploy below does not.
-  pnpm turbo run i18n build test --filter=...[$LATEST_TAG_SHA] --filter=@docs/website
+  pnpm turbo run i18n build test $AFFECTED --filter=@docs/website
 fi
 
 # Deploy after publish because there are cases in which a package is versioned
 # and it should be on NPM registry to Lambda Layer create the new version when
 # carlin deploy starts.
 #
-# The `...` prefix includes dependents of the changed packages so deployable
+# `$AFFECTED` includes dependents of the changed packages so deployable
 # workspaces like `@docs/storybook` are redeployed when a package they consume
 # changes — not only when their own files change.
 #
@@ -155,4 +160,4 @@ fi
 # the branch without a publish. The bumped package.json files change the test
 # hashes, so asking for `test` again re-ran the suites of every released
 # package and its dependents.
-pnpm turbo run build deploy --filter=...[$LATEST_TAG_SHA] --filter=@docs/website
+pnpm turbo run build deploy $AFFECTED --filter=@docs/website
