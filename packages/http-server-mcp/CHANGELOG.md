@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.42.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fhttp-server-mcp%400.41.0...%40ttoss%2Fhttp-server-mcp%400.42.0) (2026-10-21)
+
+- feat(http-server-mcp)!: a deferred call's errors carry the schema only for invalid arguments (#1341) ([c4308e2](https://github.com/ttoss/ttoss/commit/c4308e2ea4b4f3b569b0d2797950ebebe9826640)), closes [#1341](https://github.com/ttoss/ttoss/issues/1341)
+
+### BREAKING CHANGES
+
+- under `defer`, a `call` whose tool returns an error result
+  or throws no longer appends `{ inputSchema }` to its content. Pass
+  `defer: { schemaOnError: 'always' }` to keep it.
+
 # [0.41.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fhttp-server-mcp%400.40.0...%40ttoss%2Fhttp-server-mcp%400.41.0) (2026-10-21)
 
 ### Features
