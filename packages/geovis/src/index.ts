@@ -3,6 +3,13 @@ export * from './react/GeoVisCanvas';
 export * from './react/GeoVisProvider';
 export type { UseMapDataResult } from './react/hooks';
 export { useMapData } from './react/hooks';
+export type {
+  GeoVisMapMode,
+  GeoVisMapModeContextValue,
+  GeoVisSplitSide,
+  GeoVisSplitSides,
+} from './react/mapMode';
+export { useGeoVisMapMode } from './react/mapMode';
 export type { HoverTooltipConfig } from './react/tooltip';
 export type { BoundaryToggleResult } from './react/useBoundaryToggle';
 export { useBoundaryToggle } from './react/useBoundaryToggle';

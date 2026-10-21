@@ -10,6 +10,7 @@ import type {
 import { validateSpec } from '../spec/validateSpec';
 import type { ActionLogEntry, GeoVisAction, GeoVisSelection } from './action';
 import type {
+  CameraView,
   EngineAdapter,
   MountedView,
   SetViewOptions,
@@ -48,6 +49,12 @@ export interface GeoVisRuntime {
   getContextPacket(): ContextPacket;
   /** The runtime's current selection (set via `dispatch({ type: 'select-feature' })`), or `null`. */
   getSelection(): GeoVisSelection | null;
+  /**
+   * Subscribes to the camera of every view this runtime mounts, after each
+   * move. Returns the unsubscribe; a no-op when the adapter reports no camera
+   * (see `EngineAdapter.onViewChange`).
+   */
+  onViewChange(listener: (camera: CameraView) => void): () => void;
   destroy(): void;
   getAdapter(): EngineAdapter;
 }
@@ -485,6 +492,14 @@ export const createRuntime = (
     },
     getSelection: () => {
       return state.selection;
+    },
+    onViewChange: (listener) => {
+      return (
+        adapter.onViewChange?.(listener) ??
+        (() => {
+          /* no camera reported: nothing to unsubscribe */
+        })
+      );
     },
     destroy: () => {
       adapter.destroy();
