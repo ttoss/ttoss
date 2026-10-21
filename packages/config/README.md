@@ -216,6 +216,14 @@ You can use configs below to your packages folders.
 
 Follow our [tests guidelines](https://ttoss.dev/docs/engineering/guidelines/tests) to configure and run your tests.
 
+`jestUnitConfig` collects coverage by default. Set `JEST_COVERAGE=false` to turn it off for a run, for example for the dependents of a change that only need to pass, not to be measured:
+
+```shell
+JEST_COVERAGE=false pnpm run test
+```
+
+Prefer it to `jest --coverage=false` under a task runner: Turborepo hashes pass-through arguments (`turbo run test -- --coverage=false`) into every task of the run, dependencies included, so their cache misses. An environment variable listed in the `test` task's `env` changes that task's hash only. A package config that sets `collectCoverage` still wins.
+
 ### Tsup
 
 Use [tsup](https://tsup.egoist.sh/) to bundle your TypeScript packages.
