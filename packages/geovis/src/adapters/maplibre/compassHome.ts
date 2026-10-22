@@ -135,3 +135,30 @@ export class HomeNavigationControl extends maplibregl.NavigationControl {
     super.onRemove();
   }
 }
+
+/**
+ * Mounts the navigation control — zoom buttons and a compass that flies home
+ * (see {@link HomeNavigationControl}) — in the map's top-right corner.
+ *
+ * @param map - The mounted map.
+ * @param getHome - Reads the home view's source at click time.
+ *
+ * @example
+ * addHomeNavigationControl(map, () => viewState);
+ */
+export const addHomeNavigationControl = (
+  map: maplibregl.Map,
+  getHome: () => HomeViewSource | undefined
+): void => {
+  map.addControl(
+    new HomeNavigationControl(
+      {
+        visualizePitch: true,
+        visualizeRoll: true,
+        showZoom: true,
+        showCompass: true,
+      },
+      getHome
+    )
+  );
+};

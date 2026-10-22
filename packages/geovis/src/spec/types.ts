@@ -779,6 +779,14 @@ export interface VisualizationSpec {
   attributionControlEnabled?: boolean;
 
   /**
+   * Controls whether the engine's navigation control — the zoom in / zoom out
+   * buttons and the compass in the map's top-right corner — is mounted.
+   * Defaults to `true`. Read when the map mounts. The split map mode turns it
+   * off on its left side, so the two sides share the right side's one column.
+   */
+  navigationControlEnabled?: boolean;
+
+  /**
    * Internal marker set by `resolveSpecFromMapType` to prevent double-resolution.
    * Consumers should not set this field directly.
    */
@@ -799,6 +807,20 @@ export interface VisualizationSpec {
    * layers by id via `dispatch({ type: 'toggle-layer' })`.
    */
   control?: LayerControl;
+
+  /**
+   * Offers the reader a "Modo do mapa" button in the map's top-right corner,
+   * which `<GeoVisProvider>` auto-mounts: "Mapa único" keeps one map, and
+   * "Dividir em dois" splits it into two maps side by side, cameras kept
+   * together, each showing one item of `control` the reader picks from the
+   * pickers above it — the layer control itself steps aside while split.
+   *
+   * Only switches the button on: the mode and the two sides are the reader's
+   * choice, never the spec's. Needs a `control` with at least two items whose
+   * layers exist in the spec, which are what the sides choose between; without
+   * them the button is not shown. Defaults to `false`.
+   */
+  mapModeControl?: boolean;
 }
 
 export type GeovisSpec = VisualizationSpec;

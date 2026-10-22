@@ -1,6 +1,8 @@
 import * as React from 'react';
 
 import { useGeoVis } from './contexts';
+import { GeoVisSplitMap } from './GeoVisSplitMap';
+import { useGeoVisMapMode } from './mapMode';
 
 export interface GeoVisCanvasProps {
   /**
@@ -19,6 +21,10 @@ export interface GeoVisCanvasProps {
  * Must be used inside a {@link GeoVisProvider}.
  * The component mounts the engine's native map into a `<div>` and
  * unmounts it automatically when removed from the tree.
+ *
+ * While the provider's map mode is `split` (see `spec.mapModeControl`), it
+ * renders the two side-by-side maps instead, and its own map is unmounted
+ * until the mode returns to a single map.
  */
 export const GeoVisCanvas = ({
   viewId = 'default',
@@ -26,17 +32,22 @@ export const GeoVisCanvas = ({
   className,
 }: GeoVisCanvasProps) => {
   const { runtime, spec } = useGeoVis();
+  const split = useGeoVisMapMode().mode === 'split';
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     const container = containerRef.current;
-    if (!runtime || !container) return;
+    if (!runtime || !container || split) return;
 
     const mounted = runtime.mount(container, viewId);
     return () => {
       mounted.destroy();
     };
-  }, [runtime, viewId]);
+  }, [runtime, viewId, split]);
+
+  if (split) {
+    return <GeoVisSplitMap style={style} className={className} />;
+  }
 
   const isBasemapHidden = spec.basemap?.visible === false;
   const containerStyle: React.CSSProperties = {
