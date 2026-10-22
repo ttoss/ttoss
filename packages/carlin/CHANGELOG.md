@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.2](https://github.com/ttoss/ttoss/compare/carlin%406.0.1...carlin%406.0.2) (2026-10-22)
+
+### Bug Fixes
+
+- **carlin:** exit non-zero when the AWS account does not match ([#1352](https://github.com/ttoss/ttoss/issues/1352)) ([9fecd32](https://github.com/ttoss/ttoss/commit/9fecd32fbe1b124f85962144bc5136b6262d2406))
+
 ## [6.0.1](https://github.com/ttoss/ttoss/compare/carlin%406.0.0...carlin%406.0.1) (2026-10-21)
 
 **Note:** Version bump only for package carlin
