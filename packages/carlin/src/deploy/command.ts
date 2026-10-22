@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { CommandModule, InferredOptionTypes } from 'yargs';
 
-import { addGroupToOptions, getAwsAccountId } from '../utils';
+import { addGroupToOptions } from '../utils';
 import { log } from '../utils/log';
 import { deployBaseStackCommand } from './baseStack/command';
+import { checkAwsAccountId } from './checkAwsAccountId';
 import { deployCicdCommand } from './cicd/command';
 import { deployCloudFormation, destroyCloudFormation } from './cloudformation';
 import { printStackOutputsAfterDeploy } from './cloudformation.core';
@@ -15,27 +16,6 @@ import { deployStaticAppCommand } from './staticApp/command';
 import { deployVMCommand } from './vm/command';
 
 const logPrefix = 'deploy';
-
-const checkAwsAccountId = async (awsAccountId: string) => {
-  try {
-    const currentAwsAccountId = await getAwsAccountId();
-    if (String(awsAccountId) !== String(currentAwsAccountId)) {
-      throw new Error(
-        `AWS account id does not match. Current is "${currentAwsAccountId}" but the defined in configuration files is "${awsAccountId}".`
-      );
-    }
-  } catch (error: any) {
-    if (error.code === 'CredentialsError') {
-      /**
-       * No credentials found.
-       */
-      return;
-    }
-
-    log.error(logPrefix, error.message);
-    process.exit();
-  }
-};
 
 const reportDeployCommand: CommandModule = {
   command: 'report',

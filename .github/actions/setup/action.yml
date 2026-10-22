@@ -14,6 +14,9 @@ runs:
       uses: actions/setup-node@v6
       with:
         node-version: ${{ inputs.node-version }}
+        # The runner image's cached 24.x can lag behind a security release;
+        # resolve the newest one instead.
+        check-latest: true
 
     - name: Install pnpm
       uses: pnpm/action-setup@v5
