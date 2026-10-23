@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fopenapi-codegen%400.9.0...%40ttoss%2Fopenapi-codegen%400.10.0) (2026-10-23)
+
+### Features
+
+- **openapi-codegen:** refuse items without type: array ([#1353](https://github.com/ttoss/ttoss/issues/1353)) ([2b00f2a](https://github.com/ttoss/ttoss/commit/2b00f2af65002c7c6b4750904b4464b229cd7387))
+
 # 0.9.0 (2026-10-21)
 
 ### Bug Fixes

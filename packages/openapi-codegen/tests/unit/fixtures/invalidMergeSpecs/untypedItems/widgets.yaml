@@ -1,0 +1,78 @@
+openapi: 3.0.3
+info:
+  title: Widgets
+  version: 1.0.0
+paths:
+  /widgets:
+    parameters:
+      - name: tags
+        in: query
+        schema:
+          items:
+            type: string
+    get:
+      operationId: listWidgets
+      parameters:
+        - name: ids
+          in: query
+          schema:
+            items:
+              type: string
+      responses:
+        '200':
+          description: A page of widgets
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Page'
+                  - properties:
+                      data:
+                        items:
+                          $ref: '#/components/schemas/Widget'
+    post:
+      operationId: createWidgets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - items:
+                    type: string
+              anyOf:
+                - type: object
+              not:
+                items: {}
+              additionalProperties:
+                items: {}
+      responses:
+        '201':
+          $ref: '#/components/responses/Created'
+components:
+  parameters:
+    Ids:
+      name: ids
+      in: query
+      schema:
+        items:
+          type: string
+  responses:
+    Created:
+      description: Created
+      content:
+        application/json:
+          schema:
+            items:
+              type: string
+  schemas:
+    Page:
+      type: object
+      properties:
+        data:
+          type: array
+          items: {}
+    Widget:
+      type: object
+      properties:
+        id:
+          type: string
