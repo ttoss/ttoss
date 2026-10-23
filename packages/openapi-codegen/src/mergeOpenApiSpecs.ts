@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { assertTypedArrays } from './assertTypedArrays';
 import { loadYamlFile } from './loadYamlFile';
 import { parseRef } from './parseRef';
 import type { OpenApiSpec } from './types';
@@ -284,7 +285,8 @@ export interface MergeOpenApiSpecsArgs {
  * point at.
  *
  * Files are read in sorted filename order, so merge order — and therefore
- * which file wins a naming collision — is deterministic.
+ * which file wins a naming collision — is deterministic. A file declaring
+ * `items` on a schema that is not `type: array` is refused.
  */
 export const mergeOpenApiSpecs = (args: MergeOpenApiSpecsArgs): OpenApiSpec => {
   const { specsDir, info, openapiVersion = '3.0.3' } = args;
@@ -296,6 +298,7 @@ export const mergeOpenApiSpecs = (args: MergeOpenApiSpecsArgs): OpenApiSpec => {
     if (cached) return cached;
 
     const spec = loadYamlFile(specPath) as OpenApiSpec;
+    assertTypedArrays({ spec, specPath });
     specs.set(specPath, spec);
     return spec;
   };
