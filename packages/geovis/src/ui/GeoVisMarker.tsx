@@ -7,9 +7,13 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import { useGeoVis, useGeoVisClick } from './contexts';
+import { createPinElement } from './pinElement';
 
 export interface GeoVisMarkerProps {
-  /** Marker accent colour passed to `maplibregl.Marker`. Only used when neither `children` nor `element` is provided. */
+  /**
+   * Colour of geovis's pin, drawn when neither `children` nor `element` is
+   * provided. Default: `'#3FB1CE'`.
+   */
   color?: string;
   /**
    * Pre-existing HTML element used as the marker. When provided, `color` is
@@ -36,7 +40,8 @@ export interface GeoVisMarkerProps {
  * Supports three rendering modes:
  * - **children** — arbitrary React JSX rendered inside a container div
  * - **element** — pre-existing `HTMLElement` passed directly to MapLibre
- * - **color** — built-in SVG pin tinted with the given colour
+ * - **color** — geovis's pin (the drop `spec.images` pins wear) in the given
+ *   colour; also what is drawn when no mode is chosen
  *
  * Must be rendered inside `<GeoVisProvider>`.
  */
@@ -82,8 +87,9 @@ export const GeoVisMarker = ({
         markerOptions.element = container;
       } else if (element) {
         markerOptions.element = element;
-      } else if (color) {
-        markerOptions.color = color;
+      } else {
+        markerOptions.element = createPinElement({ color });
+        markerOptions.anchor = 'bottom';
       }
       if (offset) markerOptions.offset = offset;
 

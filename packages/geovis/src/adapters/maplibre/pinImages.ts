@@ -3,26 +3,65 @@ import type * as maplibregl from 'maplibre-gl';
 
 import type { ImageSpec, PinImage, VisualizationSpec } from '../../spec/types';
 
-/**
- * The pin's teardrop, in a 24 × 30 box: a circle of radius 10.5 around
- * (12, 12) narrowing to its tip at the bottom centre, which is the point a
- * `symbol` layer anchors with `iconAnchor: 'bottom'`.
+/*
+ * The pin's drop: a square with three corners fully rounded and the fourth
+ * sharp, turned 45° so the sharp corner points down — a 24 px drop with a 2 px
+ * white outline and a soft shadow under it, the icon centred in its round part.
+ *
+ * Laid out in CSS pixels, at the default size, inside the 30 × 36 box a pin
+ * stands in: the box's bottom centre is the point a `symbol` layer anchors
+ * with `iconAnchor: 'bottom'`, a few pixels under the tip so the shadow has
+ * room. The image pads the box on the sides and the top, where the shadow
+ * spreads too, and not at the bottom, which would lift the pin off its point.
  */
-const PIN_PATH =
-  'M12 29.25C12 29.25 1.5 19 1.5 12a10.5 10.5 0 1 1 21 0c0 7-10.5 17.25-10.5 17.25z';
-const PIN_BOX = { width: 24, height: 30 };
+const PIN_BOX = { width: 30, height: 36 };
+const SHADOW_PAD = { x: 8, top: 4 };
+const VIEW = {
+  width: PIN_BOX.width + 2 * SHADOW_PAD.x,
+  height: PIN_BOX.height + SHADOW_PAD.top,
+};
 
-/** Where the icon sits inside the pin's circle, in the same box. */
-const ICON_BOX = { x: 5.5, y: 5.5, size: 13 };
+/** Centre of the drop's round part: 3 px in from the box's left, 12 down. */
+const DROP_CENTER = { x: SHADOW_PAD.x + 3 + 12, y: SHADOW_PAD.top + 12 };
 
-const DEFAULT_SIZE = 28;
+/**
+ * The drop's outline, centred on the origin before it is turned: three
+ * quarter circles and the square corner, traced along the middle of the 2 px
+ * outline so its outer edge spans the full 24 px.
+ */
+const DROP_PATH =
+  'M-11 0A11 11 0 0 1 0-11A11 11 0 0 1 11 0A11 11 0 0 1 0 11L-11 11Z';
+
+/** The icon: 12 px, centred on the drop's round part. */
+const ICON_SIZE = 12;
+
+/**
+ * A layer's pins stand a little taller than the 30 px pins a proximity search
+ * drops in, so the places a search starts from read as the larger marks.
+ */
+const DEFAULT_SIZE = 34;
 const DEFAULT_ICON_COLOR = '#ffffff';
 
 /**
  * A white outline, so a pin reads against any basemap and a pin drawn over
  * another stays distinct from it.
  */
-const OUTLINE = { color: '#ffffff', width: 1.5 };
+const OUTLINE = { color: '#ffffff', width: 2 };
+
+/** The shadow under the drop: CSS `0 3px 8px rgba(0,0,0,0.25)`. */
+const SHADOW = { dy: 3, deviation: 4, opacity: 0.25 };
+
+/**
+ * The shadow the pin casts on the ground: a 12 × 4 ellipse under the tip,
+ * resting on the box's bottom edge so it never lifts the pin off its point.
+ */
+const GROUND_SHADOW = {
+  cx: SHADOW_PAD.x + PIN_BOX.width / 2,
+  cy: VIEW.height - 2,
+  rx: 6,
+  ry: 2,
+  fill: 'rgba(0,0,0,0.22)',
+};
 
 /**
  * A 1 × 1 transparent image registered under a pin's id while the pin loads.
@@ -40,8 +79,9 @@ const escapeAttribute = (value: string): string => {
 };
 
 /**
- * Builds a pin's SVG: the teardrop in `pin.color`, outlined, with the icon
- * inside it in `pin.iconColor`.
+ * Builds a pin's SVG: the drop in `pin.color`, outlined in white over a soft
+ * shadow, with the icon inside it in `pin.iconColor` and its shadow on the
+ * ground under the tip.
  *
  * Pure, so the pin's look is testable without a browser; turning it into
  * pixels is {@link rasterizeSvg}'s job.
@@ -55,7 +95,7 @@ const escapeAttribute = (value: string): string => {
  *
  * @example
  * buildPinSvg({ pin, icon: { viewBox: '0 0 15 15', body: '<path d="…"/>' }, pixelRatio: 2 });
- * // { svg: '<svg …>', width: 56, height: 70 }
+ * // { svg: '<svg …>', width: 104, height: 91 }
  */
 export const buildPinSvg = ({
   pin,
@@ -66,22 +106,44 @@ export const buildPinSvg = ({
   icon: { viewBox: string; body: string };
   pixelRatio: number;
 }): { svg: string; width: number; height: number } => {
-  const size = pin.size ?? DEFAULT_SIZE;
-  const width = Math.round(size * pixelRatio);
-  const height = Math.round(
-    ((size * PIN_BOX.height) / PIN_BOX.width) * pixelRatio
-  );
+  const scale = (pin.size ?? DEFAULT_SIZE) / PIN_BOX.width;
+  const width = Math.round(VIEW.width * scale * pixelRatio);
+  const height = Math.round(VIEW.height * scale * pixelRatio);
   const iconColor = escapeAttribute(pin.iconColor ?? DEFAULT_ICON_COLOR);
 
   const svg = [
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${PIN_BOX.width} ${PIN_BOX.height}">`,
-    `<path d="${PIN_PATH}" fill="${escapeAttribute(pin.color)}" stroke="${OUTLINE.color}" stroke-width="${OUTLINE.width}"/>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${VIEW.width} ${VIEW.height}">`,
+    `<defs><filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="${SHADOW.dy}" stdDeviation="${SHADOW.deviation}" flood-color="#000000" flood-opacity="${SHADOW.opacity}"/></filter></defs>`,
+    `<ellipse cx="${GROUND_SHADOW.cx}" cy="${GROUND_SHADOW.cy}" rx="${GROUND_SHADOW.rx}" ry="${GROUND_SHADOW.ry}" fill="${GROUND_SHADOW.fill}"/>`,
+    `<path d="${DROP_PATH}" transform="translate(${DROP_CENTER.x} ${DROP_CENTER.y}) rotate(-45)" fill="${escapeAttribute(pin.color)}" stroke="${OUTLINE.color}" stroke-width="${OUTLINE.width}" filter="url(#shadow)"/>`,
     // Iconify bodies paint with `currentColor`, which `color` sets here.
-    `<svg x="${ICON_BOX.x}" y="${ICON_BOX.y}" width="${ICON_BOX.size}" height="${ICON_BOX.size}" viewBox="${escapeAttribute(icon.viewBox)}" color="${iconColor}" fill="${iconColor}">${icon.body}</svg>`,
+    `<svg x="${DROP_CENTER.x - ICON_SIZE / 2}" y="${DROP_CENTER.y - ICON_SIZE / 2}" width="${ICON_SIZE}" height="${ICON_SIZE}" viewBox="${escapeAttribute(icon.viewBox)}" color="${iconColor}" fill="${iconColor}">${icon.body}</svg>`,
     '</svg>',
   ].join('');
 
   return { svg, width, height };
+};
+
+/**
+ * A pin's SVG, its icon loaded, at one device pixel per CSS pixel — to draw
+ * the pin outside the map exactly as the map draws it.
+ *
+ * @param pin - The pin to draw.
+ * @returns The SVG markup and its size in CSS pixels.
+ * @throws If the icon cannot be loaded.
+ *
+ * @example
+ * const { svg, width, height } = await renderPinSvg(pin);
+ */
+export const renderPinSvg = async (
+  pin: PinImage
+): Promise<{ svg: string; width: number; height: number }> => {
+  const { attributes, body } = buildIcon(await loadIcon(pin.icon));
+  return buildPinSvg({
+    pin,
+    icon: { viewBox: attributes.viewBox, body },
+    pixelRatio: 1,
+  });
 };
 
 /**

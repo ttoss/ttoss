@@ -706,6 +706,56 @@
         }
       }
     },
+    "proximitySearch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["layers", "query"],
+      "description": "A search for the places within a radius of a feature: clicking a feature of one of `layers` calls `query` with its position and drops the answers in around it. `query` is a function, so the search is only declared from code.",
+      "properties": {
+        "layers": {
+          "description": "Ids of the layers whose features start a search when clicked.",
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "query": {
+          "description": "({ lat, lng, radiusMin, radius, signal }) => Promise<ProximityResult[]>, radii in metres."
+        },
+        "radii": {
+          "description": "The radii the reader can choose between, in metres, ascending. Defaults to [1000, 2000, 3000].",
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "number", "exclusiveMinimum": 0 }
+        },
+        "initialRadius": {
+          "description": "The radius the first search uses, in metres — one of `radii`. Defaults to the smallest.",
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "label", "color"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "label": { "type": "string" },
+              "color": { "type": "string" },
+              "icon": { "type": "string" }
+            }
+          }
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "one": { "type": "string" },
+            "other": { "type": "string" }
+          }
+        }
+      }
+    },
     "mapModeControl": {
       "type": "boolean",
       "description": "Offers the reader a \"Modo do mapa\" button (top-right) that splits the map into two synchronized maps, each showing one `control` item the reader picks. Only switches the button on; the mode and the sides are the reader's choice. Needs a `control` with at least two items whose layers exist. Defaults to false."

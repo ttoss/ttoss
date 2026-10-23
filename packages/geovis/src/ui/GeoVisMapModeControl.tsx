@@ -2,6 +2,17 @@ import { defineMessages, useI18n } from '@ttoss/react-i18n';
 import * as React from 'react';
 
 import { type GeoVisMapMode, useGeoVisMapMode } from '../react/mapMode';
+import {
+  ACCENT,
+  ACCENT_TINT,
+  ACCENT_TINT_BORDER,
+  ACCENT_TINT_STRONG,
+  BORDER,
+  NEUTRAL_FILL,
+  SURFACE,
+  TEXT_MUTED,
+  TEXT_STRONG,
+} from './palette';
 
 const messages = defineMessages({
   mapMode: {
@@ -26,20 +37,6 @@ const messages = defineMessages({
     description: 'Map mode menu: what the "Split in two" option is for.',
   },
 });
-
-/*
- * The geovis-workspace palette, as its left-sidebar button wears it, so this
- * button reads as one of the workspace's own floating controls. Copied, not
- * imported: the workspace depends on geovis, never the other way round.
- */
-const SURFACE = '#FAF9F7';
-const BORDER = '#E4DED3';
-const TEXT_STRONG = '#241F21';
-const TEXT_MUTED = '#524945';
-const ACCENT = '#337C59';
-const ACCENT_TINT = 'rgba(51,124,89,0.07)';
-const ACCENT_TINT_STRONG = 'rgba(51,124,89,0.14)';
-const ACCENT_TINT_BORDER = 'rgba(51,124,89,0.2)';
 
 /** The engine's navigation control: 29px buttons, 10px from the corner. */
 const NAV_BUTTON = 29;
@@ -150,7 +147,7 @@ const ModeThumbnail = ({
             width={width}
             height={26}
             rx={3}
-            fill={on ? ACCENT_TINT_STRONG : '#f3f0ea'}
+            fill={on ? ACCENT_TINT_STRONG : NEUTRAL_FILL}
             stroke={on ? ACCENT : BORDER}
             strokeWidth={1}
           />
