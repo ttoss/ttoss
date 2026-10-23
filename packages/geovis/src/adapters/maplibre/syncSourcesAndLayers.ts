@@ -14,6 +14,7 @@ import {
   stripUndefinedPaint,
   toMaplibreLayer,
 } from './layerTranslation';
+import { reapplyPinFocus } from './pinFocus';
 import { syncImages } from './pinImages';
 import {
   resolvePromoteIdForSource,
@@ -500,6 +501,9 @@ export const syncSourcesAndLayers = (
   // Before the layers, so a symbol layer drawing a pin finds it registered.
   syncImages(map, spec, previousSpec);
   upsertLayers(map, spec);
+  // `upsertLayers` rewrote every layer's visibility: a pin focus hides the
+  // pins again.
+  reapplyPinFocus(map, spec);
   enforceManagedLayerOrder(map, spec);
   runCrossfades(map, spec, previousSpec);
 };

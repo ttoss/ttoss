@@ -361,21 +361,24 @@ export const buildHoverTrackedKey = (
 };
 
 /**
- * Returns the set of layer IDs that declare `click` or `clickAnchor` and
- * therefore warrant a pointer cursor on hover.
+ * Returns the set of layer IDs that declare `click` or `clickAnchor`, or that
+ * a proximity search starts from (`extraLayerIds`), and therefore warrant a
+ * pointer cursor on hover.
  */
 export const buildPointerLayerIds = (
-  layers: VisualizationSpec['layers']
+  layers: VisualizationSpec['layers'],
+  extraLayerIds: string[] = []
 ): Set<string> => {
-  return new Set(
-    layers
+  return new Set([
+    ...layers
       .filter((layer) => {
         return layer.click != null || layer.clickAnchor != null;
       })
       .map((layer) => {
         return layer.id;
-      })
-  );
+      }),
+    ...extraLayerIds,
+  ]);
 };
 
 export interface BuildHandleGlobalCursorParams {

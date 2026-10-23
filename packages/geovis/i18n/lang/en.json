@@ -1,7 +1,23 @@
 {
+  "/xKyFI": {
+    "defaultMessage": "Searching {results}…",
+    "description": "Proximity search: shown while the first answer is awaited. \"results\" names what is searched."
+  },
+  "2YFPLq": {
+    "defaultMessage": "Radius of {radius}",
+    "description": "Proximity search: tooltip of one radius option. \"radius\" is a distance like \"2 km\"."
+  },
+  "82h6s4": {
+    "defaultMessage": "{distance} from the point",
+    "description": "Proximity search: on a place's card, how far it is from the searched point. \"distance\" is like \"450 m\" or \"1.2 km\"."
+  },
   "9RwXzX": {
     "defaultMessage": "Map mode",
     "description": "Map mode control: the button label and the heading of its menu, which switches between one map and two side by side."
+  },
+  "AYMp8/": {
+    "defaultMessage": "Widening the search to {radius}…",
+    "description": "Proximity search: shown while the answer for a wider radius is awaited. \"radius\" is a distance like \"2 km\"."
   },
   "H3hZ4p": {
     "defaultMessage": "One map, full screen",
@@ -15,6 +31,14 @@
     "defaultMessage": "Compare side by side",
     "description": "Map mode menu: what the \"Split in two\" option is for."
   },
+  "KXJbGw": {
+    "defaultMessage": "result",
+    "description": "Proximity search: what a found place is called when the app names it nothing else, singular."
+  },
+  "T/eK/a": {
+    "defaultMessage": "results",
+    "description": "Proximity search: what found places are called when the app names them nothing else, plural."
+  },
   "Ws/Os5": {
     "defaultMessage": "Feature #{feature_id}",
     "description": "Map hover tooltip heading: the identifier of the hovered map feature."
@@ -22,6 +46,18 @@
   "Wuofl/": {
     "defaultMessage": "Map {side} layer: {layer}",
     "description": "Split map mode: accessible name of a side's picker button, naming the side (A or B) and the layer it shows."
+  },
+  "gsoC7t": {
+    "defaultMessage": "Clear search",
+    "description": "Proximity search: label of the buttons that clear the search."
+  },
+  "j1cP/t": {
+    "defaultMessage": "{count, plural, one {# {one}} other {# {other}}} within {radius}",
+    "description": "Proximity search: how many places were found. \"one\" and \"other\" name what is searched, singular and plural; \"radius\" is a distance like \"1 km\"."
+  },
+  "jFZRGK": {
+    "defaultMessage": "Search radius",
+    "description": "Proximity search: accessible name of the radius choice."
   },
   "jlSTFF": {
     "defaultMessage": "Map {side} layer",
@@ -38,5 +74,13 @@
   "sWPCP+": {
     "defaultMessage": "Single map",
     "description": "Map mode menu option: one map."
+  },
+  "tAmUUh": {
+    "defaultMessage": "Nothing within {radius}",
+    "description": "Proximity search: no place was found. \"radius\" is a distance like \"1 km\"."
+  },
+  "ulc096": {
+    "defaultMessage": "{count} within {radius}",
+    "description": "Proximity search: how many places were found, on a narrow map. \"radius\" is a distance like \"1 km\"."
   }
 }

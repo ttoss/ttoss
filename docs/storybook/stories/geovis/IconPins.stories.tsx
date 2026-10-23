@@ -13,13 +13,14 @@ import { computeBbox } from './helpers/map-story-helpers';
 
 /**
  * Demonstrates **icon pins**: `spec.images` declares one pin per kind of
- * place — a teardrop in a colour with an Iconify icon inside — and a `symbol`
+ * place — a drop in a colour with an Iconify icon inside — and a `symbol`
  * layer draws it at each feature through `paint.iconImage`. GeoVis builds the
  * pin images itself and registers them on the map; there are no image files.
  *
- * Each pin layer sets `iconAnchor: 'bottom'`, so the pin's tip (not its middle)
- * sits on the place, and `iconAllowOverlap: true`, so neighbouring places keep
- * their pins instead of MapLibre hiding the ones that collide.
+ * Each pin layer sets `iconAnchor: 'bottom'`, so the pin stands on the place
+ * (rather than being centred on it), and `iconAllowOverlap: true`, so
+ * neighbouring places keep their pins instead of MapLibre hiding the ones that
+ * collide.
  */
 export default {
   title: 'GeoVis/IconPins',

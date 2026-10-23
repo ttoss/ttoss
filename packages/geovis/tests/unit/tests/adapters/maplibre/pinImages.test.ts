@@ -101,22 +101,27 @@ beforeEach(() => {
 describe('buildPinSvg', () => {
   const icon = { viewBox: '0 0 15 15', body: '<path d="M1 1"/>' };
 
-  test('draws the teardrop in the pin colour with the icon inside, white by default', () => {
+  test('draws the drop in the pin colour with the icon inside, white by default, and its ground shadow', () => {
     const { svg } = buildPinSvg({ pin: HOSPITAL, icon, pixelRatio: 1 });
 
     expect(svg).toContain('fill="#C0392B"');
+    expect(svg).toContain('<ellipse');
     expect(svg).toContain('viewBox="0 0 15 15" color="#ffffff"');
     expect(svg).toContain('<path d="M1 1"/>');
   });
 
-  test('sizes the image in device pixels, keeping the teardrop proportions', () => {
+  /*
+   * A 30 × 36 box plus the room its shadow takes — 8 px on each side and 4 on
+   * top — is 46 × 40 CSS pixels, scaled by `size / 30`; `size` defaults to 34.
+   */
+  test('sizes the image in device pixels, keeping the pin proportions', () => {
     expect(buildPinSvg({ pin: HOSPITAL, icon, pixelRatio: 2 })).toMatchObject({
-      width: 56,
-      height: 70,
+      width: 104,
+      height: 91,
     });
     expect(
-      buildPinSvg({ pin: { ...HOSPITAL, size: 40 }, icon, pixelRatio: 1 })
-    ).toMatchObject({ width: 40, height: 50 });
+      buildPinSvg({ pin: { ...HOSPITAL, size: 60 }, icon, pixelRatio: 1 })
+    ).toMatchObject({ width: 92, height: 80 });
   });
 
   test('takes an icon colour and escapes attribute values', () => {

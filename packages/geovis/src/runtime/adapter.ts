@@ -75,6 +75,15 @@ export interface EngineAdapter {
    */
   setSelection?(selection: GeoVisSelection | null): void;
   /**
+   * Hides every pin on the map — every `symbol` layer — while a pin is in
+   * focus, so the caller can draw that pin itself above what it draws around
+   * it, until called with `null`, which shows every pin the spec turns on
+   * again. Holds across spec updates. What a proximity search does while it
+   * shows the places around a pin. Optional: an adapter without it leaves
+   * every pin on the map.
+   */
+  setPinFocus?(focus: PinFocus | null): void;
+  /**
    * Subscribes to camera moves of every view this adapter mounts, including
    * views mounted after the call. Returns the unsubscribe. Optional: an
    * adapter without it simply reports nothing, and whatever relies on it
@@ -84,6 +93,14 @@ export interface EngineAdapter {
   onViewChange?(listener: (camera: CameraView) => void): () => void;
   destroy(): void;
   getNativeInstance(): unknown;
+}
+
+/** The pin in focus while {@link EngineAdapter.setPinFocus} hides the pins. */
+export interface PinFocus {
+  /** The `symbol` layer the pin belongs to. */
+  layerId: string;
+  /** The pin's feature id; `null` for a feature that carries none. */
+  featureId: string | number | null;
 }
 
 export interface MountedView {
