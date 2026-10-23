@@ -38,6 +38,26 @@ dangling ref. A pulled component keeps its name, so a name a different
 definition already holds is an error: the ref that lost would otherwise point
 at the definition that won.
 
+A schema that declares `items` without `type: array` (or a `type` list holding
+`array`) is rejected, naming each place it occurs. OpenAPI applies `items` only
+to an array, so a generator types such a field `unknown` rather than failing:
+
+```yaml
+# Rejected: the generated `data` is `unknown`.
+data:
+  items:
+    $ref: '#/components/schemas/Widget'
+
+# Accepted: the generated `data` is `Array<Widget>`.
+data:
+  type: array
+  items:
+    $ref: '#/components/schemas/Widget'
+```
+
+Names (a property or a component called `items`), examples, defaults and
+`x-` extensions are never read as the keyword.
+
 ```ts
 import fs from 'node:fs';
 

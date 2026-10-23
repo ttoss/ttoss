@@ -161,6 +161,36 @@ describe('mergeOpenApiSpecs', () => {
     }).toThrow(/already holds a different definition of that name/s);
   });
 
+  test('throws on every schema with items but no type: array', () => {
+    let message = '';
+    try {
+      mergeOpenApiSpecs({ specsDir: invalidSpecsDir('untypedItems') });
+    } catch (error) {
+      message = (error as Error).message;
+    }
+
+    expect(message.split('\n')).toEqual([
+      `${invalidSpecsDir('untypedItems')}/widgets.yaml: \`items\` without \`type: array\` at`,
+      '  paths./widgets.parameters.0.schema',
+      '  paths./widgets.get.parameters.0.schema',
+      '  paths./widgets.get.responses.200.content.application/json.schema.allOf.1.properties.data',
+      '  paths./widgets.post.requestBody.content.application/json.schema.oneOf.0',
+      '  paths./widgets.post.requestBody.content.application/json.schema.not',
+      '  paths./widgets.post.requestBody.content.application/json.schema.additionalProperties',
+      '  components.parameters.Ids.schema',
+      '  components.responses.Created.content.application/json.schema',
+    ]);
+  });
+
+  test('reads a name, an example or an extension holding items as data', () => {
+    const merged = mergeOpenApiSpecs({
+      specsDir: path.join(__dirname, 'fixtures/mergeArrays'),
+    });
+
+    expect(merged.components?.schemas).toHaveProperty('Order');
+    expect(merged.components?.schemas).toHaveProperty('items');
+  });
+
   test('stamps the requested openapi version and info', () => {
     const merged = mergeOpenApiSpecs({
       specsDir,
