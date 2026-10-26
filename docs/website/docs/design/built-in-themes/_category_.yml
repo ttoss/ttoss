@@ -3,4 +3,4 @@ position: 8
 link:
   type: generated-index
   slug: /design/built-in-themes
-  description: "The themes shipped by @ttoss/fsl-theme and theme profiles awaiting implementation."
+  description: 'The themes shipped by @ttoss/fsl-theme and theme profiles awaiting implementation.'
