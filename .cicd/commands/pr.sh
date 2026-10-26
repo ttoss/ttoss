@@ -45,7 +45,11 @@ pnpm run lint -- --no-stash --allow-empty
 # `$AFFECTED` includes dependents of the changed packages, so deployable
 # workspaces like `@docs/storybook` are redeployed when a package they consume
 # (e.g. a component package) changes — not only when their own files change.
-pnpm turbo run build test deploy $AFFECTED
+#
+# `@docs/website` is left out: its build above already catches broken links,
+# and a preview of the whole site cost every docs PR its deploy. main.sh still
+# deploys it to ttoss.dev.
+pnpm turbo run build test deploy $AFFECTED --filter=!@docs/website
 
 # Build carlin CLI explicitly so it is available even when no packages changed
 # since main (e.g. PRs that only touch workflow/config files), because the
