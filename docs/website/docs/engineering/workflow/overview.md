@@ -10,7 +10,7 @@ The agentic workflow is how a change at ttoss goes from a signal to an effect ob
 
 ## A State Machine
 
-A task's state lives in Flow: its status, what holds it, and the changes it references. A tick reads that state, applies the transitions it calls for, writes the new state back, and stops. The next tick reads the state as it is now and does the same. Nothing passes from one tick to the next except the graph, so a tick that dies loses nothing, any agent can run the next one, and whatever schedules the ticks sets the pace. That schedule is the project's [routines](./routines.md): the tick, and beside it a run that chases the people the graph waits on, one that audits what the loop spends, and one that calibrates how far the loop can be trusted.
+A task's state lives in Flow: its status, what holds it, and the changes it references. A tick reads that state, applies the transitions it calls for, writes the new state back, and stops. The next tick reads the state as it is now and does the same. Nothing passes from one tick to the next except the graph, so a tick that dies loses nothing, any agent can run the next one, and whatever schedules the ticks sets the pace. That schedule is the project's [routines](./routines.md): the tick, and beside it a run that chases the people the graph waits on, one that audits what the agents spend, and one that calibrates how far the agents can be trusted.
 
 ```mermaid
 stateDiagram-v2
@@ -37,7 +37,7 @@ The [Delivery Process](./process.md) defines every state, the seven stages that 
 
 ## One Engine, Extended per Project
 
-The engine is the same for every project: the states, the stages and their owners, the transitions and the rules of the Delivery Process. A project extends it at defined [extension points](./parameters.md#extension-points), its parameters: where work comes from, what a task must state before an agent starts it, which choices stay with a person, what runs before a change is proposed, who reviews it, when it may be integrated, how it is released, what proves it done, which deliveries are not pull requests, how much of what the loop integrates a person samples, how its agents run and which routines fire them. An extension answers a question the engine asks and never changes the engine. A point left empty takes its default, so a project starts from the engine as it is and extends only where it differs, and a rule that turns out true of every project moves into the engine.
+The engine is the same for every project: the states, the stages and their owners, the transitions and the rules of the Delivery Process. A project extends it at defined [extension points](./parameters.md#extension-points), its parameters: where work comes from, what a task must state before an agent starts it, which choices stay with a person, what runs before a change is proposed, who reviews it, when it may be integrated, how it is released, what proves it done, which deliveries are not pull requests, how much of what the agents integrate a person samples, how its agents run and which routines fire them. An extension answers a question the engine asks and never changes the engine. A point left empty takes its default, so a project starts from the engine as it is and extends only where it differs, and a rule that turns out true of every project moves into the engine.
 
 ```mermaid
 flowchart TB
@@ -62,19 +62,19 @@ The workflow rests on two sets of principles: the [Principles of Product Develop
 | Every change has a cause, under a standing decision                  | [E13 First Decision Rule][], [FF13 Second Decision Rule][]             | [Compressed Delegation][], [Trust-Gated Orchestration][]               |
 | A person decides what is reserved                                    | [D2 Scale][]                                                           | [Asymmetric Risk][], [Contextual Authority][]                          |
 | Done is the effect, observed where it matters                        | [FF8 Fast-Learning][]                                                  | [Proxy Collapse][], [Detection Window][]                               |
-| Loops have a limit                                                   | [FF15 Relief Valve][], [W16 Escalation][]                              | [Compounding Contextual Error][], [Proxy Collapse][]                   |
+| Rounds have a limit                                                  | [FF15 Relief Valve][], [W16 Escalation][]                              | [Compounding Contextual Error][], [Proxy Collapse][]                   |
 | Finish before starting, with a cap on children                       | [W1 WIP Constraints][], [F15 SJF Scheduling][]                         | [Cheap Generation, Expensive Commitment][], [Verification Asymmetry][] |
 | A brief a child can check, one delivery per task                     | [D8 Mission][], [B1 Batch Size Queueing][], [B3 Batch Size Feedback][] | [Executable Specification][], [Problem Decomposition][]                |
 | Noticed work becomes a task, never a fix                             | [W20 Expansion Control][]                                              | [Admission Control][], [Traceable Edits][]                             |
 | Gates the change cannot loosen, and a reviewer that did not write it | [FF14 Locality of Feedback][]                                          | [Deterministic Verification][], [Verifier Sovereignty][]               |
-| A random sample of what the loop integrated gets a person's review   | [E18 Buying Information][]                                             | [Structural Sampling][]                                                |
-| Trust in the loop expires until a person renews it                   | [F5 Periodic Resynchronization][]                                      | [Trust Expiry][]                                                       |
+| A random sample of what the agents integrated gets a person's review | [E18 Buying Information][]                                             | [Structural Sampling][]                                                |
+| Trust in the agents expires until a person renews it                 | [F5 Periodic Resynchronization][]                                      | [Trust Expiry][]                                                       |
 | One engine, extended per project                                     | [V9 Reuse][], [F22 Tailored Routing][]                                 | [Protocol Standardization][]                                           |
 | An hourly tick inside a daily Chase and the weekly routines          | [F5 Periodic Resynchronization][], [FF16 Multiple Control Loops][]     | [Invisible Risk][], [Prompt Economics][]                               |
-| Pinned models, compared by how the loop behaves on each              | [FF3 Leading Indicators][]                                             | [Substrate Non-Stationarity][]                                         |
+| Pinned models, compared by how the agents behave on each             | [FF3 Leading Indicators][]                                             | [Substrate Non-Stationarity][]                                         |
 | What fired a routine is data                                         |                                                                        | [Instruction-Data Conflation][]                                        |
 
-The gates are [deterministic guardrails](/docs/ai/agentic-engineering-foundations/deterministic-guardrails), and the run records keep the loop [observable](/docs/ai/agentic-engineering-foundations/observability).
+The gates are [deterministic guardrails](/docs/ai/agentic-engineering-foundations/deterministic-guardrails), and the run records keep the agents [observable](/docs/ai/agentic-engineering-foundations/observability).
 
 [D9 Boundaries]: /docs/product/product-development/principles#d9-the-principle-of-boundaries-establish-clear-roles-and-boundaries
 [Distributed Unreliability]: /docs/ai/agentic-development-principles/physics-of-ai-integration#the-principle-of-distributed-unreliability
