@@ -9,7 +9,7 @@ These principles guide the trade-off between execution speed and code quality, e
 
 ### The Principle of Economic Technical Debt
 
-Technical debt is not a failure of engineering; it is a deliberate economic choice to borrow against future code quality to secure present value. It must be treated as a calculated loan where the principal is the time saved now, and the interest is the cost of future refactoring. If the Cost of Delay exceeds the Cost of Repayment, incurring debt is the rational decision.
+Technical debt is not a failure of engineering; it is a deliberate economic choice to borrow against future code quality to secure present value: a loan whose principal is the time saved now and whose interest is the cost of future refactoring. Whether to take it is the comparison [E3](/docs/product/product-development/principles#e3-the-principle-of-quantified-cost-of-delay-if-you-only-quantify-one-thing-quantify-the-cost-of-delay) and [E16](/docs/product/product-development/principles#e16-the-principle-of-marginal-economics-always-compare-marginal-cost-and-marginal-value) already make: if the Cost of Delay exceeds the Cost of Repayment, incurring debt is the rational decision. What agents change is the repayment. A module an agent can rewrite in minutes is cheap to leave imperfect for now, so the rational amount of debt rises. Cheap repayment holds only for debt that fails loudly and sits where it can be replaced, which is what the rest of this chapter bounds.
 
 Consider a scenario where a competitor might launch a similar feature, secure investment, and capture the market.
 
@@ -62,9 +62,13 @@ System intelligence and stability emerge from the interaction of limited special
 
 Modular debt is better than monolithic perfection. It is better to have five imperfect, loosely coupled services than one perfect, tightly coupled monolith. The former allows for incremental improvement and failure isolation; the latter demands a "big bang" rewrite that rarely happens.
 
+#### The Corollary of Modular Composability
+
+Agents should be designed as composable modules with strict input/output interfaces (schemas). This allows individual "cognitive modules" (e.g., a "SQL Query Writer") to be swapped, upgraded, or debugged independently without breaking the broader orchestration flow.
+
 ### The Principle of Flow Elasticity
 
-A single development pipeline cannot simultaneously optimize for speed of learning and safety of outcomes. If every change is forced through a maximum-rigor path, experimentation dies. If critical work is allowed to flow through low-rigor paths, failures become catastrophic. Therefore, sustainable velocity requires elastic flow: multiple lanes with different guarantees (fast feedback vs. strong assurance) and explicit routing between them.
+A single development pipeline cannot simultaneously optimize for speed of learning and safety of outcomes. If every change is forced through a maximum-rigor path, experimentation dies. If critical work is allowed to flow through low-rigor paths, failures become catastrophic. [W18](/docs/product/product-development/principles#w18-the-principle-of-differential-service-differentiate-quality-of-service-by-workstream) and [F22](/docs/product/product-development/principles#f22-the-principle-of-tailored-routing-select-and-tailor-the-sequence-of-subprocesses-to-the-task-at-hand) already answer this for any team: elastic flow, with lanes that differ in their guarantees and explicit routing between them. What agents add is a second dimension to every lane: how much an agent may decide and do before a check. A lane is therefore defined by its guarantees and its agency together, and routing a change to a lane sets both.
 
 This is an economic constraint (optimize marginal cost vs. marginal value per path via [E16: The Principle of Marginal Economics](/docs/product/product-development/principles#e16-the-principle-of-marginal-economics-always-compare-marginal-cost-and-marginal-value)) and a risk constraint governed by [The Principle of Asymmetric Risk](/docs/ai/agentic-development-principles/governance-of-agency#the-principle-of-asymmetric-risk) and [The Corollary of Graduated Agency by Structure and Risk](/docs/ai/agentic-development-principles/governance-of-agency#the-corollary-of-graduated-agency-by-structure-and-risk). It operationalizes [The Principle of Economic Technical Debt](/docs/ai/agentic-development-principles/governance-of-technical-debt#the-principle-of-economic-technical-debt) by ensuring debt is taken only where the downside is bounded.
 

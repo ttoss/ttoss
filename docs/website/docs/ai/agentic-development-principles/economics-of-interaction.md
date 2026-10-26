@@ -21,19 +21,9 @@ This is the economic counterpart of [The Principle of Problem Structure Allocati
 
 **Failure Scenario:** A system routes every user interaction—including simple "hello" messages—to a reasoning-heavy model (e.g., o1 or Opus). The system incurs massive latency and financial costs for interactions that required zero reasoning, depleting the budget for tasks that actually need high intelligence.
 
-#### The Corollary of Model Specialization
-
-General-purpose models pay a "generalization tax" in latency, cost, and output variance because they carry capability you are not using for a narrow task. For critical, high-volume, repeatable tasks (e.g., query formulation, entity extraction, classification), specialized models (or constrained decoding + fine-tuning) often provide more infrastructure-grade economics than a single large general model.
-
-This corollary is strongest when the task is well-structured and stable over time (see [The Principle of Problem Structure Allocation](/docs/ai/agentic-development-principles/foundations-of-hybrid-allocation#the-principle-of-problem-structure-allocation)) and when the marginal savings exceed the ongoing maintenance cost (see [E16: The Principle of Marginal Economics](/docs/product/product-development/principles#e16-the-principle-of-marginal-economics-always-compare-marginal-cost-and-marginal-value)).
-
-**Failure Scenario:** A product relies on a single massive general-purpose LLM for a high-throughput, time-sensitive task (e.g., real-time query rewriting). Latency and compute cost become a system bottleneck. The team misses a simpler routing strategy (smaller model + deterministic constraints) that would have met the quality bar at lower marginal cost.
-
 #### The Corollary of the Generalization Tax
 
-Every unit of model capacity that does not contribute to the task is a recurring tax on latency and cost. Specialization reduces the tax, but it introduces its own fixed costs (data, evaluation, deployment, drift monitoring) that must be justified economically.
-
-_Read more about this principle in [NEMO-4-PAYPAL: Leveraging NVIDIA's Nemo Framework for empowering PayPal's Commerce Agent](https://arxiv.org/abs/2512.21578)._
+Every unit of model capacity that does not contribute to the task is a recurring tax on latency and cost. [Specialization](/docs/ai/agentic-design-patterns#model-specialization) reduces the tax, but it introduces its own fixed costs (data, evaluation, deployment, drift monitoring) that must be justified economically.
 
 ### The Principle of Zero-Cost Erosion
 

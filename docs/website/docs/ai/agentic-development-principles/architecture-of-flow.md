@@ -15,10 +15,6 @@ This is [E1: The Principle of Quantified Overall Economics](/docs/product/produc
 
 **Failure Scenario:** A developer accepts an AI-generated payment integration that adds conditional logic directly to a core function. It works immediately, but subsequent integrations follow the pattern, creating a fragile, nested monolith. What felt like fast delivery created a system where every future change carries disproportionate risk. Had the developer applied [The Corollary of Modular Debt](/docs/ai/agentic-development-principles/governance-of-technical-debt#the-corollary-of-modular-debt), each provider would be isolated.
 
-#### The Corollary of Architectural Prompting
-
-Prevent structural decay by explicitly specifying architectural patterns in prompts (e.g., "use the Strategy Pattern"). Instruct agents on _how_ to build, not just _what_ to build, to align output with system boundaries.
-
 #### The Corollary of Boundary Enforcement
 
 Enforce decoupling through explicit interfaces. Agents often couple modules to solve prompts quickly; developers must reject monolithic solutions in favor of small, isolated modules with clear contracts, applying [The Corollary of Decoupled Agency](/docs/ai/agentic-development-principles/governance-of-technical-debt#the-corollary-of-decoupled-agency).
@@ -63,7 +59,7 @@ Because maintenance capacity is finite, the number of load-bearing artifacts mus
 
 Every boundary between agents is dual: it is at once a _firewall_ and an _interface_. As a firewall it isolates the agent's context window, attention, and blast radius from the rest of the system—the property that makes specialization, parallelism, and containment possible. As an interface it forces all shared state to be re-serialized, transmitted, and re-grounded across the gap; whatever is not explicitly carried is lost to [The Principle of Signal Entropy](/docs/ai/agentic-development-principles/protocol-of-communication#the-principle-of-signal-entropy), and the carrying itself pays the translation cost of [The Principle of Protocol Standardization](/docs/ai/agentic-development-principles/protocol-of-communication#the-principle-of-protocol-standardization). The same wall that contains a failure also severs the continuity that [The Principle of Compounding Context](/docs/ai/agentic-development-principles/architecture-of-flow#the-principle-of-compounding-context) depends on. The number and placement of agent boundaries is therefore not a stylistic preference but an economic decision: each boundary spends a handoff cost to buy an isolation benefit, and a topology is justified only where, boundary by boundary, the isolation purchased exceeds the continuity surrendered.
 
-This dissolves the false choice between "one generalist agent" and "a pipeline of specialists." Narrowing an agent's _active objective_ and isolating its _context window_ are different acts with different prices. A skill, sub-routine, or staged prompt invoked inside one agent narrows the objective without crossing a boundary—buying focus while keeping continuity. A separate agent narrows the objective _and_ isolates the context—buying focus and containment, but paying the handoff tax. Both satisfy [The Corollary of Agentic Single Responsibility](/docs/ai/agentic-development-principles/architecture-of-flow#the-corollary-of-agentic-single-responsibility); they are the same lever pulled at different costs, not rival philosophies.
+This dissolves the false choice between "one generalist agent" and "a pipeline of specialists." Narrowing an agent's _active objective_ and isolating its _context window_ are different acts with different prices. A skill, sub-routine, or staged prompt invoked inside one agent narrows the objective without crossing a boundary—buying focus while keeping continuity. A separate agent narrows the objective _and_ isolates the context—buying focus and containment, but paying the handoff tax. Both satisfy [The Corollary of Agentic Single Responsibility](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-corollary-of-agentic-single-responsibility); they are the same lever pulled at different costs, not rival philosophies.
 
 **Failure Scenario:** A team builds a five-agent pipeline—product → design → architecture → implementation → test—because "specialized agents are best practice." Each performs well alone, but the _why_ behind the product decision never reaches the implementer (it was never serialized into the handoff), the design rationale is re-derived from scratch downstream, and the test agent verifies the spec it received rather than the intent that produced it. The system pays five handoff taxes for isolation it never needed: the phases were sequential and tightly coupled, and would have shared one evolving context for free inside a single agent invoking a design skill, an architecture skill, and a test skill. More tokens, more orchestration, more drift—no better result.
 
@@ -89,10 +85,6 @@ The mitigation is not "better prompting." It is structural: define canonical rep
 
 **Failure Scenario:** A team builds a RAG workflow that pulls "user status" from SQL, "entitlements" from an API, and "policy" from a document store. Each source uses different identifiers, timestamp semantics, and field names. Retrieval returns plausible but incompatible fragments, and the agent stitches them into a coherent-looking answer that is wrong (e.g., applies the wrong policy to the wrong user). The system is blamed for hallucination, but the root cause is unmanaged translation between heterogeneous context sources.
 
-#### The Corollary of Universal Abstraction
-
-By abstracting all context artifacts into a standardized namespace (similar to a file system), we decouple reasoning logic from storage and transport. This enables agents to treat memory, tools, and human inputs uniformly, improving composability while keeping the cost of translation explicit.
-
 #### The Corollary of Canonicalization Contracts
 
 Standardization must be contractual. Define what "canonical" means via schemas (types, JSON Schema, validators) and enforce it at ingestion boundaries. This operationalizes [The Principle of Structural Determinism](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-principle-of-structural-determinism) and prevents "format drift" from accumulating as hidden context debt.
@@ -102,16 +94,6 @@ Standardization must be contractual. Define what "canonical" means via schemas (
 In traditional human coding, "messy" code (bad formatting, typos) often serves as a proxy for "broken" logic. With LLMs, syntactic correctness and semantic validity are statistically independent. An agent can produce code that is syntactically perfect—adhering to linters, using descriptive variable names, and following style guides—while being architecturally destructive or logically unsound. The visual quality of the code is no longer a reliable indicator of its "substance" (functional quality).
 
 **Failure Scenario:** A senior engineer reviews a Pull Request generated by an agent. The code looks professional, passes the linter, and has excellent comments. Trusting the visual, the engineer merges it. They fail to notice that the agent implemented a clean-looking function that subtly bypasses a critical security check defined in a different layer of the application.
-
-#### The Corollary of Agentic Single Responsibility
-
-Just as in software engineering, AI agents maximize reliability when scoped to a single, atomic objective. Increasing the breadth of an agent's mandate exponentially increases the probability of "attention drift," where the model prioritizes one instruction at the expense of another. Complex workflows should be composed of specialized scopes—each with a distinct definition of done—rather than a single undifferentiated mandate juggling multiple distinct context streams at once. This minimizes [The Corollary of Compounding Contextual Error](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-corollary-of-compounding-contextual-error). Single responsibility constrains the _active objective_, not the process count: it is satisfied either by chained specialist agents or by one agent that loads a single skill at a time—see [The Principle of the Decomposition Boundary](/docs/ai/agentic-development-principles/architecture-of-flow#the-principle-of-the-decomposition-boundary) for which to choose.
-
-**Failure Scenario:** A team creates a "Release Manager" agent instructed to "check git status, run tests, update version numbers, and write the changelog." The agent successfully writes the changelog but hallucinates test results because the test output context was pushed out of its active attention span by the verbose git logs.
-
-#### The Corollary of Modular Composability
-
-Agents should be designed as composable modules with strict input/output interfaces (schemas). This allows individual "cognitive modules" (e.g., a "SQL Query Writer") to be swapped, upgraded, or debugged independently without breaking the broader orchestration flow.
 
 ### The Principle of Tool Atomicity and Efficiency
 
@@ -135,4 +117,4 @@ Treat tool definitions as strict interfaces: precise schemas, idempotency where 
 
 #### The Corollary of Retrieval as First-Class Tool
 
-For knowledge-heavy tasks, Retrieval-Augmented Generation (RAG) — dynamic, just-in-time retrieval — isn't optional; it's the primary mitigation for hallucinations and context scarcity. Static context loading fails at scale; agents must learn to retrieve relevant facts on-demand.
+For knowledge-heavy tasks, just-in-time retrieval isn't optional; it's the primary mitigation for hallucinations and context scarcity. Static context loading fails at scale, so an agent must fetch the relevant facts on demand. How it fetches them is a design choice (an embedding index, as in RAG, a keyword search, or the agent reading files with its own tools); that it retrieves rather than preloads is not.

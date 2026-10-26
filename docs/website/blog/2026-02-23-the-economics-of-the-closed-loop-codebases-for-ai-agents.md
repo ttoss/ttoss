@@ -21,7 +21,7 @@ In this open-loop workflow, **you** act as the sensor. You read the code, run th
 
 ### The Verification Tax
 
-Every line of code written by an AI imposes a [Verification Tax](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-corollary-of-the-verification-tax) on the human developer. When you write code yourself, the creation cost is high because you have to think through the logic, but the verification cost is low since you inherently trust your own reasoning.
+Every line of code written by an AI imposes a [Verification Tax](/docs/ai/agentic-development-principles/symbiosis-of-human-ai-agency#the-corollary-of-verification-investment) on the human developer. When you write code yourself, the creation cost is high because you have to think through the logic, but the verification cost is low since you inherently trust your own reasoning.
 
 With AI coding, the equation flips. The generation cost is near zero because tokens are cheap, but the verification cost is massive. You have to reverse-engineer the AI's logic to fundamentally trust it. If an AI generates 1,000 lines of code in 10 seconds, but it takes you 2 hours to manually verify it works, you shifted the cost from **Creation** to **Verification**.
 

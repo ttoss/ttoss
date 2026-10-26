@@ -99,13 +99,19 @@ Smart developers love **systems**. When they discover AI, they follow a natural 
 
 This works brilliantly for deterministic tools. It **fails catastrophically for AI**.
 
-Why? Because effective AI collaboration requires **dynamic adaptation** (see **[The Corollary of Dynamic Adaptation](/docs/ai/agentic-development-principles/protocol-of-communication#the-corollary-of-dynamic-adaptation)**). The same prompt produces different results depending on:
+Why? Because effective AI collaboration requires **dynamic adaptation**. The same prompt produces different results depending on:
 
 - The accumulated context in the conversation
 - The specific nuances of the current task
 - How the AI interpreted your previous messages
 
 Developers who treat AI collaboration as a script to memorize plateau quickly. Those who treat it as improvisational dialogue compound their effectiveness.
+
+:::note[Update, October 2026]
+
+This section cited The Corollary of Dynamic Adaptation, since withdrawn from the Agentic Development Principles. It describes a person steering an agent in conversation, not agents that run without one: there, leverage comes from judgment encoded once and reused ([The Principle of Compressed Delegation](/docs/ai/agentic-development-principles/symbiosis-of-human-ai-agency#the-principle-of-compressed-delegation)), and the [Agentic Workflow](/docs/engineering/workflow) runs on a shared library of instructions that changes only by deliberate, reviewed edits.
+
+:::
 
 ## What High Collaborative Ability Looks Like
 
