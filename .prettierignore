@@ -1,2 +1,6 @@
 pnpm-lock.yaml
 **/i18n/lang/*.json
+# Copied verbatim into ttoss/skills, where agents read them on every tick: aligned
+# tables would pad them with tokens.
+docs/website/docs/engineering/workflow/process.md
+docs/website/docs/engineering/workflow/parameters.md

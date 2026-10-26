@@ -61,4 +61,4 @@ Once the task is defined and linked between **ClickUp** and **GitHub**, the deve
 - **Test staging environment**: Use staging links to validate functionality
 - **Approve completion**: Confirm task meets product requirements before deployment
 
-**For technical implementation details**, see the [Engineering Development Process](/docs/engineering/workflow/development-process).
+**For technical implementation details**, see the [Delivery Process](/docs/engineering/workflow/process).
