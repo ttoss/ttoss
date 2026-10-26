@@ -23,7 +23,7 @@ How this project's runtime runs the loop, usually a pointer to the file the sche
 
 - **Child runs:** how the runtime starts a child (prompt, model, repos), reads it (working, idle, failed, gone), ends it and, where it can, messages it; which tools a tick loads.
 - **Run records:** whether a hook records each session's run (GTF-S7); without one, the tick records its children and a session nobody started records itself.
-- **Max runs:** how many children run at once in the project. Default 2.
+- **Max runs:** how many children each manager runs at once: the children its runtime can read, never another manager's. Default 2.
 - **Child handoff:** where a child stops. `push` (default): the change is proposed and ready, its gates left to the tick. `verdict`: the child stays until the verdict, fixing red checks and findings itself, which costs a live child per change but keeps its memory of why. A runtime whose children end with the tick needs `push`.
 - **Models:** the child's model (default: the manager's), the check model for checks and other read-only work (default: a mid-tier model), and the review model for the reviews the loop runs (default: the child's).
 - **Each run:** cleanup the runtime needs in every run of a routine, such as recording the usage of runs already closed and ending their sessions.
