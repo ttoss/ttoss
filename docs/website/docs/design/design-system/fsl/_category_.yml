@@ -1,5 +1,6 @@
 label: FSL
 position: 1
 link:
-  type: doc
-  id: design/design-system/fsl/index
+  type: generated-index
+  slug: /design/design-system/fsl
+  description: The semantic foundation from which components, tokens, themes, and tooling are derived.

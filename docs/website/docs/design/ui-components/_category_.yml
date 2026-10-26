@@ -1,5 +1,6 @@
 label: UI Components
 position: 4
 link:
-  type: doc
-  id: design/ui-components/index
+  type: generated-index
+  slug: /design/ui-components
+  description: The React implementation of the FSL component model.

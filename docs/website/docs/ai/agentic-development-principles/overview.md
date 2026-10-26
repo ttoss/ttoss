@@ -1,7 +1,7 @@
 ---
+sidebar_position: 0
+sidebar_label: Overview
 title: Agentic Development Principles
-slug: /ai/agentic-development-principles
-sidebar_position: 2
 ---
 
 :::caution Work in Progress

@@ -1,5 +1,6 @@
 label: Pillars
 position: 4
 link:
-  type: doc
-  id: engineering/pillars/index
+  type: generated-index
+  slug: /engineering/pillars
+  description: The properties the delivery system has, and the mechanisms that make them true.

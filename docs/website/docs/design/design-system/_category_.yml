@@ -1,5 +1,6 @@
 label: Design System
 position: 1
 link:
-  type: doc
-  id: design/design-system/index
+  type: generated-index
+  slug: /design/design-system
+  description: The foundation for consistent, accessible, and scalable digital products.

@@ -1,5 +1,6 @@
 label: Components
 position: 3
 link:
-  type: doc
-  id: design/design-system/components/index
+  type: generated-index
+  slug: /design/design-system/components
+  description: The semantic, token-native component framework of ttoss.

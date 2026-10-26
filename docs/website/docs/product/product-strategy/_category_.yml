@@ -1,5 +1,6 @@
 label: Product Strategy
 position: 2
 link:
-  type: doc
-  id: product-strategy
+  type: generated-index
+  slug: /product/product-strategy
+  description: The plan for our product in a specific market, from discovery to product-market fit.

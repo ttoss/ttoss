@@ -1,6 +1,7 @@
 ---
+sidebar_position: 0
+sidebar_label: Overview
 title: Design Tokens
-sidebar_position: 1
 ---
 
 # Design Tokens
@@ -83,7 +84,7 @@ It adds a controlled semantic layer for:
 
 This extension exists because analytical visualization introduces meaning that is not equivalent to standard UI semantics.
 
-For the Data Visualization model, see [Data Visualization](./data-visualization/index.md) and [Model](./data-visualization/dataviz-model.md).
+For the Data Visualization model, see [Data Visualization](./data-visualization/overview.md) and [Model](./data-visualization/dataviz-model.md).
 
 ## Themes and Modes
 
@@ -126,4 +127,4 @@ Then explore the token families:
 - [Motion](./families/motion.md)
 - [Z-Index](./families/z-index.md)
 - [Breakpoints](./families/breakpoints.md)
-- [Data Visualization](./data-visualization/index.md)
+- [Data Visualization](./data-visualization/overview.md)

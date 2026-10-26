@@ -169,7 +169,7 @@ See [Motion](./families/motion.md), [Opacity](./families/opacity.md), [Z-Index](
 | Non-color differentiator — pattern | `semantic.dataviz.encoding.pattern.series.{1..6}`                   |
 | Analytical stroke role             | `semantic.dataviz.encoding.stroke.{reference,forecast,uncertainty}` |
 
-See [Data Visualization](./data-visualization/index.md).
+See [Data Visualization](./data-visualization/overview.md).
 
 ---
 
@@ -178,4 +178,4 @@ See [Data Visualization](./data-visualization/index.md).
 - **Token missing** → read the family doc; if still absent, open a governance request.
 - **Want a raw value** → you need a new **semantic** token, not a core reference. Core is never consumed by components.
 - **Repeating the same combo in many places** → extract a **component** or **pattern**, not a new token.
-- **Building a chart** → start in [Data Visualization](./data-visualization/index.md), not in foundation colors.
+- **Building a chart** → start in [Data Visualization](./data-visualization/overview.md), not in foundation colors.
