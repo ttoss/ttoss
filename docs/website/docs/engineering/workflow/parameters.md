@@ -5,7 +5,7 @@ sidebar_position: 2
 
 # Project Parameters
 
-The [delivery process](process.md) is generic; how one project delivers is its answers here. The manager reads them from the consuming repo, first match wins: the `/flow <project id>` argument (project id only), `.agents/flow.md`, `.claude/flow.md`, or a `## Flow parameters` section of `AGENTS.md` / `CLAUDE.md`. [`/flow-setup`](https://github.com/ttoss/skills/blob/main/skills/flow-setup/SKILL.md) defines them with the user. They bind every session working in the repo, not only the loop's.
+The [delivery process](process.md) is the engine, the same for every project; these are its extension points, and a project's answers to them are how it delivers. The manager reads them from the consuming repo, first match wins: the `/flow <project id>` argument (project id only), `.agents/flow.md`, `.claude/flow.md`, or a `## Flow parameters` section of `AGENTS.md` / `CLAUDE.md`. [`/flow-setup`](https://github.com/ttoss/skills/blob/main/skills/flow-setup/SKILL.md) defines them with the user. They bind every session working in the repo, not only the loop's.
 
 A value is a short rule written inline, or a pointer to the project file that holds it (`` `docs/agents/release.md` ``). A pointer keeps one source of truth: the manager and every child read the file, never a copy.
 

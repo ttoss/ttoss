@@ -5,7 +5,7 @@ sidebar_position: 1
 
 # Delivery Process
 
-How work in a software project goes from a signal to a closed task, once, for every project. What differs between projects is each one's answers to the [parameters](parameters.md); a project with no answer gets the default. The process is [Get Things Flowing](https://flow.ttoss.dev/docs/agents/protocol.md) (GTF) applied to product development: the rule ids below are GTF's.
+How work in a software project goes from a signal to a closed task, once, for every project. It is a state machine: a task's state lives in Flow, and each tick reads it, applies the [transitions](#transitions) it calls for and writes the result, which the next tick reads. This is the engine; each project extends it with its answers to the [parameters](parameters.md), and a project with no answer gets the default. The process is [Get Things Flowing](https://flow.ttoss.dev/docs/agents/protocol.md) (GTF) applied to product development: the rule ids below are GTF's.
 
 ## Eight rules
 
