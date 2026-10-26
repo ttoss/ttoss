@@ -10,7 +10,7 @@ The engineering workflow is how a change at ttoss goes from a signal to an effec
 
 ## A State Machine
 
-A task's state lives in Flow: its status, what holds it, and the changes it references. A tick reads that state, applies the transitions it calls for, writes the new state back, and stops. The next tick reads the state as it is now and does the same. Nothing passes from one tick to the next except the graph, so a tick that dies loses nothing, any agent can run the next one, and whatever schedules the ticks sets the pace.
+A task's state lives in Flow: its status, what holds it, and the changes it references. A tick reads that state, applies the transitions it calls for, writes the new state back, and stops. The next tick reads the state as it is now and does the same. Nothing passes from one tick to the next except the graph, so a tick that dies loses nothing, any agent can run the next one, and whatever schedules the ticks sets the pace. That schedule is the project's [routines](./routines.md): the tick, and beside it a run that chases the people the graph waits on and one that audits what the loop spends.
 
 ```mermaid
 stateDiagram-v2
@@ -33,11 +33,11 @@ stateDiagram-v2
     Done --> [*]
 ```
 
-The [Delivery Process](./process.md) defines every state, the seven stages that move a task between them with one owner each, and the [transitions](./process.md#transitions) a tick applies. A manager agent applies them in order on every tick: it verifies what came due, runs the release steps, integrates the changes whose gates passed, and only then starts a child agent for each ready task, up to a cap.
+The [Delivery Process](./process.md) defines every state, the seven stages that move a task between them with one owner each, and the [transitions](./process.md#transitions) a tick applies. A manager agent applies them in order on every tick: it verifies what came due, runs the release steps, reviews and integrates the changes whose checks passed, and only then starts a child agent for each ready task, up to a cap.
 
 ## One Engine, Extended per Project
 
-The engine is the same for every project: the states, the stages and their owners, the transitions and the rules of the Delivery Process. A project extends it at defined [extension points](./parameters.md#extension-points), its parameters: where work comes from, what a task must state before an agent starts it, which choices stay with a person, what runs before a change is proposed, who reviews it, when it may be integrated, how it is released, what proves it done, which deliveries are not pull requests, and how its agents run. An extension answers a question the engine asks and never changes the engine. A point left empty takes its default, so a project starts from the engine as it is and extends only where it differs, and a rule that turns out true of every project moves into the engine.
+The engine is the same for every project: the states, the stages and their owners, the transitions and the rules of the Delivery Process. A project extends it at defined [extension points](./parameters.md#extension-points), its parameters: where work comes from, what a task must state before an agent starts it, which choices stay with a person, what runs before a change is proposed, who reviews it, when it may be integrated, how it is released, what proves it done, which deliveries are not pull requests, how its agents run and which routines fire them. An extension answers a question the engine asks and never changes the engine. A point left empty takes its default, so a project starts from the engine as it is and extends only where it differs, and a rule that turns out true of every project moves into the engine.
 
 ```mermaid
 flowchart TB
@@ -57,4 +57,4 @@ Finishing before starting and capping the children keep work in process low, whi
 
 ## Adopting It
 
-A repository adopts the workflow with the [`flow-setup`](https://github.com/ttoss/skills/blob/main/skills/flow-setup/SKILL.md) skill: it installs the skills, defines the [parameters](./parameters.md) with you from what the repository already says, proposes the Flow project and its standing decision, and opens a pull request for your review. The [`flow`](https://github.com/ttoss/skills/blob/main/skills/flow/SKILL.md) skill then runs the ticks on whatever schedule fires them.
+A repository adopts the workflow with the [`flow-setup`](https://github.com/ttoss/skills/blob/main/skills/flow-setup/SKILL.md) skill: it installs the skills, defines the [parameters](./parameters.md) with you from what the repository already says, proposes the Flow project and its standing decision, opens a pull request for your review and, once you integrate it, creates the project's [routines](./routines.md). The [`flow`](https://github.com/ttoss/skills/blob/main/skills/flow/SKILL.md) skill runs the tick and the chase they fire, and [`token-audit`](https://github.com/ttoss/skills/blob/main/skills/token-audit/SKILL.md) the audit.
