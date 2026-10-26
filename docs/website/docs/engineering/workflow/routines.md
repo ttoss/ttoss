@@ -11,7 +11,7 @@ A routine is a run that a schedule or an event starts, not a person. Each one ru
 
 | Routine | Fired by | Runs | Model | Writes |
 | --- | --- | --- | --- | --- |
-| Tick | a schedule: hourly, in the project's working hours | `/flow <project id>` | the manager's | the [transitions](process.md#transitions) |
+| Tick | a schedule: hourly, in the project's working hours | `/flow <project id>` | its row's | the [transitions](process.md#transitions) |
 | Chase | a schedule: daily, at the start of the working day | `/flow <project id> --chase` | the check model | nothing in Flow: each person gets what waits on them |
 | Audit | a schedule: weekly, at the end of the week | `/token-audit --routine` | the check model | an `incubated` task for each fix it proposes |
 
