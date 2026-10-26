@@ -179,6 +179,6 @@ const CheckoutPage = () => {
 
 ## Related Documentation
 
-- [Development Process](/docs/engineering/workflow/development-process) - Integration with PR workflow
+- [Delivery Process](/docs/engineering/workflow/process) - How a change goes from a task to production
 - [Testing Guidelines](/docs/engineering/guidelines/tests) - Testing flagged features
 - [@ttoss/react-feature-flags](/docs/modules/packages/react-feature-flags) - React implementation
