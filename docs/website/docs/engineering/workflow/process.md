@@ -15,8 +15,8 @@ How work in a software project goes from a signal to a closed task, once, for ev
 4. **A person decides what is reserved.** A choice the project reserves, or one nobody delegated, waits on a person (GTF-N6).
 5. **One worker per task.** A run takes a task with its `works_on`; a task another run holds comes back `contended` (GTF-S8).
 6. **Done is the effect, observed where it matters.** Integrated is not in effect (GTF-E8).
-7. **Loops have a limit.** Each reason a change goes back (red checks, findings) gets the automatic rounds the `Merge rule` allows; the next goes to a person.
-8. **Finish before starting.** The work closest to done goes first: verify, then release, then the gates (reviews the loop runs, fix rounds, conflicts), then new work. A priority a person set outranks the stage.
+7. **Rounds have a limit.** Each reason a change goes back (red checks, findings) gets the automatic rounds the `Merge rule` allows; the next goes to a person.
+8. **Finish before starting.** The work closest to done goes first: verify, then release, then the gates (reviews the agents run, fix rounds, conflicts), then new work. A priority a person set outranks the stage.
 
 ## Words
 
@@ -71,8 +71,8 @@ The tick applies these on every tick, under the standing decision:
 
 | When | The tick |
 | --- | --- |
-| The change's checks pass with no verdict for its head, and `Review` gives the review to the loop | starts a review child, which leaves its verdict on the change |
-| The gates pass and the `Merge rule` lets the loop integrate | integrates the change |
+| The change's checks pass with no verdict for its head, and `Review` gives the review to an agent | starts a review child, which leaves its verdict on the change |
+| The gates pass and the `Merge rule` lets the agents integrate | integrates the change |
 | Checks red, or findings, within the round limit | moves the task to `active` with the log or the findings in the body, for a fresh child on the same change |
 | The round limit reached (rounds are the task's fix runs; a red caused outside the change, such as a broken default branch or infrastructure, does not count) | moves the task to `waiting` on a person |
 | A review request lost | applies the `Review` fallback |
@@ -99,7 +99,7 @@ An investigation delivers knowledge: its output is evidence or a proposal for a 
 
 ## Prerequisites
 
-- **The code host enforces the `Merge rule`.** Required checks, branch protection and required reviews make the rule true for everyone, not only for the loop. A change to the CI configuration needs a person's review there too (code owners or the host's equivalent), so the loop never integrates a change to the checks that judge it on its own reading of the diff.
+- **The code host enforces the `Merge rule`.** Required checks, branch protection and required reviews make the rule true for everyone, not only for the agents. A change to the CI configuration needs a person's review there too (code owners or the host's equivalent), so no agent integrates a change to the checks that judge it on its own reading of the diff.
 - **The runtime allows every act the standing decision delegates.** An act the runtime refuses, such as a merge or a release step its permission rules block, moves the task to `waiting` on a person, naming the refusal (GTF-U3).
 - **Agent instructions change only through a merge a person approved**, so the standing decision can point at them (GTF-A6).
 - **Something fires the runs.** Flow keeps the state but wakes nobody (GTF-S5): the project's [routines](routines.md) start each run fresh from the graph.
