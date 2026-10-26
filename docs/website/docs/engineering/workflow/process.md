@@ -77,7 +77,7 @@ The tick applies these on every tick, under the standing decision:
 | The round limit reached (rounds are the task's fix runs; a red caused outside the change, such as a broken default branch or infrastructure, does not count) | moves the task to `waiting` on a person |
 | A review request lost | applies the `Review` fallback |
 | The change needs what the `Merge rule` reserves to a person | moves the task to `waiting` on that person, naming what is ready |
-| The `Renewal` date has passed | applies the `Merge rule` as if it reserved every integration to a person: each change ready to integrate moves its task to `waiting` on the standing decision's author, naming the renewal, until a person integrates a change that moves the date |
+| The `Renewal` date has passed | applies the `Merge rule` as if it reserved every integration to a person: each change ready to integrate moves its task to `waiting` on the person `Renewal` names, naming the renewal, until a person integrates a change that moves the date |
 | A conflict with the default branch | moves the task to `active` for a fresh child that resolves it |
 | A step only a person can do before integrating (a migration, a manual check) | writes that step as a task, theirs, that `blocks` the task (GTF-N4) |
 | The change closed without integrating | retracts its `implements` reference and moves the task to `waiting` on a person: implement it again, or cancel it |

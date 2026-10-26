@@ -15,7 +15,7 @@ A value is a short rule written inline, or a pointer to the project file that ho
 | --- | --- | --- |
 | Flow project id | yes | `proj_...` |
 | Standing-decision task id | yes | the `decision` that authorises the loop (GTF-T1); every run of the loop names it as its `authority` |
-| Renewal | no | the date until which the loop integrates on its own; past it, every integration waits on a person, who renews it by moving the date ([transitions](process.md#transitions)). Default: 90 days after the standing decision |
+| Renewal | no | the date until which the loop integrates on its own, and the person who renews it; past the date, every integration waits on that person until the date moves ([transitions](process.md#transitions)). [`/flow-setup`](https://github.com/ttoss/skills/blob/main/skills/flow-setup/SKILL.md) writes the standing decision's author and a date 90 days after it; left empty, nothing expires and every tick's report says so |
 | Repos | no | every repo the tasks touch, so children start with them |
 
 ## Runtime
@@ -50,7 +50,7 @@ Each answers a question the process asks but cannot answer for every project. Le
 | Release procedure | After integrating, what puts the change in effect: which steps the loop runs, which are automatic, which are a person's | none: integrated is in effect once its pipeline passes |
 | Closing evidence | What proves a task done, where it is checked (the target, every credential its checks use, which calls are read-only) and who reads the checks | integrated and its pipeline green; a check that needs a target the project did not name waits on a person |
 | Delivery kinds | Which deliveries are not a change through the code host, and for each, its gates, who integrates it and what proves it | none: every delivery is a pull request |
-| Calibration | How much of what the loop integrates on its own a person reviews in depth, and who; what change in how the loop behaves after a model change counts as a regression | one in ten of the changes the loop integrated on its own, drawn at random, at least one a week, reviewed by the standing decision's author; a regression is a measure a quarter worse in the two weeks after a model change than in the four before |
+| Calibration | How much of what the loop integrates on its own a person reviews in depth, and who; what change in how the loop behaves after a model change counts as a regression | one in ten of the changes the loop integrated on its own, drawn at random, at least one a week, reviewed by the person `Renewal` names; a regression is a measure a quarter worse in the two weeks after a model change than in the four before |
 
 ## Release procedure shapes
 
