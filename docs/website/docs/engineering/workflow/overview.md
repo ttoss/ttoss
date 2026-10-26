@@ -1,12 +1,12 @@
 ---
 sidebar_position: 0
 sidebar_label: Overview
-title: Engineering Workflow
+title: Agentic Workflow
 ---
 
-# Engineering Workflow
+# Agentic Workflow
 
-The engineering workflow is how a change at ttoss goes from a signal to an effect observed in production. Three ideas shape it: it is a state machine over a task graph, one engine runs it for every project while each project extends it, and it is built on [Get Things Flowing](https://flow.ttoss.dev/docs/method/principles) (GTF) and [Flow](https://flow.ttoss.dev).
+The agentic workflow is how a change at ttoss goes from a signal to an effect observed in production. Three ideas shape it: it is a state machine over a task graph, one engine runs it for every project while each project extends it, and it is built on [Get Things Flowing](https://flow.ttoss.dev/docs/method/principles) (GTF) and [Flow](https://flow.ttoss.dev).
 
 ## A State Machine
 

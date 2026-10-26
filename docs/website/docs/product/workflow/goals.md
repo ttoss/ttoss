@@ -3,7 +3,7 @@ sidebar_position: 1
 title: Goals
 ---
 
-The main goal of our **product workflow** is to make it easy to apply [principles of product development](/docs/product/product-development/principles) to the entire process of building products, from conception to launch. We focus on **strategy, discovery, and definition** of what should be built, while the [engineering workflow](/docs/engineering/workflow) handles the technical implementation.
+The main goal of our **product workflow** is to make it easy to apply [principles of product development](/docs/product/product-development/principles) to the entire process of building products, from conception to launch. We focus on **strategy, discovery, and definition** of what should be built, while the [agentic workflow](/docs/engineering/workflow) handles the technical implementation.
 
 We aim to balance creating a flexible approach to eliminate waste on low-value tasks and allowing our team to focus on high-value and creative tasks. Because of this, we have a few goals for our product workflow:
 
@@ -15,7 +15,7 @@ We aim to balance creating a flexible approach to eliminate waste on low-value t
 - Foster collaboration and communication among team members to ensure everyone is working towards the same goals and has a shared understanding of the product and its development.
 - Encourage continuous learning and improvement by regularly reviewing and refining the workflow to optimize efficiency, quality, and outcomes (kaizen).
 
-## Product vs Engineering Workflow
+## Product vs Agentic Workflow
 
 This **product workflow** focuses on:
 
@@ -24,7 +24,7 @@ This **product workflow** focuses on:
 - **Requirements definition** (user stories and acceptance criteria)
 - **Prioritization** (what comes first and why)
 
-The **[engineering workflow](/docs/engineering/workflow)** focuses on:
+The **[agentic workflow](/docs/engineering/workflow)** focuses on:
 
 - **How** to build it (technical implementation)
 - **When** to deliver it (deployment and release)

@@ -47,11 +47,11 @@ Before development begins, the task needs to be linked between **ClickUp** and *
 - **Provide GitHub integration**: Link the ClickUp task to the appropriate GitHub repository
 - **Set up tracking**: Enable status synchronization between ClickUp and GitHub
 
-**Technical implementation**: The engineering team handles the technical aspects of branch creation and repository management as described in the [Engineering Workflow](/docs/engineering/workflow).
+**Technical implementation**: The engineering team handles the technical aspects of branch creation and repository management as described in the [Agentic Workflow](/docs/engineering/workflow).
 
 ### 5 - Task Development
 
-Once the task is defined and linked between **ClickUp** and **GitHub**, the development team follows the [engineering workflow](/docs/engineering/workflow) to implement the solution.
+Once the task is defined and linked between **ClickUp** and **GitHub**, the development team follows the [agentic workflow](/docs/engineering/workflow) to implement the solution.
 
 **Product responsibilities during development:**
 
