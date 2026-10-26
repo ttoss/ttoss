@@ -53,7 +53,67 @@ GTF is the general method for working a task graph: who may change a commitment,
 
 ## Why It Is Shaped This Way
 
-Finishing before starting and capping the children keep work in process low, which drives cycle time ([W1](/docs/product/product-development/principles#w1-the-principle-of-wip-constraints-constrain-wip-to-control-cycle-time-and-flow)). A task that holds more than one delivery is split before a child starts it, since small batches cut cycle time and speed feedback ([B1](/docs/product/product-development/principles#b1-the-batch-size-queueing-principle-reducing-batch-size-reduces-cycle-time), [B3](/docs/product/product-development/principles#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback)). The standing decision is a decision rule that lets agents act without asking each time ([E13](/docs/product/product-development/principles#e13-the-first-decision-rule-principle-use-decision-rules-to-decentralize-economic-control)), and a change that keeps failing for the same reason goes to a person after a set number of rounds, a relief valve decided in advance ([FF15](/docs/product/product-development/principles#ff15-the-relief-valve-principle-have-a-clear-predetermined-relief-valve)). A task closes only when its effect is observed where it matters, because a merge is not feedback ([FF8](/docs/product/product-development/principles#ff8-the-fast-learning-principle-use-fast-feedback-to-make-learning-faster-and-more-efficient)). The gates are [deterministic guardrails](/docs/ai/agentic-engineering-foundations/deterministic-guardrails), and the run records keep the loop [observable](/docs/ai/agentic-engineering-foundations/observability).
+The workflow rests on two sets of principles: the [Principles of Product Development Flow](/docs/product/product-development/principles) say why a rule pays, and the [Agentic Development Principles](/docs/ai/agentic-development-principles) say why agents need it.
+
+| The workflow                                              | Why it pays                                                            | Why agents need it                                                     |
+| --------------------------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| One owner per transition, one worker per task             | [D9 Boundaries][]                                                      | [Distributed Unreliability][]                                          |
+| The state lives in Flow                                   | [E5 Inactivity][], [W23 Visual WIP][]                                  | [Compounding Context][]                                                |
+| Every change has a cause, under a standing decision       | [E13 First Decision Rule][], [FF13 Second Decision Rule][]             | [Compressed Delegation][], [Trust-Gated Orchestration][]               |
+| A person decides what is reserved                         | [D2 Scale][]                                                           | [Asymmetric Risk][], [Contextual Authority][]                          |
+| Done is the effect, observed where it matters             | [FF8 Fast-Learning][]                                                  | [Proxy Collapse][], [Detection Window][]                               |
+| Loops have a limit                                        | [FF15 Relief Valve][], [W16 Escalation][]                              | [Compounding Contextual Error][], [Proxy Collapse][]                   |
+| Finish before starting, with a cap on children            | [W1 WIP Constraints][], [F15 SJF Scheduling][]                         | [Cheap Generation, Expensive Commitment][], [Verification Asymmetry][] |
+| A brief a child can check, one delivery per task          | [D8 Mission][], [B1 Batch Size Queueing][], [B3 Batch Size Feedback][] | [Executable Specification][], [Problem Decomposition][]                |
+| Noticed work becomes a task, never a fix                  | [W20 Expansion Control][]                                              | [Admission Control][], [Traceable Edits][]                             |
+| Gates on the change, and a reviewer that did not write it | [FF14 Locality of Feedback][]                                          | [Deterministic Verification][], [Verifier Sovereignty][]               |
+| One engine, extended per project                          | [V9 Reuse][], [F22 Tailored Routing][]                                 | [Protocol Standardization][]                                           |
+| An hourly tick inside a daily Chase and a weekly Audit    | [F5 Periodic Resynchronization][], [FF16 Multiple Control Loops][]     | [Invisible Risk][], [Prompt Economics][]                               |
+| What fired a routine is data                              |                                                                        | [Instruction-Data Conflation][]                                        |
+
+The gates are [deterministic guardrails](/docs/ai/agentic-engineering-foundations/deterministic-guardrails), and the run records keep the loop [observable](/docs/ai/agentic-engineering-foundations/observability).
+
+[D9 Boundaries]: /docs/product/product-development/principles#d9-the-principle-of-boundaries-establish-clear-roles-and-boundaries
+[Distributed Unreliability]: /docs/ai/agentic-development-principles/physics-of-ai-integration#the-principle-of-distributed-unreliability
+[E5 Inactivity]: /docs/product/product-development/principles#e5-the-inactivity-principle-watch-the-work-product-not-the-worker
+[W23 Visual WIP]: /docs/product/product-development/principles#w23-the-principle-of-visual-wip-make-wip-continuously-visible
+[Compounding Context]: /docs/ai/agentic-development-principles/architecture-of-flow#the-principle-of-compounding-context
+[E13 First Decision Rule]: /docs/product/product-development/principles#e13-the-first-decision-rule-principle-use-decision-rules-to-decentralize-economic-control
+[FF13 Second Decision Rule]: /docs/product/product-development/principles#ff13-the-second-decision-rule-principle-control-the-economic-logic-behind-a-decision-not-the-entire-decision
+[Compressed Delegation]: /docs/ai/agentic-development-principles/symbiosis-of-human-ai-agency#the-principle-of-compressed-delegation
+[Trust-Gated Orchestration]: /docs/ai/agentic-development-principles/governance-of-agency#the-corollary-of-trust-gated-orchestration
+[D2 Scale]: /docs/product/product-development/principles#d2-the-scale-principle-centralize-control-for-problems-that-are-infrequent-large-or-have-significant-economies-of-scale
+[Asymmetric Risk]: /docs/ai/agentic-development-principles/governance-of-agency#the-principle-of-asymmetric-risk
+[Contextual Authority]: /docs/ai/agentic-development-principles/governance-of-agency#the-principle-of-contextual-authority
+[FF8 Fast-Learning]: /docs/product/product-development/principles#ff8-the-fast-learning-principle-use-fast-feedback-to-make-learning-faster-and-more-efficient
+[Proxy Collapse]: /docs/ai/agentic-development-principles/physics-of-ai-integration#the-principle-of-proxy-collapse
+[Detection Window]: /docs/ai/agentic-development-principles/economics-of-interaction#the-corollary-of-the-detection-window
+[FF15 Relief Valve]: /docs/product/product-development/principles#ff15-the-relief-valve-principle-have-a-clear-predetermined-relief-valve
+[W16 Escalation]: /docs/product/product-development/principles#w16-the-escalation-principle-create-a-preplanned-escalation-process-for-outliers
+[Compounding Contextual Error]: /docs/ai/agentic-development-principles/physics-of-ai-integration#the-corollary-of-compounding-contextual-error
+[W1 WIP Constraints]: /docs/product/product-development/principles#w1-the-principle-of-wip-constraints-constrain-wip-to-control-cycle-time-and-flow
+[F15 SJF Scheduling]: /docs/product/product-development/principles#f15-the-sjf-scheduling-principle-when-delay-costs-are-homogeneous-do-the-shortest-job-first
+[Cheap Generation, Expensive Commitment]: /docs/ai/agentic-development-principles/economics-of-interaction#the-principle-of-cheap-generation-expensive-commitment
+[Verification Asymmetry]: /docs/ai/agentic-development-principles/symbiosis-of-human-ai-agency#the-principle-of-verification-asymmetry
+[D8 Mission]: /docs/product/product-development/principles#d8-the-principle-of-mission-specify-the-end-state-its-purpose-and-the-minimal-possible-constraints
+[B1 Batch Size Queueing]: /docs/product/product-development/principles#b1-the-batch-size-queueing-principle-reducing-batch-size-reduces-cycle-time
+[B3 Batch Size Feedback]: /docs/product/product-development/principles#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback
+[Executable Specification]: /docs/ai/agentic-development-principles/foundations-of-hybrid-allocation#the-principle-of-executable-specification
+[Problem Decomposition]: /docs/ai/agentic-development-principles/physics-of-ai-integration#the-corollary-of-problem-decomposition
+[W20 Expansion Control]: /docs/product/product-development/principles#w20-the-expansion-control-principle-prevent-uncontrolled-expansion-of-work
+[Admission Control]: /docs/ai/agentic-development-principles/economics-of-interaction#the-corollary-of-admission-control
+[Traceable Edits]: /docs/ai/agentic-development-principles/symbiosis-of-human-ai-agency#the-corollary-of-traceable-edits
+[FF14 Locality of Feedback]: /docs/product/product-development/principles#ff14-the-locality-principle-of-feedback-whenever-possible-make-feedback-local
+[Deterministic Verification]: /docs/ai/agentic-development-principles/physics-of-ai-integration#the-corollary-of-deterministic-verification
+[Verifier Sovereignty]: /docs/ai/agentic-development-principles/physics-of-ai-integration#the-corollary-of-verifier-sovereignty
+[V9 Reuse]: /docs/product/product-development/principles#v9-the-reuse-principle-reuse-reduces-variability
+[F22 Tailored Routing]: /docs/product/product-development/principles#f22-the-principle-of-tailored-routing-select-and-tailor-the-sequence-of-subprocesses-to-the-task-at-hand
+[Protocol Standardization]: /docs/ai/agentic-development-principles/protocol-of-communication#the-principle-of-protocol-standardization
+[F5 Periodic Resynchronization]: /docs/product/product-development/principles#f5-the-principle-of-periodic-resynchronization-use-a-regular-cadence-to-limit-the-accumulation-of-variance
+[FF16 Multiple Control Loops]: /docs/product/product-development/principles#ff16-the-principle-of-multiple-control-loops-embed-fast-control-loops-inside-slow-loops
+[Invisible Risk]: /docs/ai/agentic-development-principles/governance-of-technical-debt#the-principle-of-invisible-risk
+[Prompt Economics]: /docs/ai/agentic-development-principles/economics-of-interaction#the-principle-of-prompt-economics
+[Instruction-Data Conflation]: /docs/ai/agentic-development-principles/physics-of-ai-integration#the-principle-of-instruction-data-conflation
 
 ## Adopting It
 
