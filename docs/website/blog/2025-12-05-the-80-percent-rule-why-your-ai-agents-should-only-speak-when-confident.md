@@ -9,7 +9,13 @@ We've all been there: You ask your AI coding assistant for a solution to a trick
 
 The AI wasn't lying to you. It was hallucinating. It was "confidently wrong."
 
-In our [Agentic Development Principles](/docs/ai/agentic-development-principles), we call this **[The Corollary of Confidence-Qualified Output](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-corollary-of-confidence-qualified-output)**. But in practice, we just call it **The 80% Rule**.
+In our [Agentic Development Principles](/docs/ai/agentic-development-principles), we called this **The Corollary of Confidence-Qualified Output**. But in practice, we just call it **The 80% Rule**.
+
+:::note[Update, October 2026]
+
+The Corollary of Confidence-Qualified Output was withdrawn from the Agentic Development Principles. A confidence score the model reports is its own estimate, not a verification ([The Corollary of Confident Hallucination](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-corollary-of-confident-hallucination)); an instruction to stay silent below 80% is a prompt that stronger signals outvote ([The Principle of Interpretive Competition](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-principle-of-interpretive-competition)); and fact-checking less because the agent sounds sure is how [vigilance decays](/docs/ai/agentic-development-principles/symbiosis-of-human-ai-agency#the-principle-of-vigilance-decay). To have an agent surface its uncertainty, require it in the output's structure: [The Corollary of Externalized Confusion](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-corollary-of-externalized-confusion).
+
+:::
 
 <!--truncate-->
 
@@ -63,6 +69,6 @@ Implementing the 80% Rule changes the dynamic of your development workflow.
 
 ## Conclusion
 
-AI agents are powerful, but they lack the human instinct for self-preservation that keeps us from making wild guesses in production. By enforcing **[The Corollary of Confidence-Qualified Output](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-corollary-of-confidence-qualified-output)**, we impose that discipline artificially.
+AI agents are powerful, but they lack the human instinct for self-preservation that keeps us from making wild guesses in production. By enforcing **The 80% Rule**, we impose that discipline artificially.
 
 Make your agents earn the right to interrupt you. If they aren't 80% sure, they should stay 100% silent.

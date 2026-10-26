@@ -75,6 +75,28 @@ Assigning multiple agents to work simultaneously on the same critical path incre
 
 The canonical implementation of Artificial Friction: configure CI/CD or agent orchestrators to calculate the cyclomatic complexity of the agent's output. If a PR increases the complexity score of a function beyond a threshold (e.g., >10), the system automatically rejects the change or demands a "Refactor Plan" before acceptance. An agent tasked with an edge case will otherwise add a 5th nested if/else block because it was the easiest valid solution—a human would have felt the pain and refactored; the agent felt nothing.
 
+### Universal Abstraction
+
+**The Problem:** Context arrives from databases, uploads, APIs, tools, and people, each with its own format and access path. Agent logic written against each source couples reasoning to storage and transport, and every new source is another integration in every agent.
+
+**The Underlying Principle:** Derived from [The Principle of Context Heterogeneity](/docs/ai/agentic-development-principles/architecture-of-flow#the-principle-of-context-heterogeneity) and [The Corollary of Canonicalization Contracts](/docs/ai/agentic-development-principles/architecture-of-flow#the-corollary-of-canonicalization-contracts).
+
+**The Strategy:** Abstract every context artifact into one standardized namespace, similar to a file system, so agents treat memory, tools, and human inputs uniformly. Reasoning is decoupled from storage and transport, and the cost of translation stays explicit at the namespace's boundary. A canonical schema enforced at each ingestion point satisfies the same constraint without a shared namespace.
+
+**Failure Scenario:** Each agent reads customers through a SQL tool, entitlements through an API client, and policies through a document search, each with its own identifiers. Adding a billing source means changing every agent; the one nobody updated keeps answering from the other three, and its answers stay plausible.
+
+### Model Specialization
+
+**The Problem:** A general-purpose model carries capability a narrow task never uses and pays for it on every call, in latency, cost, and output variance.
+
+**The Underlying Principle:** Derived from [The Principle of Allocative Efficiency](/docs/ai/agentic-development-principles/economics-of-interaction#the-principle-of-allocative-efficiency) and [The Corollary of the Generalization Tax](/docs/ai/agentic-development-principles/economics-of-interaction#the-corollary-of-the-generalization-tax).
+
+**The Strategy:** For critical, high-volume, repeatable tasks (query formulation, entity extraction, classification), use specialized models, or constrained decoding plus fine-tuning, instead of a single large general model. It pays when the task is well-structured and stable over time (see [The Principle of Problem Structure Allocation](/docs/ai/agentic-development-principles/foundations-of-hybrid-allocation#the-principle-of-problem-structure-allocation)) and when the marginal savings exceed the ongoing maintenance cost (see [E16: The Principle of Marginal Economics](/docs/product/product-development/principles#e16-the-principle-of-marginal-economics-always-compare-marginal-cost-and-marginal-value)). A smaller general model behind deterministic constraints satisfies the same constraint with less to maintain.
+
+**Failure Scenario:** A product relies on a single massive general-purpose LLM for a high-throughput, time-sensitive task (e.g., real-time query rewriting). Latency and compute cost become a system bottleneck. The team misses a simpler routing strategy (smaller model + deterministic constraints) that would have met the quality bar at lower marginal cost.
+
+_Read more in [NEMO-4-PAYPAL: Leveraging NVIDIA's Nemo Framework for empowering PayPal's Commerce Agent](https://arxiv.org/abs/2512.21578)._
+
 ## Communication Patterns
 
 ### Explicit Intent Protocol
@@ -216,6 +238,16 @@ Level 3 (Employee): Can deploy to production, but only for specific, whitelisted
 
 **Failure Scenario:** An agent generates a Regex for validating emails. It looks complex and professional. The developer merges it. In reality, the Regex allows catastrophic backtracking (ReDoS), crashing the production server when a malicious user sends a long string. A simple functional test would have caught this, but the visual masked it.
 
+### Model Convergence
+
+**The Problem:** A single model can present a hallucination as convincingly as a fact, and one answer carries no signal of which it is.
+
+**The Underlying Principle:** Derived from [The Principle of Probabilistic AI Output](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-principle-of-probabilistic-ai-output) and [The Corollary of Confident Hallucination](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-corollary-of-confident-hallucination).
+
+**The Strategy:** Submit the same prompt to several models. If their answers diverge, the output goes to further review; if they converge, confidence increases. Convergence is weaker evidence than it looks, because models trained on overlapping data share failure modes and variability only pools away across uncorrelated sources ([V5](/docs/product/product-development/principles#v5-the-principle-of-variability-pooling-overall-variation-decreases-when-uncorrelated-random-tasks-are-combined)): agreement can decide what to review first, never replace the review.
+
+**Failure Scenario:** A team asks two models whether a library still exports a helper. Both were trained on the same years of public code and both confidently say yes; the agreement is taken as verification, and the code ships against a function the library removed in its last major version.
+
 ### The Next Move Test
 
 **The Problem:** AI-generated code that works today can still make tomorrow more expensive. Reviewers need a fast, repeatable way to decide "merge or rework" that accounts for structural cost, not just functional correctness.
@@ -232,7 +264,7 @@ Level 3 (Employee): Can deploy to production, but only for specific, whitelisted
 
 **The Problem:** A workflow spans several phases—product, design, implementation, test. Two topologies can deliver it: one agent that loads a skill per phase against a single growing context, or a chain of specialized agents each owning one phase. Choosing by fashion rather than by cost fails both ways—a generalist drowns when phases are independent, parallelizable, or high-blast-radius; a pipeline bleeds handoff taxes when phases are sequential, coupled, and rationale-heavy.
 
-**The Underlying Principle:** Derived from [The Principle of the Decomposition Boundary](/docs/ai/agentic-development-principles/architecture-of-flow#the-principle-of-the-decomposition-boundary), [The Principle of Compounding Context](/docs/ai/agentic-development-principles/architecture-of-flow#the-principle-of-compounding-context), and [The Corollary of Agentic Single Responsibility](/docs/ai/agentic-development-principles/architecture-of-flow#the-corollary-of-agentic-single-responsibility).
+**The Underlying Principle:** Derived from [The Principle of the Decomposition Boundary](/docs/ai/agentic-development-principles/architecture-of-flow#the-principle-of-the-decomposition-boundary), [The Principle of Compounding Context](/docs/ai/agentic-development-principles/architecture-of-flow#the-principle-of-compounding-context), and [The Corollary of Agentic Single Responsibility](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-corollary-of-agentic-single-responsibility).
 
 **The Strategy:** Default to the skilled generalist—one agent, one compounding context, a skill loaded per phase—because most product work is sequential and coupled, and continuity is free only inside a single context. Promote a phase to its own agent only when it earns a boundary: it can run in parallel, it must be verified by something that did not write it, its blast radius or trust profile must be contained, or its context genuinely conflicts with the others. Most mature systems are hybrids: a generalist that spawns isolated sub-agents for the few phases that justify the wall, with a [Shared Memory Layer](/docs/ai/agentic-design-patterns#shared-memory-layer) carrying rationale across every seam.
 

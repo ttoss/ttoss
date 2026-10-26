@@ -37,10 +37,6 @@ AI agents excel at high-volume generation of commodity outputs and automatable t
 
 As AI drives the marginal cost of generation toward zero, the relative value of human curation—selecting, pruning, and rejecting suboptimal outputs—dramatically increases. Agentic workflows must explicitly design feedback loops that position humans as curators rather than primary generators, preserving cognitive bandwidth for high-signal interventions.
 
-#### The Corollary of Collaborative Amplification
-
-Human-AI interaction thrives in a "jam session" model: AI provides versatile, rapid ideation and execution across domains, while humans contribute specialized direction and structural integrity. Resistance to this interdependent dynamic stifles emergent creativity and multidisciplinary integration, limiting agentic systems to mechanical replication rather than amplified innovation.
-
 ### The Principle of Emergent Insight Constraint
 
 AI systems are bounded by their priors (training + fine-tuning) and by the evidence you provide in-context. Without genuinely new signal, they tend to recombine and optimize within an existing solution space rather than originate new ground truth or market-disrupting insight. Therefore, treat AI as an accelerator for exploration and iteration, while reserving discontinuous insight generation (new hypotheses, reframing, and reality contact) for humans operating with fresh evidence. This is an extension of [The Principle of Role Elevation in Human-AI Hybridization](/docs/ai/agentic-development-principles/symbiosis-of-human-ai-agency#the-principle-of-role-elevation-in-human-ai-hybridization) and should be allocated as an ill-structured, high-leverage domain per [The Principle of Problem Structure Allocation](/docs/ai/agentic-development-principles/foundations-of-hybrid-allocation#the-principle-of-problem-structure-allocation).
@@ -63,7 +59,7 @@ The cost of generating AI output is orders of magnitude lower than the cost of v
 
 #### The Corollary of Verification Investment
 
-Every dollar saved on AI-assisted generation must be matched by investment in automated verification infrastructure (tests, linters, type systems, CI pipelines). The ROI of agentic workflows is determined not by generation capability but by verification scalability. Teams that invest only in generation create an illusion of productivity while accumulating review debt.
+AI shifts the cost of software development from creation to verification, and while people pay that verification tax, total cost can rise despite faster generation. Every dollar saved on AI-assisted generation must therefore be matched by investment in automated verification infrastructure (tests, linters, type systems, CI pipelines), so that machines pay the tax instead. The ROI of agentic workflows is determined not by generation capability but by verification scalability. Teams that invest only in generation create an illusion of productivity while accumulating review debt.
 
 #### The Corollary of Review Debt
 
