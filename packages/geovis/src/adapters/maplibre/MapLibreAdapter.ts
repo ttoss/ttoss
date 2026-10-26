@@ -39,6 +39,7 @@ import {
 } from './mapDataFeatureState';
 import { silenceNonCancelableTouchMove } from './nonCancelableTouchMove';
 import { applyLayerPatch, applySourcePatch } from './patchDispatch';
+import { focusPins } from './pinFocus';
 import { applySelectionToMap } from './selection';
 import { toMaplibreSource } from './sourceTranslation';
 import { syncSourcesAndLayers } from './syncSourcesAndLayers';
@@ -506,6 +507,9 @@ const createMapLibreAdapter = (): EngineAdapter => {
         );
       }
       _prevSelection = selection;
+    },
+    setPinFocus: (focus) => {
+      for (const vs of _views.values()) focusPins(vs.map, vs.spec, focus);
     },
     onViewChange: (listener) => {
       return subscribeViewChanges(state.viewListeners, listener);

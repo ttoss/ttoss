@@ -24,22 +24,10 @@ import type { VisualizationSpec } from 'src/spec/types';
 // ---------------------------------------------------------------------------
 
 jest.mock('maplibre-gl', () => {
-  const Marker = jest.fn(() => {
-    // Build a realistic marker element: a wrapper <div> whose first child is the
-    // pin <svg> (with a white-fill group, as MapLibre's default pin has). Global
-    // flags let individual tests drop the svg or the white group to exercise the
-    // hook's null branches. Self-contained (no outer refs) — babel hoists the mock.
-    const doc = globalThis.document;
-    const el = doc.createElement('div');
-    if (!(globalThis as Record<string, unknown>).__geovisMarkerNoSvg) {
-      const svg = doc.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      if (!(globalThis as Record<string, unknown>).__geovisMarkerNoWhiteGroup) {
-        const g = doc.createElementNS('http://www.w3.org/2000/svg', 'g');
-        g.setAttribute('fill', '#FFFFFF');
-        svg.appendChild(g);
-      }
-      el.appendChild(svg);
-    }
+  const Marker = jest.fn((options?: { element?: HTMLElement }) => {
+    // The marker's element is the one the hook hands it, as MapLibre's is.
+    // Self-contained (no outer refs) — babel hoists the mock.
+    const el = options?.element ?? globalThis.document.createElement('div');
     return {
       setLngLat: jest.fn().mockReturnThis(),
       addTo: jest.fn().mockReturnThis(),
@@ -67,10 +55,18 @@ const getLastMarkerInstance = () => {
   };
 };
 
-/** Returns the last marker's pin `<svg>` element (its wrapper's first child). */
-const getLastMarkerSvg = (): SVGElement | null => {
-  const el = getLastMarkerInstance().getElement() as HTMLElement;
-  return el.firstElementChild as SVGElement | null;
+/** The options the last Marker was built with. */
+const getLastMarkerOptions = () => {
+  const { calls } = getMockMarkerCtor().mock;
+  return calls[calls.length - 1]?.[0] as
+    { element?: HTMLElement; anchor?: string } | undefined;
+};
+
+/** The last marker's pin: its animated box, and the drop inside it. */
+const getLastPin = () => {
+  const box = getLastMarkerOptions()?.element?.firstElementChild as
+    HTMLElement | undefined;
+  return { box, drop: box?.firstElementChild as HTMLElement | undefined };
 };
 
 // ---------------------------------------------------------------------------
@@ -249,9 +245,7 @@ describe('useClickAnchor', () => {
   beforeEach(() => {
     mockCurrentMap = buildMockMap();
     getMockMarkerCtor().mockClear();
-    delete (globalThis as Record<string, unknown>).__geovisMarkerNoSvg;
-    delete (globalThis as Record<string, unknown>).__geovisMarkerNoWhiteGroup;
-    document.getElementById('geovis-pin-drop-keyframes')?.remove();
+    document.getElementById('geovis-pin-element-drop')?.remove();
   });
 
   // 1. clickAnchor.color → DOM Marker created at click.lngLat
@@ -328,8 +322,8 @@ describe('useClickAnchor', () => {
     expect(getMockMarkerCtor()).not.toHaveBeenCalled();
   });
 
-  // 4. clickAnchor.color → drop keyframes injected once, inner fill darkened, pin animated
-  test('clickAnchor.color: injects the drop keyframes, darkens the inner fill, and animates the pin', async () => {
+  // 4. clickAnchor.color → geovis's pin, in the colour, dropping in
+  test("clickAnchor.color: draws geovis's pin in the colour, anchored at its bottom, dropping in", async () => {
     const onReady = jest.fn();
     render(
       <GeoVisProvider spec={buildSpec({ color: '#2171b5' })}>
@@ -349,16 +343,11 @@ describe('useClickAnchor', () => {
       expect(getMockMarkerCtor()).toHaveBeenCalledTimes(1);
     });
 
-    // Keyframes are injected once into <head>.
-    expect(document.getElementById('geovis-pin-drop-keyframes')).not.toBeNull();
-
-    const svg = getLastMarkerSvg();
-    // Animation is applied to the pin svg.
-    expect((svg as unknown as HTMLElement).style.animation).toContain(
-      'geovis-pin-drop'
-    );
-    // The white inner group is recolored to a 30%-darkened shade of #2171b5.
-    expect(svg?.querySelector('g')?.getAttribute('fill')).toBe('#174f7f');
+    expect(getLastMarkerOptions()?.anchor).toBe('bottom');
+    const { box, drop } = getLastPin();
+    expect(drop?.style.background).toBe('rgb(33, 113, 181)');
+    expect(box?.style.animation).toContain('geovis-pin-element-drop');
+    expect(document.getElementById('geovis-pin-element-drop')).not.toBeNull();
 
     // A second click reuses the already-injected <style> (no duplicate).
     triggerClick(mockCurrentMap, 'districts-fill', {
@@ -369,13 +358,13 @@ describe('useClickAnchor', () => {
     await waitFor(() => {
       expect(getMockMarkerCtor()).toHaveBeenCalledTimes(2);
     });
-    expect(
-      document.querySelectorAll('#geovis-pin-drop-keyframes')
-    ).toHaveLength(1);
+    expect(document.querySelectorAll('#geovis-pin-element-drop')).toHaveLength(
+      1
+    );
   });
 
-  // 5. default pin (no color) → animated but inner fill left untouched
-  test('default pin without color: animates the pin and leaves the inner fill untouched', async () => {
+  // 5. no colour → the pin in MapLibre's own marker blue
+  test('clickAnchor without color: draws the pin in the default blue', async () => {
     const onReady = jest.fn();
     render(
       <GeoVisProvider spec={buildSpec({})}>
@@ -395,91 +384,6 @@ describe('useClickAnchor', () => {
       expect(getMockMarkerCtor()).toHaveBeenCalledTimes(1);
     });
 
-    const svg = getLastMarkerSvg();
-    expect((svg as unknown as HTMLElement).style.animation).toContain(
-      'geovis-pin-drop'
-    );
-    expect(svg?.querySelector('g')?.getAttribute('fill')).toBe('#FFFFFF');
-  });
-
-  // 6. malformed color → darkenHex returns it unchanged
-  test('clickAnchor.color malformed: applies the hex unchanged when it is not #rrggbb', async () => {
-    const onReady = jest.fn();
-    render(
-      <GeoVisProvider spec={buildSpec({ color: '#abc' })}>
-        <ExposeRuntime onReady={onReady} />
-      </GeoVisProvider>
-    );
-    await waitFor(() => {
-      expect(onReady).toHaveBeenCalled();
-    });
-
-    triggerClick(mockCurrentMap, 'districts-fill', {
-      point: { x: 50, y: 50 },
-      lngLat: { lng: -46.6, lat: -23.5 },
-      features: [{ id: 1, layer: { id: 'districts-fill' } }],
-    });
-    await waitFor(() => {
-      expect(getMockMarkerCtor()).toHaveBeenCalledTimes(1);
-    });
-
-    expect(getLastMarkerSvg()?.querySelector('g')?.getAttribute('fill')).toBe(
-      '#abc'
-    );
-  });
-
-  // 7. svg present but no white group → recolor is skipped, pin still animates
-  test('clickAnchor.color with no white fill group: skips the recolor and still animates', async () => {
-    (globalThis as Record<string, unknown>).__geovisMarkerNoWhiteGroup = true;
-    const onReady = jest.fn();
-    render(
-      <GeoVisProvider spec={buildSpec({ color: '#2171b5' })}>
-        <ExposeRuntime onReady={onReady} />
-      </GeoVisProvider>
-    );
-    await waitFor(() => {
-      expect(onReady).toHaveBeenCalled();
-    });
-
-    triggerClick(mockCurrentMap, 'districts-fill', {
-      point: { x: 50, y: 50 },
-      lngLat: { lng: -46.6, lat: -23.5 },
-      features: [{ id: 1, layer: { id: 'districts-fill' } }],
-    });
-    await waitFor(() => {
-      expect(getMockMarkerCtor()).toHaveBeenCalledTimes(1);
-    });
-
-    const svg = getLastMarkerSvg();
-    expect(svg?.querySelector('g')).toBeNull();
-    expect((svg as unknown as HTMLElement).style.animation).toContain(
-      'geovis-pin-drop'
-    );
-  });
-
-  // 8. marker whose element has no svg child → animation block is a no-op, no crash
-  test('marker without an svg child: injects keyframes without touching a pin element', async () => {
-    (globalThis as Record<string, unknown>).__geovisMarkerNoSvg = true;
-    const onReady = jest.fn();
-    render(
-      <GeoVisProvider spec={buildSpec({ color: '#2171b5' })}>
-        <ExposeRuntime onReady={onReady} />
-      </GeoVisProvider>
-    );
-    await waitFor(() => {
-      expect(onReady).toHaveBeenCalled();
-    });
-
-    triggerClick(mockCurrentMap, 'districts-fill', {
-      point: { x: 50, y: 50 },
-      lngLat: { lng: -46.6, lat: -23.5 },
-      features: [{ id: 1, layer: { id: 'districts-fill' } }],
-    });
-    await waitFor(() => {
-      expect(getMockMarkerCtor()).toHaveBeenCalledTimes(1);
-    });
-
-    expect(getLastMarkerSvg()).toBeNull();
-    expect(document.getElementById('geovis-pin-drop-keyframes')).not.toBeNull();
+    expect(getLastPin().drop?.style.background).toBe('rgb(63, 177, 206)');
   });
 });

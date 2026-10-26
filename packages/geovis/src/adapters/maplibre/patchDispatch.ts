@@ -14,6 +14,7 @@ import {
   setPaintWhenReady,
 } from './legendFillPaint';
 import { specPaintKeyToMaplibre } from './paintKeyMap';
+import { reapplyPinFocus } from './pinFocus';
 import {
   resolvePromoteIdForSource,
   toMaplibreSource,
@@ -123,6 +124,8 @@ const applyLayerVisibleReplace = (
       : undefined);
   upsertOutlineCompanions(map, nextLayer, sourceLayer);
   upsertClickAnchorCompanion(map, nextLayer, sourceLayer);
+  // A pin layer turned on under a pin focus stays hidden until it clears.
+  reapplyPinFocus(map, viewState.spec);
 };
 
 /**

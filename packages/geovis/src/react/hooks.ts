@@ -7,6 +7,7 @@ import * as React from 'react';
 
 import type { GeoVisRuntime } from '../runtime/createRuntime';
 import type { VisualizationSpec } from '../spec/types';
+import { createPinElement } from '../ui/pinElement';
 import type { MapClickInfo, MapHoverInfo } from './contexts';
 import { useGeoVis } from './contexts';
 import {
@@ -46,6 +47,22 @@ const EMPTY_HOVER_TRACKING: DecodedHoverTracking = {
 };
 
 /**
+ * The layers whose features warrant a pointer cursor: those that declare
+ * `click` or `clickAnchor`, and those a proximity search starts from.
+ */
+const usePointerLayerIds = (spec: VisualizationSpec): Set<string> => {
+  // Joined, so an inline array in the spec does not re-run the memo on every
+  // render.
+  const proximityLayerKey = spec.proximitySearch?.layers.join(',') ?? '';
+  return React.useMemo(() => {
+    return buildPointerLayerIds(
+      spec.layers,
+      proximityLayerKey ? proximityLayerKey.split(',') : []
+    );
+  }, [spec.layers, proximityLayerKey]);
+};
+
+/**
  * Tracks the hovered feature on every polygon layer that has an `activeLegendId`
  * declared. The hook centralises the MapLibre `mousemove`/`mouseleave` wiring
  * so consumers can render hover-driven UI (`GeoVisHoverTooltip`, custom panels)
@@ -71,9 +88,7 @@ export const useMapHover = ({
     return buildHoverTrackedKey(spec.layers);
   }, [spec.layers]);
 
-  const pointerLayerIds = React.useMemo(() => {
-    return buildPointerLayerIds(spec.layers);
-  }, [spec.layers]);
+  const pointerLayerIds = usePointerLayerIds(spec);
 
   React.useEffect(() => {
     if (!runtime || (!trackedKey && pointerLayerIds.size === 0)) return;
@@ -321,21 +336,14 @@ type ClickAnchorSpec = NonNullable<
   VisualizationSpec['layers'][number]['clickAnchor']
 >;
 
+/** The click anchor's marker: geovis's pin in the anchor's colour, dropping in. */
 const buildMarkerOptions = (anchor: ClickAnchorSpec): MapLibreMarkerOptions => {
-  const opts: MapLibreMarkerOptions = {};
-  if (anchor.color) opts.color = anchor.color;
+  const opts: MapLibreMarkerOptions = {
+    element: createPinElement({ color: anchor.color, animate: true }),
+    anchor: 'bottom',
+  };
   if (anchor.offset) opts.offset = anchor.offset;
   return opts;
-};
-
-const darkenHex = (hex: string, amount: number): string => {
-  const clean = hex.replace('#', '');
-  if (clean.length !== 6) return hex;
-  const num = parseInt(clean, 16);
-  const r = Math.max(0, Math.round(((num >> 16) & 0xff) * (1 - amount)));
-  const g = Math.max(0, Math.round(((num >> 8) & 0xff) * (1 - amount)));
-  const b = Math.max(0, Math.round((num & 0xff) * (1 - amount)));
-  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
 };
 
 export const useClickAnchor = ({
@@ -370,24 +378,6 @@ export const useClickAnchor = ({
       marker = new Marker(buildMarkerOptions(anchor))
         .setLngLat(click.featureLngLat ?? click.lngLat)
         .addTo(map);
-
-      const STYLE_ID = 'geovis-pin-drop-keyframes';
-      if (!document.getElementById(STYLE_ID)) {
-        const style = document.createElement('style');
-        style.id = STYLE_ID;
-        style.textContent = `@keyframes geovis-pin-drop{0%{transform:translateY(-24px) scale(.7);opacity:0}70%{transform:translateY(4px) scale(1.05);opacity:1}85%{transform:translateY(-3px) scale(.98)}100%{transform:translateY(0) scale(1);opacity:1}}`;
-        document.head.appendChild(style);
-      }
-      const svg = marker.getElement().firstElementChild as SVGElement | null;
-      if (svg) {
-        if (anchor.color) {
-          const darkerColor = darkenHex(anchor.color, 0.3);
-          const whiteFillGroup = svg.querySelector('g[fill="#FFFFFF"]');
-          whiteFillGroup?.setAttribute('fill', darkerColor);
-        }
-        (svg as unknown as HTMLElement).style.animation =
-          'geovis-pin-drop 0.35s cubic-bezier(0.34,1.56,0.64,1)';
-      }
     })();
 
     return () => {

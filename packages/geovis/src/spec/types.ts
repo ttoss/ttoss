@@ -1,8 +1,10 @@
 import type { LayerClickConfig } from '../react/click';
 import type { HoverTooltipConfig } from '../react/tooltip';
 import type { LegendPosition, LegendSpec } from './types.legend';
+import type { ProximitySearch } from './types.proximity';
 
 export * from './types.legend';
+export * from './types.proximity';
 
 export type LngLat = [number, number];
 
@@ -296,7 +298,8 @@ export interface SymbolPaint {
 }
 
 /**
- * A map pin: a teardrop in `color` with an icon drawn inside it. GeoVis builds
+ * A map pin: a drop in `color`, outlined in white over a soft shadow, with an
+ * icon drawn inside it. GeoVis builds
  * the image itself and registers it on the map under `id`, so a `symbol` layer
  * shows it with `paint.iconImage: id`.
  *
@@ -324,7 +327,11 @@ export interface PinImage {
   color: string;
   /** Colour of the icon inside the pin. @default '#ffffff' */
   iconColor?: string;
-  /** Pin width in CSS pixels; its height follows the teardrop's shape. @default 28 */
+  /**
+   * Width in CSS pixels of the box the pin stands in — its drop is 4/5 of it
+   * across, and the box 6/5 of it tall. @default 34, a little larger than
+   * the 30 px pins a proximity search drops in
+   */
   size?: number;
 }
 
@@ -482,8 +489,8 @@ export interface VisualizationLayer {
     /** Scale factor for the sprite icon. Default: `1`. */
     iconSize?: number;
     /**
-     * Accent colour for the built-in SVG pin. Applied when `iconImage` is not
-     * set. Default: `'#3FB1CE'`. For a custom HTML/React element, use
+     * Colour of geovis's pin — the drop `spec.images` pins wear, with a white
+     * dot — drawn when `iconImage` is not set. Default: `'#3FB1CE'`. For a custom HTML/React element, use
      * `<GeoVisMarker>` instead.
      */
     color?: string;
@@ -821,6 +828,14 @@ export interface VisualizationSpec {
    * them the button is not shown. Defaults to `false`.
    */
   mapModeControl?: boolean;
+
+  /**
+   * A search for the places within a radius of a feature: clicking a feature
+   * of one of {@link ProximitySearch.layers} drops in around it the places
+   * {@link ProximitySearch.query} answers — see {@link ProximitySearch}. Off
+   * while the map is split.
+   */
+  proximitySearch?: ProximitySearch;
 }
 
 export type GeovisSpec = VisualizationSpec;

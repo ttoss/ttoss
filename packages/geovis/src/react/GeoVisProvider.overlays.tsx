@@ -6,6 +6,7 @@ import { buildOuterStyle } from '../ui/GeoVisLayerControl.styles';
 import { GeoVisLegend } from '../ui/GeoVisLegend';
 import { buildContainerStyle, resolveLegend } from '../ui/GeoVisLegend.utils';
 import { GeoVisMapModeControl } from '../ui/GeoVisMapModeControl';
+import { GeoVisProximitySearch } from '../ui/GeoVisProximitySearch';
 import { useGeoVisMapMode } from './mapMode';
 import type { CompactOverlays } from './useCompactOverlays';
 
@@ -77,7 +78,7 @@ const ControlBar = ({
  * The overlays the spec declares over the map: its positioned legends (above
  * the compact breakpoint only — below it they collapse into the control bar's
  * legend button, see `useCompactOverlays`), the control bar, the compact
- * legend panel and the map mode button.
+ * legend panel, the map mode button and the proximity search.
  *
  * Split, each side carries its own legends and the pickers replace the layer
  * control, so all but the map mode button step aside.
@@ -118,6 +119,9 @@ export const ProviderOverlays = ({
       />
       {legendPanel}
       {modeControl}
+      {spec.proximitySearch && (
+        <GeoVisProximitySearch config={spec.proximitySearch} />
+      )}
     </>
   );
 };

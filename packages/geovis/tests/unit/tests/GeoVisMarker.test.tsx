@@ -221,7 +221,7 @@ describe('GeoVisMarker — Integration', () => {
   });
 
   // Test 2 — Color mode
-  test('creates default marker with color when no children', async () => {
+  test("draws geovis's pin in the color when no children", async () => {
     const { rerender } = render(
       <TestWrapper click={null}>
         <GeoVisMarker color="#ff0000" />
@@ -238,12 +238,21 @@ describe('GeoVisMarker — Integration', () => {
       </TestWrapper>
     );
 
-    // Verify MapLibre Marker was created with color
+    // The marker draws geovis's pin, anchored at its bottom, in the colour.
     await waitFor(() => {
       expect(maplibregl.Marker).toHaveBeenCalledWith(
-        expect.objectContaining({ color: '#ff0000' })
+        expect.objectContaining({
+          anchor: 'bottom',
+          element: expect.any(HTMLElement),
+        })
       );
     });
+    const [options] = jest.mocked(maplibregl.Marker).mock.calls[0] as [
+      { element: HTMLElement },
+    ];
+    const drop = options.element.firstElementChild?.firstElementChild as
+      HTMLElement | undefined;
+    expect(drop?.style.background).toBe('rgb(255, 0, 0)');
 
     const markerInstance = getLastMarkerInstance();
     expect(markerInstance.setLngLat).toHaveBeenCalledWith([-46.6, -23.5]);
