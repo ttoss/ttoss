@@ -1,5 +1,6 @@
 label: Workflow
 position: 5
 link:
-  type: doc
-  id: engineering/workflow/index
+  type: generated-index
+  slug: /engineering/workflow
+  description: How a change goes from a signal to an effect observed in production.

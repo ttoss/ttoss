@@ -1,2 +1,6 @@
 label: Agentic Engineering Foundations
 position: 3
+link:
+  type: generated-index
+  slug: /ai/agentic-engineering-foundations
+  description: What must be true of the team and the codebase before agentic execution can scale.

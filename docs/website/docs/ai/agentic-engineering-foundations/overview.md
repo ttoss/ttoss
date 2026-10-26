@@ -1,7 +1,7 @@
 ---
+sidebar_position: 0
+sidebar_label: Overview
 title: Agentic Engineering Foundations
-slug: /ai/agentic-engineering-foundations
-sidebar_position: 1
 ---
 
 Agentic engineering is the engineering discipline required to make AI-assisted development economically useful, operationally safe, and structurally sustainable.

@@ -1,7 +1,7 @@
 ---
+sidebar_position: 0
+sidebar_label: Overview
 title: Pillars
-slug: /engineering/pillars
-sidebar_position: 1
 ---
 
 A pillar is not a practice. It is a property the delivery system has, together with the mechanism that makes it true whether or not anyone remembers to care.

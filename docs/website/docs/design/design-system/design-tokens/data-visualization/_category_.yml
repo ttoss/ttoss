@@ -1,3 +1,7 @@
 label: Dataviz
 position: 5
 collapsed: false
+link:
+  type: generated-index
+  slug: /design/design-system/design-tokens/data-visualization
+  description: The semantic contract for charts, dashboards, and geospatial overlays.

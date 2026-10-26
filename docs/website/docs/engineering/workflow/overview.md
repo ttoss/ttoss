@@ -1,7 +1,7 @@
 ---
 sidebar_position: 0
+sidebar_label: Overview
 title: Engineering Workflow
-slug: .
 ---
 
 # Engineering Workflow

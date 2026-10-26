@@ -1,5 +1,6 @@
 label: Workflow
 position: 4
 link:
-  type: doc
-  id: product/workflow/index
+  type: generated-index
+  slug: /product/workflow
+  description: Strategy, discovery, and definition of the features that should be built.

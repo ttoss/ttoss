@@ -1,2 +1,6 @@
 label: Agentic Development Principles
 position: 2
+link:
+  type: generated-index
+  slug: /ai/agentic-development-principles
+  description: The laws that govern human-AI collaboration in software development.

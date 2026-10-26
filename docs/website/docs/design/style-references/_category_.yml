@@ -1,5 +1,6 @@
 label: Style References
 position: 7
 link:
-  type: doc
-  id: design/style-references/index
+  type: generated-index
+  slug: /design/style-references
+  description: Visual languages studied and translated into theme constraints without changing semantic meaning.

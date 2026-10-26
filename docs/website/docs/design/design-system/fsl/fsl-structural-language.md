@@ -74,7 +74,7 @@ The semantic architecture is composed of five layers:
 5. **Resolution contract**  
    The obligation that every resolution function (validate, normalize, resolve, project, explain) has a declared owner. Defined in §14.
 
-This document defines only layer 2. It defines structure, not delivery state — the implementation status of each layer is tracked in the [FSL overview](./index.md).
+This document defines only layer 2. It defines structure, not delivery state — the implementation status of each layer is tracked in the [FSL overview](./overview.md).
 
 ---
 

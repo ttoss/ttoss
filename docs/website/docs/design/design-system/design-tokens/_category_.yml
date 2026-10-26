@@ -2,5 +2,6 @@ label: Design Tokens
 position: 2
 collapsed: false
 link:
-  type: doc
-  id: design/design-system/design-tokens/index
+  type: generated-index
+  slug: /design/design-system/design-tokens
+  description: The vocabulary that separates raw values from meaning across themes, components, and platforms.
