@@ -25,10 +25,14 @@ How this project's runtime runs the loop, usually a pointer to the file the sche
 - **Run records:** whether a hook records each session's run (GTF-S7); without one, the tick records its children and a session nobody started records itself.
 - **Max runs:** how many children run at once in the project. Default 2.
 - **Child handoff:** where a child stops. `push` (default): the change is proposed and ready, its gates left to the tick. `verdict`: the child stays until the verdict, fixing red checks and findings itself, which costs a live child per change but keeps its memory of why. A runtime whose children end with the tick needs `push`.
-- **Models:** the child's model (default: the manager's) and the check model for checks and other read-only work (default: a mid-tier model).
-- **Each tick:** cleanup the runtime needs on every tick, such as archiving the sessions of runs already closed.
+- **Models:** the child's model (default: the manager's), the check model for checks and other read-only work (default: a mid-tier model), and the review model for the reviews the loop runs (default: the child's).
+- **Each run:** cleanup the runtime needs in every run of a routine, such as recording the usage of runs already closed and ending their sessions.
 
 A runtime several projects share is a preset, which the project's `Runtime` names and completes with what differs: [Claude Code sessions](https://github.com/ttoss/skills/blob/main/skills/flow/references/runtime-claude-code-remote.md).
+
+## Routines
+
+What fires the runs, one row each: what fires it (a schedule with its time zone, or an event), what it runs (a skill's invocation, or a file on the default branch), its model and its connectors. The [standard routines](routines.md#standard-routines), the rules every routine follows and the shapes of a project's own are in [Routines](routines.md). Empty: nothing fires the tick, which runs only when somebody invokes `/flow`.
 
 ## Extension points
 
@@ -40,7 +44,7 @@ Each answers a question the process asks but cannot answer for every project. Le
 | Ready brief | What a task must state before a child may start it, and what counts as more than one delivery, which the manager splits before delegating | an objective and an acceptance a child can check; more than one delivery that can ship alone (code and its guard, backend and screen, a migration and its use, more than one repo) is split |
 | Decisions | Which choices always go to a person, and how an agent tests any other open choice before raising it | reserved: product intent, security, auth, billing, data loss, migrations, public contracts, and changes to the project's agent instructions; every other choice the task and the standing decision leave open is raised |
 | Before proposing | What the implementer runs and decides before it proposes a change: checks that reproduce the gates, so the change goes up green, and what every change records in its description, such as a flag, its monitoring, what a new scheduled job does on its first run, or the order of a migration and its use | the repo's own fast checks: lint, typecheck and the tests of what changed; nothing else recorded |
-| Review | Who reviews a change (`none` is valid), who asks for the review and when, and what the tick does with a request that got lost | none: the gates are the checks |
+| Review | Who reviews a change (`none` is valid; `the loop` is a review child the tick starts once the change's checks pass), who asks for the review and when, and what the tick does with a request that got lost | none: the gates are the checks |
 | Merge rule | When a change may be integrated and by whom; what only a person may integrate; how many automatic rounds each reason gets | the gates green on the change's head, no conflict, no blocking review thread; the loop integrates; one automatic round per reason, a red caused outside the change not counted |
 | Release procedure | After integrating, what puts the change in effect: which steps the loop runs, which are automatic, which are a person's | none: integrated is in effect once its pipeline passes |
 | Closing evidence | What proves a task done, where it is checked (the target, every credential its checks use, which calls are read-only) and who reads the checks | integrated and its pipeline green; a check that needs a target the project did not name waits on a person |
