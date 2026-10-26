@@ -9,7 +9,7 @@ While [Agentic Development Principles](/docs/ai/agentic-development-principles) 
 
 These are not theoretical concepts; they are reusable design patterns. They provide specific solutions to the recurring problems of cost, latency, reliability, and risk that every agentic system encounters. Use these patterns to bridge the gap between abstract principles and production code.
 
-A pattern differs from a principle and from a corollary: a principle is a truth (it survives being prefixed with "It is true that…"), a corollary is a constraint entailed by a principle (you cannot accept the principle and reject it), and a pattern is one chosen solution among alternatives (it survives "You should…", and a competent team could satisfy the same constraint differently). See [Principles, Corollaries, and Design Patterns](/docs/ai/agentic-development-principles#principles-corollaries-and-design-patterns) for the full distinction. Every pattern below cites the principle it serves; none of them is the only valid way to serve it.
+A pattern differs from a principle and from a corollary: a principle is a truth (it survives being prefixed with "It is true that…"), a corollary is a constraint entailed by a principle (you cannot accept the principle and reject it), and a pattern is one chosen solution among alternatives (it survives "You should…", and a competent team could satisfy the same constraint differently). See [Principles, Corollaries, and Design Patterns](/docs/ai/agentic-development-principles/overview#principles-corollaries-and-design-patterns) for the full distinction. Every pattern below cites the principle it serves; none of them is the only valid way to serve it.
 
 ## Table of Contents
 
