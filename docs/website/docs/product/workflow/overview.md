@@ -6,7 +6,7 @@ title: Product Workflow
 
 # Product Workflow
 
-This document describes ttoss product workflow, focused on **strategy, discovery, and definition** of features that should be built. For the technical implementation process, see the [engineering workflow](/docs/engineering/workflow).
+This document describes ttoss product workflow, focused on **strategy, discovery, and definition** of features that should be built. For the technical implementation process, see the [agentic workflow](/docs/engineering/workflow).
 
 ## Overview
 
@@ -48,7 +48,7 @@ Meeting structure for team alignment and communication.
 
 ## Workflow Differences
 
-| Aspect               | **Product Workflow**                   | **Engineering Workflow**               |
+| Aspect               | **Product Workflow**                   | **Agentic Workflow**                   |
 | -------------------- | -------------------------------------- | -------------------------------------- |
 | **Main Focus**       | What and why to build                  | How and when to build                  |
 | **Responsibilities** | Strategy, requirements, prioritization | Implementation, deployment, monitoring |
@@ -75,7 +75,7 @@ For product team members:
 
 ## Related Links
 
-- [Engineering Workflow](/docs/engineering/workflow) - Technical implementation process
+- [Agentic Workflow](/docs/engineering/workflow) - Technical implementation process
 - [Product Development Principles](/docs/product/product-development/principles) - Fundamental principles
 - [Product Strategy](/docs/product/product-strategy) - Product strategy
 - [User Stories Guidelines](/docs/product/product-strategy/discover/user-stories) - How to write user stories
