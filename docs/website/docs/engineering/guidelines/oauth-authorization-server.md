@@ -97,7 +97,7 @@ app.use(authServer.routes());
 
 ## Discovery
 
-Clients bootstrap by fetching metadata, so they need no manual configuration. The router serves `/.well-known/oauth-authorization-server` ([RFC 8414](https://www.rfc-editor.org/rfc/rfc8414)) advertising the `authorization_endpoint`, `token_endpoint`, `registration_endpoint`, supported grants, and `code_challenge_methods_supported: ['S256']`. Set `resource` to also serve `/.well-known/oauth-protected-resource` ([RFC 9728](https://www.rfc-editor.org/rfc/rfc9728)), which pairs a resource URL with this issuer as its authorization server and advertises `scopesSupported` as its `scopes_supported`.
+Clients bootstrap by fetching metadata, so they need no manual configuration. The router serves `/.well-known/oauth-authorization-server` ([RFC 8414](https://www.rfc-editor.org/rfc/rfc8414)) advertising the `authorization_endpoint`, `token_endpoint`, `registration_endpoint`, supported grants (`authorization_code`, plus `refresh_token` only when `onRefreshToken` is set), and `code_challenge_methods_supported: ['S256']`. Set `resource` to also serve `/.well-known/oauth-protected-resource` ([RFC 9728](https://www.rfc-editor.org/rfc/rfc9728)), which pairs a resource URL with this issuer as its authorization server and advertises `scopesSupported` as its `scopes_supported`.
 
 ## Resource indicators
 
@@ -105,7 +105,7 @@ MCP clients send a `resource` parameter ([RFC 8707](https://www.rfc-editor.org/r
 
 ## Dynamic client registration
 
-`POST /register` ([RFC 7591](https://www.rfc-editor.org/rfc/rfc7591)) lets clients self-register: they post their `redirect_uris` and metadata, and the server issues a `client_id` (plus a `client_secret` for confidential clients) and persists it via `clientStore.register`. Your `ClientStore` only needs `get(clientId)` and `register(client)` — back it with DynamoDB, Postgres, or anything else.
+`POST /register` ([RFC 7591](https://www.rfc-editor.org/rfc/rfc7591)) lets clients self-register: they post their `redirect_uris` and metadata, and the server issues a `client_id` (plus a `client_secret` for confidential clients) and persists it via `clientStore.register`. Your `ClientStore` only needs `get(clientId)` and `register(client)` — back it with DynamoDB, Postgres, or anything else. A client that omits `grant_types` gets the grants the server supports. Without `onRefreshToken` a requested `refresh_token` grant is dropped from the registration, and a request for `refresh_token` alone is refused with `invalid_client_metadata`.
 
 Implement the optional `verifyClientSecret({ clientId, clientSecret })` to keep secrets hashed at rest: the server hands over the value the client presented and your store compares it against its own stored form with `verifyClientSecret` from `@ttoss/auth-core`, so the raw secret never has to be recoverable. Without it the server compares the `client_secret` your `get` returns, which means the store must keep that value recoverable. `@ttoss/auth-postgresdb` implements it, so `client_secret_hash` is all its `oauth_clients` table holds.
 
@@ -117,7 +117,7 @@ The `subject` you return is the only link between OAuth and your user model — 
 
 ## Token endpoint
 
-`POST /token` handles two grants ([RFC 6749](https://www.rfc-editor.org/rfc/rfc6749)). The `authorization_code` grant runs once at the end of login, verifying the PKCE `code_verifier` against the stored challenge before calling `issueTokens` and deleting the single-use code. The `refresh_token` grant lets a client renew an expired access token without sending the user back through login; it is enabled only when you supply `onRefreshToken`, which validates the presented token and returns the `subject` and `scopes` to re-issue (return `undefined` to reject). Omit `onRefreshToken` and refresh requests get `unsupported_grant_type`.
+`POST /token` handles two grants ([RFC 6749](https://www.rfc-editor.org/rfc/rfc6749)). The `authorization_code` grant runs once at the end of login, verifying the PKCE `code_verifier` against the stored challenge before calling `issueTokens` and deleting the single-use code. The `refresh_token` grant lets a client renew an expired access token without sending the user back through login; it is enabled only when you supply `onRefreshToken`, which validates the presented token and returns the `subject` and `scopes` to re-issue (return `undefined` to reject). Omit `onRefreshToken` and refresh requests get `unsupported_grant_type`, and discovery and registration stop advertising the grant, so clients do not wait on a refresh token they can never use.
 
 ## Refresh token rotation
 

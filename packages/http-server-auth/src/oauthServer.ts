@@ -39,8 +39,10 @@ export {
 /**
  * Mounts an OAuth 2.1 Authorization Server (issuing tokens) as a Koa `Router`,
  * adapting the runner-agnostic engine from `@ttoss/auth-core`. Exposes the
- * authorization endpoint (PKCE S256), token endpoint (`authorization_code` +
- * `refresh_token`), Dynamic Client Registration, and discovery metadata.
+ * authorization endpoint (PKCE S256), token endpoint (`authorization_code`,
+ * plus `refresh_token` when `onRefreshToken` is set), Dynamic Client
+ * Registration, and discovery metadata. Discovery and registration advertise
+ * `refresh_token` only when `onRefreshToken` is set.
  *
  * This is the issuing side of OAuth; pair it with `authMiddleware`'s `oauth`
  * strategy (the verifying side) when one deployment both issues and verifies.
