@@ -753,6 +753,10 @@
             "one": { "type": "string" },
             "other": { "type": "string" }
           }
+        },
+        "fromUserLocation": {
+          "description": "Adds a button that searches from the reader's own location, asked of the browser. Defaults to false.",
+          "type": "boolean"
         }
       }
     },

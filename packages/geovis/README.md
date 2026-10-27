@@ -1229,6 +1229,64 @@ layer visible that the remembered choice says should be hidden, reconciliation
 hides it on the next frame — a brief flash is possible but the source is never
 remounted.
 
+## Proximity Search
+
+Declaring `proximitySearch` makes `<GeoVisProvider>` search the places within a radius of a pin the reader clicks. Your `query` finds the places, and the map does the rest:
+
+- a circle sweeps around the pin while the query runs;
+- the answers drop in as pins of their category;
+- a bar under the circle counts them by kind, switches between the radii and clears the search.
+
+While a search is shown, every other pin is hidden.
+
+```tsx
+const spec: VisualizationSpec = {
+  // ...sources and layers, among them the `hospitals` pins
+  proximitySearch: {
+    layers: ['hospitals'],
+    query: async ({ lat, lng, radiusMin, radius, signal }) => {
+      const response = await fetch(
+        `/api/services?lat=${lat}&lng=${lng}&min=${radiusMin}&max=${radius}`,
+        { signal }
+      );
+      return response.json(); // ProximityResult[]
+    },
+    radii: [1000, 2000, 3000],
+    categories: [
+      { id: 'ubs', label: 'UBS', color: '#1E8449', icon: 'maki:doctor' },
+    ],
+    labels: { one: 'service', other: 'services' },
+    fromUserLocation: true,
+  },
+};
+```
+
+The first search asks for the whole disc (`radiusMin` is `0`). Widening the radius asks only for the ring beyond the radius already searched, so a place never comes back twice. `signal` aborts once the reader clears the search or starts another.
+
+### `ProximitySearch` fields
+
+| Field              | Type                                                           | Default              | Description                                                                             |
+| ------------------ | -------------------------------------------------------------- | -------------------- | --------------------------------------------------------------------------------------- |
+| `layers`           | `string[]`                                                     | —                    | Layers whose features start a search when clicked                                       |
+| `query`            | `(params: ProximityQueryParams) => Promise<ProximityResult[]>` | —                    | Finds the places within a ring; only callable from code, so a JSON spec cannot carry it |
+| `radii`            | `number[]`                                                     | `[1000, 2000, 3000]` | The radii the reader chooses between, in metres, ascending                              |
+| `initialRadius`    | `number`                                                       | smallest of `radii`  | The radius of the first search                                                          |
+| `categories`       | `ProximityCategory[]`                                          | —                    | Each kind of place: `id`, `label`, pin `color` and optional `icon`                      |
+| `labels`           | `{ one?: string; other?: string }`                             | "result", "results"  | How the texts name what is searched                                                     |
+| `fromUserLocation` | `boolean`                                                      | `false`              | Adds a button that searches from the reader's own location (see below)                  |
+
+### Searching from the reader's location
+
+With `fromUserLocation: true`, a button joins the map's control column, under the map mode button when there is one. Clicking it runs these steps:
+
+1. **Explain.** A dialog says why the location is needed and that it is not stored. It is skipped when the browser already granted the location.
+2. **Ask the browser.** The browser asks for the location while a "Getting your location…" note shows.
+3. **Search.** The same search runs from where the reader is, marked by a blue dot. No pin is in focus, so every pin is hidden.
+
+Clicking the button or the dot again clears the search. If the location cannot be had (refused, or the lookup failed), a dialog offers to try again or to search from a pin instead.
+
+The button is not shown where the browser offers no geolocation, as on a page served over plain HTTP. It is off by default, because asking for the reader's location is the app's choice.
+
 ## Spec Validation
 
 Use `validateSpec` to validate a visualization spec against the JSON schema before passing it to `GeoVisProvider`. It returns a `GeoVisResult`: a `resolved` status carrying the typed spec, or one of a closed set of failure statuses carrying every issue found in one pass — never only the first — so a repair loop can fix everything in one round trip:

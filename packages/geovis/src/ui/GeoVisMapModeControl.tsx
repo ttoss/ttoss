@@ -46,15 +46,16 @@ const NAV_MARGIN = 10;
  * The button's side: roomier than the navigation control's buttons, so the
  * glyph breathes as in the workspace's own floating buttons.
  */
-const SIZE = 36;
+export const SIZE = 36;
 
 /**
  * Where the button sits: right under the navigation control (zoom in, zoom
  * out and compass), centred on that column rather than flush with its edge —
- * being wider, flush would leave it visibly off the column's axis.
+ * being wider, flush would leave it visibly off the column's axis. The
+ * proximity search's location button stacks under it, in the same column.
  */
-const TOP = NAV_MARGIN + 3 * NAV_BUTTON + 2 + 10;
-const RIGHT = NAV_MARGIN - (SIZE - NAV_BUTTON) / 2;
+export const TOP = NAV_MARGIN + 3 * NAV_BUTTON + 2 + 10;
+export const RIGHT = NAV_MARGIN - (SIZE - NAV_BUTTON) / 2;
 
 /** How many maps the badge counts while split. */
 const SPLIT_COUNT = 2;

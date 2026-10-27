@@ -165,9 +165,13 @@ const buildQuery = () => {
   return { query, calls };
 };
 
-const buildSpec = (
-  query: (params: ProximityQueryParams) => Promise<ProximityResult[]>
-): VisualizationSpec => {
+const buildSpec = ({
+  query,
+  fromUserLocation,
+}: {
+  query: (params: ProximityQueryParams) => Promise<ProximityResult[]>;
+  fromUserLocation?: boolean;
+}): VisualizationSpec => {
   return {
     engine: 'maplibre',
     view: { center: ORIGIN, zoom: 14 },
@@ -197,19 +201,24 @@ const buildSpec = (
         { id: 'ubs', label: 'UBS', color: '#1E8449', icon: 'maki:doctor' },
       ],
       labels: { one: 'service', other: 'services' },
+      fromUserLocation,
     },
   };
 };
 
 /** Renders the map and waits for the search to find it. */
-const renderSearch = async ({ width = 800 } = {}) => {
+const renderSearch = async ({
+  width = 800,
+  fromUserLocation,
+}: { width?: number; fromUserLocation?: boolean } = {}) => {
   mockMap = buildMap({ width });
   const { query, calls } = buildQuery();
-  render(<GeoVisProvider spec={buildSpec(query)}>{null}</GeoVisProvider>);
+  const spec = buildSpec({ query, fromUserLocation });
+  const view = render(<GeoVisProvider spec={spec}>{null}</GeoVisProvider>);
   await waitFor(() => {
     expect(mockMap.on).toHaveBeenCalledWith('click', expect.any(Function));
   });
-  return { query, calls };
+  return { query, calls, view };
 };
 
 const clickPin = (lngLat = { lng: ORIGIN[0], lat: ORIGIN[1] }) => {
@@ -398,5 +407,274 @@ describe('GeoVisProximitySearch', () => {
     clickPin();
 
     expect(query).not.toHaveBeenCalled();
+  });
+});
+
+describe('GeoVisProximitySearch from the reader location', () => {
+  /** Where the fake browser places the reader, `[lng, lat]`. */
+  const READER: [number, number] = [-46.6559, -23.5614];
+
+  /** The browser's geolocation, answered by hand, and its permission. */
+  const fakeGeolocation = ({
+    permission = 'prompt' as PermissionState | Error,
+  } = {}) => {
+    const lookups: {
+      succeed: () => void;
+      fail: () => void;
+      options?: PositionOptions;
+    }[] = [];
+    const getCurrentPosition = jest.fn(
+      (
+        success: PositionCallback,
+        failure: PositionErrorCallback,
+        options?: PositionOptions
+      ) => {
+        lookups.push({
+          options,
+          succeed: () => {
+            success({
+              coords: { longitude: READER[0], latitude: READER[1] },
+            } as GeolocationPosition);
+          },
+          fail: () => {
+            failure({ code: 1 } as GeolocationPositionError);
+          },
+        });
+      }
+    );
+    Object.defineProperty(navigator, 'geolocation', {
+      configurable: true,
+      value: { getCurrentPosition },
+    });
+    Object.defineProperty(navigator, 'permissions', {
+      configurable: true,
+      value: {
+        query: jest.fn(async () => {
+          if (permission instanceof Error) throw permission;
+          return { state: permission };
+        }),
+      },
+    });
+    return { lookups, getCurrentPosition };
+  };
+
+  afterEach(() => {
+    Reflect.deleteProperty(navigator, 'geolocation');
+    Reflect.deleteProperty(navigator, 'permissions');
+  });
+
+  const locateButton = () => {
+    return screen.getByRole('button', {
+      name: 'Search services near my location',
+    });
+  };
+
+  const clickLocate = async () => {
+    fireEvent.click(locateButton());
+    await settle();
+  };
+
+  test('offers no button unless the spec asks for it', async () => {
+    fakeGeolocation();
+    await renderSearch();
+
+    expect(
+      screen.queryByRole('button', { name: 'Search services near my location' })
+    ).toBeNull();
+  });
+
+  test('offers no button where the browser cannot locate', async () => {
+    await renderSearch({ fromUserLocation: true });
+
+    expect(
+      screen.queryByRole('button', { name: 'Search services near my location' })
+    ).toBeNull();
+  });
+
+  test('explains first, then searches from the reader with no pin in focus', async () => {
+    const { lookups } = fakeGeolocation();
+    const { calls } = await renderSearch({ fromUserLocation: true });
+    expect(locateButton().title).toBe('Services near me');
+
+    await clickLocate();
+
+    expect(
+      screen.getByRole('dialog', { name: 'Use your location?' })
+    ).toBeTruthy();
+    expect(lookups).toHaveLength(0);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Allow access' }));
+
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(screen.getByText('Getting your location…')).toBeTruthy();
+    expect(locateButton().getAttribute('aria-busy')).toBe('true');
+    expect(lookups[0].options).toMatchObject({ enableHighAccuracy: true });
+
+    act(() => {
+      lookups[0].succeed();
+    });
+
+    expect(screen.queryByText('Getting your location…')).toBeNull();
+    expect(calls[0].params).toMatchObject({
+      lng: READER[0],
+      lat: READER[1],
+      radius: 1000,
+    });
+    expect(mockSetPinFocus).toHaveBeenLastCalledWith({
+      layerId: null,
+      featureId: null,
+    });
+    expect(screen.getByText('Searching services near you…')).toBeTruthy();
+    expect(screen.getByText('You')).toBeTruthy();
+
+    calls[0].resolve(
+      [1, 2].map((id) => {
+        return {
+          id,
+          name: `Place ${id}`,
+          lngLat: [READER[0], READER[1] + (id * 300) / METRES_PER_DEGREE],
+        };
+      })
+    );
+    await settle();
+
+    expect(screen.getByText('2 services within 1 km of you')).toBeTruthy();
+    expect(locateButton().getAttribute('aria-pressed')).toBe('true');
+  });
+
+  test('clicked again while the search from the reader is shown, clears it', async () => {
+    const { lookups } = fakeGeolocation({ permission: 'granted' });
+    const { calls } = await renderSearch({ fromUserLocation: true });
+    await clickLocate();
+    act(() => {
+      lookups[0].succeed();
+    });
+    calls[0].resolve([]);
+    await settle();
+
+    fireEvent.click(locateButton());
+
+    expect(screen.queryByText('You')).toBeNull();
+    expect(locateButton().getAttribute('aria-pressed')).toBe('false');
+    expect(mockSetPinFocus).toHaveBeenLastCalledWith(null);
+  });
+
+  test('the blue dot clears the search, as the clicked pin does', async () => {
+    const { lookups } = fakeGeolocation({ permission: 'granted' });
+    const { calls } = await renderSearch({ fromUserLocation: true });
+    await clickLocate();
+    act(() => {
+      lookups[0].succeed();
+    });
+    calls[0].resolve([]);
+    await settle();
+
+    fireEvent.click(screen.getByTitle('You are here · clear search'));
+
+    expect(screen.queryByText('You')).toBeNull();
+  });
+
+  test('already granted, it looks the reader up without asking, and ignores clicks meanwhile', async () => {
+    const { getCurrentPosition } = fakeGeolocation({ permission: 'granted' });
+    await renderSearch({ fromUserLocation: true });
+
+    await clickLocate();
+    await clickLocate();
+
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(getCurrentPosition).toHaveBeenCalledTimes(1);
+  });
+
+  test('a permission it cannot read is asked for, as a new one', async () => {
+    fakeGeolocation({ permission: new Error('unsupported') });
+    await renderSearch({ fromUserLocation: true });
+
+    await clickLocate();
+
+    expect(
+      screen.getByRole('dialog', { name: 'Use your location?' })
+    ).toBeTruthy();
+  });
+
+  test('already denied, it says so and offers searching from a pin', async () => {
+    const { getCurrentPosition } = fakeGeolocation({ permission: 'denied' });
+    await renderSearch({ fromUserLocation: true });
+
+    await clickLocate();
+
+    expect(
+      screen.getByRole('dialog', { name: "We couldn't get your location" })
+    ).toBeTruthy();
+    expect(getCurrentPosition).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Use a pin' }));
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
+  test('a failed lookup says so, and trying again looks the reader up anew', async () => {
+    const { lookups } = fakeGeolocation({ permission: 'granted' });
+    const { calls } = await renderSearch({ fromUserLocation: true });
+    await clickLocate();
+
+    act(() => {
+      lookups[0].fail();
+    });
+
+    expect(
+      screen.getByRole('dialog', { name: "We couldn't get your location" })
+    ).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    act(() => {
+      lookups[1].succeed();
+    });
+
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(calls).toHaveLength(1);
+  });
+
+  test('the dialog closes on Escape, on its backdrop and on "Not now"', async () => {
+    fakeGeolocation();
+    await renderSearch({ fromUserLocation: true });
+
+    await clickLocate();
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByRole('dialog')).toBeNull();
+
+    await clickLocate();
+    fireEvent.keyDown(document, { key: 'Enter' });
+    fireEvent.pointerDown(screen.getByRole('dialog'));
+    expect(screen.getByRole('dialog')).toBeTruthy();
+    fireEvent.pointerDown(screen.getByRole('dialog').parentElement!);
+    expect(screen.queryByRole('dialog')).toBeNull();
+
+    await clickLocate();
+    expect(document.activeElement?.textContent).toBe('Allow access');
+    fireEvent.click(screen.getByRole('button', { name: 'Not now' }));
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
+  test('an answer that comes after the map is gone is dropped', async () => {
+    const { lookups } = fakeGeolocation({ permission: 'granted' });
+    const { query, view } = await renderSearch({ fromUserLocation: true });
+    await clickLocate();
+
+    view.unmount();
+    lookups[0].succeed();
+    lookups[0].fail();
+
+    expect(query).not.toHaveBeenCalled();
+  });
+
+  test('the button darkens under the pointer', async () => {
+    fakeGeolocation();
+    await renderSearch({ fromUserLocation: true });
+    const idle = locateButton().style.color;
+
+    fireEvent.mouseEnter(locateButton());
+    expect(locateButton().style.color).not.toBe(idle);
+
+    fireEvent.mouseLeave(locateButton());
+    expect(locateButton().style.color).toBe(idle);
   });
 });

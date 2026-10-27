@@ -7,9 +7,25 @@
     "defaultMessage": "Radius of {radius}",
     "description": "Proximity search: tooltip of one radius option. \"radius\" is a distance like \"2 km\"."
   },
+  "4dKe0M": {
+    "defaultMessage": "Use a pin",
+    "description": "Proximity search: button that closes the location error dialog, so the reader searches from a pin instead."
+  },
+  "5tScZF": {
+    "defaultMessage": "{count, plural, one {# {one}} other {# {other}}} within {radius} of you",
+    "description": "Proximity search from the reader's location: how many places were found. \"one\" and \"other\" name what is searched, singular and plural; \"radius\" is a distance like \"1 km\"."
+  },
+  "6aSZah": {
+    "defaultMessage": "Searching {results} near you…",
+    "description": "Proximity search from the reader's location: shown while the first answer is awaited. \"results\" names what is searched."
+  },
   "82h6s4": {
     "defaultMessage": "{distance} from the point",
     "description": "Proximity search: on a place's card, how far it is from the searched point. \"distance\" is like \"450 m\" or \"1.2 km\"."
+  },
+  "8mj/iN": {
+    "defaultMessage": "Not now",
+    "description": "Proximity search: button that closes the dialog asking for the reader's location."
   },
   "9RwXzX": {
     "defaultMessage": "Map mode",
@@ -18,6 +34,10 @@
   "AYMp8/": {
     "defaultMessage": "Widening the search to {radius}…",
     "description": "Proximity search: shown while the answer for a wider radius is awaited. \"radius\" is a distance like \"2 km\"."
+  },
+  "Ddt68b": {
+    "defaultMessage": "Your location is used only for this search. It is neither saved nor shared.",
+    "description": "Proximity search: privacy note in the dialog asking for the reader's location."
   },
   "H3hZ4p": {
     "defaultMessage": "One map, full screen",
@@ -35,9 +55,29 @@
     "defaultMessage": "result",
     "description": "Proximity search: what a found place is called when the app names it nothing else, singular."
   },
+  "RJi0HT": {
+    "defaultMessage": "You are here · clear search",
+    "description": "Proximity search: tooltip of the dot marking the reader's location, which clears the search when clicked."
+  },
+  "RRe3ho": {
+    "defaultMessage": "Try again",
+    "description": "Proximity search: button that asks the browser for the reader's location again."
+  },
+  "RVJx/b": {
+    "defaultMessage": "Use your location?",
+    "description": "Proximity search: title of the dialog shown before the browser asks for the reader's location."
+  },
   "T/eK/a": {
     "defaultMessage": "results",
     "description": "Proximity search: what found places are called when the app names them nothing else, plural."
+  },
+  "UBnmiN": {
+    "defaultMessage": "Permission was denied or no signal was found. Turn location on in your browser settings and try again — or click a pin on the map to search from it.",
+    "description": "Proximity search: what to do when the reader's location could not be had."
+  },
+  "WlO7vD": {
+    "defaultMessage": "We couldn't get your location",
+    "description": "Proximity search: title of the dialog shown when the reader's location could not be had."
   },
   "Ws/Os5": {
     "defaultMessage": "Feature #{feature_id}",
@@ -46,6 +86,14 @@
   "Wuofl/": {
     "defaultMessage": "Map {side} layer: {layer}",
     "description": "Split map mode: accessible name of a side's picker button, naming the side (A or B) and the layer it shows."
+  },
+  "X7144b": {
+    "defaultMessage": "{results} near me",
+    "description": "Proximity search: tooltip of the button that searches from the reader's location. \"results\" names what is searched, plural, e.g. \"services near me\"."
+  },
+  "g65tjJ": {
+    "defaultMessage": "To show the {results} around you, the map needs your current location. Your browser will ask you to confirm next.",
+    "description": "Proximity search: why the reader's location is needed, before the browser asks for it. \"results\" names what is searched, plural."
   },
   "gsoC7t": {
     "defaultMessage": "Clear search",
@@ -67,6 +115,10 @@
     "defaultMessage": "No data",
     "description": "Map hover tooltip: shown instead of a value when the feature has no data."
   },
+  "od/d+I": {
+    "defaultMessage": "You",
+    "description": "Proximity search: the tag over the dot marking the reader's location."
+  },
   "qRVBJs": {
     "defaultMessage": "Split in two",
     "description": "Map mode menu option: two maps side by side."
@@ -75,12 +127,24 @@
     "defaultMessage": "Single map",
     "description": "Map mode menu option: one map."
   },
+  "t7oBiG": {
+    "defaultMessage": "Getting your location…",
+    "description": "Proximity search: shown while the browser looks up the reader's location."
+  },
   "tAmUUh": {
     "defaultMessage": "Nothing within {radius}",
     "description": "Proximity search: no place was found. \"radius\" is a distance like \"1 km\"."
   },
+  "tC9nJy": {
+    "defaultMessage": "Allow access",
+    "description": "Proximity search: button that goes on to the browser's request for the reader's location."
+  },
   "ulc096": {
     "defaultMessage": "{count} within {radius}",
     "description": "Proximity search: how many places were found, on a narrow map. \"radius\" is a distance like \"1 km\"."
+  },
+  "ydJlsv": {
+    "defaultMessage": "Search {results} near my location",
+    "description": "Proximity search: accessible name of the button that searches from the reader's location. \"results\" names what is searched, plural."
   }
 }

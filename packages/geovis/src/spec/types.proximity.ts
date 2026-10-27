@@ -52,7 +52,8 @@ export interface ProximityCategory {
 }
 
 /**
- * A search for the places within a radius of a feature the reader clicks.
+ * A search for the places within a radius of a feature the reader clicks — or,
+ * with {@link fromUserLocation}, of where the reader is.
  *
  * Clicking a feature of one of {@link layers} calls {@link query} with its
  * position. While the search runs, a circle of the radius sweeps around the
@@ -96,4 +97,13 @@ export interface ProximitySearch {
    * Defaults to the translated "result" and "results".
    */
   labels?: { one?: string; other?: string };
+  /**
+   * Adds a button under the map's controls that searches from the reader's
+   * own location: it explains why the location is needed, asks the browser
+   * for it, and runs the same search from there, marking the reader with a
+   * blue dot. Clicking it again clears the search. Hidden where the browser
+   * offers no geolocation, as outside HTTPS. Defaults to `false`: asking for
+   * the reader's location is the app's choice, not the search's.
+   */
+  fromUserLocation?: boolean;
 }

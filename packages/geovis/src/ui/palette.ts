@@ -16,3 +16,10 @@ export const ACCENT_TINT_STRONG = `rgba(${ACCENT_RGB},0.14)`;
 export const ACCENT_TINT_BORDER = `rgba(${ACCENT_RGB},0.2)`;
 /** The neutral fill behind an unselected option, as in the mode thumbnails. */
 export const NEUTRAL_FILL = '#f3f0ea';
+/**
+ * The reader's own location: the blue every map app marks "you are here" in,
+ * so the dot reads as the reader at a glance.
+ */
+export const USER = '#2f6fe4';
+/** {@link USER} as `r,g,b`, for its halo and the button's tint. */
+export const USER_RGB = '47,111,228';
