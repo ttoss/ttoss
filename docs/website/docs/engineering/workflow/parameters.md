@@ -24,7 +24,6 @@ How this project's runtime runs the tick and its children, usually a pointer to 
 - **Child runs:** how the runtime starts a child (prompt, model, repos), reads it (working, idle, failed, gone), ends it and, where it can, messages it; which tools a tick loads.
 - **Run records:** whether a hook records each session's run (GTF-S7); without one, the tick records its children and a session nobody started records itself.
 - **Max runs:** how many children each person's ticks run at once: the `running` children their Flow credential wrote, never another person's. Default 2.
-- **Child handoff:** where a child stops. `push` (default): the change is proposed and ready, its gates left to the tick. `verdict`: the child stays until the verdict, fixing red checks and findings itself, which costs a live child per change but keeps its memory of why. A runtime whose children end with the tick needs `push`.
 - **Models:** the child's model (default: the tick's), the check model for checks and other read-only work (default: a mid-tier model), and the review model for the reviews the agents run (default: the child's). Each is an exact model id, never an alias or a tier such as `latest` ([`/flow-setup`](https://github.com/ttoss/skills/blob/main/skills/flow-setup/SKILL.md) writes the id each default resolves to), so a model changes only through a merge a person approved.
 - **Each run:** cleanup the runtime needs in every run of a routine, such as recording the usage of runs already closed and ending their sessions.
 
