@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.44.0 (2026-10-27)
+
+### Features
+
+- **openapi-codegen:** refuse items without type: array ([#1353](https://github.com/ttoss/ttoss/issues/1353)) ([2b00f2a](https://github.com/ttoss/ttoss/commit/2b00f2af65002c7c6b4750904b4464b229cd7387))
+
 # 0.43.0 (2026-10-21)
 
 - feat(http-server-mcp)!: a deferred call's errors carry the schema only for invalid arguments (#1341) ([c4308e2](https://github.com/ttoss/ttoss/commit/c4308e2ea4b4f3b569b0d2797950ebebe9826640)), closes [#1341](https://github.com/ttoss/ttoss/issues/1341)
