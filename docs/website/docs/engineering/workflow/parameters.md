@@ -15,7 +15,6 @@ A value is a short rule written inline, or a pointer to the project file that ho
 | --- | --- | --- |
 | Flow project id | yes | `proj_...` |
 | Standing-decision task id | yes | the `decision` that authorises the agents (GTF-T1); every agent run names it as its `authority` |
-| Renewal | no | the date until which the agents integrate on their own, and the person who renews it; past the date, every integration waits on that person until the date moves ([transitions](process.md#transitions)). [`/flow-setup`](https://github.com/ttoss/skills/blob/main/skills/flow-setup/SKILL.md) writes the standing decision's author and a date 90 days after it; left empty, nothing expires and every tick's report says so |
 | Repos | no | every repo the tasks touch, so children start with them |
 
 ## Runtime
@@ -26,7 +25,7 @@ How this project's runtime runs the tick and its children, usually a pointer to 
 - **Run records:** whether a hook records each session's run (GTF-S7); without one, the tick records its children and a session nobody started records itself.
 - **Max runs:** how many children each person's ticks run at once: the `running` children their Flow credential wrote, never another person's. Default 2.
 - **Child handoff:** where a child stops. `push` (default): the change is proposed and ready, its gates left to the tick. `verdict`: the child stays until the verdict, fixing red checks and findings itself, which costs a live child per change but keeps its memory of why. A runtime whose children end with the tick needs `push`.
-- **Models:** the child's model (default: the tick's), the check model for checks and other read-only work (default: a mid-tier model), and the review model for the reviews the agents run (default: the child's). Each is an exact model id, never an alias or a tier such as `latest` ([`/flow-setup`](https://github.com/ttoss/skills/blob/main/skills/flow-setup/SKILL.md) writes the id each default resolves to), so a model changes only through a merge a person approved, and the [Calibration](routines.md#standard-routines) compares how the agents behave before and after.
+- **Models:** the child's model (default: the tick's), the check model for checks and other read-only work (default: a mid-tier model), and the review model for the reviews the agents run (default: the child's). Each is an exact model id, never an alias or a tier such as `latest` ([`/flow-setup`](https://github.com/ttoss/skills/blob/main/skills/flow-setup/SKILL.md) writes the id each default resolves to), so a model changes only through a merge a person approved.
 - **Each run:** cleanup the runtime needs in every run of a routine, such as recording the usage of runs already closed and ending their sessions.
 
 A runtime several projects share is a preset, which the project's `Runtime` names and completes with what differs: [Claude Code sessions](https://github.com/ttoss/skills/blob/main/skills/flow/references/runtime-claude-code-remote.md).
@@ -50,7 +49,6 @@ Each answers a question the process asks but cannot answer for every project. Le
 | Release procedure | After integrating, what puts the change in effect: which steps the agents run, which are automatic, which are a person's | none: integrated is in effect once its pipeline passes |
 | Closing evidence | What proves a task done, where it is checked (the target, every credential its checks use, which calls are read-only) and who reads the checks | integrated and its pipeline green; a check that needs a target the project did not name waits on a person |
 | Delivery kinds | Which deliveries are not a change through the code host, and for each, its gates, who integrates it and what proves it | none: every delivery is a pull request |
-| Calibration | How much of what the agents integrate on their own a person reviews in depth, and who; what change in how the agents behave after a model change counts as a regression | one in ten of the changes the agents integrated on their own, drawn at random, at least one a week, reviewed by the person `Renewal` names; a regression is a measure a quarter worse in the two weeks after a model change than in the four before |
 
 ## Release procedure shapes
 
