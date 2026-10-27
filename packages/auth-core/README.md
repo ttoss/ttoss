@@ -309,6 +309,8 @@ const res = await oauth.token({ query: {}, body, headers }); // { status, body }
 
 Setting `resource` also enables resource indicators ([RFC 8707](https://www.rfc-editor.org/rfc/rfc8707)): a `resource` parameter on `/authorize` or `/token` that names anything else fails with `invalid_target`, and `issueTokens` receives `resource` so the app can put it in the token's `aud` — the claim `@ttoss/http-server-mcp`'s `resourceIndicator` checks. Without `resource`, the parameter is ignored.
 
+The `refresh_token` grant exists only when you pass `onRefreshToken`. The discovery metadata (`grant_types_supported`) and Dynamic Client Registration follow suit: without it they advertise only `authorization_code`, so a client never expects a refresh token it cannot use. A registration that asks for `refresh_token` on such a server has that grant dropped (RFC 7591 lets the server replace requested metadata) and gets back the grants it can use; one that asks for nothing but `refresh_token` is refused with `invalid_client_metadata`. With `onRefreshToken`, both advertise `['authorization_code', 'refresh_token']`, and a client registered without `grant_types` gets both.
+
 Your app keeps its user model, signing keys, and login/consent UI behind the hooks. See the [OAuth Authorization Server](https://ttoss.dev/docs/engineering/guidelines/oauth-authorization-server) guideline for the full flow.
 
 ### Protected resource metadata (RFC 9728)
