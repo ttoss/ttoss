@@ -7,16 +7,13 @@ sidebar_position: 1
 
 How work in a software project goes from a signal to a closed task, once, for every project. It is a state machine: a task's state lives in Flow, and each tick reads it, applies the [transitions](#transitions) it calls for and writes the result, which the next tick reads. This is the engine; each project extends it with its answers to the [parameters](parameters.md), and a project with no answer gets the default. The process is [Get Things Flowing](https://flow.ttoss.dev/docs/agents/protocol.md) (GTF) applied to product development: the rule ids below are GTF's.
 
-## Eight rules
+## Three rules
+
+The rules of any work are GTF's, cited below by id. Three are the delivery process's own:
 
 1. **One owner per transition.** Only a stage's owner changes the task's state in that stage. Two owners drift apart silently, each acting on a state the other already changed.
-2. **The state lives in Flow.** Every stage reads the task before it acts and writes it back before it ends, so a run that dies mid-stage is resumed from the graph (GTF-S4).
-3. **Every change has a cause.** A run names the standing decision once, as its `authority`; its writes inherit it (GTF-A2, GTF-E4).
-4. **A person decides what is reserved.** A choice the project reserves, or one nobody delegated, waits on a person (GTF-N6).
-5. **One worker per task.** A run takes a task with its `works_on`; a task another run holds comes back `contended` (GTF-S8).
-6. **Done is the effect, observed where it matters.** Integrated is not in effect (GTF-E8).
-7. **Rounds have a limit.** Each reason a change goes back (red checks, findings) gets the automatic rounds the `Merge rule` allows; the next goes to a person.
-8. **Finish before starting.** The work closest to done goes first: verify, then release, then the gates (reviews the agents run, fix rounds, conflicts), then new work. A priority a person set outranks the stage.
+2. **Rounds have a limit.** Each reason a change goes back (red checks, findings) gets the automatic rounds the `Merge rule` allows; the next goes to a person.
+3. **Finish before starting.** The work closest to done goes first: verify, then release, then the gates (reviews the agents run, fix rounds, conflicts), then new work. A priority a person set outranks the stage.
 
 ## Words
 
@@ -36,7 +33,7 @@ The process names acts, not tools, so it reads the same on any code host and for
 | --- | --- | --- | --- | --- | --- |
 | 1 | Intake | whoever finds the signal: an intake [routine](routines.md#project-routines), a person, an agent mid-task | an alert, feedback, an idea, a finding | a task with its `source` and what was investigated, `active`, or `incubated` when found mid-task (GTF-C1); never a fix | `Intake` |
 | 2 | Decide | a person | a choice the work needs, or a brief short of the `Ready brief` | the answer, on the task that waits on them (the move that frees it cites their words), or as the `outcome` of a `decision` that holds several tasks | `Decisions`, `Ready brief` |
-| 3 | Implement | a child run, or a person | the task is ready, or a round sends it back | the change, proposed ready (not draft); an `implements` reference; in the body, what integrating leaves; in the change's description, the task's URL and the tasks it settles; the task `waiting` on the gates | `Before proposing`, `Child handoff` |
+| 3 | Implement | a child run, or a person | the task is ready, or a round sends it back | the change, proposed ready (not draft); an `implements` reference; in the body, what integrating leaves; in the change's description, the task's URL and the tasks it settles; the task `waiting` on the gates | `Before proposing` |
 | 4 | Gates | automation, the reviewer `Review` names (a review child of the tick, a project routine or a person), the person the `Merge rule` reserves | the change is proposed | nothing on the task: verdicts stay on the change, and the tick writes after them | `Review`, `Merge rule` |
 | 5 | Integrate | whoever the `Merge rule` lets integrate: the reviewer, the tick or a person | the gates pass | nothing on the task: the tick writes what integrating leaves | `Merge rule` |
 | 6 | Release | the `Release procedure`: automation, a child run or a person | integration | a release step that is somebody's act is its own task that `blocks` the integrated task (GTF-N4); a pipeline every integration runs is a wait, not a task | `Release procedure` |
