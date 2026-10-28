@@ -112,7 +112,7 @@ describe('createOAuthHandlers — discovery metadata', () => {
       token_endpoint: 'https://api.example.com/token',
       registration_endpoint: 'https://api.example.com/register',
       response_types_supported: ['code'],
-      grant_types_supported: ['authorization_code', 'refresh_token'],
+      grant_types_supported: ['authorization_code'],
       code_challenge_methods_supported: ['S256'],
       token_endpoint_auth_methods_supported: [
         'client_secret_basic',
@@ -895,7 +895,7 @@ describe('createOAuthHandlers — register (RFC 7591)', () => {
     expect(body.client_id).toBeTruthy();
     expect(body.client_secret).toBeTruthy();
     expect(body.client_secret_expires_at).toBe(0);
-    expect(body.grant_types).toEqual(['authorization_code', 'refresh_token']);
+    expect(body.grant_types).toEqual(['authorization_code']);
     expect(body.response_types).toEqual(['code']);
     const stored = await clientStore.get(body.client_id);
     expect(stored?.client_secret).toBe(body.client_secret);

@@ -91,6 +91,44 @@ describe('oauthServer (Koa adapter)', () => {
     expect(res.body.token_endpoint).toBe('https://api.example.com/token');
   });
 
+  test('advertises refresh_token in discovery and registration only with onRefreshToken', async () => {
+    const withoutRefresh = buildApp().callback();
+    expect(
+      (
+        await request(withoutRefresh).get(
+          '/.well-known/oauth-authorization-server'
+        )
+      ).body.grant_types_supported
+    ).toEqual(['authorization_code']);
+    expect(
+      (
+        await request(withoutRefresh)
+          .post('/register')
+          .send({ redirect_uris: ['https://client.example.com/cb'] })
+      ).body.grant_types
+    ).toEqual(['authorization_code']);
+
+    const withRefresh = buildApp({
+      onRefreshToken: () => {
+        return { subject: 'user-1', scopes: [] };
+      },
+    }).callback();
+    expect(
+      (
+        await request(withRefresh).get(
+          '/.well-known/oauth-authorization-server'
+        )
+      ).body.grant_types_supported
+    ).toEqual(['authorization_code', 'refresh_token']);
+    expect(
+      (
+        await request(withRefresh)
+          .post('/register')
+          .send({ redirect_uris: ['https://client.example.com/cb'] })
+      ).body.grant_types
+    ).toEqual(['authorization_code', 'refresh_token']);
+  });
+
   test('does not serve protected-resource metadata unless resource is set', async () => {
     const res = await request(buildApp().callback()).get(
       '/.well-known/oauth-protected-resource'

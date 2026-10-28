@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.22.0 (2026-10-27)
+
+### Bug Fixes
+
+- **auth-core:** advertise refresh_token grant only when onRefreshToken is set ([#1369](https://github.com/ttoss/ttoss/issues/1369)) ([9a99e5e](https://github.com/ttoss/ttoss/commit/9a99e5e94a0da78b9eed241ec559df0e9e69d95b))
+
+### Features
+
+- **openapi-codegen:** refuse items without type: array ([#1353](https://github.com/ttoss/ttoss/issues/1353)) ([2b00f2a](https://github.com/ttoss/ttoss/commit/2b00f2af65002c7c6b4750904b4464b229cd7387))
+
 # 0.21.0 (2026-10-21)
 
 - feat!: ESLint 10 with maintained React/import/a11y plugins, and a lint-clean monorepo (#1323) ([6efae16](https://github.com/ttoss/ttoss/commit/6efae16a0ee2e036bb9fe41c132aa8cd03fe3489)), closes [#1323](https://github.com/ttoss/ttoss/issues/1323) [jsx-eslint/eslint-plugin-react#3977](https://github.com/jsx-eslint/eslint-plugin-react/issues/3977) [#958](https://github.com/ttoss/ttoss/issues/958)

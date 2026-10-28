@@ -172,7 +172,7 @@ path when the app versions its API; individual paths are overridable through
 
 ## OAuth authorization server
 
-The package also ships `oauthServer()` — a Koa `Router` that issues tokens (`/authorize`, `/token`, `/register`, discovery), a thin adapter over `createOAuthHandlers` from [`@ttoss/auth-core`](https://ttoss.dev/docs/modules/packages/auth-core). Pair it with the `oauth` verification strategy above when one deployment both issues and verifies. See the [OAuth Authorization Server](https://ttoss.dev/docs/engineering/guidelines/oauth-authorization-server) guideline.
+The package also ships `oauthServer()` — a Koa `Router` that issues tokens (`/authorize`, `/token`, `/register`, discovery), a thin adapter over `createOAuthHandlers` from [`@ttoss/auth-core`](https://ttoss.dev/docs/modules/packages/auth-core). Pair it with the `oauth` verification strategy above when one deployment both issues and verifies. The discovery document and `/register` advertise the `refresh_token` grant only when you pass `onRefreshToken`; otherwise they advertise just `authorization_code`, and a registration asking for `refresh_token` has it dropped (or is refused with `invalid_client_metadata` when it asked for nothing else). See the [OAuth Authorization Server](https://ttoss.dev/docs/engineering/guidelines/oauth-authorization-server) guideline.
 
 ### Protected resource metadata (RFC 9728)
 

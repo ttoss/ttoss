@@ -3,7 +3,6 @@ import { randomBytes } from 'node:crypto';
 import { asString, authenticateClient } from './authenticateClient';
 import { verifyPkceChallenge } from './oauth';
 import type {
-  ClientStore,
   IssuedTokens,
   OAuthClient,
   OAuthHandlers,
@@ -277,10 +276,66 @@ const handleAuthorize = async (
   };
 };
 
+/**
+ * Grants this server can honour: `refresh_token` only when the app supplies
+ * `onRefreshToken`, otherwise the token endpoint answers it with
+ * `unsupported_grant_type`. Advertising it anyway makes clients expect a
+ * refresh token they can never use.
+ */
+const supportedGrantTypes = (options: OAuthServerOptions): string[] => {
+  return options.onRefreshToken
+    ? ['authorization_code', 'refresh_token']
+    : ['authorization_code'];
+};
+
+/**
+ * The `grant_types` a registering client gets. RFC 7591 §3.2.1 lets the server
+ * replace requested metadata values, so a requested `refresh_token` grant the
+ * server cannot honour is dropped rather than failing the registration; a
+ * client left with no grant at all is refused.
+ */
+const resolveGrantTypes = ({
+  requested,
+  options,
+}: {
+  requested: unknown;
+  options: OAuthServerOptions;
+}): string[] | OAuthResponse => {
+  if (requested === undefined) {
+    return supportedGrantTypes(options);
+  }
+  if (
+    !Array.isArray(requested) ||
+    !requested.every((grantType) => {
+      return typeof grantType === 'string';
+    })
+  ) {
+    return oauthError(
+      400,
+      'invalid_client_metadata',
+      'grant_types must be an array of strings'
+    );
+  }
+  const grantTypes = requested.filter((grantType) => {
+    return (
+      options.onRefreshToken !== undefined || grantType !== 'refresh_token'
+    );
+  });
+  if (grantTypes.length === 0 && requested.length > 0) {
+    return oauthError(
+      400,
+      'invalid_client_metadata',
+      'refresh_token grant is not supported'
+    );
+  }
+  return grantTypes;
+};
+
 const handleRegister = async (
   request: OAuthRequest,
-  clientStore: ClientStore
+  options: OAuthServerOptions
 ): Promise<OAuthResponse> => {
+  const { clientStore } = options;
   const metadata = request.body;
   const redirectUris = metadata.redirect_uris;
 
@@ -298,6 +353,14 @@ const handleRegister = async (
     );
   }
 
+  const grantTypes = resolveGrantTypes({
+    requested: metadata.grant_types,
+    options,
+  });
+  if (!Array.isArray(grantTypes)) {
+    return grantTypes;
+  }
+
   const tokenAuthMethod =
     asString(metadata.token_endpoint_auth_method) ?? 'client_secret_basic';
   const isPublic = tokenAuthMethod === 'none';
@@ -307,10 +370,7 @@ const handleRegister = async (
     client_id: generateToken(16),
     redirect_uris: redirectUris,
     token_endpoint_auth_method: tokenAuthMethod,
-    grant_types: (metadata.grant_types as string[]) ?? [
-      'authorization_code',
-      'refresh_token',
-    ],
+    grant_types: grantTypes,
     response_types: (metadata.response_types as string[]) ?? ['code'],
     client_id_issued_at: Math.floor(Date.now() / 1000),
   };
@@ -334,7 +394,8 @@ const handleRegister = async (
  * Creates runner-agnostic OAuth 2.1 Authorization Server handlers.
  *
  * Implements the authorization endpoint (PKCE S256 required), token endpoint
- * (`authorization_code` + `refresh_token` grants), Dynamic Client Registration
+ * (`authorization_code`, plus `refresh_token` when `onRefreshToken` is set —
+ * discovery metadata and registration advertise it only then), Dynamic Client Registration
  * (RFC 7591), and discovery metadata (RFC 8414, plus RFC 9728 when `resource`
  * is set, which also enables RFC 8707 resource indicators). The handlers
  * operate on plain {@link OAuthRequest} / {@link OAuthResponse} objects, so any HTTP runtime can host them through a
@@ -373,7 +434,7 @@ export const createOAuthHandlers = (
           token_endpoint: joinUrl(issuer, paths.token),
           registration_endpoint: joinUrl(issuer, paths.register),
           response_types_supported: ['code'],
-          grant_types_supported: ['authorization_code', 'refresh_token'],
+          grant_types_supported: supportedGrantTypes(options),
           code_challenge_methods_supported: ['S256'],
           token_endpoint_auth_methods_supported: [
             'client_secret_basic',
@@ -428,7 +489,7 @@ export const createOAuthHandlers = (
     },
 
     register: (request: OAuthRequest) => {
-      return handleRegister(request, options.clientStore);
+      return handleRegister(request, options);
     },
   };
 };

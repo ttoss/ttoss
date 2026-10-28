@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 13.1.0 (2026-10-27)
+
+### Bug Fixes
+
+- **auth-core:** advertise refresh_token grant only when onRefreshToken is set ([#1369](https://github.com/ttoss/ttoss/issues/1369)) ([9a99e5e](https://github.com/ttoss/ttoss/commit/9a99e5e94a0da78b9eed241ec559df0e9e69d95b))
+
+### Features
+
+- **openapi-codegen:** refuse items without type: array ([#1353](https://github.com/ttoss/ttoss/issues/1353)) ([2b00f2a](https://github.com/ttoss/ttoss/commit/2b00f2af65002c7c6b4750904b4464b229cd7387))
+
 ## [13.0.2](https://github.com/ttoss/ttoss/compare/%40docs%2Fwebsite%4013.0.1...%40docs%2Fwebsite%4013.0.2) (2026-10-22)
 
 **Note:** Version bump only for package @docs/website
