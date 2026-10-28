@@ -105,11 +105,6 @@ export const messages = defineMessages({
     description:
       'Accessible label for the button that closes the left sidebar.',
   },
-  openDetails: {
-    defaultMessage: 'Open details',
-    description:
-      'Accessible label for the button that opens the right sidebar.',
-  },
   closeDetails: {
     defaultMessage: 'Close details',
     description:

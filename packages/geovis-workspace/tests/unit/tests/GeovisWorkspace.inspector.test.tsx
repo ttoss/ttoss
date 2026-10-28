@@ -8,7 +8,7 @@ import { GeovisWorkspace } from 'src';
 
 import {
   config,
-  openRightSidebar,
+  openRight,
   Provider,
   visualizationSpec,
 } from './geovisWorkspaceTestUtils';
@@ -20,36 +20,40 @@ jest.mock('@ttoss/geovis', () => {
 
 test('right sidebar is absent when nothing is selected on the map', () => {
   render(
-    <GeovisWorkspace config={config} visualizationSpec={visualizationSpec} />,
+    <GeovisWorkspace
+      config={openRight(config)}
+      visualizationSpec={visualizationSpec}
+    />,
     { wrapper: Provider }
   );
 
   expect(
-    screen.queryByRole('button', { name: 'Open details' })
+    screen.queryByRole('button', { name: 'Close details' })
   ).not.toBeInTheDocument();
 });
 
 test('inspector panel shows the selected feature and clearing the selection removes it', async () => {
   const { rerender } = render(
-    <GeovisWorkspace config={config} visualizationSpec={visualizationSpec} />,
+    <GeovisWorkspace
+      config={openRight(config)}
+      visualizationSpec={visualizationSpec}
+    />,
     { wrapper: Provider }
   );
 
   expect(
-    screen.queryByRole('button', { name: 'Open details' })
+    screen.queryByRole('button', { name: 'Close details' })
   ).not.toBeInTheDocument();
 
   rerender(
     <GeovisWorkspace
-      config={config}
+      config={openRight(config)}
       visualizationSpec={{
         ...visualizationSpec,
         mockClick: { layerId: 'districts-fill', featureId: 'sp', value: 42 },
       }}
     />
   );
-
-  await openRightSidebar();
 
   expect(screen.getByText('districts-fill')).toBeInTheDocument();
   expect(screen.getByText('42')).toBeInTheDocument();
@@ -59,7 +63,7 @@ test('inspector panel shows the selected feature and clearing the selection remo
 test('inspector panel shows a fallback when the selected feature has no value', async () => {
   render(
     <GeovisWorkspace
-      config={config}
+      config={openRight(config)}
       visualizationSpec={{
         ...visualizationSpec,
         mockClick: { layerId: 'districts-fill', featureId: 'sp', value: null },
@@ -68,15 +72,13 @@ test('inspector panel shows a fallback when the selected feature has no value', 
     { wrapper: Provider }
   );
 
-  await openRightSidebar();
-
   expect(screen.getByText('No value')).toBeInTheDocument();
 });
 
 test('dismissing the inspector selection clears the panel and closes the sidebar content', async () => {
   render(
     <GeovisWorkspace
-      config={config}
+      config={openRight(config)}
       visualizationSpec={{
         ...visualizationSpec,
         mockClick: { layerId: 'districts-fill', featureId: 'sp', value: 42 },
@@ -84,8 +86,6 @@ test('dismissing the inspector selection clears the panel and closes the sidebar
     />,
     { wrapper: Provider }
   );
-
-  await openRightSidebar();
 
   expect(screen.getByText('districts-fill')).toBeInTheDocument();
 
@@ -104,11 +104,12 @@ test('metadata panel shows the map type and pluralized source count', async () =
   };
 
   render(
-    <GeovisWorkspace config={config} visualizationSpec={specWithMetadata} />,
+    <GeovisWorkspace
+      config={openRight(config)}
+      visualizationSpec={specWithMetadata}
+    />,
     { wrapper: Provider }
   );
-
-  await openRightSidebar();
 
   expect(screen.getByText('Map type: choropleth')).toBeInTheDocument();
   expect(screen.getByText('2 sources')).toBeInTheDocument();
@@ -121,36 +122,38 @@ test('metadata panel uses the singular form for a single source', async () => {
   };
 
   render(
-    <GeovisWorkspace config={config} visualizationSpec={specWithOneSource} />,
+    <GeovisWorkspace
+      config={openRight(config)}
+      visualizationSpec={specWithOneSource}
+    />,
     { wrapper: Provider }
   );
-
-  await openRightSidebar();
 
   expect(screen.getByText('1 source')).toBeInTheDocument();
 });
 
 test('metadata panel contributes no content and no sidebar when the spec has neither mapType nor sources', () => {
   render(
-    <GeovisWorkspace config={config} visualizationSpec={visualizationSpec} />,
+    <GeovisWorkspace
+      config={openRight(config)}
+      visualizationSpec={visualizationSpec}
+    />,
     { wrapper: Provider }
   );
 
   expect(
-    screen.queryByRole('button', { name: 'Open details' })
+    screen.queryByRole('button', { name: 'Close details' })
   ).not.toBeInTheDocument();
 });
 
 test('metadata panel is absent while another slot keeps the sidebar open', async () => {
   render(
     <GeovisWorkspace
-      config={{ ...config, legend: { description: 'Descrição' } }}
+      config={openRight({ ...config, legend: { description: 'Descrição' } })}
       visualizationSpec={visualizationSpec}
     />,
     { wrapper: Provider }
   );
-
-  await openRightSidebar();
 
   expect(screen.getByText('Descrição')).toBeInTheDocument();
   expect(screen.queryByText(/Map type:/)).not.toBeInTheDocument();
@@ -183,11 +186,11 @@ test('right sidebar detail API fetches on click, auto-opens, and renders the det
   );
 
   // The detail renders without a manual open — an accepted click auto-opens the
-  // sidebar, so its reopen button is gone.
+  // sidebar.
   expect(await screen.findByText('Cozinha X')).toBeInTheDocument();
   expect(
-    screen.queryByRole('button', { name: 'Open details' })
-  ).not.toBeInTheDocument();
+    screen.getByRole('button', { name: 'Close details' })
+  ).toBeInTheDocument();
   expect(onFeatureSelect).toHaveBeenCalledWith(
     expect.objectContaining({ layerId: 'kitchens', featureId: 'k1' })
   );
@@ -199,8 +202,7 @@ test('right sidebar closes when the selection clears (click outside), not only v
   });
 
   // `legend.description` keeps the right sidebar populated after the selection
-  // clears, so its open state stays observable via the reopen button instead of
-  // being hidden for lack of content.
+  // clears, so its closing is down to its open state, not to a lack of content.
   const configWithDetail: GeovisWorkspaceConfig = {
     legend: { description: 'Descrição da legenda.' },
     rightSidebar: {
@@ -223,12 +225,11 @@ test('right sidebar closes when the selection clears (click outside), not only v
     { wrapper: Provider }
   );
 
-  // Clicking a feature auto-opens the sidebar: the detail shows and the reopen
-  // button is gone.
+  // Clicking a feature auto-opens the sidebar: the detail shows.
   expect(await screen.findByText('Cozinha X')).toBeInTheDocument();
   expect(
-    screen.queryByRole('button', { name: 'Open details' })
-  ).not.toBeInTheDocument();
+    screen.getByRole('button', { name: 'Close details' })
+  ).toBeInTheDocument();
 
   // Clicking outside clears the selection (no manual close-button press).
   rerender(
@@ -240,14 +241,13 @@ test('right sidebar closes when the selection clears (click outside), not only v
 
   await act(async () => {});
 
-  // The detail is gone and the sidebar is closed — its reopen button is back,
-  // even though the legend description still keeps the sidebar populated. Before
-  // the fix, the open state stayed `true` here and a pushed-aside legend would
-  // never return to rest.
+  // The detail is gone and the sidebar is closed, even though the legend
+  // description still keeps it populated. Before the fix, the open state stayed
+  // `true` here and a pushed-aside legend would never return to rest.
   expect(screen.queryByText('Cozinha X')).not.toBeInTheDocument();
   expect(
-    screen.getByRole('button', { name: 'Open details' })
-  ).toBeInTheDocument();
+    screen.queryByRole('button', { name: 'Close details' })
+  ).not.toBeInTheDocument();
 });
 
 test('right sidebar detail API ignores clicks rejected by shouldOpen', async () => {
@@ -281,7 +281,7 @@ test('right sidebar detail API ignores clicks rejected by shouldOpen', async () 
   await act(async () => {});
 
   expect(
-    screen.queryByRole('button', { name: 'Open details' })
+    screen.queryByRole('button', { name: 'Close details' })
   ).not.toBeInTheDocument();
   expect(onFeatureSelect).not.toHaveBeenCalled();
 });
@@ -344,6 +344,7 @@ test('right sidebar shows inspector content for renderDetails without onFeatureS
     <GeovisWorkspace
       config={{
         rightSidebar: {
+          initialState: 'open',
           renderDetails: ({ data }) => {
             return <span>{String(data)}</span>;
           },
@@ -360,9 +361,9 @@ test('right sidebar shows inspector content for renderDetails without onFeatureS
   await act(async () => {});
 
   // With no `onFeatureSelect`, an accepted click gives the inspector slot
-  // content (so the sidebar exists) but nothing is fetched or auto-opened.
+  // content, so the sidebar shows; nothing is fetched.
   expect(
-    screen.getByRole('button', { name: 'Open details' })
+    screen.getByRole('button', { name: 'Close details' })
   ).toBeInTheDocument();
 });
 
@@ -373,7 +374,7 @@ test('right sidebar detail API does not fetch until a feature is clicked', async
 
   render(
     <GeovisWorkspace
-      config={{
+      config={openRight({
         legend: { description: 'Descrição' },
         rightSidebar: {
           onFeatureSelect,
@@ -383,14 +384,13 @@ test('right sidebar detail API does not fetch until a feature is clicked', async
             );
           },
         },
-      }}
+      })}
       visualizationSpec={visualizationSpec}
     />,
     { wrapper: Provider }
   );
 
   await act(async () => {});
-  await openRightSidebar();
 
   expect(screen.getByText('Descrição')).toBeInTheDocument();
   expect(onFeatureSelect).not.toHaveBeenCalled();
@@ -456,7 +456,7 @@ test('right sidebar detail API skips the fetch for a rejected click while the si
 
   render(
     <GeovisWorkspace
-      config={{
+      config={openRight({
         legend: { description: 'Descrição' },
         rightSidebar: {
           onFeatureSelect,
@@ -469,7 +469,7 @@ test('right sidebar detail API skips the fetch for a rejected click while the si
             );
           },
         },
-      }}
+      })}
       visualizationSpec={{
         ...visualizationSpec,
         mockClick: { layerId: 'other', featureId: 'x', value: null },
@@ -479,7 +479,6 @@ test('right sidebar detail API skips the fetch for a rejected click while the si
   );
 
   await act(async () => {});
-  await openRightSidebar();
 
   // The legend keeps the sidebar mounted, but the rejected click drives no fetch.
   expect(screen.getByText('Descrição')).toBeInTheDocument();

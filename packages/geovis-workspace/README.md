@@ -280,6 +280,44 @@ The workspace never fetches or caches: `onFeatureSelect` owns the request.
 />
 ```
 
+### Opening the right sidebar
+
+The right sidebar has no button of its own over the map: it opens on what the
+reader does. An accepted click opens it when the detail API is set, and the app
+opens or closes it with `setRightSidebarOpen` from `useGeovisWorkspace()`. Its
+× closes it; `initialState: 'open'` mounts it open.
+
+### Replacing the right sidebar's content
+
+Set `rightSidebar.content` when the sidebar's content belongs to the app — a
+list of the places a proximity search found, say. The component takes the
+sidebar's whole card in place of the title and the stacked slots, and alone is
+enough to mount the sidebar. It renders inside the workspace and GeoVis
+providers, so it reads both through their hooks and drives the sidebar itself:
+
+```tsx
+import { useGeoVisProximitySearch } from '@ttoss/geovis';
+import { useGeovisWorkspace } from '@ttoss/geovis-workspace';
+
+const NearbyPanel = () => {
+  const search = useGeoVisProximitySearch();
+  const { setRightSidebarOpen } = useGeovisWorkspace();
+  const searching = search?.origin != null;
+
+  // Opens with each search, closes when it clears.
+  React.useEffect(() => {
+    setRightSidebarOpen({ open: searching });
+  }, [searching, setRightSidebarOpen]);
+
+  return <PlaceList results={search?.results ?? []} />;
+};
+
+<GeovisWorkspace
+  config={{ rightSidebar: { content: NearbyPanel } }}
+  visualizationSpec={visualizationSpec}
+/>;
+```
+
 ## Metadata
 
 The `metadata` slot's default panel needs no config: it reads the current
@@ -595,6 +633,7 @@ way, `enabledWhen` gates included.
 | `shouldOpen`      | `(info: MapClickInfo) => boolean`                        | Gate deciding whether a click drives the inspector. Defaults to accepting every click. |
 | `onFeatureSelect` | `(info: MapClickInfo) => Promise<unknown>`               | Fetches the clicked feature's detail; its promise drives `renderDetails`.              |
 | `renderDetails`   | `(state: GeovisWorkspaceDetailState) => React.ReactNode` | Renders the `inspector` slot from the `loading`/`error`/`data` fetch state.            |
+| `content`         | `React.ComponentType`                                    | Replaces the whole sidebar — header and slots — with the app's own component.          |
 
 ### `GeovisWorkspaceLegendConfig`
 

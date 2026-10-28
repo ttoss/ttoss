@@ -98,6 +98,14 @@ export interface GeovisWorkspaceRightSidebarState extends GeovisWorkspaceSidebar
    * replacing the built-in inspector panel when set.
    */
   renderDetails?: (state: GeovisWorkspaceDetailState) => React.ReactNode;
+  /**
+   * Replaces the whole sidebar — the title, the close button and the stacked
+   * slots — with the app's own component, drawn edge to edge inside the
+   * sidebar's card. The app owns everything in it, closing included
+   * (`useGeovisWorkspace().setRightSidebarOpen`), and decides when it opens:
+   * no map click opens it on its own.
+   */
+  content?: React.ComponentType;
 }
 
 /**

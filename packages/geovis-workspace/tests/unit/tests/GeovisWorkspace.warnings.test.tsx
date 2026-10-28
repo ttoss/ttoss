@@ -9,7 +9,7 @@ import { GeovisWorkspace } from 'src';
 import {
   config,
   failingVisualizationSpec,
-  openRightSidebar,
+  openRight,
   Provider,
   visualizationSpec,
   visualizationSpecWithWarnings,
@@ -23,13 +23,11 @@ jest.mock('@ttoss/geovis', () => {
 test('warnings panel shows a resolved result warning with its i18n text and subject', async () => {
   render(
     <GeovisWorkspace
-      config={config}
+      config={openRight(config)}
       visualizationSpec={visualizationSpecWithWarnings}
     />,
     { wrapper: Provider }
   );
-
-  await openRightSidebar();
 
   expect(
     screen.getByText('This map violates the cartography policy.')
@@ -41,18 +39,19 @@ test('warnings panel shows a resolved result warning with its i18n text and subj
 
 test('warnings panel shows a blocking failure that follows a successful resolve', async () => {
   const { rerender } = render(
-    <GeovisWorkspace config={config} visualizationSpec={visualizationSpec} />,
+    <GeovisWorkspace
+      config={openRight(config)}
+      visualizationSpec={visualizationSpec}
+    />,
     { wrapper: Provider }
   );
 
   rerender(
     <GeovisWorkspace
-      config={config}
+      config={openRight(config)}
       visualizationSpec={failingVisualizationSpec}
     />
   );
-
-  await openRightSidebar();
 
   expect(
     screen.getByText('A layer references a map data id that does not exist.')
@@ -77,11 +76,12 @@ test('warnings panel falls back to the raw message for a code with no catalog en
   };
 
   render(
-    <GeovisWorkspace config={config} visualizationSpec={specWithUnknownCode} />,
+    <GeovisWorkspace
+      config={openRight(config)}
+      visualizationSpec={specWithUnknownCode}
+    />,
     { wrapper: Provider }
   );
-
-  await openRightSidebar();
 
   expect(screen.getByText('Raw untranslated message.')).toBeInTheDocument();
 });
@@ -91,7 +91,7 @@ test('an allowed-values repair renders one button per value and calls onRepair w
 
   const { rerender } = render(
     <GeovisWorkspace
-      config={config}
+      config={openRight(config)}
       visualizationSpec={visualizationSpec}
       onRepair={onRepair}
     />,
@@ -100,13 +100,11 @@ test('an allowed-values repair renders one button per value and calls onRepair w
 
   rerender(
     <GeovisWorkspace
-      config={config}
+      config={openRight(config)}
       visualizationSpec={failingVisualizationSpec}
       onRepair={onRepair}
     />
   );
-
-  await openRightSidebar();
 
   const choroplethButton = screen.getByRole('button', { name: 'choropleth' });
   const dotsButton = screen.getByRole('button', { name: 'dots' });
@@ -129,14 +127,12 @@ test('a set-value repair calls onRepair with the option as-is', async () => {
 
   render(
     <GeovisWorkspace
-      config={config}
+      config={openRight(config)}
       visualizationSpec={visualizationSpecWithWarnings}
       onRepair={onRepair}
     />,
     { wrapper: Provider }
   );
-
-  await openRightSidebar();
 
   await act(async () => {
     fireEvent.click(screen.getByRole('button', { name: "Use 'safe-field'" }));
@@ -175,13 +171,11 @@ test('a set-value repair without a label falls back to the stringified value', a
 
   render(
     <GeovisWorkspace
-      config={config}
+      config={openRight(config)}
       visualizationSpec={specWithUnlabeledRepair}
     />,
     { wrapper: Provider }
   );
-
-  await openRightSidebar();
 
   expect(
     screen.getByRole('button', { name: 'safe-field' })
@@ -191,13 +185,11 @@ test('a set-value repair without a label falls back to the stringified value', a
 test('repair buttons render disabled rather than hidden when onRepair is omitted', async () => {
   render(
     <GeovisWorkspace
-      config={config}
+      config={openRight(config)}
       visualizationSpec={visualizationSpecWithWarnings}
     />,
     { wrapper: Provider }
   );
-
-  await openRightSidebar();
 
   expect(
     screen.getByRole('button', { name: "Use 'safe-field'" })
@@ -223,13 +215,11 @@ test('cold start: a failing result before any resolve shows the empty state inst
 test('cold start: the warnings panel itself suppresses issues even when the sidebar shows for the legend slot', async () => {
   render(
     <GeovisWorkspace
-      config={{ ...config, legend: { description: 'Descrição' } }}
+      config={openRight({ ...config, legend: { description: 'Descrição' } })}
       visualizationSpec={failingVisualizationSpec}
     />,
     { wrapper: Provider }
   );
-
-  await openRightSidebar();
 
   expect(screen.getByText('Descrição')).toBeInTheDocument();
   // Shown once, by the map's cold-start empty state — not a second time by
