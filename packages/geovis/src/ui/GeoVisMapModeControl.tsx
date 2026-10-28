@@ -2,6 +2,7 @@ import { defineMessages, useI18n } from '@ttoss/react-i18n';
 import * as React from 'react';
 
 import { type GeoVisMapMode, useGeoVisMapMode } from '../react/mapMode';
+import { OVERLAY_Z_INDEX } from './GeoVisLayerControl.styles';
 import {
   ACCENT,
   ACCENT_TINT,
@@ -352,7 +353,12 @@ export const GeoVisMapModeControl = () => {
   return (
     <div
       data-map-mode
-      style={{ position: 'absolute', zIndex: 23, top: TOP, right: RIGHT }}
+      style={{
+        position: 'absolute',
+        zIndex: OVERLAY_Z_INDEX,
+        top: TOP,
+        right: RIGHT,
+      }}
     >
       <button
         type="button"

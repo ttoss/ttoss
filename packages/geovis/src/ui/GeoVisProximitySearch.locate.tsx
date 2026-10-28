@@ -1,6 +1,7 @@
 import { useI18n } from '@ttoss/react-i18n';
 import * as React from 'react';
 
+import { OVERLAY_Z_INDEX } from './GeoVisLayerControl.styles';
 import { RIGHT, SIZE, TOP } from './GeoVisMapModeControl';
 import { messages } from './GeoVisProximitySearch.messages';
 import { KEYFRAMES } from './GeoVisProximitySearch.styles';
@@ -187,7 +188,7 @@ export const LocateButton = ({
     <div
       style={{
         position: 'absolute',
-        zIndex: 23,
+        zIndex: OVERLAY_Z_INDEX,
         top: belowMapMode ? TOP + SIZE + STACK_GAP : TOP,
         right: RIGHT,
       }}

@@ -1287,6 +1287,47 @@ Clicking the button or the dot again clears the search. If the location cannot b
 
 The button is not shown where the browser offers no geolocation, as on a page served over plain HTTP. It is off by default, because asking for the reader's location is the app's choice.
 
+### Reading the search from the app
+
+`useGeoVisProximitySearch()` hands the search to any component under `<GeoVisProvider>`, so the app can draw its own view of the results — a list beside the map, say — kept in step with the pins. It returns `null` when the spec declares no `proximitySearch`.
+
+| Field        | Type                            | Description                                                                       |
+| ------------ | ------------------------------- | --------------------------------------------------------------------------------- |
+| `status`     | `'idle' \| 'loading' \| 'done'` | `loading` while an answer is awaited — the first one, or a widening               |
+| `origin`     | `[number, number] \| null`      | The searched point, `[lng, lat]`; `null` while idle                               |
+| `fromUser`   | `boolean`                       | Whether the search started from the reader's location rather than a pin           |
+| `radius`     | `number`                        | The radius shown, in metres                                                       |
+| `radii`      | `number[]`                      | The radii the reader can choose between                                           |
+| `results`    | `ProximityHit[]`                | The places within `radius`, nearest first, each with its `distance` from `origin` |
+| `selectedId` | `string \| number \| null`      | The place whose card is open on the map                                           |
+| `select`     | `(id) => void`                  | Opens a place's card on the map, or closes it when it is the open one             |
+| `setRadius`  | `(radius: number) => void`      | Shows another radius, asking `query` only for the ring beyond the widest searched |
+| `clear`      | `() => void`                    | Clears the search, as the bar's × does                                            |
+
+Each result carries every field your `query` returned, so extra data (an address, a phone) reaches the app's view as-is:
+
+```tsx
+import { useGeoVisProximitySearch } from '@ttoss/geovis';
+
+const NearbyList = () => {
+  const search = useGeoVisProximitySearch();
+  if (!search || search.status === 'idle') return null;
+  return (
+    <ul>
+      {search.results.map((place) => {
+        return (
+          <li key={place.id}>
+            <button onClick={() => search.select(place.id)}>
+              {place.name} — {Math.round(place.distance)} m
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+  );
+};
+```
+
 ## Spec Validation
 
 Use `validateSpec` to validate a visualization spec against the JSON schema before passing it to `GeoVisProvider`. It returns a `GeoVisResult`: a `resolved` status carrying the typed spec, or one of a closed set of failure statuses carrying every issue found in one pass — never only the first — so a repair loop can fix everything in one round trip:

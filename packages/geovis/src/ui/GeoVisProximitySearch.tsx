@@ -5,6 +5,7 @@ import * as ReactDOM from 'react-dom';
 import { useGeoVisMapMode } from '../react/mapMode';
 import { type ProximityState, useProximitySearch } from '../react/proximity';
 import { metresPerPixel } from '../react/proximity.geo';
+import { usePublishProximitySearch } from '../react/proximityContext';
 import type {
   ProximityCategory,
   ProximitySearch,
@@ -124,6 +125,42 @@ const FromUserLocation = ({
 };
 
 /**
+ * Hands the search to the app through the provider's store — see
+ * `useGeoVisProximitySearch` — as the places within the radius shown.
+ */
+const usePublishSearch = ({
+  state,
+  radii,
+  select,
+  setRadius,
+  clear,
+}: Pick<
+  ReturnType<typeof useProximitySearch>,
+  'state' | 'radii' | 'select' | 'setRadius' | 'clear'
+>) => {
+  usePublishProximitySearch(
+    React.useMemo(() => {
+      return {
+        status: state.status,
+        origin: state.origin,
+        fromUser: state.fromUser,
+        radius: state.radius,
+        radii,
+        results: state.hits.filter((hit) => {
+          return hit.distance <= state.radius;
+        }),
+        selectedId: state.selectedId,
+        select,
+        setRadius: (radius: number) => {
+          void setRadius(radius);
+        },
+        clear,
+      };
+    }, [state, radii, select, setRadius, clear])
+  );
+};
+
+/**
  * The proximity search `<GeoVisProvider>` auto-mounts when the spec declares
  * `proximitySearch`: clicking a feature of its layers searches the places
  * around it — see {@link ProximitySearch}. Drawn over the map, in its own
@@ -149,6 +186,7 @@ export const GeoVisProximitySearch = ({
   const { state, radii, searchFrom, searchFromUser, clear, setRadius, select } =
     useProximitySearch({ config, map, framePixels: framePixelsFor(width) });
   useSearchOnClick({ map, layerIds: config.layers, searchFrom });
+  usePublishSearch({ state, radii, select, setRadius, clear });
   useFocusOnSearchedPin(state.status === 'idle' ? null : state.focus);
   const focusedPin = useFocusedPinLook(state.focus);
 
@@ -211,6 +249,7 @@ export const GeoVisProximitySearch = ({
               distance={intl.formatMessage(messages.fromPoint, {
                 distance: format(hit.distance),
               })}
+              closeLabel={intl.formatMessage(messages.closeCard)}
               onSelect={() => {
                 select(hit.id);
               }}

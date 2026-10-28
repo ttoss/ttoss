@@ -2,8 +2,13 @@
  * @jest-environment jsdom
  */
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
+import type * as React from 'react';
 import { renderPinSvg } from 'src/adapters/maplibre/pinImages';
 import { GeoVisProvider } from 'src/react/GeoVisProvider';
+import {
+  type GeoVisProximitySearchValue,
+  useGeoVisProximitySearch,
+} from 'src/react/proximityContext';
 import type { VisualizationSpec } from 'src/spec/types';
 import type {
   ProximityQueryParams,
@@ -210,11 +215,16 @@ const buildSpec = ({
 const renderSearch = async ({
   width = 800,
   fromUserLocation,
-}: { width?: number; fromUserLocation?: boolean } = {}) => {
+  children = null,
+}: {
+  width?: number;
+  fromUserLocation?: boolean;
+  children?: React.ReactNode;
+} = {}) => {
   mockMap = buildMap({ width });
   const { query, calls } = buildQuery();
   const spec = buildSpec({ query, fromUserLocation });
-  const view = render(<GeoVisProvider spec={spec}>{null}</GeoVisProvider>);
+  const view = render(<GeoVisProvider spec={spec}>{children}</GeoVisProvider>);
   await waitFor(() => {
     expect(mockMap.on).toHaveBeenCalledWith('click', expect.any(Function));
   });
@@ -407,6 +417,117 @@ describe('GeoVisProximitySearch', () => {
     clickPin();
 
     expect(query).not.toHaveBeenCalled();
+  });
+});
+
+describe('the place card', () => {
+  test('its × closes it, leaving the search on the map', async () => {
+    const { calls } = await renderSearch();
+    clickPin();
+    calls[0].resolve([northBy(1, 300, 'ubs')]);
+    await settle();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Place 1' }));
+    expect(screen.getByText('300 m from the point')).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+
+    expect(screen.queryByText('300 m from the point')).toBeNull();
+    expect(screen.getByText('1 service within 1 km')).toBeTruthy();
+  });
+});
+
+describe('useGeoVisProximitySearch', () => {
+  /** What the hook last returned to a component under the provider. */
+  let seen: GeoVisProximitySearchValue | null | undefined;
+
+  const Probe = () => {
+    seen = useGeoVisProximitySearch();
+    return null;
+  };
+
+  beforeEach(() => {
+    seen = undefined;
+  });
+
+  test('follows the search from idle to its results, nearest first, within the radius', async () => {
+    const { calls } = await renderSearch({ children: <Probe /> });
+    expect(seen).toMatchObject({
+      status: 'idle',
+      origin: null,
+      radius: 1000,
+      radii: [1000, 2000],
+      results: [],
+      selectedId: null,
+    });
+
+    clickPin();
+    expect(seen).toMatchObject({
+      status: 'loading',
+      origin: ORIGIN,
+      fromUser: false,
+    });
+
+    calls[0].resolve([northBy(2, 600), northBy(1, 300, 'ubs')]);
+    await settle();
+
+    expect(seen?.status).toBe('done');
+    expect(
+      seen?.results.map((hit) => {
+        return [hit.id, Math.round(hit.distance)];
+      })
+    ).toEqual([
+      [1, 300],
+      [2, 600],
+    ]);
+  });
+
+  test('drives the search: select toggles a card, setRadius widens, clear ends it', async () => {
+    const { calls } = await renderSearch({ children: <Probe /> });
+    clickPin();
+    calls[0].resolve([northBy(1, 300)]);
+    await settle();
+
+    act(() => {
+      seen?.select(1);
+    });
+    expect(seen?.selectedId).toBe(1);
+    expect(screen.getByText('300 m from the point')).toBeTruthy();
+    act(() => {
+      seen?.select(1);
+    });
+    expect(seen?.selectedId).toBeNull();
+
+    act(() => {
+      seen?.setRadius(2000);
+    });
+    expect(calls[1].params).toMatchObject({ radiusMin: 1000, radius: 2000 });
+    calls[1].resolve([northBy(2, 1500)]);
+    await settle();
+    expect(seen).toMatchObject({ status: 'done', radius: 2000 });
+    expect(seen?.results).toHaveLength(2);
+
+    act(() => {
+      seen?.clear();
+    });
+    expect(seen).toMatchObject({ status: 'idle', origin: null, results: [] });
+  });
+
+  test('is null outside a provider, and for a spec without a proximity search', async () => {
+    render(<Probe />);
+    expect(seen).toBeNull();
+
+    mockMap = buildMap({ width: 800 });
+    const { proximitySearch: _, ...spec } = buildSpec({
+      query: buildQuery().query,
+    });
+    render(
+      <GeoVisProvider spec={spec}>
+        <Probe />
+      </GeoVisProvider>
+    );
+    await settle();
+    expect(seen).toBeNull();
   });
 });
 

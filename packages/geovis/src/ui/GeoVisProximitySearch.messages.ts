@@ -51,6 +51,11 @@ export const messages = defineMessages({
     description:
       'Proximity search: on a place\'s card, how far it is from the searched point. "distance" is like "450 m" or "1.2 km".',
   },
+  closeCard: {
+    defaultMessage: 'Close',
+    description:
+      "Proximity search: label of the button that closes a place's card.",
+  },
   resultOne: {
     defaultMessage: 'result',
     description:

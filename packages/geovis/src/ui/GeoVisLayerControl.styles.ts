@@ -13,9 +13,13 @@ const TEXT_MUTED = '#5f6368';
 const ACCENT = '#1a73e8';
 const HOVER_BG = '#f1f3f4';
 const CARD_SHADOW = '0 1px 4px rgba(0,0,0,0.3)';
-// Just above the map canvas, but below app chrome such as geovis-workspace
-// sidebars (z-index 2) so those overlays cover the control when they open.
-const OVERLAY_Z_INDEX = 1;
+/**
+ * Where the controls geovis draws over the map stack: just above the map
+ * canvas, but below app chrome such as the geovis-workspace sidebars
+ * (z-index 2), so an opening sidebar covers them as it covers the map's own
+ * zoom buttons.
+ */
+export const OVERLAY_Z_INDEX = 1;
 // Distance from the anchored map edges. Larger than resolvePositionStyle's
 // default so the square trigger clears the map corner (and MapLibre's
 // attribution) with a comfortable margin.

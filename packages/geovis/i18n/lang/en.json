@@ -115,6 +115,10 @@
     "defaultMessage": "No data",
     "description": "Map hover tooltip: shown instead of a value when the feature has no data."
   },
+  "ltBlZe": {
+    "defaultMessage": "Close",
+    "description": "Proximity search: label of the button that closes a place's card."
+  },
   "od/d+I": {
     "defaultMessage": "You",
     "description": "Proximity search: the tag over the dot marking the reader's location."
