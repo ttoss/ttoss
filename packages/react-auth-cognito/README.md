@@ -231,6 +231,11 @@ import { getAuthData } from '@ttoss/react-auth-cognito';
 const authData = await getAuthData({ includeTokens: true });
 ```
 
+With `includeTokens`, `tokens` carries the ID, access and refresh tokens of the
+current session; the refresh token comes from Amplify's token store, since
+`fetchAuthSession` does not return it. Hand it only to a client of the same
+user pool app client, such as a browser extension renewing the session itself.
+
 ### `checkAuth()`
 
 Check if user is currently authenticated:
