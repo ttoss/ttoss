@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.25.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fgeovis-workspace%400.24.1...%40ttoss%2Fgeovis-workspace%400.25.0) (2026-10-29)
+
+### Features
+
+- **geovis:** search the places near the reader's location ([#1370](https://github.com/ttoss/ttoss/issues/1370)) ([a401661](https://github.com/ttoss/ttoss/commit/a4016610bebc1131074c99094b4a33550c7d01b4))
+
 ## [0.24.1](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fgeovis-workspace%400.24.0...%40ttoss%2Fgeovis-workspace%400.24.1) (2026-10-26)
 
 **Note:** Version bump only for package @ttoss/geovis-workspace

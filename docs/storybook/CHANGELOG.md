@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [11.2.0](https://github.com/ttoss/ttoss/compare/%40docs%2Fstorybook%4011.1.1...%40docs%2Fstorybook%4011.2.0) (2026-10-29)
+
+### Features
+
+- **geovis:** search the places near the reader's location ([#1370](https://github.com/ttoss/ttoss/issues/1370)) ([a401661](https://github.com/ttoss/ttoss/commit/a4016610bebc1131074c99094b4a33550c7d01b4))
+
 ## [11.1.1](https://github.com/ttoss/ttoss/compare/%40docs%2Fstorybook%4011.1.0...%40docs%2Fstorybook%4011.1.1) (2026-10-26)
 
 **Note:** Version bump only for package @docs/storybook
