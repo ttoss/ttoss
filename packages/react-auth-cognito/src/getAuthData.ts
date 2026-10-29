@@ -4,22 +4,27 @@ import {
   fetchUserAttributes,
   getCurrentUser,
 } from 'aws-amplify/auth';
+import { cognitoUserPoolsTokenProvider } from 'aws-amplify/auth/cognito';
 
 export type { AuthData };
 
-const getTokens = (
-  session: Awaited<ReturnType<typeof fetchAuthSession>> | null
-): NonNullable<AuthData['tokens']> => {
-  const idToken = session?.tokens?.idToken?.toString() ?? '';
-  const accessToken = session?.tokens?.accessToken?.toString() ?? '';
-  const refreshToken = '';
+/**
+ * `fetchAuthSession` never returns the refresh token, so it is read from
+ * Amplify's token store, after the session call has refreshed what it had to.
+ */
+const getTokens = async (): Promise<NonNullable<AuthData['tokens']>> => {
+  const session = await fetchAuthSession();
+  const stored =
+    await cognitoUserPoolsTokenProvider.authTokenStore.loadTokens();
 
   return {
-    idToken,
-    accessToken,
-    refreshToken,
+    idToken: session.tokens?.idToken?.toString() ?? '',
+    accessToken: session.tokens?.accessToken?.toString() ?? '',
+    refreshToken: stored?.refreshToken ?? '',
   };
 };
+
+const NO_TOKENS = { idToken: '', accessToken: '', refreshToken: '' };
 
 export const getAuthData = async ({
   includeTokens,
@@ -28,8 +33,8 @@ export const getAuthData = async ({
 } = {}): Promise<AuthData | null> => {
   const currentUser = await getCurrentUser();
 
-  const [session, user] = await Promise.all([
-    includeTokens ? fetchAuthSession() : Promise.resolve(null),
+  const [tokens, user] = await Promise.all([
+    includeTokens ? getTokens() : Promise.resolve(NO_TOKENS),
     fetchUserAttributes(),
   ]);
 
@@ -39,7 +44,7 @@ export const getAuthData = async ({
       email: user.email ?? '',
       emailVerified: user.email_verified === 'true',
     },
-    tokens: getTokens(session),
+    tokens,
     isAuthenticated: true,
   };
 };
