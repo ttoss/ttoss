@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 5.0.2 (2026-10-29)
+
+### Bug Fixes
+
+- **react-auth-cognito:** return the refresh token from getAuthData ([#1374](https://github.com/ttoss/ttoss/issues/1374)) ([54f77dc](https://github.com/ttoss/ttoss/commit/54f77dce05dbfebb621b7e2b8042fd4631e8c938))
+
 ## [5.0.1](https://github.com/ttoss/ttoss/compare/%40ttoss%2Freact-auth-cognito%405.0.0...%40ttoss%2Freact-auth-cognito%405.0.1) (2026-10-21)
 
 **Note:** Version bump only for package @ttoss/react-auth-cognito
