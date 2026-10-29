@@ -27,6 +27,10 @@ import {
   useMapHover,
 } from './hooks';
 import { GeoVisMapModeContext, useMapModeState } from './mapMode';
+import {
+  createProximityStore,
+  GeoVisProximityContext,
+} from './proximityContext';
 import { useCompactOverlays } from './useCompactOverlays';
 
 // Re-export the contexts and hooks so existing public-API consumers
@@ -448,6 +452,9 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
   useSpecRejectionWarning(committed.result);
 
   const mapMode = useMapModeState({ runtime, spec: committed.spec });
+  // One store for the provider's life: the search writes it from the overlays,
+  // the app reads it from `children` — siblings, so neither can hand it down.
+  const [proximityStore] = React.useState(createProximityStore);
 
   if (adapterError) throw adapterError;
 
@@ -470,20 +477,22 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
   return (
     <GeoVisContext.Provider value={ctxValue}>
       <GeoVisMapModeContext.Provider value={mapMode}>
-        <ClickProvider runtime={runtime} spec={committed.spec}>
-          <HoverProvider runtime={runtime} spec={committed.spec}>
-            {children}
-          </HoverProvider>
-        </ClickProvider>
-        <ProviderOverlays
-          spec={committed.spec}
-          isCompact={isCompact}
-          legendGroups={legendPositionGroups}
-          legendTrigger={compactLegendTrigger}
-          legendPanel={compactLegendPanel}
-          layerControlProps={compactLayerControlProps}
-          position={compactControlPosition}
-        />
+        <GeoVisProximityContext.Provider value={proximityStore}>
+          <ClickProvider runtime={runtime} spec={committed.spec}>
+            <HoverProvider runtime={runtime} spec={committed.spec}>
+              {children}
+            </HoverProvider>
+          </ClickProvider>
+          <ProviderOverlays
+            spec={committed.spec}
+            isCompact={isCompact}
+            legendGroups={legendPositionGroups}
+            legendTrigger={compactLegendTrigger}
+            legendPanel={compactLegendPanel}
+            layerControlProps={compactLayerControlProps}
+            position={compactControlPosition}
+          />
+        </GeoVisProximityContext.Provider>
       </GeoVisMapModeContext.Provider>
     </GeoVisContext.Provider>
   );

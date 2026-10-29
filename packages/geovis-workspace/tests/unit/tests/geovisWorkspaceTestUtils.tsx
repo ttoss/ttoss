@@ -209,8 +209,15 @@ export const openLeftSidebar = async () => {
   });
 };
 
-export const openRightSidebar = async () => {
-  await act(async () => {
-    fireEvent.click(screen.getByRole('button', { name: 'Open details' }));
-  });
+/**
+ * The config with the right sidebar starting open: it has no button of its
+ * own to open it, so a test reaching its panels mounts it open.
+ */
+export const openRight = <T extends { rightSidebar?: object }>(
+  config: T
+): T => {
+  return {
+    ...config,
+    rightSidebar: { ...config.rightSidebar, initialState: 'open' },
+  };
 };

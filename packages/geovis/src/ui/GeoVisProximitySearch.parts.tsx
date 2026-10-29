@@ -8,7 +8,7 @@ import {
   KEYFRAMES,
   MONO,
 } from './GeoVisProximitySearch.styles';
-import { ACCENT } from './palette';
+import { ACCENT, USER, USER_RGB } from './palette';
 
 /** A distance tag over the circle, as the radius line carries it. */
 const RadiusTag = ({ text, left }: { text: string; left: number }) => {
@@ -166,5 +166,80 @@ export const Spinner = () => {
         animation: `${KEYFRAMES.rotate} .7s linear infinite`,
       }}
     />
+  );
+};
+
+/**
+ * The reader, when the search runs from their location: a blue dot with a
+ * pulsing halo and a "You" tag. Clicking it clears the search, as the clicked
+ * pin does for a search from a pin.
+ */
+export const YouMarker = ({
+  tag,
+  title,
+  label,
+  onClick,
+}: {
+  tag: string;
+  title: string;
+  label: string;
+  onClick: () => void;
+}) => {
+  return (
+    <>
+      <div
+        style={{
+          ...AT_ORIGIN,
+          width: 46,
+          height: 46,
+          borderRadius: '50%',
+          background: `rgba(${USER_RGB},0.25)`,
+          animation: `${KEYFRAMES.pulse} 2s ease-out infinite`,
+          pointerEvents: 'none',
+        }}
+      />
+      <button
+        type="button"
+        onClick={(event) => {
+          event.stopPropagation();
+          onClick();
+        }}
+        aria-label={label}
+        title={title}
+        style={{
+          ...AT_ORIGIN,
+          zIndex: 2,
+          width: 22,
+          height: 22,
+          padding: 0,
+          boxSizing: 'border-box',
+          borderRadius: '50%',
+          background: USER,
+          border: '3px solid #ffffff',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+          transform: 'translate(-50%,-50%)',
+          cursor: 'pointer',
+        }}
+      />
+      <span
+        style={{
+          ...AT_ORIGIN,
+          top: -22,
+          zIndex: 2,
+          transform: 'translate(-50%,-100%)',
+          padding: '2px 6px',
+          borderRadius: 5,
+          background: USER,
+          color: '#ffffff',
+          fontSize: 10,
+          fontWeight: 600,
+          whiteSpace: 'nowrap',
+          pointerEvents: 'none',
+          animation: `${KEYFRAMES.fadeIn} .3s both`,
+        }}
+      >
+        {tag}
+      </span>
+    </>
   );
 };

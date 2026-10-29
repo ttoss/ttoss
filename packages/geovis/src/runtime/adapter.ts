@@ -97,8 +97,11 @@ export interface EngineAdapter {
 
 /** The pin in focus while {@link EngineAdapter.setPinFocus} hides the pins. */
 export interface PinFocus {
-  /** The `symbol` layer the pin belongs to. */
-  layerId: string;
+  /**
+   * The `symbol` layer the pin belongs to; `null` to hide every pin with none
+   * in focus, as while a search runs from the reader's location.
+   */
+  layerId: string | null;
   /** The pin's feature id; `null` for a feature that carries none. */
   featureId: string | number | null;
 }

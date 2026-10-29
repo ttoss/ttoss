@@ -14,7 +14,7 @@ import {
 import {
   config,
   openLeftSidebar,
-  openRightSidebar,
+  openRight,
   Provider,
   visualizationSpec,
   visualizationSpecWithLegends,
@@ -27,23 +27,26 @@ jest.mock('@ttoss/geovis', () => {
 
 test('right sidebar renders only when a slot has content', () => {
   const { rerender } = render(
-    <GeovisWorkspace config={config} visualizationSpec={visualizationSpec} />,
+    <GeovisWorkspace
+      config={openRight(config)}
+      visualizationSpec={visualizationSpec}
+    />,
     { wrapper: Provider }
   );
 
   expect(
-    screen.queryByRole('button', { name: 'Open details' })
+    screen.queryByRole('button', { name: 'Close details' })
   ).not.toBeInTheDocument();
 
   rerender(
     <GeovisWorkspace
-      config={{ ...config, legend: { description: 'Descrição' } }}
+      config={openRight({ ...config, legend: { description: 'Descrição' } })}
       visualizationSpec={visualizationSpec}
     />
   );
 
   expect(
-    screen.getByRole('button', { name: 'Open details' })
+    screen.getByRole('button', { name: 'Close details' })
   ).toBeInTheDocument();
 });
 
@@ -64,17 +67,15 @@ test('left sidebar controls are absent when leftSidebar has no sections', () => 
 test('right sidebar shows a custom title', async () => {
   render(
     <GeovisWorkspace
-      config={{
+      config={openRight({
         ...config,
         legend: { description: 'Descrição' },
         rightSidebar: { title: 'Camadas' },
-      }}
+      })}
       visualizationSpec={visualizationSpec}
     />,
     { wrapper: Provider }
   );
-
-  await openRightSidebar();
 
   expect(screen.getByText('Camadas')).toBeInTheDocument();
 });
@@ -97,13 +98,11 @@ test('right sidebar renders the legend panel from the config', async () => {
 
   render(
     <GeovisWorkspace
-      config={configWithLegend}
+      config={openRight(configWithLegend)}
       visualizationSpec={visualizationSpecWithLegends}
     />,
     { wrapper: Provider }
   );
-
-  await openRightSidebar();
 
   expect(
     screen.getByText('Proporção da população total com 65 anos ou mais.')
@@ -124,16 +123,14 @@ test('right sidebar renders the legend panel from the config', async () => {
 test('right sidebar shows when the legend slot only has sources configured', async () => {
   render(
     <GeovisWorkspace
-      config={{
+      config={openRight({
         ...config,
         legend: { sources: { items: [{ label: 'SEADE (2025)' }] } },
-      }}
+      })}
       visualizationSpec={visualizationSpec}
     />,
     { wrapper: Provider }
   );
-
-  await openRightSidebar();
 
   expect(screen.getByText('SEADE (2025)')).toBeInTheDocument();
 });
@@ -141,28 +138,28 @@ test('right sidebar shows when the legend slot only has sources configured', asy
 test('right sidebar is absent when the legend slot has no content and nothing else configures it', () => {
   render(
     <GeovisWorkspace
-      config={{ ...config, legend: {} }}
+      config={openRight({ ...config, legend: {} })}
       visualizationSpec={visualizationSpec}
     />,
     { wrapper: Provider }
   );
 
   expect(
-    screen.queryByRole('button', { name: 'Open details' })
+    screen.queryByRole('button', { name: 'Close details' })
   ).not.toBeInTheDocument();
 });
 
 test('hiding the legend slot suppresses it even when the spec has legends', () => {
   render(
     <GeovisWorkspace
-      config={{ ...config, slots: { legend: { hidden: true } } }}
+      config={openRight({ ...config, slots: { legend: { hidden: true } } })}
       visualizationSpec={visualizationSpecWithLegends}
     />,
     { wrapper: Provider }
   );
 
   expect(
-    screen.queryByRole('button', { name: 'Open details' })
+    screen.queryByRole('button', { name: 'Close details' })
   ).not.toBeInTheDocument();
 });
 
@@ -221,13 +218,14 @@ test('right sidebar shows via a slot override even when legend has no config', a
 
   render(
     <GeovisWorkspace
-      config={{ ...config, slots: { metadata: { component: CustomMetadata } } }}
+      config={openRight({
+        ...config,
+        slots: { metadata: { component: CustomMetadata } },
+      })}
       visualizationSpec={visualizationSpec}
     />,
     { wrapper: Provider }
   );
-
-  await openRightSidebar();
 
   expect(screen.getByTestId('custom-metadata')).toBeInTheDocument();
 });
@@ -239,17 +237,15 @@ test('hidden takes precedence over an override for a right-sidebar slot', async 
 
   render(
     <GeovisWorkspace
-      config={{
+      config={openRight({
         ...config,
         legend: { description: 'Descrição' },
         slots: { metadata: { component: CustomMetadata, hidden: true } },
-      }}
+      })}
       visualizationSpec={visualizationSpec}
     />,
     { wrapper: Provider }
   );
-
-  await openRightSidebar();
 
   expect(screen.queryByTestId('custom-metadata')).not.toBeInTheDocument();
 });
@@ -268,24 +264,26 @@ test('hiding the controls slot removes the left sidebar even with menus configur
   ).not.toBeInTheDocument();
 });
 
-test('closing the right sidebar brings its open button back', async () => {
+test('closing the right sidebar hides it, leaving no button over the map to reopen it', async () => {
   render(
     <GeovisWorkspace
-      config={{ ...config, legend: { description: 'Descrição' } }}
+      config={openRight({ ...config, legend: { description: 'Descrição' } })}
       visualizationSpec={visualizationSpec}
     />,
     { wrapper: Provider }
   );
 
-  await openRightSidebar();
-
   await act(async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Close details' }));
   });
 
+  // Hidden from the reader — and nothing over the map opens it again.
   expect(
-    screen.getByRole('button', { name: 'Open details' })
-  ).toBeInTheDocument();
+    screen.queryByRole('button', { name: 'Close details' })
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: 'Open details' })
+  ).not.toBeInTheDocument();
 });
 
 test('right sidebar starts open when initialState is "open"', () => {
@@ -303,8 +301,67 @@ test('right sidebar starts open when initialState is "open"', () => {
 
   expect(screen.getByText('Camadas')).toBeInTheDocument();
   expect(
-    screen.queryByRole('button', { name: 'Open details' })
+    screen.getByRole('button', { name: 'Close details' })
+  ).toBeInTheDocument();
+});
+
+test("a content component replaces the right sidebar's panels, and opens it through the workspace", async () => {
+  const Content = () => {
+    const { setRightSidebarOpen } = useGeovisWorkspace();
+    return (
+      <div>
+        <p>Painel do app</p>
+        <button
+          type="button"
+          onClick={() => {
+            setRightSidebarOpen({ open: false });
+          }}
+        >
+          Fechar painel
+        </button>
+      </div>
+    );
+  };
+
+  render(
+    <GeovisWorkspace
+      config={openRight({
+        ...config,
+        legend: { description: 'Descrição' },
+        rightSidebar: { title: 'Camadas', content: Content },
+      })}
+      visualizationSpec={visualizationSpec}
+    />,
+    { wrapper: Provider }
+  );
+
+  expect(screen.getByText('Painel do app')).toBeInTheDocument();
+  // The app's component owns the whole sidebar: no title, no default panels.
+  expect(screen.queryByText('Camadas')).not.toBeInTheDocument();
+  expect(screen.queryByText('Descrição')).not.toBeInTheDocument();
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'Fechar painel' }));
+  });
+  expect(
+    screen.queryByRole('button', { name: 'Fechar painel' })
   ).not.toBeInTheDocument();
+});
+
+test('a content component alone is enough to mount the right sidebar', () => {
+  const Content = () => {
+    return <p>Painel do app</p>;
+  };
+
+  render(
+    <GeovisWorkspace
+      config={{ rightSidebar: { content: Content } }}
+      visualizationSpec={visualizationSpec}
+    />,
+    { wrapper: Provider }
+  );
+
+  expect(screen.getByText('Painel do app')).toBeInTheDocument();
 });
 
 test('getInitialSelection seeds the selection from section defaultValues', () => {

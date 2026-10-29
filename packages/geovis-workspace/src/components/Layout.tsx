@@ -197,84 +197,32 @@ const OpenLeftSidebarButton = () => {
 };
 
 /**
- * Floating button that opens the right sidebar. Sits vertically centered on
- * the right edge and is hidden while the sidebar is open.
- */
-const OpenRightSidebarButton = () => {
-  const {
-    intl: { formatMessage },
-  } = useI18n();
-
-  const { isRightSidebarOpen, setRightSidebarOpen } = useGeovisWorkspace();
-
-  return (
-    <IconButton
-      icon="lucide:chevrons-left"
-      aria-label={formatMessage(messages.openDetails)}
-      onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
-        // Release focus before the button hides itself (aria-hidden), so a
-        // focused element is never hidden from assistive technology.
-        event.currentTarget.blur();
-        setRightSidebarOpen({ open: true });
-      }}
-      aria-hidden={isRightSidebarOpen}
-      tabIndex={isRightSidebarOpen ? -1 : 0}
-      sx={{
-        position: 'absolute',
-        top: '50%',
-        right: 0,
-        transform: 'translateY(-50%)',
-        zIndex: 1,
-        borderTopLeftRadius: 'md',
-        borderBottomLeftRadius: 'md',
-        borderTopRightRadius: 0,
-        borderBottomRightRadius: 0,
-        color: 'display.text.primary.default',
-        backgroundColor: 'display.background.primary.default',
-        border: 'sm',
-        borderColor: 'display.border.muted.default',
-        boxShadow: 'md',
-        opacity: isRightSidebarOpen ? 0 : 1,
-        visibility: isRightSidebarOpen ? 'hidden' : 'visible',
-        pointerEvents: isRightSidebarOpen ? 'none' : 'auto',
-        transition: 'opacity 0.2s ease-in-out, visibility 0.2s ease-in-out',
-        '&:hover': {
-          backgroundColor: 'display.background.secondary.default',
-        },
-      }}
-    />
-  );
-};
-
-/**
  * Internal layout shell. Resolves all six slots through one override-or-
  * default path (ADR-0002): `map` fills the main area; `controls` renders in
  * the left sidebar; `legend`, `warnings`, `inspector`, and `metadata` stack
- * in that order in the right sidebar. Each sidebar (and its floating reopen
- * button) is rendered only when at least one of its slots has content to
- * show — an explicit `hidden` always suppresses a slot regardless.
+ * in that order in the right sidebar. Each sidebar is rendered only when at
+ * least one of its slots has content to show — an explicit `hidden` always
+ * suppresses a slot regardless. Only the left one has a floating reopen
+ * button: the right one opens on what the reader does — a map click, or the
+ * app's own `setRightSidebarOpen` — never from a button of its own.
  */
 /**
- * The controls that float over the map: the two reopen buttons and the compact
- * timeline bar. Grouped out of `Layout` so its body stays about structure
+ * The controls that float over the map: the left sidebar's reopen button and
+ * the compact timeline bar. Grouped out of `Layout` so its body stays about structure
  * rather than about which overlay currently applies.
  */
 const MapOverlays = ({
   hasLeftSidebar,
-  hasRightSidebar,
   hudVisible,
   onDismissHud,
 }: {
   hasLeftSidebar: boolean;
-  hasRightSidebar: boolean;
   hudVisible: boolean;
   onDismissHud: () => void;
 }) => {
   return (
     <>
       {hasLeftSidebar && <OpenLeftSidebarButton />}
-
-      {hasRightSidebar && <OpenRightSidebarButton />}
 
       {hudVisible && <TimelineHud onDismiss={onDismissHud} />}
     </>
@@ -388,6 +336,21 @@ const resolveTimelineEnabled = ({
   return isSectionEnabled({ section: timelineSection, sections, selection });
 };
 
+/**
+ * Whether the right sidebar has anything to show: the app's own `content`,
+ * or any of its slots.
+ */
+const rightSidebarHasContent = (
+  params: Omit<Parameters<typeof slotHasContent>[0], 'slot'>
+): boolean => {
+  return (
+    params.config.rightSidebar?.content != null ||
+    RIGHT_SIDEBAR_SLOTS.some((slot) => {
+      return slotHasContent({ ...params, slot });
+    })
+  );
+};
+
 export const Layout = () => {
   const {
     config,
@@ -433,15 +396,12 @@ export const Layout = () => {
     slot: 'controls',
   });
 
-  const hasRightSidebar = RIGHT_SIDEBAR_SLOTS.some((slot) => {
-    return slotHasContent({
-      config,
-      spec,
-      result,
-      hasResolvedOnce,
-      click,
-      slot,
-    });
+  const hasRightSidebar = rightSidebarHasContent({
+    config,
+    spec,
+    result,
+    hasResolvedOnce,
+    click,
   });
 
   // `'bare'` drops the card chrome so the workspace fills its container
@@ -500,8 +460,8 @@ export const Layout = () => {
           remove the node the instant its slots lose content (e.g. the inspector
           clearing on an outside click), skipping the slide-out transition and
           making the sidebar vanish abruptly. Keeping it mounted lets `open` fall
-          to `false` and the overlay animate closed. The reopen buttons stay
-          gated on content — an empty sidebar has nothing to reopen. */}
+          to `false` and the overlay animate closed. The left reopen button
+          stays gated on content — an empty sidebar has nothing to reopen. */}
           <SidebarOverlay
             side="left"
             open={isLeftOpen}
@@ -520,7 +480,6 @@ export const Layout = () => {
 
           <MapOverlays
             hasLeftSidebar={hasLeftSidebar}
-            hasRightSidebar={hasRightSidebar}
             hudVisible={hudVisible}
             onDismissHud={dismissTimelineHud}
           />

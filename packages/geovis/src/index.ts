@@ -10,6 +10,11 @@ export type {
   GeoVisSplitSides,
 } from './react/mapMode';
 export { useGeoVisMapMode } from './react/mapMode';
+export type { ProximityHit } from './react/proximity';
+export {
+  type GeoVisProximitySearchValue,
+  useGeoVisProximitySearch,
+} from './react/proximityContext';
 export type { HoverTooltipConfig } from './react/tooltip';
 export type { BoundaryToggleResult } from './react/useBoundaryToggle';
 export { useBoundaryToggle } from './react/useBoundaryToggle';

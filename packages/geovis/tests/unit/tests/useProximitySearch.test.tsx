@@ -132,6 +132,35 @@ describe('useProximitySearch', () => {
     expect(result.current.state.origin).toBeNull();
   });
 
+  test('searches from the reader with no pin in focus, hiding every pin', () => {
+    const { result, calls } = setup();
+
+    act(() => {
+      void result.current.searchFromUser(ORIGIN);
+    });
+
+    expect(result.current.state).toMatchObject({
+      status: 'loading',
+      origin: ORIGIN,
+      fromUser: true,
+      focus: { layerId: null, featureId: null },
+    });
+    expect(calls[0].params).toMatchObject({ lat: ORIGIN[1], lng: ORIGIN[0] });
+  });
+
+  test('a search from a pin is not one from the reader', () => {
+    const { result } = setup();
+
+    act(() => {
+      void result.current.searchFrom(ORIGIN);
+    });
+
+    expect(result.current.state).toMatchObject({
+      fromUser: false,
+      focus: null,
+    });
+  });
+
   test('ignores a click on the point it is still searching from', () => {
     const { result, query } = setup();
     act(() => {

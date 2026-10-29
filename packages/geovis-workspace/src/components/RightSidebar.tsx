@@ -99,8 +99,9 @@ const DEFAULT_PANELS: Record<GeovisWorkspaceSlotName, React.ComponentType> = {
 
 /**
  * Internal right sidebar: the chrome hosting the legend/warnings/inspector/
- * metadata slots, stacked in that order. Rendered only when `Layout`
- * determines at least one of them has content.
+ * metadata slots, stacked in that order — or, when the app sets
+ * `rightSidebar.content`, the app's component in their place. Rendered only
+ * when `Layout` determines it has content.
  */
 export const RightSidebar = () => {
   const {
@@ -108,6 +109,7 @@ export const RightSidebar = () => {
   } = useI18n();
 
   const { config, setRightSidebarOpen } = useGeovisWorkspace();
+  const Content = config.rightSidebar?.content;
 
   return (
     <Flex
@@ -127,81 +129,91 @@ export const RightSidebar = () => {
         boxShadow: ['none', '0 8px 40px rgba(0,0,0,0.14)'],
       }}
     >
-      {/* Fixed header: display title + close, divided from the scrolling body. */}
-      <Flex
-        sx={{
-          flexShrink: 0,
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '10px',
-          paddingX: '20px',
-          paddingY: '16px',
-          borderBottom: `1px solid ${COLOR.border}`,
-        }}
-      >
-        <Heading
-          as="h3"
-          sx={{
-            margin: 0,
-            fontFamily: FONT_HEAD,
-            fontWeight: 600,
-            fontSize: '15px',
-            letterSpacing: '0.06em',
-            textTransform: 'uppercase',
-            color: COLOR.textStrong,
-          }}
-        >
-          {config.rightSidebar?.title ?? formatMessage(messages.detailsTitle)}
-        </Heading>
+      {Content ? (
+        <Content />
+      ) : (
+        <>
+          {/* Fixed header: display title + close, divided from the scrolling body. */}
+          <Flex
+            sx={{
+              flexShrink: 0,
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '10px',
+              paddingX: '20px',
+              paddingY: '16px',
+              borderBottom: `1px solid ${COLOR.border}`,
+            }}
+          >
+            <Heading
+              as="h3"
+              sx={{
+                margin: 0,
+                fontFamily: FONT_HEAD,
+                fontWeight: 600,
+                fontSize: '15px',
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                color: COLOR.textStrong,
+              }}
+            >
+              {config.rightSidebar?.title ??
+                formatMessage(messages.detailsTitle)}
+            </Heading>
 
-        <IconButton
-          icon="lucide:x"
-          aria-label={formatMessage(messages.closeDetails)}
-          onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
-            // Release focus before the sidebar hides itself (aria-hidden), so a
-            // focused element is never hidden from assistive technology.
-            event.currentTarget.blur();
-            setRightSidebarOpen({ open: false });
-          }}
-          sx={{
-            width: '28px',
-            height: '28px',
-            minWidth: 'auto',
-            flexShrink: 0,
-            color: COLOR.textGhost,
-            backgroundColor: 'transparent',
-            boxShadow: 'none',
-            borderRadius: 'md',
-            '&:hover': { color: COLOR.textMuted, backgroundColor: COLOR.fill },
-          }}
-        />
-      </Flex>
+            <IconButton
+              icon="lucide:x"
+              aria-label={formatMessage(messages.closeDetails)}
+              onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+                // Release focus before the sidebar hides itself (aria-hidden), so a
+                // focused element is never hidden from assistive technology.
+                event.currentTarget.blur();
+                setRightSidebarOpen({ open: false });
+              }}
+              sx={{
+                width: '28px',
+                height: '28px',
+                minWidth: 'auto',
+                flexShrink: 0,
+                color: COLOR.textGhost,
+                backgroundColor: 'transparent',
+                boxShadow: 'none',
+                borderRadius: 'md',
+                '&:hover': {
+                  color: COLOR.textMuted,
+                  backgroundColor: COLOR.fill,
+                },
+              }}
+            />
+          </Flex>
 
-      {/* Scrolling body: the stacked slots. */}
-      <Flex
-        sx={{
-          flex: 1,
-          minHeight: 0,
-          flexDirection: 'column',
-          gap: '4',
-          paddingX: '4',
-          paddingY: '4',
-          overflowY: 'auto',
-          // Ends at the panel, not the page — as the left sidebar's body does.
-          overscrollBehavior: 'contain',
-        }}
-      >
-        {RIGHT_SIDEBAR_SLOTS.map((slot) => {
-          if (config.slots?.[slot]?.hidden === true) return null;
-          const Override = config.slots?.[slot]?.component;
-          const DefaultPanel = DEFAULT_PANELS[slot];
-          return Override ? (
-            <Override key={slot} />
-          ) : (
-            <DefaultPanel key={slot} />
-          );
-        })}
-      </Flex>
+          {/* Scrolling body: the stacked slots. */}
+          <Flex
+            sx={{
+              flex: 1,
+              minHeight: 0,
+              flexDirection: 'column',
+              gap: '4',
+              paddingX: '4',
+              paddingY: '4',
+              overflowY: 'auto',
+              // Ends at the panel, not the page — as the left sidebar's body does.
+              overscrollBehavior: 'contain',
+            }}
+          >
+            {RIGHT_SIDEBAR_SLOTS.map((slot) => {
+              if (config.slots?.[slot]?.hidden === true) return null;
+              const Override = config.slots?.[slot]?.component;
+              const DefaultPanel = DEFAULT_PANELS[slot];
+              return Override ? (
+                <Override key={slot} />
+              ) : (
+                <DefaultPanel key={slot} />
+              );
+            })}
+          </Flex>
+        </>
+      )}
     </Flex>
   );
 };
