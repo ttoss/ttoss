@@ -54,8 +54,32 @@ export interface QuantitativeColorBy {
   defaultColor?: string;
 }
 
+/**
+ * A density gradient for a heatmap layer: the legend shows the layer's own
+ * `heatmapColors` as a continuous bar, from the lowest density to the
+ * highest. It reads its colours from the heatmap layer that points at it
+ * through `activeLegendId` (or declares it in its own `legends`), so the
+ * legend and the map can never disagree.
+ *
+ * @example
+ * ```typescript
+ * const colorBy: DensityColorBy = {
+ *   type: 'density',
+ *   lowLabel: 'Fewer crashes',
+ *   highLabel: 'More crashes',
+ * };
+ * ```
+ */
+export interface DensityColorBy {
+  type: 'density';
+  /** Label under the low end of the gradient. Default: a localized "Less". */
+  lowLabel?: string;
+  /** Label under the high end of the gradient. Default: a localized "More". */
+  highLabel?: string;
+}
+
 /** Declarative color-by configuration for a layer. */
-export type ColorBy = CategoricalColorBy | QuantitativeColorBy;
+export type ColorBy = CategoricalColorBy | QuantitativeColorBy | DensityColorBy;
 
 /**
  * Categorical color template (used inside `LayerTemplate`). Identical to

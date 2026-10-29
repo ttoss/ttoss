@@ -347,6 +347,11 @@
     "defaultMessage": "Decrease",
     "description": "Accessible label for the button that steps a setting's slider down."
   },
+  "/H0Dkt": {
+    "module": "@ttoss/geovis",
+    "defaultMessage": "More",
+    "description": "Map legend: label under the high end of a heatmap density gradient."
+  },
   "/xKyFI": {
     "module": "@ttoss/geovis",
     "defaultMessage": "Searching {results}…",
@@ -492,6 +497,11 @@
     "defaultMessage": "No data",
     "description": "Map hover tooltip: shown instead of a value when the feature has no data."
   },
+  "lUA3Ob": {
+    "module": "@ttoss/geovis",
+    "defaultMessage": "Less",
+    "description": "Map legend: label under the low end of a heatmap density gradient."
+  },
   "ltBlZe": {
     "module": "@ttoss/geovis",
     "defaultMessage": "Close",
@@ -501,6 +511,11 @@
     "module": "@ttoss/geovis",
     "defaultMessage": "You",
     "description": "Proximity search: the tag over the dot marking the reader's location."
+  },
+  "q5Z03D": {
+    "module": "@ttoss/geovis",
+    "defaultMessage": "{title}: {low} to {high}",
+    "description": "Map legend: accessible name of a heatmap density gradient. \"title\" is the legend title; \"low\" and \"high\" label its ends."
   },
   "qRVBJs": {
     "module": "@ttoss/geovis",

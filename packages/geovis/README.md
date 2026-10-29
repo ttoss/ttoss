@@ -150,12 +150,12 @@ The home view is the `view` the app's spec declares. A camera move made through 
 
 ### `LegendSpec`
 
-Each entry in `spec.legends` (or `layer.legends`) defines one choropleth legend.
+Each entry in `spec.legends` (or `layer.legends`) defines one legend: a choropleth's swatches, or a heatmap's density gradient (see the heatmap in [Paint properties](#paint-properties)).
 
 | Field           | Type                   | Required | Description                                                                                                                                                       |
 | --------------- | ---------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `id`            | `string`               | ✓        | Unique legend identifier. Referenced by `activeLegendId` and `GeoVisLegend`.                                                                                      |
-| `colorBy`       | `ColorBy`              | ✓        | Color-by configuration (`categorical` or `quantitative`). The colour always reads the layer's `mapData`; `colorBy.property` is optional, deprecated and ignored.  |
+| `colorBy`       | `ColorBy`              | ✓        | Color-by configuration (`categorical`, `quantitative` or `density`). The first two read the layer's `mapData`; `colorBy.property` is deprecated and ignored.      |
 | `title`         | `string`               |          | Short heading rendered above the swatches.                                                                                                                        |
 | `subtitle`      | `string`               |          | Secondary description rendered below the title.                                                                                                                   |
 | `icon`          | `string`               |          | Icon shown in a tinted chip beside the title, as a [`@ttoss/react-icons`](https://storybook.ttoss.dev/) name (e.g. `'lucide:tractor'`).                           |
@@ -270,6 +270,69 @@ default (`Open Sans Regular`, `Arial Unicode MS Regular`), which OpenFreeMap
 and most OpenMapTiles-derived basemaps do not serve: a missing fontstack 404s
 the glyph request and rasterizes no text at all, which looks like the layer
 never mounted. Override it only with a fontstack the basemap serves.
+
+**Heatmap (`geometry: 'heatmap'`) — `HeatmapPaint`**
+
+A heatmap draws the density of a point source: where points crowd, the heat
+rises. Radius, intensity and opacity take a number, or `[zoom, value]` pairs in
+ascending zoom that interpolate linearly between them (`ZoomScaled`) — so the
+heat neither vanishes when zooming in nor smears when zooming out.
+
+```typescript
+paint: {
+  // lowest density first; zero density is always transparent
+  heatmapColors: ['#fde68a', '#f97316', '#dc2626', '#7f1d1d'], // or 'blue' | 'green' | 'red'
+  heatmapRadius: [[10, 6], [13, 18], [16, 40]],  // heatmap-radius (pixels), by zoom
+  heatmapIntensity: [[10, 0.6], [16, 2]],        // heatmap-intensity, by zoom
+  heatmapOpacity: 1,                             // heatmap-opacity, 0–1, fixed or by zoom
+  heatmapWeight: { property: 'peso', max: 10 },  // heatmap-weight, a number or read from a property
+}
+```
+
+| Field              | Type                                     | Default         | Description                                                                                                                           |
+| ------------------ | ---------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `heatmapColors`    | `'blue' \| 'green' \| 'red' \| string[]` | MapLibre's ramp | The density ramp, lowest first: a palette from `SEQUENTIAL_PALETTES`, or at least two colours spread evenly above a transparent zero. |
+| `heatmapRadius`    | `ZoomScaled`                             | `15`            | Radius of influence of each point, in pixels.                                                                                         |
+| `heatmapIntensity` | `ZoomScaled`                             | `1`             | Multiplier on the density.                                                                                                            |
+| `heatmapOpacity`   | `ZoomScaled`                             | `1`             | Layer opacity, between `0` and `1`.                                                                                                   |
+| `heatmapWeight`    | `number \| { property, max }`            | `1`             | Each point's weight. `{ property, max }` reads it from a feature property: `0` weighs nothing, `max` and above a full point.          |
+
+`validateSpec` rejects stops out of zoom order, an opacity outside `0`–`1`, a
+single colour, an unknown palette (with the palette names as repair) and a
+weight without a property or with `max <= 0` — MapLibre would otherwise drop
+the property and draw its default. Patches (`applyPatch`) translate these
+values the same way the initial render does.
+
+To give a heatmap a legend, point the layer's `activeLegendId` at a legend
+whose `colorBy` is `{ type: 'density' }`. It renders a gradient bar in the
+layer's own colours — MapLibre's ramp when the layer declares none — so the
+legend and the map can never disagree. `lowLabel` and `highLabel` replace the
+default localized "Less"/"More" under its ends. A density legend no heatmap
+layer refers to is rejected by `validateSpec`, since it has no colours to show.
+
+```typescript
+layers: [
+  {
+    id: 'crashes-heat',
+    sourceId: 'crashes',
+    geometry: 'heatmap',
+    activeLegendId: 'crashes-density',
+    paint: { heatmapColors: 'red', heatmapWeight: { property: 'peso', max: 10 } },
+  },
+],
+legends: [
+  {
+    id: 'crashes-density',
+    title: 'Traffic crashes',
+    colorBy: { type: 'density', lowLabel: 'Fewer', highLabel: 'More' },
+  },
+],
+```
+
+At street level a heatmap usually hands over to the points themselves: fade
+the heat out by zoom (`heatmapOpacity: [[14, 1], [16, 0]]`) and add a `point`
+layer on the same source with `minzoom: 14`. See the
+[GeoVis/Heatmap stories](https://storybook.ttoss.dev/?path=/docs/geovis-heatmap--docs).
 
 ## Clustered vector tiles
 

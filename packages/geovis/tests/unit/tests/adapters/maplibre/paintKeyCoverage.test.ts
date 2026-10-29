@@ -11,6 +11,20 @@ import type { GeoVisGeometryType, VisualizationLayer } from 'src/spec/types';
 
 const GEOMETRIES = Object.keys(PAINT_KEYS) as GeoVisGeometryType[];
 
+/**
+ * Keys whose value is not a plain scalar carry their sentinel in the shape
+ * they accept: a colour ramp needs a list to be drawn, and a property weight
+ * names the property.
+ */
+const SENTINEL_SHAPES: Record<string, (sentinel: string) => unknown> = {
+  heatmapColors: (sentinel) => {
+    return [sentinel, '#000000'];
+  },
+  heatmapWeight: (sentinel) => {
+    return { property: sentinel, max: 1 };
+  },
+};
+
 test.each(GEOMETRIES)(
   'every %s paint key reaches the MapLibre layer',
   (geometry) => {
@@ -18,7 +32,10 @@ test.each(GEOMETRIES)(
     // proves that key, and no other, carried it there.
     const paint = Object.fromEntries(
       PAINT_KEYS[geometry].map((key) => {
-        return [key, `sentinel-${key}`];
+        return [
+          key,
+          SENTINEL_SHAPES[key]?.(`sentinel-${key}`) ?? `sentinel-${key}`,
+        ];
       })
     );
     const layer = {

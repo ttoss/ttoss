@@ -205,15 +205,68 @@ export interface RasterPaint {
   rasterOpacity?: number;
 }
 
+/** A `[zoom, value]` stop of a {@link ZoomScaled} value. */
+export type ZoomStop = [zoom: number, value: number];
+
+/**
+ * A value that is either fixed at every zoom, or interpolated linearly between
+ * `[zoom, value]` stops in ascending zoom order — held at the first stop's
+ * value below it and at the last stop's above it.
+ *
+ * @example
+ * ```typescript
+ * const radius: ZoomScaled = [[10, 6], [13, 18], [16, 40]];
+ * ```
+ */
+export type ZoomScaled = number | ZoomStop[];
+
+/** A sequential palette a heatmap can be coloured with by name. */
+export type HeatmapPaletteName = 'blue' | 'green' | 'red';
+
+/**
+ * A point's heatmap weight read from one of its properties: `0` weighs
+ * nothing, `max` and above weigh a full point, and values between scale
+ * linearly. A missing or non-numeric value weighs nothing.
+ *
+ * @example
+ * ```typescript
+ * // Fatal crashes carry `peso: 10`, minor ones `peso: 1`.
+ * const weight: HeatmapWeightBy = { property: 'peso', max: 10 };
+ * ```
+ */
+export interface HeatmapWeightBy {
+  /** Feature property holding the weight. */
+  property: string;
+  /** Property value that weighs a full point. Must be greater than `0`. */
+  max: number;
+}
+
 export interface HeatmapPaint {
-  /** Radius of influence of each data point, in pixels. Default: 15. */
-  heatmapRadius?: number;
-  /** Similar to `circleOpacity` — controls overall layer opacity. Default: 1. */
-  heatmapOpacity?: number;
-  /** Multiplier applied to each pixel's weight. Default: 1. */
-  heatmapIntensity?: number;
-  /** Individual data point contribution weight. Default: 1. */
-  heatmapWeight?: number;
+  /**
+   * Radius of influence of each data point, in pixels, fixed or by zoom.
+   * Default: 15.
+   */
+  heatmapRadius?: ZoomScaled;
+  /**
+   * Similar to `circleOpacity` — controls overall layer opacity, fixed or by
+   * zoom. Fading it out by zoom hands over to a point layer at street level.
+   * Default: 1.
+   */
+  heatmapOpacity?: ZoomScaled;
+  /** Multiplier applied to each pixel's weight, fixed or by zoom. Default: 1. */
+  heatmapIntensity?: ZoomScaled;
+  /**
+   * Individual data point contribution weight: a number for every point, or
+   * a {@link HeatmapWeightBy} to read it from a feature property. Default: 1.
+   */
+  heatmapWeight?: number | HeatmapWeightBy;
+  /**
+   * Colours of the density ramp, from the lowest density to the highest — a
+   * list of at least two colours, or the name of a sequential palette. Zero
+   * density is always transparent. When omitted, MapLibre's own ramp (blue
+   * through red) is drawn.
+   */
+  heatmapColors?: HeatmapPaletteName | string[];
 }
 
 /**

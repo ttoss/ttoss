@@ -448,5 +448,9 @@ export const resolveSwatchColor = (
   items: LegendItem[],
   legend: LegendSpec
 ): string => {
-  return items[0]?.color ?? legend.colorBy?.defaultColor ?? MUTED_COLOR;
+  const defaultColor =
+    legend.colorBy?.type === 'density'
+      ? undefined
+      : legend.colorBy?.defaultColor;
+  return items[0]?.color ?? defaultColor ?? MUTED_COLOR;
 };
