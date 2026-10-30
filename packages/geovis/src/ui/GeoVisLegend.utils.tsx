@@ -74,6 +74,21 @@ const isSafeUrl = (url: string): boolean => {
   }
 };
 
+/**
+ * A reference link is blue, so it stands out from the muted footer text, and
+ * underlined only under the pointer or the keyboard focus — whatever the
+ * app's theme does with links. The blue keeps over 4.5:1 against the card's
+ * white, and darkens a step on hover.
+ */
+const REFERENCE_LINK_SX = {
+  color: '#2563EB',
+  textDecorationLine: 'none',
+  '&:hover, &:focus-visible': {
+    color: '#1D4ED8',
+    textDecorationLine: 'underline',
+  },
+};
+
 export const parseReference = (text: string): React.ReactNode[] => {
   const nodes: React.ReactNode[] = [];
   const pattern =
@@ -86,7 +101,13 @@ export const parseReference = (text: string): React.ReactNode[] => {
     const url = match[2];
     nodes.push(
       isSafeUrl(url) ? (
-        <Link key={key++} href={url} target="_blank" rel="noopener noreferrer">
+        <Link
+          key={key++}
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          sx={REFERENCE_LINK_SX}
+        >
           {match[1]}
         </Link>
       ) : (
@@ -376,19 +397,55 @@ const resolveOffsetEdges = (
   };
 };
 
+/**
+ * The anchoring of a positioned legend overlay: its corner, its distance from
+ * the anchored edges, and the slide between offsets — nothing of how it looks.
+ */
+const buildAnchorStyle = (
+  position: LegendPosition,
+  offset?: number | { x?: number; y?: number }
+): React.CSSProperties => {
+  return {
+    ...resolvePositionStyle(position),
+    ...resolveOffsetEdges(position, offset),
+    transition:
+      'top 0.25s ease-in-out, bottom 0.25s ease-in-out, left 0.25s ease-in-out, right 0.25s ease-in-out',
+  };
+};
+
 export const buildContainerStyle = (
   position: LegendPosition | undefined,
   offset?: number | { x?: number; y?: number }
 ): React.CSSProperties => {
-  const positionStyle = resolvePositionStyle(position);
-  if (!positionStyle || !position) return { ...CARD_CHROME };
+  if (!position) return { ...CARD_CHROME };
 
+  return { ...buildAnchorStyle(position, offset), ...CARD_CHROME };
+};
+
+/**
+ * Style of the wrapper that stacks the legends sharing a position: their one
+ * anchor, laid out as a column as wide as a card. It wears no card chrome of
+ * its own — each legend inside is already a card — so the gap between the
+ * cards shows the map instead of a white strip joining them, and the cards'
+ * shadows are not clipped at its edges.
+ *
+ * @param position - The corner the legends share.
+ * @param offset - The group's distance from the anchored edges.
+ * @returns The wrapper's style.
+ *
+ * @example
+ * buildGroupContainerStyle('bottom-right', 12);
+ * // { position: 'absolute', zIndex: 1, bottom: 12, right: 12, ..., display: 'flex', flexDirection: 'column', width: 276 }
+ */
+export const buildGroupContainerStyle = (
+  position: LegendPosition,
+  offset?: number | { x?: number; y?: number }
+): React.CSSProperties => {
   return {
-    ...positionStyle,
-    ...resolveOffsetEdges(position, offset),
-    transition:
-      'top 0.25s ease-in-out, bottom 0.25s ease-in-out, left 0.25s ease-in-out, right 0.25s ease-in-out',
-    ...CARD_CHROME,
+    ...buildAnchorStyle(position, offset),
+    display: CARD_CHROME.display,
+    flexDirection: CARD_CHROME.flexDirection,
+    width: CARD_CHROME.width,
   };
 };
 

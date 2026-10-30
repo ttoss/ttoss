@@ -86,13 +86,20 @@ const listStyle: React.CSSProperties = {
   listStyle: 'none',
 };
 
+/**
+ * The reference wraps to a second line before it is cut, with an ellipsis at
+ * the end of that line: a source and its links rarely fit one line of the
+ * card, and a single line left most of them out.
+ */
 const referenceStyle: React.CSSProperties = {
   fontSize: 11,
+  lineHeight: 1.4,
   color: MUTED_COLOR,
   flex: 1,
   overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
+  display: '-webkit-box',
+  WebkitBoxOrient: 'vertical',
+  WebkitLineClamp: 2,
 };
 
 const GeoVisLegendItems = ({
