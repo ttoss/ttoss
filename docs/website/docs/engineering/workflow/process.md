@@ -13,7 +13,7 @@ The rules of any work are GTF's, cited below by id. Three are the delivery proce
 
 1. **One owner per transition.** Only a stage's owner changes the task's state in that stage. Two owners drift apart silently, each acting on a state the other already changed.
 2. **Rounds have a limit.** Each reason a change goes back (red checks, findings) gets the automatic rounds the `Merge rule` allows; the next goes to a person.
-3. **Finish before starting.** The work closest to done goes first: verify, then release, then the gates (reviews the agents run, fix rounds, conflicts), then new work. A priority a person set outranks the stage.
+3. **What ages fastest goes first.** Work is ordered by how fast waiting costs: a defect in production hurts users every hour, an open change gathers conflicts and stale verdicts, integrated work nobody has seen in effect lets a regression run, and new work loses little by waiting a tick. So: a bug (a task tagged `bug`) at `very_high` priority, then one at `high`, in whatever stage it is; then integrating, with the conflicts that hold it; then releasing what integrated and verifying it; then the fix rounds; then the reviews the agents run; then the scheduled tasks whose date came with no integrated change behind them; then new work. Every other priority a person set orders the work inside a stage, never across stages.
 
 ## Words
 
