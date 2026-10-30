@@ -83,7 +83,8 @@ The tick applies these on every tick, under the standing decision:
 | A change in the project's repos names no task | applies the `Intake` answer: writes a task for it, or leaves it |
 | A release step's task closes | moves each task it blocked to its check's wait, or closes it citing the release task, whose outcome is the evidence |
 | A check comes due | starts a check child (unless the `Closing evidence` names another reader), which closes the task with what it observed or sends it back |
-| A child's run failed or is gone with its task open | closes the run `failed`; the task is ready again |
+| A child's run failed, is gone, or stays `running` past the `Runtime`'s `Stale after` with its task open | closes the run `failed`; the task is ready again |
+| Another agent's run, such as a person's session, holds an open task past `Stale after` | leaves it: the Chase tells the run's owner |
 
 A person reviewing a change has three outcomes: integrate it, ask for changes (the task goes back a round), or close it, which is the "closed without integrating" row.
 
