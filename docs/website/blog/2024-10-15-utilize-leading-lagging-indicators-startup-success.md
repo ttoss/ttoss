@@ -40,11 +40,11 @@ These examples illustrate how companies can use a mix of leading and lagging ind
 
 While leading and lagging indicators are valuable tools for startups, common mistakes can undermine their effectiveness. Here are some key pitfalls to avoid:
 
-- **Over-Reliance on Lagging Indicators**: Focusing too much on past performance metrics can delay responses to emerging issues. Leading indicators should be monitored alongside lagging ones to predict future challenges (see the [Principle FF3: The Principle of Leading Indicators](/docs/product/product-development/principles#ff3-the-principle-of-leading-indicators-select-control-variables-that-predict-future-system-behavior)).
+- **Over-Reliance on Lagging Indicators**: Focusing too much on past performance metrics can delay responses to emerging issues. Leading indicators should be monitored alongside lagging ones to predict future challenges (see the [Principle FF3: The Principle of Leading Indicators](/docs/product/product-development/principles/using-fast-feedback#ff3-the-principle-of-leading-indicators-select-control-variables-that-predict-future-system-behavior)).
 
 - **Ignoring Context**: A spike in user engagement might seem positive, but if it results from a temporary campaign, it may not indicate sustainable success. Always consider the factors influencing leading indicators.
 
-- **Choosing Irrelevant Indicators**: Selecting indicators that don't align with business goals can misguide decision-making (see the [Principle FF2: The Principle of Efficient Control](/docs/product/product-development/principles#ff2-the-principle-of-efficient-control-control-parameters-that-are-both-influential-and-efficient)). Ensure that chosen metrics provide actionable insights related to your objectives.
+- **Choosing Irrelevant Indicators**: Selecting indicators that don't align with business goals can misguide decision-making (see the [Principle FF2: The Principle of Efficient Control](/docs/product/product-development/principles/using-fast-feedback#ff2-the-principle-of-efficient-control-control-parameters-that-are-both-influential-and-efficient)). Ensure that chosen metrics provide actionable insights related to your objectives.
 
 - **Neglecting Trend Analysis**: Tracking indicators without analyzing their trends over time limits their usefulness. Regularly review trends to identify patterns and adjust strategies accordingly.
 

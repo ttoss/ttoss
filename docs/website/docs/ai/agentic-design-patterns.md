@@ -21,7 +21,7 @@ A pattern differs from a principle and from a corollary: a principle is a truth 
 
 **The Problem:** Context switching and delays kill developer flow. When AI tools have latency, developers either wait (breaking concentration) or ignore the tool entirely.
 
-**The Underlying Principle:** Derived from [The Principle of Cognitive Bandwidth Conservation](/docs/ai/agentic-development-principles/symbiosis-of-human-ai-agency#the-principle-of-cognitive-bandwidth-conservation) and [B3: The Batch Size Feedback Principle](/docs/product/product-development/principles#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback).
+**The Underlying Principle:** Derived from [The Principle of Cognitive Bandwidth Conservation](/docs/ai/agentic-development-principles/symbiosis-of-human-ai-agency#the-principle-of-cognitive-bandwidth-conservation) and [B3: The Batch Size Feedback Principle](/docs/product/product-development/principles/reducing-batch-size#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback).
 
 **The Strategy:** Integrate AI tools directly into the coding environment to deliver instant suggestions and error checking, minimizing context switching and delays.
 
@@ -31,7 +31,7 @@ A pattern differs from a principle and from a corollary: a principle is a truth 
 
 **The Problem:** Large, monolithic changes carry high risk and slow feedback. Manual test creation is tedious and often skipped.
 
-**The Underlying Principle:** Derived from [V7: The Principle of Small Experiments](/docs/product/product-development/principles#v7-the-principle-of-small-experiments-many-small-experiments-produce-less-variation-than-one-big-one).
+**The Underlying Principle:** Derived from [V7: The Principle of Small Experiments](/docs/product/product-development/principles/exploiting-variability#v7-the-principle-of-small-experiments-many-small-experiments-produce-less-variation-than-one-big-one).
 
 **The Strategy:** Use AI agents to break down large tasks into small, verifiable experiments (e.g., auto-generated unit tests, code variations), reducing risk and enabling fast feedback.
 
@@ -41,7 +41,7 @@ A pattern differs from a principle and from a corollary: a principle is a truth 
 
 **The Problem:** Sequential agent execution creates bottlenecks. Without clear task boundaries, parallel agents conflict or duplicate work.
 
-**The Underlying Principle:** Derived from [The Principle of Compounding Context](/docs/ai/agentic-development-principles/architecture-of-flow#the-principle-of-compounding-context) and [D10. The Main Effort Principle](/docs/product/product-development/principles#d10-the-main-effort-principle-designate-a-main-effort-and-subordinate-other-activities).
+**The Underlying Principle:** Derived from [The Principle of Compounding Context](/docs/ai/agentic-development-principles/architecture-of-flow#the-principle-of-compounding-context) and [D10. The Main Effort Principle](/docs/product/product-development/principles/achieving-decentralized-control#d10-the-main-effort-principle-designate-a-main-effort-and-subordinate-other-activities).
 
 **The Strategy:** Agent parallelism is most effective when the critical path is clearly defined and agents are orchestrated to work on independent, non-overlapping tasks.
 
@@ -91,7 +91,7 @@ The canonical implementation of Artificial Friction: configure CI/CD or agent or
 
 **The Underlying Principle:** Derived from [The Principle of Allocative Efficiency](/docs/ai/agentic-development-principles/economics-of-interaction#the-principle-of-allocative-efficiency) and [The Corollary of the Generalization Tax](/docs/ai/agentic-development-principles/economics-of-interaction#the-corollary-of-the-generalization-tax).
 
-**The Strategy:** For critical, high-volume, repeatable tasks (query formulation, entity extraction, classification), use specialized models, or constrained decoding plus fine-tuning, instead of a single large general model. It pays when the task is well-structured and stable over time (see [The Principle of Problem Structure Allocation](/docs/ai/agentic-development-principles/foundations-of-hybrid-allocation#the-principle-of-problem-structure-allocation)) and when the marginal savings exceed the ongoing maintenance cost (see [E16: The Principle of Marginal Economics](/docs/product/product-development/principles#e16-the-principle-of-marginal-economics-always-compare-marginal-cost-and-marginal-value)). A smaller general model behind deterministic constraints satisfies the same constraint with less to maintain.
+**The Strategy:** For critical, high-volume, repeatable tasks (query formulation, entity extraction, classification), use specialized models, or constrained decoding plus fine-tuning, instead of a single large general model. It pays when the task is well-structured and stable over time (see [The Principle of Problem Structure Allocation](/docs/ai/agentic-development-principles/foundations-of-hybrid-allocation#the-principle-of-problem-structure-allocation)) and when the marginal savings exceed the ongoing maintenance cost (see [E16: The Principle of Marginal Economics](/docs/product/product-development/principles/economic-view#e16-the-principle-of-marginal-economics-always-compare-marginal-cost-and-marginal-value)). A smaller general model behind deterministic constraints satisfies the same constraint with less to maintain.
 
 **Failure Scenario:** A product relies on a single massive general-purpose LLM for a high-throughput, time-sensitive task (e.g., real-time query rewriting). Latency and compute cost become a system bottleneck. The team misses a simpler routing strategy (smaller model + deterministic constraints) that would have met the quality bar at lower marginal cost.
 
@@ -244,7 +244,7 @@ Level 3 (Employee): Can deploy to production, but only for specific, whitelisted
 
 **The Underlying Principle:** Derived from [The Principle of Probabilistic AI Output](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-principle-of-probabilistic-ai-output) and [The Corollary of Confident Hallucination](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-corollary-of-confident-hallucination).
 
-**The Strategy:** Submit the same prompt to several models. If their answers diverge, the output goes to further review; if they converge, confidence increases. Convergence is weaker evidence than it looks, because models trained on overlapping data share failure modes and variability only pools away across uncorrelated sources ([V5](/docs/product/product-development/principles#v5-the-principle-of-variability-pooling-overall-variation-decreases-when-uncorrelated-random-tasks-are-combined)): agreement can decide what to review first, never replace the review.
+**The Strategy:** Submit the same prompt to several models. If their answers diverge, the output goes to further review; if they converge, confidence increases. Convergence is weaker evidence than it looks, because models trained on overlapping data share failure modes and variability only pools away across uncorrelated sources ([V5](/docs/product/product-development/principles/exploiting-variability#v5-the-principle-of-variability-pooling-overall-variation-decreases-when-uncorrelated-random-tasks-are-combined)): agreement can decide what to review first, never replace the review.
 
 **Failure Scenario:** A team asks two models whether a library still exports a helper. Both were trained on the same years of public code and both confidently say yes; the agreement is taken as verification, and the code ships against a function the library removed in its last major version.
 

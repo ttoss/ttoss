@@ -97,7 +97,7 @@ flowchart LR
 - Requiring comprehensive QA cycles for experimental features
 - Delaying launch until every edge case is handled
 
-**The Economic Impact:** [Fast data collection has quantifiable economic value](/blog/2025/07/14/data-driven-hypothesis-validation-speed-as-competitive-advantage#the-economic-value-of-fast-data-collection) through reduced uncertainty and accelerated time-to-market. Teams that delay data collection pay opportunity costs in the form of wasted development effort and missed competitive positioning. This reflects [the cost of delay principle](/docs/product/product-development/principles#e3-the-principle-of-quantified-cost-of-delay-if-you-only-quantify-one-thing-quantify-the-cost-of-delay)—cycle time delays dominate product development economics.
+**The Economic Impact:** [Fast data collection has quantifiable economic value](/blog/2025/07/14/data-driven-hypothesis-validation-speed-as-competitive-advantage#the-economic-value-of-fast-data-collection) through reduced uncertainty and accelerated time-to-market. Teams that delay data collection pay opportunity costs in the form of wasted development effort and missed competitive positioning. This reflects [the cost of delay principle](/docs/product/product-development/principles/economic-view#e3-the-principle-of-quantified-cost-of-delay-if-you-only-quantify-one-thing-quantify-the-cost-of-delay)—cycle time delays dominate product development economics.
 
 **Strategic Solution:** Optimize development processes to reach [Initial Launch](/blog/2025/07/09/the-lifecycle-of-a-saas-feature-from-idea-to-sunset#4-initial-launch-broader-access-with-clear-expectations) as quickly as possible. Build minimum viable functionality, deploy behind feature flags, and prioritize learning over perfection.
 
@@ -126,7 +126,7 @@ The [First Mile phase](/blog/2025/07/09/the-lifecycle-of-a-saas-feature-from-ide
 
 **The Resource Drain:** Multiple First Mile features create exponential complexity. Each feature requires monitoring, support, iteration, and decision-making. Teams spread thin across multiple experiments make shallow progress on all fronts.
 
-**Strategic Solution:** Limit work-in-progress ruthlessly. Focus on completing the full journey from First Mile to Initial Launch before starting new experiments. This aligns with [queue control principles](/docs/product/product-development/principles#q13-the-first-queue-size-control-principle-dont-control-capacity-utilization-control-queue-size) that emphasize controlling queue size rather than utilization, creating sustainable learning cycles and reducing cognitive overhead.
+**Strategic Solution:** Limit work-in-progress ruthlessly. Focus on completing the full journey from First Mile to Initial Launch before starting new experiments. This aligns with [queue control principles](/docs/product/product-development/principles/managing-queues#q13-the-first-queue-size-control-principle-dont-control-capacity-utilization-control-queue-size) that emphasize controlling queue size rather than utilization, creating sustainable learning cycles and reducing cognitive overhead.
 
 ## Mistake #4: Misaligned Hiring for Lifecycle Stages
 
@@ -196,7 +196,7 @@ Avoiding these mistakes requires systematic changes to how teams approach featur
 - Plan hiring and team allocation based on portfolio composition
 - Balance innovation investment with maintenance excellence
 
-This systematic approach implements [economic decision-making principles](/docs/product/product-development/principles#e8-the-principles-of-small-decisions-influence-the-many-small-decisions) by providing frameworks for the numerous small decisions that have enormous cumulative impact on product success.
+This systematic approach implements [economic decision-making principles](/docs/product/product-development/principles/economic-view#e8-the-principles-of-small-decisions-influence-the-many-small-decisions) by providing frameworks for the numerous small decisions that have enormous cumulative impact on product success.
 
 ## Conclusion: Systematic Success Through Lifecycle Mastery
 

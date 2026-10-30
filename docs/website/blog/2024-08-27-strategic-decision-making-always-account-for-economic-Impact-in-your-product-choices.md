@@ -13,7 +13,7 @@ tags:
   - strategic decisions
 ---
 
-In today's fast-paced business environment, product decisions are often driven by deadlines, resource constraints, and the pressure to innovate. [E1. The Principle of Quantified Overall Economics: Select Actions Based on Quantified Overall Economic Impact](/docs/product/product-development/principles#e1-the-principle-of-quantified-overall-economics-select-actions-based-on-quantified-overall-economic-impact) offers a strategic framework, emphasizing that every decision should be grounded in a clear economic analysis rather than philosophical debates.
+In today's fast-paced business environment, product decisions are often driven by deadlines, resource constraints, and the pressure to innovate. [E1. The Principle of Quantified Overall Economics: Select Actions Based on Quantified Overall Economic Impact](/docs/product/product-development/principles/economic-view#e1-the-principle-of-quantified-overall-economics-select-actions-based-on-quantified-overall-economic-impact) offers a strategic framework, emphasizing that every decision should be grounded in a clear economic analysis rather than philosophical debates.
 
 <!-- truncate -->
 

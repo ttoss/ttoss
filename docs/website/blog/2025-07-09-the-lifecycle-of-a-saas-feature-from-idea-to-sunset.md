@@ -56,7 +56,7 @@ Every product feature begins as a **strategic hypothesis**—a problem to solve,
 - Define success criteria and economic impact
 - Ask "should we do this?" not "how will we do this?"
 
-This aligns with [economic decision-making principles](/docs/product/product-development/principles#the-economic-view), where we evaluate opportunities based on their quantified overall economic impact.
+This aligns with [economic decision-making principles](/docs/product/product-development/principles/economic-view), where we evaluate opportunities based on their quantified overall economic impact.
 
 ### 2. Exploration: Rapid Learning Through Small Experiments
 
@@ -69,7 +69,7 @@ If the idea demonstrates strategic promise, it enters exploration—a **learning
 - Validate core value propositions
 - Implement fast feedback loops for rapid learning
 
-Following [Principle V7: Many small experiments produce less variation than one big one](/docs/product/product-development/principles#v7-the-principle-of-small-experiments-many-small-experiments-produce-less-variation-than-one-big-one), this stage embraces controlled failure to reduce overall risk.
+Following [Principle V7: Many small experiments produce less variation than one big one](/docs/product/product-development/principles/exploiting-variability#v7-the-principle-of-small-experiments-many-small-experiments-produce-less-variation-than-one-big-one), this stage embraces controlled failure to reduce overall risk.
 
 ### 3. First Mile: Controlled Real-World Validation
 
@@ -82,7 +82,7 @@ With positive exploration results, the feature enters its **most critical phase*
 - Establish tight feedback loops with early adopters
 - Prove value delivery in real-world conditions
 
-This stage implements [Principle F28: For fast responses, preplan and invest in flexibility](/docs/product/product-development/principles#f28-the-principle-of-preplanned-flexibility-for-fast-responses-preplan-and-invest-in-flexibility) through flexible deployment strategies.
+This stage implements [Principle F28: For fast responses, preplan and invest in flexibility](/docs/product/product-development/principles/controlling-flow-under-uncertainty#f28-the-principle-of-preplanned-flexibility-for-fast-responses-preplan-and-invest-in-flexibility) through flexible deployment strategies.
 
 ### 4. Initial Launch: Broader Access with Clear Expectations
 
@@ -126,7 +126,7 @@ While mature features are stable, **continuous improvement** represents active s
 - User experience optimization
 - Strategic capability expansion
 
-This stage embodies [Principle FF8: Use fast feedback to make learning faster and more efficient](/docs/product/product-development/principles#ff8-the-fast-learning-principle-use-fast-feedback-to-make-learning-faster-and-more-efficient) through continuous user feedback integration.
+This stage embodies [Principle FF8: Use fast feedback to make learning faster and more efficient](/docs/product/product-development/principles/using-fast-feedback#ff8-the-fast-learning-principle-use-fast-feedback-to-make-learning-faster-and-more-efficient) through continuous user feedback integration.
 
 ### 7. Sunset: Strategic Resource Reallocation
 
@@ -168,7 +168,7 @@ Most importantly, explicitly managing the feature portfolio ensures the overall 
 
 Feature management is inherently complex—multiple capabilities evolving at different paces, competing for resources, and serving different user segments. This lifecycle framework brings strategic structure to that complexity.
 
-By clearly identifying where each feature stands in its evolution, teams can make better decisions about investment, set appropriate expectations, and maintain a focused, valuable product portfolio. The framework supports both [velocity in product development](/blog/2024/12/17/first-we-aim-for-velocity-driving-fast-and-adaptive-product-development) and [strategic economic decision-making](/docs/product/product-development/principles#the-economic-view).
+By clearly identifying where each feature stands in its evolution, teams can make better decisions about investment, set appropriate expectations, and maintain a focused, valuable product portfolio. The framework supports both [velocity in product development](/blog/2024/12/17/first-we-aim-for-velocity-driving-fast-and-adaptive-product-development) and [strategic economic decision-making](/docs/product/product-development/principles/economic-view).
 
 Most importantly, it acknowledges that not every feature needs to complete the full lifecycle. Some should fail quickly in exploration. Others will jump rapidly to maturity. The value lies in making these transitions intentional and strategic rather than accidental.
 
