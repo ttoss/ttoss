@@ -32,7 +32,7 @@ A runtime several projects share is a preset, which the project's `Runtime` name
 
 ## Routines
 
-What fires the runs, one row each: what fires it (a schedule with its time zone, or an event), what it runs (a skill's invocation, or a file on the default branch), its model (an exact id, as in `Models`) and its connectors. The [standard routines](routines.md#standard-routines), the rules every routine follows and the shapes of a project's own are in [Routines](routines.md). Empty: nothing fires the tick, which runs only when somebody invokes `/flow`.
+What fires the runs, one row each: what fires it (a schedule with its time zone, or an event), what it runs (a skill's invocation, or a file on the default branch), its model (an exact id, as in `Models`) and its connectors. The Chase's row may also set how many lines each section of its digest shows (default five). The [standard routines](routines.md#standard-routines), the rules every routine follows and the shapes of a project's own are in [Routines](routines.md). Empty: nothing fires the tick, which runs only when somebody invokes `/flow`.
 
 ## Extension points
 

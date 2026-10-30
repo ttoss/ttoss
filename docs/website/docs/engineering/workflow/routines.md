@@ -18,15 +18,17 @@ A routine is a run that a schedule or an event starts, not a person. Each one ru
 The tick is required, and it runs every stage an agent owns: it starts a child for each ready task, a check child for each check that came due and a review child for each change the `Review` parameter gives an agent, and it integrates and releases. The Chase and the Audit are recommended, and [`flow-setup`](https://github.com/ttoss/skills/blob/main/skills/flow-setup/SKILL.md) proposes all three.
 
 - **Chase.** A wait on a person carries the date to chase on (GTF-N4), and an unattended run writes what needs a person into the graph instead of asking (GTF-U3), but the graph reaches nobody who does not read it. Every day, the Chase sends one digest of what needs a person, in sections ordered by what ages fastest ([process](process.md#three-rules), rule 3), each line naming who acts:
-  1. **Critical bugs**: open tasks tagged `bug` at `very_high` or `high`, and any `very_high` task, with what holds each, even when nothing waits on a person.
+  1. **Critical bugs**: open tasks tagged `bug` at `very_high` or `high`, and any `very_high` task, with what holds each. One held by a person, or by an agent's run past `Stale after` or out of the rounds the `Merge rule` allows, is a line of its own; the ones agents are working within those limits are one line that counts them.
   2. **Changes waiting to be integrated by a person**: ready changes whose checks and review passed, held only by what the `Merge rule` reserves to a person.
-  3. **Overdue checks**: checks whose date came that no agent could run.
-  4. **Old decisions**: `decision` tasks untouched for a week, the one holding the most tasks first.
-  5. **Stale sessions**: a person's run holding an open task past `Stale after`.
-  6. **Overdue waits**: any other wait on a person past its date, or with no date and untouched for a week.
-  7. **No owner**: a wait that names nobody.
+  3. **No owner**: a wait that names nobody, addressed to the project's admins. No other section reaches anyone for it, so it ages without limit, and naming who acts takes a minute: the highest cost of delay per minute of a person's time ([F17](/docs/product/product-development/principles#f17-the-wsjf-scheduling-principle-when-job-durations-and-delay-costs-are-not-homogeneous-use-wsjf)).
+  4. **Overdue checks**: checks whose date came that no agent could run.
+  5. **Old decisions**: `decision` tasks untouched for a week.
+  6. **Stale sessions**: a person's run holding an open task past `Stale after`.
+  7. **Overdue waits**: any other wait on a person past its date, or with no date and untouched for a week.
 
-  Each section shows at most five lines and how many more; an empty one is left out, except Critical bugs, which says there are none. A last line gives the flow's health: the changes integrated since the last Chase, the ready tasks, and how many of them a stale session holds. Each section is read by a query sorted so that what qualifies comes first, so the Chase stops at the first row that does not, never reading the whole graph.
+  A wait or a decision costs what the work it holds costs ([F17](/docs/product/product-development/principles#f17-the-wsjf-scheduling-principle-when-job-durations-and-delay-costs-are-not-homogeneous-use-wsjf)), so one that holds a critical bug or a waiting change appears there, as what holds it, and each task appears once, in the first section that takes it. Sections 4 to 7 are left with what holds later work; inside each, the one holding the most tasks comes first, then the oldest.
+
+  The digest opens with a line per person: how many lines name them, and in which sections. Each section shows at most the lines the Chase's row in [`Routines`](parameters.md#routines) sets, five by default, and how many more; raise it when most digests cut a section for two weeks. An empty section is left out, except Critical bugs, which says there are none. A last line gives the flow's health: the changes integrated since the last Chase, the ready tasks, how many of them a stale session holds, and how many of the overdue waits name nobody. Each section is read by a query sorted so that what qualifies comes first, so the Chase stops at the first row that does not, never reading the whole graph.
 - **Audit.** Every run spends tokens. The Audit measures where, from the instruction files every session loads and the runs Flow records (GTF-S7), and files each fix it proposes as an `incubated` task for a person to promote (GTF-C1). It changes nothing itself.
 
 ## Rules of every routine
