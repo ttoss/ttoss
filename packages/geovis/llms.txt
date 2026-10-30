@@ -82,6 +82,10 @@ ui/       — GeoVisLegend, GeoVisHoverTooltip, GeoVisMarker
 
 Full field tables: [`VisualizationSpec`](README.md#visualizationspec) · [`LegendSpec`](README.md#legendspec) · [`VisualizationLayer`](README.md#visualizationlayer) · [mapType auto-configuration](README.md#maptype-auto-configuration) · [Boundary Groups](README.md#boundary-groups) · [Layer Control](README.md#layer-control).
 
+## Heatmaps
+
+A `geometry: 'heatmap'` layer draws the density of a point source. `heatmapRadius`/`heatmapIntensity`/`heatmapOpacity` take a number or `[zoom, value]` pairs (linear by zoom); `heatmapColors` takes a palette name (`'blue' | 'green' | 'red'`) or a colour list, lowest density first; `heatmapWeight` takes a number or `{ property, max }`. A legend with `colorBy: { type: 'density' }`, referenced by the layer's `activeLegendId`, renders a gradient in the layer's own colours. Details: [README § Paint properties](README.md#paint-properties).
+
 ## Data-driven maps
 
 GeoJSON sources hold geometry only; `mapData[]` entries hold per-feature values joined at runtime via `setFeatureState` — no source re-parse on data updates. `dimension: 'color' | 'size'` + `stateKey` let two datasets coexist on one source (bivariate maps) without collision. Details, fallback-chain, and the `stateKey` collision case: [README § Data-driven maps](README.md#data-driven-maps) · [README § Bivariate Maps](README.md#bivariate-maps).

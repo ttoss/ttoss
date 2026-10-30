@@ -656,7 +656,12 @@ describe('GeoVisLegend — reference field', () => {
       // Await for any pending state updates from GeoVisProvider
     });
 
-    expect(getByText('Data: Census Bureau 2020')).toBeTruthy();
+    const reference = getByText('Data: Census Bureau 2020');
+    expect(reference).toBeTruthy();
+    // Wraps to a second line before it is cut, instead of one line only.
+    expect(reference.style.whiteSpace).toBe('');
+    expect(reference.style.getPropertyValue('-webkit-line-clamp')).toBe('2');
+    expect(reference.style.overflow).toBe('hidden');
   });
 
   test('parses {link:text|url} markup in reference into anchor elements', async () => {

@@ -254,6 +254,13 @@ describe('stacked legend overlays (shared position)', () => {
     expect(popGroup!.style.position).toBe('absolute');
     expect(popGroup!.style.right).toBe('24px');
     expect(popGroup!.style.bottom).toBe('24px');
+    // The group is only an anchor: no card of its own around the cards, which
+    // would fill the gap between them with a white strip.
+    expect(popGroup!.style.backgroundColor).toBe('');
+    expect(popGroup!.style.boxShadow).toBe('');
+    expect(popGroup!.style.border).toBe('');
+    expect(popGroup!.style.overflow).toBe('');
+    expect(popGroup!.style.flexDirection).toBe('column');
 
     // Each legend is its own card; every card but the first is spaced from the
     // one above via a top margin (no internal divider).

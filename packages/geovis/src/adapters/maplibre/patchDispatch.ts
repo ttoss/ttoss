@@ -218,6 +218,28 @@ const LAYER_TOP_LEVEL_FIELD_APPLIERS: Record<
   filter: applyLayerFilterReplace,
 };
 
+/**
+ * The value a patched paint key is written to MapLibre as. A heatmap's keys
+ * are not written as given — zoom stops, a palette name and a weight read
+ * from a property all become expressions — so its value is taken from the
+ * layer the builder makes; every other geometry writes the value as is.
+ * `null` resets a heatmap key whose value builds nothing (as an unknown
+ * `heatmapColors` palette) to MapLibre's default.
+ */
+const translatePaintValue = ({
+  layer,
+  maplibreKey,
+  value,
+}: {
+  layer: VisualizationLayer;
+  maplibreKey: string;
+  value: unknown;
+}): unknown => {
+  if (layer.geometry !== 'heatmap') return value;
+  const built = toMaplibreLayer(layer) as { paint?: Record<string, unknown> };
+  return built.paint?.[maplibreKey] ?? null;
+};
+
 const applyLayerPaintReplace = (
   map: maplibregl.Map,
   viewState: LayerHostState,
@@ -235,12 +257,20 @@ const applyLayerPaintReplace = (
   const layer = viewState.spec.layers[layerIndex];
   const maplibreKey = specPaintKeyToMaplibre(specKey, layer);
   if (!maplibreKey) return;
-  setPaintWhenReady(map, layerId, maplibreKey, value);
+  const nextLayer: VisualizationLayer = {
+    ...layer,
+    paint: { ...layer.paint, [specKey]: value },
+  };
+  setPaintWhenReady(
+    map,
+    layerId,
+    maplibreKey,
+    translatePaintValue({ layer: nextLayer, maplibreKey, value })
+  );
   viewState.spec = {
     ...viewState.spec,
     layers: viewState.spec.layers.map((l, i) => {
-      if (i !== layerIndex) return l;
-      return { ...l, paint: { ...l.paint, [specKey]: value } };
+      return i === layerIndex ? nextLayer : l;
     }),
   };
 };

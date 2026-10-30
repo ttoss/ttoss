@@ -1,4 +1,8 @@
 {
+  "/H0Dkt": {
+    "defaultMessage": "More",
+    "description": "Map legend: label under the high end of a heatmap density gradient."
+  },
   "/xKyFI": {
     "defaultMessage": "Searching {results}…",
     "description": "Proximity search: shown while the first answer is awaited. \"results\" names what is searched."
@@ -115,6 +119,10 @@
     "defaultMessage": "No data",
     "description": "Map hover tooltip: shown instead of a value when the feature has no data."
   },
+  "lUA3Ob": {
+    "defaultMessage": "Less",
+    "description": "Map legend: label under the low end of a heatmap density gradient."
+  },
   "ltBlZe": {
     "defaultMessage": "Close",
     "description": "Proximity search: label of the button that closes a place's card."
@@ -122,6 +130,10 @@
   "od/d+I": {
     "defaultMessage": "You",
     "description": "Proximity search: the tag over the dot marking the reader's location."
+  },
+  "q5Z03D": {
+    "defaultMessage": "{title}: {low} to {high}",
+    "description": "Map legend: accessible name of a heatmap density gradient. \"title\" is the legend title; \"low\" and \"high\" label its ends."
   },
   "qRVBJs": {
     "defaultMessage": "Split in two",

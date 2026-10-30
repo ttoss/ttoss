@@ -1,6 +1,7 @@
 import { validateSpec } from 'src/spec/validateSpec';
 
 import geojsonUrlMap from '../../../../src/fixtures/geojson-url-map.json';
+import heatmapDensity from '../../../../src/fixtures/heatmap-density.json';
 import singleMap from '../../../../src/fixtures/single-map.json';
 
 const issueMessages = (result: ReturnType<typeof validateSpec>): string => {
@@ -17,6 +18,7 @@ describe('validateSpec', () => {
   test.each([
     ['single-map (geojson source)', singleMap],
     ['geojson-url-map (geojson url source)', geojsonUrlMap],
+    ['heatmap-density (heatmap layer + density legend)', heatmapDensity],
   ])('fixture "%s" is valid', (_name, fixture) => {
     const result = validateSpec(fixture);
 

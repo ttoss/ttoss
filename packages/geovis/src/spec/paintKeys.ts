@@ -47,6 +47,7 @@ const HEATMAP: Record<keyof HeatmapPaint, true> = {
   heatmapOpacity: true,
   heatmapIntensity: true,
   heatmapWeight: true,
+  heatmapColors: true,
 };
 
 const SYMBOL: Record<keyof SymbolPaint, true> = {
