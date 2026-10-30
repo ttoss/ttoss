@@ -531,6 +531,8 @@ When teams are set up to pivot quickly—by working on manageable projects and k
 
 Colocation accelerates feedback by fostering real-time, face-to-face communication, which is more efficient and includes both verbal and nonverbal cues (the principle [B17: The Proximity Principle](#b17-the-proximity-principle-proximity-enables-small-batch-sizes) discussed the value of physical proximity). It reduces communication costs, enabling frequent, small-batch interactions and immediate issue resolution. Beyond speed, colocation strengthens team cohesion through informal, non-task-related interactions, helping team members see each other as complex individuals and reducing negative biases. This leads to more cohesive and effective teams. Despite its proven benefits, colocation remains underutilized, but it is one of the simplest and most impactful ways to boost team performance and development speed.
 
+Scope: human-to-human communication. What people decide this way reaches agents only once written; see [The Corollary of Contextual Readiness](/docs/ai/agentic-development-principles/architecture-of-flow#the-corollary-of-contextual-readiness).
+
 ### FF20: The Empowerment Principle of Feedback: Fast feedback gives a sense of control.
 
 ### FF21: The Hurry-Up-and-Wait Principle: Large queues make it hard to create urgency.
@@ -640,5 +642,7 @@ This ties directly into [Principle FF10: The First Agility Principle](#ff10-the-
 ### D21: The Principle of Regenerative Initiative: Cultivating initiative enables us to use initiative.
 
 ### D22: The Principle of Face-to-Face Communication: Exploit the speed and bandwidth of face-to-face communications.
+
+Scope: human-to-human communication. What people decide this way reaches agents only once written; see [The Corollary of Contextual Readiness](/docs/ai/agentic-development-principles/architecture-of-flow#the-corollary-of-contextual-readiness).
 
 ### D23: The Trust Principle: Trust is built through experience.

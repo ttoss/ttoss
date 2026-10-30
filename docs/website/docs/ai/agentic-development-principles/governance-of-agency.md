@@ -25,13 +25,17 @@ The velocity and scale of agent orchestration are strictly limited by the "Trust
 
 ### The Principle of Asymmetric Risk
 
-The economics of automation are governed by convexity: the cost of verification is often linear (time spent reviewing), but the cost of failure can be non-linear (catastrophic data loss, security breaches). Agency must be capped not by the capability of the model, but by the bounds of the downside risk. When the "blast radius" of an error is infinite (e.g., production database access), autonomy must be zero, regardless of the model's intelligence.
+The economics of automation are governed by convexity: the cost of verification is often linear (time spent reviewing), but the cost of failure can be non-linear (catastrophic data loss, security breaches). Agency must therefore be capped by the bounds of the downside, not by the capability of the model. Downside is not a fixed property of the action: it is the product of what the error can reach before it is detected and what it costs to unwind once it is. An action whose failure is irreversible, or whose detection window is open-ended (a production schema change, a data deletion, a credential rotation), admits no autonomy, regardless of the model's intelligence. An action that is reversible within a bounded detection window admits autonomy up to that bound.
 
 **Failure Scenario:** An autonomous agent is given write access to the production environment to "fix a small bug." It hallucinates a command that drops a critical table. The $5 saved in developer time results in a \$500,000 outage.
 
 #### The Corollary of Bounded Edit Radius
 
 An agent given write access to a region treats the entire region as eligible for modification; edits diffuse outward from the requested target because each local change is locally plausible. Because blast radius is what governs risk, the agent's _editable surface_—not just its _executable actions_—must be constrained: scoped to specific files, specific functions, or change budgets enforced by tooling. Without this, a one-line bug fix can return as a 200-line PR that is individually defensible and collectively unreviewable, silently expanding the asymmetric downside this principle exists to bound.
+
+#### The Corollary of Reversibility-Bounded Autonomy
+
+Autonomy over an irreversible action cannot be bought by a better model, only by making the action reversible. So the autonomy granted to an agent for a class of action is set by three measurable properties of the system around it, not of the agent: the rollback path (per [The Corollary of Designed Reversal](/docs/ai/agentic-development-principles/economics-of-interaction#the-corollary-of-designed-reversal)), the detection window (per [The Corollary of the Detection Window](/docs/ai/agentic-development-principles/economics-of-interaction#the-corollary-of-the-detection-window)) and the isolation of what cannot be reversed (per [The Principle of Execution Isolation](/docs/ai/agentic-development-principles/governance-of-technical-debt#the-principle-of-execution-isolation)). Widening autonomy is an engineering act on those three; granting it without them is the failure this principle describes. This is [V12: The Principle of Variability Consequence](/docs/product/product-development/principles#v12-the-principle-of-variability-consequence-reducing-consequences-is-usually-the-best-way-to-reduce-the-cost-of-variability) applied to delegation: reducing consequences, not frequency, is what makes the variability of an agent affordable.
 
 #### The Corollary of Graduated Agency by Structure and Risk
 
