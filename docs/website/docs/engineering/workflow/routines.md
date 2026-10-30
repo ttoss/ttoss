@@ -12,12 +12,21 @@ A routine is a run that a schedule or an event starts, not a person. Each one ru
 | Routine | Fired by | Runs | Model | Writes |
 | --- | --- | --- | --- | --- |
 | Tick | a schedule: hourly, in the project's working hours | `/flow <project id>` | its row's | the [transitions](process.md#transitions) |
-| Chase | a schedule: daily, at the start of the working day | `/flow <project id> --chase` | the check model | nothing in Flow: each person gets what waits on them |
+| Chase | a schedule: daily, at the start of the working day | `/flow <project id> --chase` | the check model | nothing in Flow: one digest of what needs a person, each line naming who acts |
 | Audit | a schedule: weekly, at the end of the week | `/token-audit --routine` | the check model | an `incubated` task for each fix it proposes |
 
 The tick is required, and it runs every stage an agent owns: it starts a child for each ready task, a check child for each check that came due and a review child for each change the `Review` parameter gives an agent, and it integrates and releases. The Chase and the Audit are recommended, and [`flow-setup`](https://github.com/ttoss/skills/blob/main/skills/flow-setup/SKILL.md) proposes all three.
 
-- **Chase.** A wait on a person carries the date to chase on (GTF-N4), and an unattended run writes what needs a person into the graph instead of asking (GTF-U3), but the graph reaches nobody who does not read it. Every day, the Chase sends each person the waits on them past that date, the ones with no date that nobody touched for a week, and the decisions waiting on them.
+- **Chase.** A wait on a person carries the date to chase on (GTF-N4), and an unattended run writes what needs a person into the graph instead of asking (GTF-U3), but the graph reaches nobody who does not read it. Every day, the Chase sends one digest of what needs a person, in sections ordered by what ages fastest ([process](process.md#three-rules), rule 3), each line naming who acts:
+  1. **Critical bugs**: open tasks tagged `bug` at `very_high` or `high`, and any `very_high` task, with what holds each, even when nothing waits on a person.
+  2. **Changes waiting to be integrated by a person**: ready changes whose checks and review passed, held only by what the `Merge rule` reserves to a person.
+  3. **Overdue checks**: checks whose date came that no agent could run.
+  4. **Old decisions**: `decision` tasks untouched for a week, the one holding the most tasks first.
+  5. **Stale sessions**: a person's run holding an open task past `Stale after`.
+  6. **Overdue waits**: any other wait on a person past its date, or with no date and untouched for a week.
+  7. **No owner**: a wait that names nobody.
+
+  Each section shows at most five lines and how many more; an empty one is left out, except Critical bugs, which says there are none. A last line gives the flow's health: the changes integrated since the last Chase, the ready tasks, and how many of them a stale session holds. Each section is read by a query sorted so that what qualifies comes first, so the Chase stops at the first row that does not, never reading the whole graph.
 - **Audit.** Every run spends tokens. The Audit measures where, from the instruction files every session loads and the runs Flow records (GTF-S7), and files each fix it proposes as an `incubated` task for a person to promote (GTF-C1). It changes nothing itself.
 
 ## Rules of every routine
