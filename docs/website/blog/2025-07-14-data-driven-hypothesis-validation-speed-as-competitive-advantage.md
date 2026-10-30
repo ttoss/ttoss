@@ -77,7 +77,7 @@ xychart-beta
 
 _Teams that validate hypotheses faster gain exponentially greater competitive advantages_
 
-[E18: The Principle of Buying Information](/docs/product/product-development/principles#e18-the-principle-of-buying-information-the-value-of-information-is-its-expected-economic-value) states information has quantifiable economic value—but only if you don't pay more than it creates.
+[E18: The Principle of Buying Information](/docs/product/product-development/principles/economic-view#e18-the-principle-of-buying-information-the-value-of-information-is-its-expected-economic-value) states information has quantifiable economic value—but only if you don't pay more than it creates.
 
 Data collection reduces uncertainty, preventing costly mistakes and accelerating time-to-market. Infrastructure investment in fast collection typically delivers positive ROI through reduced [cost of delay](/docs/product/product-development/definitions#cost-of-delay) and higher success rates.
 
@@ -97,7 +97,7 @@ Teams that master rapid hypothesis validation gain multiple competitive advantag
 
 In fast-moving markets, the first team to validate and scale a successful approach often captures disproportionate value. Fast data collection enables early identification of market shifts, rapid response to opportunities, and preemptive competitive positioning before others recognize the opportunity.
 
-[Teams operating with short turning radius don't need long planning horizons](/docs/product/product-development/principles#ff10-the-first-agility-principle-we-dont-need-long-planning-horizons-when-we-have-a-short-turning-radius). Fast validation enables just-in-time resource allocation, portfolio approaches to innovation, and reduced sunk cost fallacy since abandoning initiatives becomes easier with minimal investment.
+[Teams operating with short turning radius don't need long planning horizons](/docs/product/product-development/principles/using-fast-feedback#ff10-the-first-agility-principle-we-dont-need-long-planning-horizons-when-we-have-a-short-turning-radius). Fast validation enables just-in-time resource allocation, portfolio approaches to innovation, and reduced sunk cost fallacy since abandoning initiatives becomes easier with minimal investment.
 
 Fast feedback loops create learning advantages extending beyond individual products. Teams develop better instincts through rapid experimentation cycles, accumulate systematic knowledge from each experiment, and become comfortable with uncertainty and rapid change.
 

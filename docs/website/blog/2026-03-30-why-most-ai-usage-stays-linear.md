@@ -117,7 +117,7 @@ Its scale is limited by [The Principle of Verification Asymmetry](/docs/ai/agent
 
 That is why compressed delegation only becomes reliable inside [The Principle of Automated Closed Loops](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-principle-of-automated-closed-loops). Tests, types, linters, and CI give the system fast feedback, reducing the cost of validating broader delegation.
 
-This also connects directly to [B3: The Batch Size Feedback Principle](/docs/product/product-development/principles#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback). High leverage does not justify giant blind batches. The winning move is to delegate at a higher level while still keeping feedback loops tight.
+This also connects directly to [B3: The Batch Size Feedback Principle](/docs/product/product-development/principles/reducing-batch-size#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback). High leverage does not justify giant blind batches. The winning move is to delegate at a higher level while still keeping feedback loops tight.
 
 ## What Actually Changes for Developers
 
