@@ -13,7 +13,7 @@ A routine is a run that a schedule or an event starts, not a person. Each one ru
 | --- | --- | --- | --- | --- |
 | Tick | a schedule: hourly, in the project's working hours | `/flow <project id>` | its row's | the [transitions](process.md#transitions) |
 | Chase | a schedule: daily, at the start of the working day | `/flow <project id> --chase` | the check model | nothing in Flow: one digest of what needs a person, each line naming who acts |
-| Audit | a schedule: weekly, at the end of the week | `/token-audit --routine` | the check model | an `incubated` task for each fix it proposes |
+| Audit | a schedule: weekly, at the end of the week | `/token-audit --routine` | the check model | each fix it proposes, written down as the `Intake` says |
 
 The tick is required, and it runs every stage an agent owns: it starts a child for each ready task, a check child for each check that came due and a review child for each change the `Review` parameter gives an agent, and it integrates and releases. The Chase and the Audit are recommended, and [`flow-setup`](https://github.com/ttoss/skills/blob/main/skills/flow-setup/SKILL.md) proposes all three.
 
@@ -29,7 +29,7 @@ The tick is required, and it runs every stage an agent owns: it starts a child f
   A wait or a decision costs what the work it holds costs, so one that holds a critical bug or a waiting change appears there, as what holds it, and each task appears once, in the first section that takes it. Sections 4 to 7 are left with what holds later work; inside each, the one holding the most tasks comes first, then the oldest.
 
   The digest opens with a line per person: how many lines name them, and in which sections. Each section shows at most the lines the Chase's row in [`Routines`](parameters.md#routines) sets, five by default, and how many more; raise it when most digests cut a section for two weeks. An empty section is left out, except Critical bugs, which says there are none. A last line gives the flow's health: the changes integrated since the last Chase, the ready tasks, how many of them a stale session holds, and how many of the overdue waits name nobody. Then the time in state, a line per state (ready, a person, the gates, a release, the check): how many tasks are open in it, how old the oldest of them are, and how long the ones that left it stayed, with lead time from creation to completion last. Flow computes them from the transitions it records, so the Chase reads one aggregate and never ages tasks itself. Each section is read by a query sorted so that what qualifies comes first, so the Chase stops at the first row that does not, never reading the whole graph.
-- **Audit.** Every run spends tokens. The Audit measures where, from the instruction files every session loads and the runs Flow records (GTF-S7), and files each fix it proposes as an `incubated` task for a person to promote (GTF-C1). It changes nothing itself.
+- **Audit.** Every run spends tokens. The Audit measures where, from the instruction files every session loads and the runs Flow records (GTF-S7), and writes down each fix it proposes as the `Intake` says, by default an `incubated` task for a person to promote (GTF-C1). It changes nothing itself.
 
 ## Rules of every routine
 
