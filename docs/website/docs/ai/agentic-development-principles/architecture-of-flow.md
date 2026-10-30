@@ -35,7 +35,7 @@ AI outputs should be persisted as durable artifacts (docs, code, tickets) rather
 
 #### The Corollary of Contextual Readiness
 
-AI agents cannot leverage knowledge that exists solely in human minds or ephemeral channels. Organizations accumulate "contextual debt" when decisions, workflows, and logic are not documented. To maximize agentic return, teams must shift from oral culture to written culture, ensuring that the organization's knowledge base is structured and accessible enough to serve as the "ground truth" for agentic ingestion.
+AI agents cannot leverage knowledge that exists solely in human minds or ephemeral channels. Organizations accumulate "contextual debt" when decisions, workflows, and logic are not documented. To maximize agentic return, teams must shift from oral culture to written culture, ensuring that the organization's knowledge base is structured and accessible enough to serve as the "ground truth" for agentic ingestion. This corollary governs the channels an agent reads: agent-to-agent and human-to-agent. It does not displace [FF19: The Principle of Colocation](/docs/product/product-development/principles#ff19-the-principle-of-colocation-colocation-improves-almost-all-aspects-of-communication) and [D22: The Principle of Face-to-Face Communication](/docs/product/product-development/principles#d22-the-principle-of-face-to-face-communication-exploit-the-speed-and-bandwidth-of-face-to-face-communications), which govern how people reach a decision among themselves. The two compose: people decide face to face, and the decision is written into the artifact the agents consume, because a decision that stays oral is one the agents never received.
 
 #### The Corollary of Tiered Memory Lifecycle
 
