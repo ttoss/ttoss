@@ -46,7 +46,7 @@ A stage a project, or a [delivery kind](#delivery-kinds), answers with "none" is
 - An owner that writes to Flow writes its own stage's end: Intake, Implement, a release step run by a child, Verify.
 - **After the verdict, the tick is the only writer of the task's status and wait** (GTF-S3). It writes every transition whose owner does not write to Flow, such as CI, the code host, or a person who merged or reviewed, and every one an owner left unwritten.
 - A run that only contributed to a stage, such as a reviewer, leaves its verdict on the change and writes at most references for what it produced (GTF-S3).
-- Every run is recorded before it works (GTF-S7): the tick takes a child's task with its own run before starting it, and the child records itself as its first act, with the tick's run as `parent`; a session nobody started records itself.
+- Every run is recorded before it works (GTF-S7, GTF-S8).
 - With no tick, because nothing schedules one, the next run that reads the graph writes what the tick would.
 
 ## States

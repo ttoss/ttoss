@@ -37,7 +37,7 @@ The [Delivery Process](./process.md) defines every state, the seven stages that 
 
 ## One Engine, Extended per Project
 
-The engine is the same for every project: the states, the stages and their owners, the transitions and the rules of the Delivery Process. A project extends it at defined [extension points](./parameters.md#extension-points), its parameters. An extension answers a question the engine asks and never changes the engine. A point left empty takes its default, so a project starts from the engine as it is and extends only where it differs, and a rule that turns out true of every project moves into the engine.
+The Delivery Process is the same for every project. A project answers its [extension points](./parameters.md#extension-points), its parameters, and never changes the engine; a point left empty takes its default. Why is [One engine, extended for any project](./principles.md#one-engine-extended-for-any-project).
 
 ```mermaid
 flowchart TB
