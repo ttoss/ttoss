@@ -9,6 +9,8 @@ The [delivery process](process.md) is the engine, the same for every project; th
 
 A value is a short rule written inline, or a pointer to the project file that holds it (`` `docs/agents/release.md` ``). A pointer keeps one source of truth: the tick and every child read the file, never a copy.
 
+The file is a list of `- **Name**: value` items, because the routines' scripts read it: the project and decision ids, the repos, and the numbers and switches the engine runs on (`Max runs`, `Stale after`, the rounds, whether the tick starts a review child, whether agents integrate, the Chase's size), each from an item of its own when there is one, else from the prose that states it, else the default. The [`flow` skill's parameters script](https://github.com/ttoss/skills/blob/main/skills/flow/scripts/params.mjs) says what it read and where each value came from.
+
 ## Identity
 
 | Parameter                 | Required | What it is                                                                                      |
