@@ -64,3 +64,62 @@ export const distanceInMetres = (
       Math.sin(dLng / 2) ** 2;
   return 2 * EARTH_RADIUS * Math.asin(Math.sqrt(a));
 };
+
+const toDegrees = (radians: number) => {
+  return (radians * 180) / Math.PI;
+};
+
+/**
+ * The point `metres` away from `origin` along a great circle, heading
+ * `bearing` degrees clockwise from north.
+ *
+ * @example
+ * destinationPoint({ origin: [0, 0], metres: 111195, bearing: 0 }); // ≈ [0, 1]
+ */
+export const destinationPoint = ({
+  origin: [lng, lat],
+  metres,
+  bearing,
+}: {
+  origin: [number, number];
+  metres: number;
+  bearing: number;
+}): [number, number] => {
+  const angle = metres / EARTH_RADIUS;
+  const heading = toRadians(bearing);
+  const lat1 = toRadians(lat);
+  const lat2 = Math.asin(
+    Math.sin(lat1) * Math.cos(angle) +
+      Math.cos(lat1) * Math.sin(angle) * Math.cos(heading)
+  );
+  const lng2 =
+    toRadians(lng) +
+    Math.atan2(
+      Math.sin(heading) * Math.sin(angle) * Math.cos(lat1),
+      Math.cos(angle) - Math.sin(lat1) * Math.sin(lat2)
+    );
+  return [toDegrees(lng2), toDegrees(lat2)];
+};
+
+/**
+ * The closed ring of a circle of `metres` around `origin`, as a GeoJSON
+ * polygon holds it: `steps` points clockwise from north, the first repeated
+ * at the end.
+ *
+ * @example
+ * circleRing({ origin: [0, 0], metres: 1000, steps: 4 }).length; // 5
+ */
+export const circleRing = ({
+  origin,
+  metres,
+  steps = 96,
+}: {
+  origin: [number, number];
+  metres: number;
+  steps?: number;
+}): [number, number][] => {
+  const ring = Array.from({ length: steps }, (_, index) => {
+    return destinationPoint({ origin, metres, bearing: (index * 360) / steps });
+  });
+  return [...ring, ring[0]];
+};

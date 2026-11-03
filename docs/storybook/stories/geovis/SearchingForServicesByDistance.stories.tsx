@@ -34,6 +34,9 @@ const loadLocaleData = async (locale: string) => {
  * `fromAnyPoint`, a click on any point of the map searches from there — see the
  * "From any point" story.
  *
+ * The circle is drawn on the map: tilt the map (right-drag, or Ctrl + drag)
+ * and it lies flat on the ground, the sweep and the pulses too.
+ *
  * A fake request stands in for the search — it answers after a moment, with
  * services placed at random within the ring asked for.
  */

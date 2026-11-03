@@ -14,9 +14,16 @@ import type {
   ProximityQueryParams,
   ProximityResult,
 } from 'src/spec/types.proximity';
+import { AREA_IDS } from 'src/ui/GeoVisProximitySearch.area';
 import { DOUBLE_CLICK_WAIT_MS } from 'src/ui/GeoVisProximitySearch.hooks';
 
 import { render } from '../renderWithI18n';
+import {
+  buildMap,
+  METRES_PER_DEGREE,
+  type MockMap,
+  ORIGIN,
+} from './proximitySearchMap';
 
 jest.mock('src/adapters/maplibre/pinImages', () => {
   return {
@@ -24,104 +31,6 @@ jest.mock('src/adapters/maplibre/pinImages', () => {
     renderPinSvg: jest.fn(),
   };
 });
-
-type Handler = (event?: unknown) => void;
-
-/** The map the fake adapter hands out, with what the test drives it by. */
-type MockMap = ReturnType<typeof buildMap>;
-
-/** Metres in one degree of latitude. */
-const METRES_PER_DEGREE = 111_195;
-
-const ORIGIN: [number, number] = [-46.63, -23.55];
-
-const buildMap = ({ width }: { width: number }) => {
-  const handlers = new Map<string, Handler[]>();
-  const container = document.createElement('div');
-  Object.defineProperty(container, 'clientWidth', { value: width });
-  Object.defineProperty(container, 'clientHeight', { value: 500 });
-  document.body.append(container);
-  const canvas = {
-    style: { cursor: '' },
-    getBoundingClientRect: () => {
-      return { left: 0, top: 0 } as DOMRect;
-    },
-  };
-  const map = {
-    container,
-    feature: {
-      id: 7 as number | undefined,
-      layer: { id: 'pins' },
-      geometry: { type: 'Point', coordinates: ORIGIN } as {
-        type: string;
-        coordinates?: unknown;
-      },
-    } as unknown,
-    hasLayer: true,
-    on: jest.fn((event: string, layerOrHandler: unknown, maybe?: unknown) => {
-      const handler = (
-        typeof layerOrHandler === 'function' ? layerOrHandler : maybe
-      ) as Handler;
-      handlers.set(event, [...(handlers.get(event) ?? []), handler]);
-    }),
-    off: jest.fn((event: string, layerOrHandler: unknown, maybe?: unknown) => {
-      const handler =
-        typeof layerOrHandler === 'function' ? layerOrHandler : maybe;
-      handlers.set(
-        event,
-        (handlers.get(event) ?? []).filter((known) => {
-          return known !== handler;
-        })
-      );
-    }),
-    fire: (event: string, payload?: unknown) => {
-      for (const handler of handlers.get(event) ?? []) handler(payload);
-    },
-    getContainer: () => {
-      return container;
-    },
-    getCanvas: () => {
-      return canvas;
-    },
-    getCanvasContainer: () => {
-      return { addEventListener: jest.fn(), removeEventListener: jest.fn() };
-    },
-    getLayer: (id: string) => {
-      return map.hasLayer && (id === 'pins' || id === 'areas')
-        ? { id }
-        : undefined;
-    },
-    queryRenderedFeatures: (
-      _point: unknown,
-      options?: { layers?: string[] }
-    ) => {
-      const feature = map.feature as { layer: { id: string } } | null;
-      if (!feature) return [];
-      if (options?.layers && !options.layers.includes(feature.layer.id)) {
-        return [];
-      }
-      return [feature];
-    },
-    project: ([lng, lat]: [number, number]) => {
-      return {
-        x: 400 + (lng - ORIGIN[0]) * 10_000,
-        y: 250 - (lat - ORIGIN[1]) * 10_000,
-      };
-    },
-    getZoom: () => {
-      return 14;
-    },
-    easeTo: jest.fn(),
-    getFeatureState: () => {
-      return {};
-    },
-    setFeatureState: jest.fn(),
-    isStyleLoaded: () => {
-      return true;
-    },
-  };
-  return map;
-};
 
 // var is hoisted alongside jest.mock so the reference is valid inside the factory.
 // eslint-disable-next-line no-var
@@ -272,6 +181,8 @@ const settle = async () => {
 };
 
 beforeEach(() => {
+  // jsdom draws no canvas: the search's sweep skips its frames.
+  jest.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null);
   mockSetPinFocus = jest.fn();
   jest.mocked(renderPinSvg).mockResolvedValue({
     svg: '<svg xmlns="http://www.w3.org/2000/svg"/>',
@@ -282,6 +193,7 @@ beforeEach(() => {
 
 afterEach(() => {
   mockMap.container.remove();
+  jest.mocked(HTMLCanvasElement.prototype.getContext).mockRestore();
 });
 
 describe('GeoVisProximitySearch', () => {
@@ -1015,5 +927,167 @@ describe('GeoVisProximitySearch from any point', () => {
       mockMap.fire('mousemove', { point: { x: 400, y: 250 } });
     });
     expect(mockMap.getCanvas().style.cursor).toBe('pointer');
+  });
+});
+
+describe('the searched area on the map', () => {
+  /** A 2D context recording what the sweep draws: jsdom has none. */
+  const fakeContext = () => {
+    return {
+      clearRect: jest.fn(),
+      createConicGradient: jest.fn(() => {
+        return { addColorStop: jest.fn() };
+      }),
+      beginPath: jest.fn(),
+      arc: jest.fn(),
+      fill: jest.fn(),
+      stroke: jest.fn(),
+      fillStyle: '' as unknown,
+      strokeStyle: '',
+      lineWidth: 1,
+    };
+  };
+  let context: ReturnType<typeof fakeContext>;
+
+  /** The kinds of the features the area's source last received. */
+  const drawnKinds = () => {
+    const { setData } = mockMap.sources.get(AREA_IDS.source)!;
+    const data = setData.mock.lastCall![0] as {
+      features: { properties: { kind: string } }[];
+    };
+    return data.features.map((feature) => {
+      return feature.properties.kind;
+    });
+  };
+
+  /** Lets the circle grow in, frame by frame. */
+  const growIn = () => {
+    act(() => {
+      jest.advanceTimersByTime(500);
+    });
+  };
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+    context = fakeContext();
+    jest
+      .mocked(HTMLCanvasElement.prototype.getContext)
+      .mockReturnValue(context as unknown as CanvasRenderingContext2D);
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  test('a search draws the circle beneath the labels, growing it in before the radius line', async () => {
+    await renderSearch();
+    clickPin();
+
+    expect(mockMap.addSource).toHaveBeenCalledWith(
+      AREA_IDS.source,
+      expect.objectContaining({ type: 'geojson' })
+    );
+    for (const id of [AREA_IDS.fill, AREA_IDS.outline, AREA_IDS.dashes]) {
+      expect(mockMap.addLayer).toHaveBeenCalledWith(
+        expect.objectContaining({ id, source: AREA_IDS.source }),
+        'labels'
+      );
+    }
+    expect(drawnKinds()).toEqual(['area']);
+
+    growIn();
+
+    expect(drawnKinds()).toEqual(['area', 'radius']);
+  });
+
+  test('widening redraws at once, with a ring at the smaller radius; clearing takes the circle off', async () => {
+    const { calls } = await renderSearch();
+    clickPin();
+    growIn();
+    calls[0].resolve([]);
+    await settle();
+
+    fireEvent.click(screen.getByRole('radio', { name: '2 km' }));
+    expect(drawnKinds()).toEqual(['area', 'ring', 'radius']);
+
+    calls[1].resolve([]);
+    await settle();
+    fireEvent.click(
+      screen.getAllByRole('button', { name: 'Clear search' }).at(-1)!
+    );
+
+    for (const id of [AREA_IDS.fill, AREA_IDS.outline, AREA_IDS.dashes]) {
+      expect(mockMap.layers.has(id)).toBe(false);
+    }
+    expect(mockMap.sources.has(AREA_IDS.source)).toBe(false);
+  });
+
+  test('while the answer is awaited, a canvas sweeps and pulses over the circle, gone once it is in', async () => {
+    const { calls } = await renderSearch();
+    clickPin();
+
+    expect(mockMap.addSource).toHaveBeenCalledWith(
+      AREA_IDS.sweepSource,
+      expect.objectContaining({ type: 'canvas', animate: true })
+    );
+    expect(mockMap.layers.has(AREA_IDS.sweep)).toBe(true);
+
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+    expect(context.createConicGradient).toHaveBeenCalled();
+    expect(context.stroke).toHaveBeenCalled();
+
+    calls[0].resolve([]);
+    await settle();
+
+    expect(mockMap.layers.has(AREA_IDS.sweep)).toBe(false);
+    expect(mockMap.sources.has(AREA_IDS.sweepSource)).toBe(false);
+    expect(mockMap.layers.has(AREA_IDS.fill)).toBe(true);
+  });
+
+  test('without a conic gradient, the sweep still pulses', async () => {
+    const { createConicGradient: _, ...withoutConic } = context;
+    jest
+      .mocked(HTMLCanvasElement.prototype.getContext)
+      .mockReturnValue(withoutConic as unknown as CanvasRenderingContext2D);
+    await renderSearch();
+    clickPin();
+
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    expect(context.fill).not.toHaveBeenCalled();
+    expect(context.stroke).toHaveBeenCalled();
+  });
+
+  test('a style still being parsed waits, and a new basemap gets the circle back', async () => {
+    const { calls } = await renderSearch();
+    const addSource = mockMap.addSource.getMockImplementation()!;
+    mockMap.addSource.mockImplementation(() => {
+      throw new Error('Style is not done loading');
+    });
+    clickPin();
+    growIn();
+    calls[0].resolve([]);
+    await settle();
+    expect(mockMap.sources.has(AREA_IDS.source)).toBe(false);
+
+    mockMap.addSource.mockImplementation(addSource);
+    act(() => {
+      mockMap.fire('styledata');
+    });
+    expect(mockMap.sources.has(AREA_IDS.source)).toBe(true);
+
+    // A new basemap discards the style, and with it the area.
+    mockMap.sources.clear();
+    mockMap.layers.clear();
+    act(() => {
+      mockMap.fire('styledata');
+    });
+
+    expect(mockMap.layers.has(AREA_IDS.fill)).toBe(true);
+    expect(drawnKinds()).toEqual(['area', 'radius']);
   });
 });

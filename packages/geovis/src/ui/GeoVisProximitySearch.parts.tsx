@@ -1,23 +1,20 @@
-import * as React from 'react';
-
+import { destinationPoint } from '../react/proximity.geo';
 import {
   accent,
   AT_ORIGIN,
-  circle,
-  EASE_OUT,
   KEYFRAMES,
   MONO,
 } from './GeoVisProximitySearch.styles';
 import { ACCENT, TEXT_STRONG, USER, USER_RGB } from './palette';
 
-/** A distance tag over the circle, as the radius line carries it. */
-const RadiusTag = ({ text, left }: { text: string; left: number }) => {
+/** A distance tag over the circle, standing on the radius line at `x`, `y`. */
+const RadiusTag = ({ text, x, y }: { text: string; x: number; y: number }) => {
   return (
     <span
       style={{
         position: 'absolute',
-        left,
-        top: -20,
+        left: x,
+        top: y - 20,
         transform: 'translateX(-50%)',
         fontFamily: MONO,
         fontSize: 10,
@@ -34,124 +31,95 @@ const RadiusTag = ({ text, left }: { text: string; left: number }) => {
   );
 };
 
+/** A point on screen, in pixels from the map's top left. */
+type ScreenPoint = { x: number; y: number };
+
 /**
- * The searched area: the circle of the radius, a dashed ring at each smaller
- * radius on offer with its distance, the radius line with its own, and — while
- * the answer is awaited — the sweep and the pulses.
+ * The searched area's distances, over the circle the map draws (see
+ * `useRadiusArea`): each smaller radius on offer at its ring's west end, and
+ * the radius on its line. Placed at the points they label as the map projects
+ * them, so they follow the circle as the map tilts and turns, while staying
+ * upright to be read.
  *
- * @param params.pixelsPerMetre - The current scale, which sizes every ring.
+ * @param params.origin - The searched point, `[lng, lat]`.
+ * @param params.originPx - Where `origin` is on screen: the labels are placed
+ * from it.
+ * @param params.project - The map's `[lng, lat]` → screen projection.
  */
-export const RadiusArea = ({
+export const RadiusLabels = ({
   request,
+  origin,
   radius,
   radii,
-  pixelsPerMetre,
-  loading,
+  originPx,
+  project,
   formatRadius,
 }: {
   request: number;
+  origin: [number, number];
   radius: number;
   radii: number[];
-  pixelsPerMetre: number;
-  loading: boolean;
+  originPx: ScreenPoint;
+  project: (lngLat: [number, number]) => ScreenPoint;
   formatRadius: (metres: number) => string;
 }) => {
-  const R = radius * pixelsPerMetre;
+  const at = (metres: number, bearing: number) => {
+    const point = project(destinationPoint({ origin, metres, bearing }));
+    return { x: point.x - originPx.x, y: point.y - originPx.y };
+  };
   const wide = radius > radii[0];
+  // Halfway along the line, or along the part of it past the first ring.
+  const tag = at(radius / 2 + (wide ? radii[0] / 2 : 0), 90);
   const inner = radii.filter((ring) => {
     return ring < radius;
   });
   return (
     <>
-      <div
-        key={`area${request}`}
-        style={circle(R, {
-          background: accent(0.1),
-          border: `2px solid ${accent(0.6)}`,
-          animation: `${KEYFRAMES.grow} .45s ${EASE_OUT} both`,
-        })}
-      />
       {inner.map((ring) => {
-        const r = ring * pixelsPerMetre;
+        const point = at(ring, 270);
         return (
-          <React.Fragment key={`ring${ring}`}>
-            <div
-              style={circle(r, {
-                background: accent(0.07),
-                border: `1.5px dashed ${accent(0.7)}`,
-                transform: 'translate(-50%,-50%)',
-                animation: `${KEYFRAMES.fadeIn} .35s both`,
-              })}
-            />
-            <div
+          <div
+            key={`ring${ring}`}
+            style={{
+              ...AT_ORIGIN,
+              pointerEvents: 'none',
+              animation: `${KEYFRAMES.fadeIn} .3s .4s both`,
+            }}
+          >
+            <span
               style={{
-                ...AT_ORIGIN,
-                pointerEvents: 'none',
-                animation: `${KEYFRAMES.fadeIn} .3s .4s both`,
+                position: 'absolute',
+                left: point.x,
+                top: point.y,
+                transform: 'translate(-50%,-50%)',
+                fontFamily: MONO,
+                fontSize: 9,
+                fontWeight: 600,
+                color: ACCENT,
+                background: 'rgba(255,255,255,0.9)',
+                padding: '0 4px',
+                borderRadius: 3,
               }}
             >
-              <span
-                style={{
-                  position: 'absolute',
-                  left: -r,
-                  top: 0,
-                  transform: 'translate(-50%,-50%)',
-                  fontFamily: MONO,
-                  fontSize: 9,
-                  fontWeight: 600,
-                  color: ACCENT,
-                  background: 'rgba(255,255,255,0.9)',
-                  padding: '0 4px',
-                  borderRadius: 3,
-                }}
-              >
-                {formatRadius(ring)}
-              </span>
-            </div>
-          </React.Fragment>
+              {formatRadius(ring)}
+            </span>
+          </div>
         );
       })}
       <div
         key={`rad${request}-${radius}`}
         style={{
           ...AT_ORIGIN,
-          width: R,
-          borderTop: `1.5px dashed ${accent(0.75)}`,
           pointerEvents: 'none',
           animation: `${KEYFRAMES.fadeIn} .3s .3s both`,
         }}
       >
-        <RadiusTag
-          text={formatRadius(radius)}
-          left={R / 2 + (wide ? ((radii[0] / radius) * R) / 2 : 0)}
-        />
+        <RadiusTag text={formatRadius(radius)} x={tag.x} y={tag.y} />
       </div>
-      {loading && (
-        <>
-          <div
-            key={`sweep${request}-${radius}`}
-            style={circle(R, {
-              background: `conic-gradient(from 0deg, ${accent(0)} 0deg, ${accent(0)} 270deg, ${accent(0.38)} 360deg)`,
-              animation: `${KEYFRAMES.spin} 1.3s linear infinite`,
-            })}
-          />
-          {[0, 0.8].map((delay) => {
-            return (
-              <div
-                key={`pulse${delay}${request}-${radius}`}
-                style={circle(R, {
-                  border: `2px solid ${accent(0.55)}`,
-                  animation: `${KEYFRAMES.pulse} 1.6s ${delay}s ease-out infinite`,
-                  opacity: 0,
-                })}
-              />
-            );
-          })}
-        </>
-      )}
     </>
   );
 };
+
 /** The small spinner the bar shows while an answer is awaited. */
 export const Spinner = () => {
   return (

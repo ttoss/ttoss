@@ -1,16 +1,18 @@
 import { useI18n } from '@ttoss/react-i18n';
+import type { Map as MapLibreMap } from 'maplibre-gl';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import { useGeoVis } from '../react/contexts';
 import { useGeoVisMapMode } from '../react/mapMode';
 import { type ProximityState, useProximitySearch } from '../react/proximity';
-import { metresPerPixel } from '../react/proximity.geo';
+import { circleRing, metresPerPixel } from '../react/proximity.geo';
 import { usePublishProximitySearch } from '../react/proximityContext';
 import type {
   ProximityCategory,
   ProximitySearch,
 } from '../spec/types.proximity';
+import { useLoadingSweep, useRadiusArea } from './GeoVisProximitySearch.area';
 import { FocusPin } from './GeoVisProximitySearch.focusPin';
 import { HitPin } from './GeoVisProximitySearch.hitPin';
 import {
@@ -31,7 +33,7 @@ import { LocationDialog } from './GeoVisProximitySearch.locationDialog';
 import { messages } from './GeoVisProximitySearch.messages';
 import {
   PointMarker,
-  RadiusArea,
+  RadiusLabels,
   YouMarker,
 } from './GeoVisProximitySearch.parts';
 import { StatusBar } from './GeoVisProximitySearch.statusBar';
@@ -167,6 +169,27 @@ const usePublishSearch = ({
 };
 
 /**
+ * The lowest point on screen of the circle the map draws around `origin`,
+ * in pixels from the map's top: where the bar goes, under the circle however
+ * the map is tilted or turned.
+ */
+const circleBottom = ({
+  map,
+  origin,
+  radius,
+}: {
+  map: MapLibreMap;
+  origin: [number, number];
+  radius: number;
+}) => {
+  return Math.max(
+    ...circleRing({ origin, metres: radius, steps: 32 }).map((point) => {
+      return map.project(point).y;
+    })
+  );
+};
+
+/**
  * What marks the point the search runs from, each clearing it when clicked:
  * the reader's blue dot, the dot on a point of the map, or the clicked pin.
  */
@@ -271,6 +294,20 @@ export const GeoVisProximitySearch = ({
   });
   usePublishSearch({ state, radii, select, setRadius, clear });
   useFocusOnSearchedPin(state.status === 'idle' ? null : state.focus);
+  const { origin } = state;
+  useRadiusArea({
+    map,
+    origin,
+    radius: state.radius,
+    radii,
+    request: state.request,
+  });
+  useLoadingSweep({
+    map,
+    origin,
+    radius: state.radius,
+    loading: state.status === 'loading',
+  });
 
   const fromUserLocation = config.fromUserLocation ? (
     <FromUserLocation
@@ -282,7 +319,6 @@ export const GeoVisProximitySearch = ({
   ) : null;
 
   // Idle, there is no origin: only a search draws anything.
-  const { origin } = state;
   if (!map || width === 0 || !origin) return fromUserLocation;
 
   const originPx = map.project(origin);
@@ -308,12 +344,15 @@ export const GeoVisProximitySearch = ({
           zIndex: 4,
         }}
       >
-        <RadiusArea
+        <RadiusLabels
           request={state.request}
+          origin={origin}
           radius={state.radius}
           radii={radii}
-          pixelsPerMetre={pixelsPerMetre}
-          loading={state.status === 'loading'}
+          originPx={originPx}
+          project={(lngLat) => {
+            return map.project(lngLat);
+          }}
           formatRadius={format}
         />
         {visible.map((hit) => {
@@ -346,7 +385,7 @@ export const GeoVisProximitySearch = ({
           zIndex: 5,
           left: 8,
           right: 8,
-          top: originPx.y + R + 14,
+          top: circleBottom({ map, origin, radius: state.radius }) + 14,
           display: 'flex',
           justifyContent: 'center',
           transform: `translateX(${originPx.x - width / 2}px)`,

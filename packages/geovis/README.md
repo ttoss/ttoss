@@ -1239,6 +1239,8 @@ Declaring `proximitySearch` makes `<GeoVisProvider>` search the places within a 
 
 While a search is shown, every other pin is hidden.
 
+The circle is drawn on the map itself, beneath the map's labels: a polygon of the radius in metres, with a dashed ring at each smaller radius on offer and the radius line. It tilts and turns with the map. While the query runs, the sweep and the pulses are drawn on a `canvas` source laid over the circle, so they tilt with it too. The distance labels, the found places and the bar stay upright, at the points they mark. The map's own sources and layers are prefixed `geovis-proximity-`; avoid that prefix for your own ids.
+
 ```tsx
 const spec: VisualizationSpec = {
   // ...sources and layers, among them the `hospitals` pins
