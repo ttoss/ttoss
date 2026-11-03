@@ -59,7 +59,9 @@ For example, in product development, rather than prescribing detailed features, 
 
 ## D9. The Principle of Boundaries: Establish clear roles and boundaries.
 
-In decentralized control, clearly defined roles and boundaries are crucial to avoid confusion. Too much overlap leads to inefficiency, while gaps leave tasks undone. In product development, unclear roles increase the need for communication and meetings. For instance, without clear roles, many people may need to approve simple decisions, slowing progress. Well-defined roles streamline teamwork. Additionally, it's important to identify and address gaps between roles to ensure all tasks are covered.
+Decentralized control works only when everyone knows what is theirs to decide and do. Unclear boundaries fail in two ways. Where roles overlap, two people do the same work or wait for each other, and every simple decision collects approvals. Where a gap lies between roles, the work falls between them and nobody does it.
+
+Clear roles make communication cheaper, because each person knows whom a question belongs to without a meeting to find out. Defining roles is not enough on its own: look for the gaps between them too, since work there goes undone without anyone deciding to drop it.
 
 ## D10. The Main Effort Principle: Designate a main effort and subordinate other activities.
 
