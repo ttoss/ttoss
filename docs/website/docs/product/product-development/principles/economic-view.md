@@ -9,11 +9,17 @@ Transform all decisions into life-cycle profit comparisons rather than chasing p
 
 ## E1: The Principle of Quantified Overall Economics: Select actions based on quantified overall economic impact.
 
-Consider economic impact when making project decisions. Choose between releasing early with fewer tests versus testing more and releasing later based on economics, not philosophy.
+Should a product move from the development lab to the factory before every defect is gone? Most companies argue it as philosophy: engineering should finish first, or waiting for perfection before facing the factory is foolish. Quantifying the overall economic impact settles it.
+
+Gather the facts first. A defect costs 10 times more to fix on the factory floor than in the lab; an immature product creates $20,000 of rework on the floor; the lab needs five weeks to find the defects the floor finds in one. Moving early saves 4 weeks of cycle time and raises the cost of fixing defects from $2,000 to $20,000, so the question becomes whether 4 weeks of cycle time are worth $18,000. If they are, the immature product goes to the factory.
+
+An economic framework expresses every operational impact in one unit, life-cycle profit, which makes complex multivariable decisions fast, correct and explainable to anyone, including senior management.
 
 ## E2: The Principle of Interconnected Variables: We can't just change one thing.
 
-Decisions simultaneously affect multiple variables. [Proxy variables](/docs/product/product-development/definitions#proxy-variable) are interconnected because they represent other variables.
+A decision almost never moves a single [proxy variable](/docs/product/product-development/definitions#proxy-variable). If it did, questions like "who wants to eliminate waste?" would be easy; in practice the question is how much time and effort to trade for eliminating a given amount of waste.
+
+A single-variable decision needs only the direction of the change. A multivariable one also needs its magnitude, and a way to express every change in every variable in the same unit of measure, the only way to judge the overall effect of changing several proxy variables at once.
 
 ## E3: The Principle of Quantified Cost of Delay: If you only quantify one thing, quantify the cost of delay.
 
