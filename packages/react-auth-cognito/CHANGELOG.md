@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 5.0.3 (2026-11-03)
+
+**Note:** Version bump only for package @ttoss/react-auth-cognito
+
 ## 5.0.2 (2026-10-29)
 
 ### Bug Fixes
