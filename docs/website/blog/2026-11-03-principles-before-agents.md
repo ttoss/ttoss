@@ -76,3 +76,5 @@ The workflow limits how much work agents start, but it never throttles them on t
 Studying principles before building felt slow at first. Looking back, it was the fastest path. Every time the workflow surprised me, I could trace the failure to a principle I had ignored or misapplied, fix it at that level, and watch the fix reach every project at its next run. Without the principles, I would have been patching symptoms one at a time.
 
 If you are about to put agents into your delivery process, my advice is the same thing I did: before you write the first rule, write down why. The full set of principles and the table mapping each rule to them live on the [principles page](/docs/engineering/workflow/principles).
+
+If you read them, I would love your feedback. Tell me which principle you disagree with, which one is missing, or where a rule does not follow from the principle it cites. The workflow is still young, and the principles are the part I most want to get right.
