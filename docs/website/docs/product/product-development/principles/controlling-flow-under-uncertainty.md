@@ -11,9 +11,25 @@ title: Controlling Flow Under Uncertainty
 
 ## F4: The Principle of Congestion Pricing: Use pricing to reduce demand during congested periods.
 
+Decision-makers should feel both the cost and the benefit of their choices ([E14](/docs/product/product-development/principles/economic-view#e14-the-first-market-principle-ensure-decision-makers-feel-both-cost-and-benefit)). The cost of loading a resource depends on how congested it is, and the most elegant way to make a project feel that cost is to charge more when the resource is congested.
+
+Airfares and hotel rates work this way: customers with no flexibility pay high-season prices, and those with flexibility move to the off-season. Any flexible demand is enough, because the queueing curve is so steep that a small shift in demand makes a large difference in flow time. Start simple: a premium of 20 to 50 percent is usually enough to move flexible demand. Project managers already decide whether to pay for faster service from external suppliers; the same choice can be extended to congested internal resources.
+
 ## F5: The Principle of Periodic Resynchronization: Use a regular cadence to limit the accumulation of variance.
 
+Cadence is a regular, predictable rhythm within a process. It turns unpredictable events into predictable ones and keeps variability from accumulating along a sequence of steps.
+
+Buses that leave their origin at carefully timed intervals still end up arriving in pairs. When the leading bus meets more passengers at a stop, it loads more slowly, falls behind, and finds even more passengers waiting at the next stops; the bus behind it meets fewer passengers and speeds up. That regenerative feedback makes the slow bus slower and the fast bus faster until they bunch. A scheduled departure time at each stop breaks the loop: a bus that arrives early waits, so it does not run ahead and leave an excessive load for the next bus. Resynchronizing to the schedule keeps one bus's variance from coupling into the ones behind it, isolating it to a single interval instead of letting it accumulate.
+
+Resynchronizing is not the same as correcting an out-of-bounds condition: it restores the system to the center of its control range, not merely inside its limits. In the coin-flipping game of [Q15](/docs/product/product-development/principles/managing-queues#q15-the-diffusion-principle-over-time-queues-will-randomly-spin-seriously-out-of-control-and-will-remain-in-this-state-for-long-periods), a player who starts with 5 dollars and loses one on every tails should add capital after losing 4. Adding 1 dollar leaves a 50 percent chance of needing more on the next flip; adding 5 leaves a 1 in 32 chance of intervening in the next five. Restoring a queue to the center of its target range makes high-queue states far less likely and leaves the system robust to a burst of demand.
+
+The benefit is a system-level effect. Optimizing one bus would let it run ahead of schedule, since a stopped bus moves no passengers, but that bus would desynchronize the whole system. What is optimal for a subsystem is not always optimal for the system.
+
 ## F6: The Cadence Capacity Margin Principle: Provide sufficient capacity margin to enable cadence.
+
+A process can resynchronize to a regular cadence only if it has enough capacity margin to keep to it despite variation. A bus schedule needs enough slack that reasonable delays do not push a bus off schedule, which means more buses on the route, some of them waiting at stops: short, predictable waits for passengers cost the operator more.
+
+The same holds for a regular product launch schedule, which needs enough capacity margin to absorb delays at intermediate milestones. That is an economic trade-off between the cost of the margin and the damage done by variances that accumulate catastrophically.
 
 ## F7: The Cadence Reliability Principle: Use cadence to make waiting times predictable.
 
@@ -30,6 +46,8 @@ title: Controlling Flow Under Uncertainty
 ## F13: The Synchronization Queueing Principle: To reduce queues, synchronize the batch size and timing of adjacent processes.
 
 ## F14: The Harmonic Principle: Make nested cadences harmonic multiples.
+
+Processes with fundamentally different cadences are best coordinated by nesting them hierarchically as harmonic multiples of one another, as a daily module test nests inside a weekly higher-level test. Nesting brings the same benefits as synchronizing batch sizes and timing, and it is established practice in financial reporting, where monthly, quarterly and annual cycles nest.
 
 ## F15: The SJF Scheduling Principle: When delay costs are homogeneous, do the shortest job first.
 
