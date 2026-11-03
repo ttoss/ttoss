@@ -2321,6 +2321,27 @@ importers:
         specifier: ^0.23.1
         version: 0.23.1(oxc-resolver@11.21.2)(tsx@4.23.15)(typescript@6.0.3)
 
+  packages/react-pwa:
+    devDependencies:
+      '@ttoss/config':
+        specifier: workspace:^
+        version: link:../config
+      '@ttoss/test-utils':
+        specifier: workspace:^
+        version: link:../test-utils
+      '@types/react':
+        specifier: ^19.3.0
+        version: 19.3.0
+      jest:
+        specifier: ^30.5.2
+        version: 30.5.2(@types/node@24.19.2)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@swc/core@1.16.18(@swc/helpers@0.5.23))(@types/node@24.19.2)(typescript@6.0.3))
+      react:
+        specifier: ^19.3.0
+        version: 19.3.0
+      tsdown:
+        specifier: ^0.23.1
+        version: 0.23.1(oxc-resolver@11.21.2)(tsx@4.23.15)(typescript@6.0.3)
+
   packages/react-wizard:
     dependencies:
       '@chakra-ui/react':
@@ -7179,6 +7200,7 @@ packages:
   '@smithy/core@3.35.2':
     resolution: {integrity: sha512-ejTukBuP/Pg3t9N8Ux+0zKsXeHWm7p6W3HbXFOyltKasSxZwCFmvTut7kBdZSCF3m9y1bXXyVu6p2xuMFcsTyQ==}
     engines: {node: '>=18.0.0'}
+    deprecated: Deprecated due to a bug in custom logger data redaction. See https://github.com/aws/aws-sdk-js-v3/issues/8393.
 
   '@smithy/credential-provider-imds@4.5.2':
     resolution: {integrity: sha512-A9uSdn72ozbRUSit0eib0TW7nXuNPlaeM0zcGkJ+nE6tFcSDbnmtwoxbTCFBukVQcszDAyvsd7+rTduPTXpygg==}
