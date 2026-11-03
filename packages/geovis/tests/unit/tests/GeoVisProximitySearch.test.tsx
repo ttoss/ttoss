@@ -9,21 +9,19 @@ import {
   type GeoVisProximitySearchValue,
   useGeoVisProximitySearch,
 } from 'src/react/proximityContext';
-import type { VisualizationSpec } from 'src/spec/types';
-import type {
-  ProximityQueryParams,
-  ProximityResult,
-} from 'src/spec/types.proximity';
 import { AREA_IDS } from 'src/ui/GeoVisProximitySearch.area';
-import { DOUBLE_CLICK_WAIT_MS } from 'src/ui/GeoVisProximitySearch.hooks';
 
 import { render } from '../renderWithI18n';
 import {
   buildMap,
+  buildQuery,
+  buildSpec,
   METRES_PER_DEGREE,
   type MockMap,
+  northBy,
   ORIGIN,
-} from './proximitySearchMap';
+  settle,
+} from './proximitySearchFixtures';
 
 jest.mock('src/adapters/maplibre/pinImages', () => {
   return {
@@ -62,82 +60,6 @@ jest.mock('src/adapters/maplibre/MapLibreAdapter', () => {
   };
 });
 
-/** A place `metres` north of the origin. */
-const northBy = (
-  id: number,
-  metres: number,
-  categoryId?: string
-): ProximityResult => {
-  return {
-    id,
-    name: `Place ${id}`,
-    categoryId,
-    lngLat: [ORIGIN[0], ORIGIN[1] + metres / METRES_PER_DEGREE],
-  };
-};
-
-/** A query the test answers by hand. */
-const buildQuery = () => {
-  const calls: {
-    params: ProximityQueryParams;
-    resolve: (results: ProximityResult[]) => void;
-  }[] = [];
-  const query = jest.fn((params: ProximityQueryParams) => {
-    return new Promise<ProximityResult[]>((resolve) => {
-      calls.push({ params, resolve });
-    });
-  });
-  return { query, calls };
-};
-
-const buildSpec = ({
-  query,
-  fromUserLocation,
-  fromAnyPoint,
-  searchLayers = ['pins'],
-}: {
-  query: (params: ProximityQueryParams) => Promise<ProximityResult[]>;
-  fromUserLocation?: boolean;
-  fromAnyPoint?: boolean;
-  searchLayers?: string[];
-}): VisualizationSpec => {
-  return {
-    engine: 'maplibre',
-    view: { center: ORIGIN, zoom: 14 },
-    images: [
-      { id: 'pin', kind: 'pin', icon: 'maki:hospital', color: '#C0392B' },
-    ],
-    sources: [
-      {
-        id: 's',
-        type: 'geojson',
-        data: { type: 'FeatureCollection', features: [] },
-      },
-    ],
-    layers: [
-      {
-        id: 'pins',
-        sourceId: 's',
-        geometry: 'symbol',
-        paint: { iconImage: 'pin' },
-      },
-      // A layer whose click opens its own card.
-      { id: 'areas', sourceId: 's', geometry: 'polygon', click: {} },
-    ],
-    proximitySearch: {
-      ...(searchLayers.length > 0 && { layers: searchLayers }),
-      query,
-      radii: [1000, 2000],
-      categories: [
-        { id: 'ubs', label: 'UBS', color: '#1E8449', icon: 'maki:doctor' },
-      ],
-      labels: { one: 'service', other: 'services' },
-      fromUserLocation,
-      fromAnyPoint,
-    },
-  };
-};
-
 /** Renders the map and waits for the search to find it. */
 const renderSearch = async ({
   width = 800,
@@ -161,8 +83,9 @@ const renderSearch = async ({
     searchLayers,
   });
   const view = render(<GeoVisProvider spec={spec}>{children}</GeoVisProvider>);
+  // The search follows the camera from the moment it finds the map.
   await waitFor(() => {
-    expect(mockMap.on).toHaveBeenCalledWith('click', expect.any(Function));
+    expect(mockMap.on).toHaveBeenCalledWith('move', expect.any(Function));
   });
   return { query, calls, view };
 };
@@ -170,13 +93,6 @@ const renderSearch = async ({
 const clickPin = (lngLat = { lng: ORIGIN[0], lat: ORIGIN[1] }) => {
   act(() => {
     mockMap.fire('click', { point: { x: 400, y: 250 }, lngLat });
-  });
-};
-
-/** Lets an answer travel through the search's awaits into its state. */
-const settle = async () => {
-  await act(async () => {
-    for (let tick = 0; tick < 5; tick += 1) await Promise.resolve();
   });
 };
 
@@ -736,197 +652,6 @@ describe('GeoVisProximitySearch from the reader location', () => {
 
     fireEvent.mouseLeave(locateButton());
     expect(locateButton().style.color).toBe(idle);
-  });
-});
-
-describe('GeoVisProximitySearch from any point', () => {
-  /** A point of the bare map, away from the pin. */
-  const POINT = { lng: -46.64, lat: -23.56 };
-
-  /** A place `metres` north of {@link POINT}. */
-  const northOfPoint = (id: number, metres: number): ProximityResult => {
-    return {
-      id,
-      name: `Place ${id}`,
-      lngLat: [POINT.lng, POINT.lat + metres / METRES_PER_DEGREE],
-    };
-  };
-
-  const clickMap = (lngLat = POINT) => {
-    act(() => {
-      mockMap.fire('click', { point: { x: 100, y: 100 }, lngLat });
-    });
-  };
-
-  /** Lets a click on the bare map outlast the wait for a second one. */
-  const waitOutDoubleClick = () => {
-    act(() => {
-      jest.advanceTimersByTime(DOUBLE_CLICK_WAIT_MS);
-    });
-  };
-
-  let seen: GeoVisProximitySearchValue | null | undefined;
-  const Probe = () => {
-    seen = useGeoVisProximitySearch();
-    return null;
-  };
-
-  beforeEach(() => {
-    jest.useFakeTimers();
-    seen = undefined;
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
-  });
-
-  test('a click off the pins searches from where it landed, marked with a dot, with no pin in focus', async () => {
-    const { query, calls } = await renderSearch({
-      fromAnyPoint: true,
-      children: <Probe />,
-    });
-    mockMap.feature = null;
-
-    clickMap();
-    expect(query).not.toHaveBeenCalled();
-    waitOutDoubleClick();
-
-    expect(calls[0].params).toMatchObject({
-      lat: POINT.lat,
-      lng: POINT.lng,
-      radiusMin: 0,
-      radius: 1000,
-    });
-    expect(mockSetPinFocus).toHaveBeenLastCalledWith({
-      layerId: null,
-      featureId: null,
-    });
-    expect(
-      screen.getByText('Searching services near this point…')
-    ).toBeTruthy();
-
-    calls[0].resolve([northOfPoint(1, 300)]);
-    await settle();
-
-    expect(
-      screen.getByText('1 service within 1 km of this point')
-    ).toBeTruthy();
-    expect(seen).toMatchObject({
-      status: 'done',
-      origin: [POINT.lng, POINT.lat],
-      fromUser: false,
-      fromPoint: true,
-    });
-
-    fireEvent.click(screen.getByTitle('Searched point · clear search'));
-
-    expect(
-      screen.queryByText('1 service within 1 km of this point')
-    ).toBeNull();
-    expect(seen).toMatchObject({ status: 'idle', fromPoint: false });
-    expect(mockSetPinFocus).toHaveBeenLastCalledWith(null);
-  });
-
-  test('a pin still searches from itself, at once', async () => {
-    const { query } = await renderSearch({ fromAnyPoint: true });
-
-    clickMap();
-    expect(query).toHaveBeenCalledTimes(1);
-    expect(mockSetPinFocus).toHaveBeenLastCalledWith({
-      layerId: 'pins',
-      featureId: 7,
-    });
-
-    waitOutDoubleClick();
-    expect(query).toHaveBeenCalledTimes(1);
-  });
-
-  test('a feature of a layer with its own click keeps it', async () => {
-    const { query } = await renderSearch({ fromAnyPoint: true });
-    mockMap.feature = {
-      id: 3,
-      layer: { id: 'areas' },
-      geometry: { type: 'Polygon', coordinates: [] },
-    };
-
-    clickMap();
-    waitOutDoubleClick();
-
-    expect(query).not.toHaveBeenCalled();
-  });
-
-  test('a double-click zooms instead of searching', async () => {
-    const { query } = await renderSearch({ fromAnyPoint: true });
-    mockMap.feature = null;
-
-    clickMap();
-    clickMap();
-    act(() => {
-      mockMap.fire('dblclick');
-    });
-    waitOutDoubleClick();
-
-    expect(query).not.toHaveBeenCalled();
-  });
-
-  test('another point moves the search there', async () => {
-    const { calls } = await renderSearch({ fromAnyPoint: true });
-    mockMap.feature = null;
-    clickMap();
-    waitOutDoubleClick();
-    calls[0].resolve([northOfPoint(1, 300)]);
-    await settle();
-
-    clickMap({ lng: -46.62, lat: -23.54 });
-    waitOutDoubleClick();
-
-    expect(calls[1].params).toMatchObject({ lng: -46.62, lat: -23.54 });
-    expect(
-      screen.getByText('Searching services near this point…')
-    ).toBeTruthy();
-  });
-
-  test('needs no layers to search from', async () => {
-    const { query } = await renderSearch({
-      fromAnyPoint: true,
-      searchLayers: [],
-    });
-    mockMap.feature = null;
-
-    clickMap();
-    waitOutDoubleClick();
-
-    expect(query).toHaveBeenCalledTimes(1);
-  });
-
-  test('without it, a click off the pins searches nothing, even after the wait', async () => {
-    const { query } = await renderSearch();
-    mockMap.feature = null;
-
-    clickMap();
-    waitOutDoubleClick();
-
-    expect(query).not.toHaveBeenCalled();
-  });
-
-  test('the bare map shows a crosshair, a pin the pointer', async () => {
-    await renderSearch({ fromAnyPoint: true });
-
-    mockMap.feature = null;
-    act(() => {
-      mockMap.fire('mousemove', { point: { x: 100, y: 100 } });
-    });
-    expect(mockMap.getCanvas().style.cursor).toBe('crosshair');
-
-    mockMap.feature = {
-      id: 7,
-      layer: { id: 'pins' },
-      geometry: { type: 'Point', coordinates: ORIGIN },
-    };
-    act(() => {
-      mockMap.fire('mousemove', { point: { x: 400, y: 250 } });
-    });
-    expect(mockMap.getCanvas().style.cursor).toBe('pointer');
   });
 });
 

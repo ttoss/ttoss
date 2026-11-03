@@ -115,6 +115,10 @@
     "defaultMessage": "{count, plural, one {# {one}} other {# {other}}} within {radius}",
     "description": "Proximity search: how many places were found. \"one\" and \"other\" name what is searched, singular and plural; \"radius\" is a distance like \"1 km\"."
   },
+  "jD634V": {
+    "defaultMessage": "Search {results} from any point of the map",
+    "description": "Proximity search: accessible name of the button that turns on searching from any point of the map the reader clicks. \"results\" names what is searched, plural."
+  },
   "jFZRGK": {
     "defaultMessage": "Search radius",
     "description": "Proximity search: accessible name of the radius choice."
@@ -158,6 +162,10 @@
   "ulc096": {
     "defaultMessage": "{count} within {radius}",
     "description": "Proximity search: how many places were found, on a narrow map. \"radius\" is a distance like \"1 km\"."
+  },
+  "xEeif3": {
+    "defaultMessage": "{results} around any point",
+    "description": "Proximity search: tooltip of the button that turns on searching from any point of the map the reader clicks. \"results\" names what is searched, plural, e.g. \"services around any point\"."
   },
   "ydJlsv": {
     "defaultMessage": "Search {results} near my location",

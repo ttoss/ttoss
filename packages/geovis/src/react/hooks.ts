@@ -29,6 +29,7 @@ import {
   buildHandleClick,
   dispatchClearSelection,
 } from './hooks.builders.click';
+import { useGeoVisProximitySearch } from './proximityContext';
 
 export type { MapClickInfo, MapHoverInfo } from './contexts';
 
@@ -63,11 +64,12 @@ const usePointerLayerIds = (spec: VisualizationSpec): Set<string> => {
 };
 
 /**
- * The cursor off every pointer layer: a crosshair where a click on the bare
- * map searches (`proximitySearch.fromAnyPoint`), the default otherwise.
+ * The cursor off every pointer layer: a crosshair while a click on the bare
+ * map searches — the reader turned on the proximity search's any-point mode —
+ * the default otherwise.
  */
-const idleCursorFor = (spec: VisualizationSpec) => {
-  return spec.proximitySearch?.fromAnyPoint ? 'crosshair' : 'default';
+const useIdleCursor = () => {
+  return useGeoVisProximitySearch()?.anyPoint ? 'crosshair' : 'default';
 };
 
 /**
@@ -78,8 +80,8 @@ const idleCursorFor = (spec: VisualizationSpec) => {
  *
  * Cursor feedback is also handled here: the canvas cursor switches to
  * `pointer` while a tracked feature is under the mouse and reverts on leave —
- * to `crosshair` with `proximitySearch.fromAnyPoint`, where a click on the
- * bare map searches from there.
+ * to `crosshair` while the proximity search's any-point mode is on, where a
+ * click on the bare map searches from there.
  */
 export const useMapHover = ({
   runtime,
@@ -99,7 +101,7 @@ export const useMapHover = ({
   }, [spec.layers]);
 
   const pointerLayerIds = usePointerLayerIds(spec);
-  const idleCursor = idleCursorFor(spec);
+  const idleCursor = useIdleCursor();
   const noCursorToSet = pointerLayerIds.size === 0 && idleCursor === 'default';
 
   React.useEffect(() => {

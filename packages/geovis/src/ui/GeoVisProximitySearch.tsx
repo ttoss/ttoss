@@ -3,8 +3,6 @@ import type { Map as MapLibreMap } from 'maplibre-gl';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import { useGeoVis } from '../react/contexts';
-import { useGeoVisMapMode } from '../react/mapMode';
 import { type ProximityState, useProximitySearch } from '../react/proximity';
 import { circleRing, metresPerPixel } from '../react/proximity.geo';
 import { usePublishProximitySearch } from '../react/proximityContext';
@@ -13,6 +11,11 @@ import type {
   ProximitySearch,
 } from '../spec/types.proximity';
 import { useLoadingSweep, useRadiusArea } from './GeoVisProximitySearch.area';
+import {
+  type AnyPointMode,
+  ColumnControls,
+  useClickToSearch,
+} from './GeoVisProximitySearch.controls';
 import { FocusPin } from './GeoVisProximitySearch.focusPin';
 import { HitPin } from './GeoVisProximitySearch.hitPin';
 import {
@@ -21,15 +24,7 @@ import {
   useFormatDistance,
   useMapFrame,
   useNativeMap,
-  useSearchOnClick,
 } from './GeoVisProximitySearch.hooks';
-import {
-  canLocate,
-  LocateButton,
-  LocatingToast,
-  useUserLocation,
-} from './GeoVisProximitySearch.locate';
-import { LocationDialog } from './GeoVisProximitySearch.locationDialog';
 import { messages } from './GeoVisProximitySearch.messages';
 import {
   PointMarker,
@@ -72,66 +67,6 @@ const framePixelsFor = (width: number) => {
 };
 
 /**
- * The search from the reader's location, when the spec offers it: the button,
- * the dialog around the browser's request and the note while it looks the
- * reader up. Clicking the button while a search from the reader is shown
- * clears it instead.
- */
-const FromUserLocation = ({
-  state,
-  results,
-  searchFromUser,
-  clear,
-}: {
-  state: ProximityState;
-  results: string;
-  searchFromUser: (origin: [number, number]) => Promise<void>;
-  clear: () => void;
-}) => {
-  const { intl } = useI18n();
-  const { enabled: mapModeShown } = useGeoVisMapMode();
-  const onLocated = React.useCallback(
-    (origin: [number, number]) => {
-      void searchFromUser(origin);
-    },
-    [searchFromUser]
-  );
-  const { phase, start, locate, dismiss } = useUserLocation(onLocated);
-  // Asked once: whether the browser can locate does not change on a page.
-  const [available] = React.useState(canLocate);
-  if (!available) return null;
-
-  const active = state.fromUser && state.status !== 'idle';
-  const title = intl.formatMessage(messages.locate, { results });
-  return (
-    <>
-      <LocateButton
-        belowMapMode={mapModeShown}
-        active={active}
-        locating={phase === 'locating'}
-        // Capitalised: the label opens with the app's plural noun.
-        title={title.charAt(0).toLocaleUpperCase(intl.locale) + title.slice(1)}
-        label={intl.formatMessage(messages.locateLabel, { results })}
-        onClick={() => {
-          if (phase === 'locating') return;
-          if (active) clear();
-          else void start();
-        }}
-      />
-      {phase === 'locating' && <LocatingToast />}
-      {(phase === 'ask' || phase === 'denied') && (
-        <LocationDialog
-          phase={phase}
-          results={results}
-          onConfirm={locate}
-          onCancel={dismiss}
-        />
-      )}
-    </>
-  );
-};
-
-/**
  * Hands the search to the app through the provider's store — see
  * `useGeoVisProximitySearch` — as the places within the radius shown.
  */
@@ -141,10 +76,13 @@ const usePublishSearch = ({
   select,
   setRadius,
   clear,
+  anyPoint,
+  setAnyPoint,
 }: Pick<
   ReturnType<typeof useProximitySearch>,
   'state' | 'radii' | 'select' | 'setRadius' | 'clear'
->) => {
+> &
+  AnyPointMode) => {
   usePublishProximitySearch(
     React.useMemo(() => {
       return {
@@ -163,8 +101,10 @@ const usePublishSearch = ({
           void setRadius(radius);
         },
         clear,
+        anyPoint,
+        setAnyPoint,
       };
-    }, [state, radii, select, setRadius, clear])
+    }, [state, radii, select, setRadius, clear, anyPoint, setAnyPoint])
   );
 };
 
@@ -233,30 +173,13 @@ const OriginMarker = ({
 };
 
 /**
- * The layers whose click is their own — those that declare `click` or
- * `clickAnchor` — which a click on the bare map must not take over.
- */
-const useOwnClickLayerIds = () => {
-  const { spec } = useGeoVis();
-  return React.useMemo(() => {
-    return spec.layers
-      .filter((layer) => {
-        return layer.click != null || layer.clickAnchor != null;
-      })
-      .map((layer) => {
-        return layer.id;
-      });
-  }, [spec.layers]);
-};
-
-/**
  * The proximity search `<GeoVisProvider>` auto-mounts when the spec declares
  * `proximitySearch`: clicking a feature of its layers searches the places
  * around it — see {@link ProximitySearch}. Drawn over the map, in its own
  * container, so what it places at a point follows the camera. With
  * `fromUserLocation`, a button in the map's control column searches from the
- * reader's location instead; with `fromAnyPoint`, a click on any point of the
- * map searches from there.
+ * reader's location instead; with `fromAnyPoint`, another button there turns
+ * on searching from any point of the map the reader clicks.
  *
  * @example
  * // Mounted by the provider — the spec only declares the search:
@@ -283,16 +206,8 @@ export const GeoVisProximitySearch = ({
     setRadius,
     select,
   } = useProximitySearch({ config, map, framePixels: framePixelsFor(width) });
-  const ownClickLayerIds = useOwnClickLayerIds();
-  useSearchOnClick({
-    map,
-    layerIds: config.layers ?? [],
-    ownClickLayerIds,
-    fromAnyPoint: config.fromAnyPoint,
-    searchFrom,
-    searchFromPoint,
-  });
-  usePublishSearch({ state, radii, select, setRadius, clear });
+  const mode = useClickToSearch({ map, config, searchFrom, searchFromPoint });
+  usePublishSearch({ state, radii, select, setRadius, clear, ...mode });
   useFocusOnSearchedPin(state.status === 'idle' ? null : state.focus);
   const { origin } = state;
   useRadiusArea({
@@ -309,17 +224,19 @@ export const GeoVisProximitySearch = ({
     loading: state.status === 'loading',
   });
 
-  const fromUserLocation = config.fromUserLocation ? (
-    <FromUserLocation
+  const controls = (
+    <ColumnControls
+      config={config}
       state={state}
       results={nouns.other}
       searchFromUser={searchFromUser}
       clear={clear}
+      {...mode}
     />
-  ) : null;
+  );
 
   // Idle, there is no origin: only a search draws anything.
-  if (!map || width === 0 || !origin) return fromUserLocation;
+  if (!map || width === 0 || !origin) return controls;
 
   const originPx = map.project(origin);
   const pixelsPerMetre = 1 / metresPerPixel(origin[1], map.getZoom());
@@ -412,7 +329,7 @@ export const GeoVisProximitySearch = ({
   );
   return (
     <>
-      {fromUserLocation}
+      {controls}
       {search}
     </>
   );

@@ -109,10 +109,13 @@ export interface ProximitySearch {
    */
   fromUserLocation?: boolean;
   /**
-   * Searches from any point of the map the reader clicks, not only from a
-   * feature of {@link layers}: the point is marked with a dot, and the bar
-   * reads "near this point". Clicking another point moves the search there;
-   * the bar's ×, or the dot, clears it.
+   * Adds a button under the map's controls that turns on searching from any
+   * point of the map the reader clicks, not only from a feature of
+   * {@link layers}. While it is on, the cursor is a crosshair off the pins;
+   * a click marks the point with a dot, and the bar reads "near this point".
+   * The search turns the button off, so searching from another point takes
+   * the button again; the bar's ×, or the dot, clears the search. Turning the
+   * button off by hand keeps the search shown too.
    *
    * A click keeps its other meanings first — a feature of {@link layers}
    * still searches from itself, and a feature of a layer that declares

@@ -766,7 +766,7 @@
           "type": "boolean"
         },
         "fromAnyPoint": {
-          "description": "Searches from any point of the map the reader clicks, not only from a feature of `layers`. A feature of `layers`, or of a layer with `click` or `clickAnchor`, keeps its own click. Defaults to false.",
+          "description": "Adds a button that turns on searching from any point of the map the reader clicks, not only from a feature of `layers`. A feature of `layers`, or of a layer with `click` or `clickAnchor`, keeps its own click. Defaults to false.",
           "type": "boolean"
         }
       }

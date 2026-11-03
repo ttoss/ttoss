@@ -1,3 +1,10 @@
+import { act } from '@testing-library/react';
+import type { VisualizationSpec } from 'src/spec/types';
+import type {
+  ProximityQueryParams,
+  ProximityResult,
+} from 'src/spec/types.proximity';
+
 type Handler = (event?: unknown) => void;
 
 /** The map the fake adapter hands out, with what the test drives it by. */
@@ -140,4 +147,88 @@ export const buildMap = ({ width }: { width: number }) => {
     },
   };
   return map;
+};
+
+/** A place `metres` north of the origin. */
+export const northBy = (
+  id: number,
+  metres: number,
+  categoryId?: string
+): ProximityResult => {
+  return {
+    id,
+    name: `Place ${id}`,
+    categoryId,
+    lngLat: [ORIGIN[0], ORIGIN[1] + metres / METRES_PER_DEGREE],
+  };
+};
+
+/** A query the test answers by hand. */
+export const buildQuery = () => {
+  const calls: {
+    params: ProximityQueryParams;
+    resolve: (results: ProximityResult[]) => void;
+  }[] = [];
+  const query = jest.fn((params: ProximityQueryParams) => {
+    return new Promise<ProximityResult[]>((resolve) => {
+      calls.push({ params, resolve });
+    });
+  });
+  return { query, calls };
+};
+
+/** A spec with one layer of pins to search from and one with its own click. */
+export const buildSpec = ({
+  query,
+  fromUserLocation,
+  fromAnyPoint,
+  searchLayers = ['pins'],
+}: {
+  query: (params: ProximityQueryParams) => Promise<ProximityResult[]>;
+  fromUserLocation?: boolean;
+  fromAnyPoint?: boolean;
+  searchLayers?: string[];
+}): VisualizationSpec => {
+  return {
+    engine: 'maplibre',
+    view: { center: ORIGIN, zoom: 14 },
+    images: [
+      { id: 'pin', kind: 'pin', icon: 'maki:hospital', color: '#C0392B' },
+    ],
+    sources: [
+      {
+        id: 's',
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      },
+    ],
+    layers: [
+      {
+        id: 'pins',
+        sourceId: 's',
+        geometry: 'symbol',
+        paint: { iconImage: 'pin' },
+      },
+      // A layer whose click opens its own card.
+      { id: 'areas', sourceId: 's', geometry: 'polygon', click: {} },
+    ],
+    proximitySearch: {
+      ...(searchLayers.length > 0 && { layers: searchLayers }),
+      query,
+      radii: [1000, 2000],
+      categories: [
+        { id: 'ubs', label: 'UBS', color: '#1E8449', icon: 'maki:doctor' },
+      ],
+      labels: { one: 'service', other: 'services' },
+      fromUserLocation,
+      fromAnyPoint,
+    },
+  };
+};
+
+/** Lets an answer travel through the search's awaits into its state. */
+export const settle = async () => {
+  await act(async () => {
+    for (let tick = 0; tick < 5; tick += 1) await Promise.resolve();
+  });
 };

@@ -41,6 +41,19 @@ export interface GeoVisProximitySearchValue {
   setRadius: (radius: number) => void;
   /** Clears the search, as the bar's × does. */
   clear: () => void;
+  /**
+   * Whether a click on any point of the map searches from there — the mode
+   * the reader turns on with the button `proximitySearch.fromAnyPoint` offers,
+   * and that the search from a point turns off again. Always `false` without
+   * it.
+   */
+  anyPoint: boolean;
+  /**
+   * Turns that mode on or off, as the button does. Turning it off keeps the
+   * search shown; only new clicks off the pins stop searching. Does nothing
+   * without `fromAnyPoint`.
+   */
+  setAnyPoint: (on: boolean) => void;
 }
 
 /**

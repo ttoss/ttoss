@@ -129,6 +129,36 @@ const useFakeGeolocation = (outcome: 'granted' | 'denied') => {
   }, [outcome]);
 };
 
+/**
+ * The map in its own frame, positioned, as in the MapMode story: the buttons
+ * in the map's control column, and the dialogs and notes they open, sit in
+ * the map's corner, not the story's.
+ */
+const PositionedMap = ({ spec: shown }: { spec: VisualizationSpec }) => {
+  return (
+    <div style={{ display: 'grid', gap: 12 }}>
+      <div>
+        <strong>{shown.title}</strong>
+        <p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: 14 }}>
+          {shown.description}
+        </p>
+      </div>
+      <div
+        style={{
+          position: 'relative',
+          width: '100%',
+          height: 560,
+          border: '1px solid #d4d4d8',
+        }}
+      >
+        <GeoVisProvider spec={shown}>
+          <GeoVisCanvas viewId="primary" />
+        </GeoVisProvider>
+      </div>
+    </div>
+  );
+};
+
 const userLocationSpec: VisualizationSpec = {
   ...spec,
   title: 'Searching for services near the reader',
@@ -153,30 +183,7 @@ export const FromUserLocation: StoryFn<{ outcome: 'granted' | 'denied' }> = ({
   outcome,
 }) => {
   useFakeGeolocation(outcome);
-  // Its own frame, positioned, as in the MapMode story: the location button,
-  // its dialog and its note sit in the map's corner, not the story's.
-  return (
-    <div style={{ display: 'grid', gap: 12 }}>
-      <div>
-        <strong>{userLocationSpec.title}</strong>
-        <p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: 14 }}>
-          {userLocationSpec.description}
-        </p>
-      </div>
-      <div
-        style={{
-          position: 'relative',
-          width: '100%',
-          height: 560,
-          border: '1px solid #d4d4d8',
-        }}
-      >
-        <GeoVisProvider key={outcome} spec={userLocationSpec}>
-          <GeoVisCanvas viewId="primary" />
-        </GeoVisProvider>
-      </div>
-    </div>
-  );
+  return <PositionedMap key={outcome} spec={userLocationSpec} />;
 };
 
 FromUserLocation.args = { outcome: 'granted' };
@@ -189,15 +196,17 @@ FromUserLocation.argTypes = {
 };
 
 /**
- * **From any point of the map**, through `proximitySearch.fromAnyPoint`: click
+ * **From any point of the map**, through `proximitySearch.fromAnyPoint`: a
+ * button under the zoom controls turns the mode on. While it is on, click
  * anywhere — a street, a square, an empty block — and the services within
  * 1 km of that point drop in around it, the point marked with a dark dot and
- * the bar saying "near this point". Clicking another point moves the search
- * there; the bar's × or the dot clears it.
+ * the bar saying "near this point". The search turns the button off: press
+ * it again to search from another point. The bar's × or the dot clears the
+ * search.
  *
  * A hospital's pin still searches from itself, and a double-click still
- * zooms. Off the pins the cursor turns into a crosshair, showing that a click
- * searches. Switch `fromAnyPoint` off to compare with the pins-only search.
+ * zooms. While the mode is on, the cursor is a crosshair off the pins. Switch
+ * `fromAnyPoint` off to drop the button and compare with the pins-only search.
  */
 export const FromAnyPoint: StoryFn<{ fromAnyPoint: boolean }> = ({
   fromAnyPoint,
@@ -206,12 +215,12 @@ export const FromAnyPoint: StoryFn<{ fromAnyPoint: boolean }> = ({
     ...spec,
     title: 'Searching for services around any point',
     description: fromAnyPoint
-      ? 'Click anywhere on the map: the services within 1 km of that point drop in around it.'
+      ? 'Turn on the button under the zoom controls, then click anywhere on the map: the services within 1 km of that point drop in around it.'
       : "Click a hospital's pin: the services within 1 km of it drop in around it.",
     proximitySearch: { ...PROXIMITY_SEARCH, fromAnyPoint },
   };
   // Keyed, so switching the field starts from a fresh map.
-  return <GeoVisFixtureStory key={String(fromAnyPoint)} spec={anyPointSpec} />;
+  return <PositionedMap key={String(fromAnyPoint)} spec={anyPointSpec} />;
 };
 
 FromAnyPoint.args = { fromAnyPoint: true };
@@ -219,6 +228,6 @@ FromAnyPoint.argTypes = {
   fromAnyPoint: {
     control: 'boolean',
     description:
-      'Whether a click on any point of the map searches from there, not only a click on a hospital.',
+      'Whether the map offers the button that turns on searching from any point, not only from a hospital.',
   },
 };
