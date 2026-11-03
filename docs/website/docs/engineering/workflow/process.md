@@ -37,7 +37,7 @@ The process names acts, not tools, so it reads the same on any code host and for
 | 4 | Gates | automation, the reviewer `Review` names (a review child of the tick, a project routine or a person), the person the `Merge rule` reserves | the change is proposed | nothing on the task: verdicts stay on the change, each bound to the commit it judged (the `flow/review` status), and the tick writes after them | `Review`, `Merge rule` |
 | 5 | Integrate | whoever the `Merge rule` lets integrate: the reviewer, the tick or a person | the gates pass | nothing on the task: the tick writes what integrating leaves | `Merge rule` |
 | 6 | Release | the `Release procedure`: automation, a child run or a person | integration | a release step that is somebody's act is its own task that `blocks` the integrated task (GTF-N4); a pipeline every integration runs is a wait, not a task | `Release procedure` |
-| 7 | Verify | the reader the `Closing evidence` names, else a check child of the tick | the check comes due | `completed` with what was observed, or `active` again with it (GTF-E8) | `Closing evidence` |
+| 7 | Verify | the reader the `Closing evidence` names, else a check child of the tick | the check comes due | `completed` with what was observed, or `active` again with it (GTF-E8), the change reverted first when what was observed is harm | `Closing evidence` |
 
 A stage a project, or a [delivery kind](#delivery-kinds), answers with "none" is skipped: with no review, the gates are the checks; with no release, integrated is in effect once its pipeline passes. A gate may also run after integrating, as in trunk-based work: its failure is the "pipeline red after integrating" transition below.
 
@@ -79,11 +79,11 @@ The tick applies these on every tick, under the standing decision:
 | A step only a person can do before integrating (a migration, a manual check) | writes that step as a task, theirs, that `blocks` the task (GTF-N4) |
 | The change closed without integrating | retracts its `implements` reference and moves the task to `waiting` on a person: implement it again, or cancel it |
 | The change integrated, nothing written since | applies what the task's body says integrating leaves: closes it on immediate evidence, citing the change; or the release step; or the check's wait (GTF-E8). A task with several changes waits for the last one |
-| The integration's pipeline red | moves the task to `active` with the log |
+| The integration's pipeline red | reverts the change by the reversal path its description records (`Before proposing`), then moves the task to `active` with the log and the revert, a round: a defect in effect costs by the hour, a round costs a child and its checks. A change that records no path waits on a person, naming the red; a repo whose default branch is red is the repair task's instead |
 | The change's description names other tasks it settles | closes them on integration, citing the change, as far as the standing decision delegates tidying (GTF-S6) |
 | A change in the project's repos names no task | applies the `Intake` answer: writes a task for it, or leaves it |
 | A release step's task closes | moves each task it blocked to its check's wait, or closes it citing the release task, whose outcome is the evidence |
-| A check comes due | starts a check child (unless the `Closing evidence` names another reader), which closes the task with what it observed or sends it back |
+| A check comes due | starts a check child (unless the `Closing evidence` names another reader), which closes the task with what it observed or sends it back; harm the change caused is reverted by its recorded path before the task goes back, and a change with no path waits on a person, naming the harm |
 | A child's run failed, is gone, or stays `running` past the `Runtime`'s `Stale after` with its task open | closes the run `failed`; the task is ready again |
 | Another agent's run, such as a person's session, holds an open task past `Stale after` | leaves it: the Chase tells the run's owner |
 
