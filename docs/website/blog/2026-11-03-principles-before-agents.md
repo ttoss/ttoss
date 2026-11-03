@@ -37,6 +37,8 @@ flowchart BT
     W --> R
 ```
 
+With the pillars in place, I want to share the principles that mattered most. These are not all of them; the full list is longer. They are the five that shaped the most rules, and the ones I would start from again if I had to rebuild the workflow from scratch.
+
 ## The Graph Is the State
 
 The first fact I had to design around is that an agent forgets everything when its run ends. Whatever it did not write outside its conversation is gone. If I let state live in conversations, every run would rebuild context from nothing, and a run that died halfway would take its progress with it.
