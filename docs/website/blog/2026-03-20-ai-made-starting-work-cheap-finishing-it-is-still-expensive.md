@@ -36,7 +36,7 @@ This changes how teams should think about velocity.
 
 If AI generates four "small" tasks in the time a developer used to complete one, the team creates 4x more unfinished obligations. The system accumulates invisible queue growth.
 
-That is why this principle connects directly to [Q3: The Principle of Queueing Capacity Utilization](/docs/product/product-development/principles#q3-the-principle-of-queueing-capacity-utilization-capacity-utilization-increases-queues-exponentially). When cheap generation floods the system with new work, queues expand silently until throughput collapses.
+That is why this principle connects directly to [Q3: The Principle of Queueing Capacity Utilization](/docs/product/product-development/principles/managing-queues#q3-the-principle-of-queueing-capacity-utilization-capacity-utilization-increases-queues-exponentially). When cheap generation floods the system with new work, queues expand silently until throughput collapses.
 
 ## Cheap Initiation Creates Expensive WIP
 

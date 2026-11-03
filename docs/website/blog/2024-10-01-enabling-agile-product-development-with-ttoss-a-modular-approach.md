@@ -10,7 +10,7 @@ tags:
   - product-development
 ---
 
-One of the core objectives of **ttoss** (Terezinha Tech Operations) is to create a modular library system that enables product development teams to become agile, aligning with the [Principle D12: The Second Agility Principle](/docs/product/product-development/principles#d12-the-second-agility-principle-develop-the-ability-to-quickly-shift-focus). In today's fast-moving development world, the ability to pivot and adapt rapidly is crucial. This principle emphasizes that it's not enough to merely decide to change direction—teams must be able to execute those changes quickly and efficiently.
+One of the core objectives of **ttoss** (Terezinha Tech Operations) is to create a modular library system that enables product development teams to become agile, aligning with the [Principle D12: The Second Agility Principle](/docs/product/product-development/principles/achieving-decentralized-control#d12-the-second-agility-principle-develop-the-ability-to-quickly-shift-focus). In today's fast-moving development world, the ability to pivot and adapt rapidly is crucial. This principle emphasizes that it's not enough to merely decide to change direction—teams must be able to execute those changes quickly and efficiently.
 
 <!-- truncate -->
 
@@ -28,7 +28,7 @@ Here are some examples of packages available in the **ttoss** [modules](/docs/mo
 
 - [ui](/docs/modules/packages/ui/): The ui package offers a collection of pre-built user interface components. By using these components, teams can maintain consistency in design and reduce the time spent on UI development, allowing them to prioritize enhancing user experience.
 
-In line with [Principle FF10: The First Agility Principle](/docs/product/product-development/principles#ff10-the-first-agility-principle-we-dont-need-long-planning-horizons-when-we-have-a-short-turning-radius)—"We Don't Need Long Planning Horizons when We Have a Short Turning Radius"**ttoss** is designed to reduce the "mass" of projects. It minimizes the burden on development teams by offering lightweight, flexible modules that can be easily integrated, adapted, or replaced as needed. This shorter "turning radius" allows teams to operate with agility and confidence, even in rapidly changing environments.
+In line with [Principle FF10: The First Agility Principle](/docs/product/product-development/principles/using-fast-feedback#ff10-the-first-agility-principle-we-dont-need-long-planning-horizons-when-we-have-a-short-turning-radius)—"We Don't Need Long Planning Horizons when We Have a Short Turning Radius"**ttoss** is designed to reduce the "mass" of projects. It minimizes the burden on development teams by offering lightweight, flexible modules that can be easily integrated, adapted, or replaced as needed. This shorter "turning radius" allows teams to operate with agility and confidence, even in rapidly changing environments.
 
 By building and expanding the **ttoss** library, the goal is to empower development teams to activate agility in their workflows, ensuring they can shift focus quickly, adapt to new information, and maintain efficiency throughout the product development lifecycle. By adopting this modular approach, teams can reduce overhead, maintain flexibility, and concentrate on what matters most—delivering exceptional products that meet customer needs.
 

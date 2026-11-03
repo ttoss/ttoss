@@ -1,6 +1,6 @@
 ---
 title: Delivery Process
-sidebar_position: 1
+sidebar_position: 2
 ---
 
 # Delivery Process
@@ -12,8 +12,8 @@ How work in a software project goes from a signal to a closed task, once, for ev
 The rules of any work are GTF's, cited below by id. Three are the delivery process's own:
 
 1. **One owner per transition.** Only a stage's owner changes the task's state in that stage. Two owners drift apart silently, each acting on a state the other already changed.
-2. **Rounds have a limit.** Each reason a change goes back (red checks, findings) gets the automatic rounds the `Merge rule` allows; the next goes to a person.
-3. **Finish before starting.** The work closest to done goes first: verify, then release, then the gates (reviews the agents run, fix rounds, conflicts), then new work. A priority a person set outranks the stage.
+2. **Rounds have a limit.** Each reason a change goes back (red checks, findings) gets the automatic rounds the `Merge rule` allows; the next goes to a person: each round an agent spends on the same gates widens the gap between green and correct ([Proxy Collapse](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-principle-of-proxy-collapse)).
+3. **What ages fastest goes first.** Work is ordered by its cost of delay, read through a fixed proxy and never estimated per task: the stage the work is in, and the one word a person may say about it. A defect in production hurts users every hour, an open change gathers conflicts and stale verdicts, integrated work nobody has seen in effect lets a regression run, and new work loses little by waiting a tick. So: a task at `very_high` priority, bug or not and in whatever stage it is, since that priority is the person's word that waiting costs most; then a bug (a task tagged `bug`) at `high`; then integrating, with the conflicts that hold it; then releasing what integrated and verifying it; then the fix rounds; then the reviews the agents run; then the scheduled tasks whose date came with no integrated change behind them; then new work. Every other priority a person set orders the work inside a stage, never across stages.
 
 ## Words
 
@@ -31,13 +31,13 @@ The process names acts, not tools, so it reads the same on any code host and for
 
 | # | Stage | Owner | Starts when | Writes to Flow before it ends | Parameter |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Intake | whoever finds the signal: an intake [routine](routines.md#project-routines), a person, an agent mid-task | an alert, feedback, an idea, a finding | a task with its `source` and what was investigated, `active`, or `incubated` when found mid-task (GTF-C1); never a fix | `Intake` |
+| 1 | Intake | whoever finds the signal: an intake [routine](routines.md#project-routines), a person, an agent mid-task | an alert, feedback, an idea, a finding | a task with its `source` and what was investigated, `active`, or, when found mid-task, `incubated` or what the standing decision names (GTF-C1); never a fix | `Intake` |
 | 2 | Decide | a person | a choice the work needs, or a brief short of the `Ready brief` | the answer, on the task that waits on them (the move that frees it cites their words), or as the `outcome` of a `decision` that holds several tasks | `Decisions`, `Ready brief` |
-| 3 | Implement | a child run, or a person | the task is ready, or a round sends it back | the change, proposed ready (not draft); an `implements` reference; in the body, what integrating leaves; in the change's description, the task's URL and the tasks it settles; the task `waiting` on the gates | `Before proposing` |
-| 4 | Gates | automation, the reviewer `Review` names (a review child of the tick, a project routine or a person), the person the `Merge rule` reserves | the change is proposed | nothing on the task: verdicts stay on the change, and the tick writes after them | `Review`, `Merge rule` |
+| 3 | Implement | a child run, or a person | the task is ready, or a round sends it back | the change, proposed ready (not draft); an `implements` reference; in the body, what integrating leaves; in the change's description, the task's URL, the tasks it settles, and the assumptions made and the choices answered on the way, each with what was checked (`Decisions`); the task `waiting` on the gates | `Before proposing` |
+| 4 | Gates | automation, the reviewer `Review` names (a review child of the tick, a project routine or a person), the person the `Merge rule` reserves | the change is proposed | nothing on the task: verdicts stay on the change, each bound to the commit it judged (the `flow/review` status), and the tick writes after them | `Review`, `Merge rule` |
 | 5 | Integrate | whoever the `Merge rule` lets integrate: the reviewer, the tick or a person | the gates pass | nothing on the task: the tick writes what integrating leaves | `Merge rule` |
 | 6 | Release | the `Release procedure`: automation, a child run or a person | integration | a release step that is somebody's act is its own task that `blocks` the integrated task (GTF-N4); a pipeline every integration runs is a wait, not a task | `Release procedure` |
-| 7 | Verify | the reader the `Closing evidence` names, else a check child of the tick | the check comes due | `completed` with what was observed, or `active` again with it (GTF-E8) | `Closing evidence` |
+| 7 | Verify | the reader the `Closing evidence` names, else a check child of the tick | the check comes due | `completed` with what was observed, or `active` again with it (GTF-E8), the change reverted first when what was observed is harm | `Closing evidence` |
 
 A stage a project, or a [delivery kind](#delivery-kinds), answers with "none" is skipped: with no review, the gates are the checks; with no release, integrated is in effect once its pipeline passes. A gate may also run after integrating, as in trunk-based work: its failure is the "pipeline red after integrating" transition below.
 
@@ -46,7 +46,7 @@ A stage a project, or a [delivery kind](#delivery-kinds), answers with "none" is
 - An owner that writes to Flow writes its own stage's end: Intake, Implement, a release step run by a child, Verify.
 - **After the verdict, the tick is the only writer of the task's status and wait** (GTF-S3). It writes every transition whose owner does not write to Flow, such as CI, the code host, or a person who merged or reviewed, and every one an owner left unwritten.
 - A run that only contributed to a stage, such as a reviewer, leaves its verdict on the change and writes at most references for what it produced (GTF-S3).
-- Every run is recorded before it works (GTF-S7): the tick takes a child's task with its own run before starting it, and the child records itself as its first act, with the tick's run as `parent`; a session nobody started records itself.
+- Every run is recorded before it works (GTF-S7, GTF-S8).
 - With no tick, because nothing schedules one, the next run that reads the graph writes what the tick would.
 
 ## States
@@ -68,22 +68,24 @@ The tick applies these on every tick, under the standing decision:
 
 | When | The tick |
 | --- | --- |
-| The change's checks pass with no verdict for its head, and `Review` gives the review to an agent | starts a review child, which leaves its verdict on the change |
-| The gates pass and the `Merge rule` lets the agents integrate | integrates the change |
+| The change's checks pass with no verdict for its head, and `Review` gives the review to an agent | starts a review child, which leaves its verdict on the change, unless a reviewer claimed the head within `Review grace` |
+| The change's checks pass with no verdict for its head, and `Review` names a reviewer outside the tick | waits: a missing verdict is never a passed gate |
+| The gates pass (a verdict for the head, or `Review` none) and the `Merge rule` lets the agents integrate | integrates the change, when the code host requires that review; otherwise moves the task to `waiting` on a person, naming what is ready |
 | Checks red, or findings, within the round limit | moves the task to `active` with the log or the findings in the body, for a fresh child on the same change |
 | The round limit reached (rounds are the task's fix runs; a red caused outside the change, such as a broken default branch or infrastructure, does not count) | moves the task to `waiting` on a person |
-| A review request lost | applies the `Review` fallback |
+| A review request lost: no verdict and no claim `Review grace` after the checks passed, or a claim that outlived it with no run holding the task | applies the `Review` fallback |
 | The change needs what the `Merge rule` reserves to a person | moves the task to `waiting` on that person, naming what is ready |
 | A conflict with the default branch | moves the task to `active` for a fresh child that resolves it |
 | A step only a person can do before integrating (a migration, a manual check) | writes that step as a task, theirs, that `blocks` the task (GTF-N4) |
 | The change closed without integrating | retracts its `implements` reference and moves the task to `waiting` on a person: implement it again, or cancel it |
 | The change integrated, nothing written since | applies what the task's body says integrating leaves: closes it on immediate evidence, citing the change; or the release step; or the check's wait (GTF-E8). A task with several changes waits for the last one |
-| The integration's pipeline red | moves the task to `active` with the log |
+| The integration's pipeline red | reverts the change by the reversal path its description records (`Before proposing`), then moves the task to `active` with the log and the revert, a round: a defect in effect costs by the hour, a round costs a child and its checks. A change that records no path waits on a person, naming the red; a repo whose default branch is red is the repair task's instead |
 | The change's description names other tasks it settles | closes them on integration, citing the change, as far as the standing decision delegates tidying (GTF-S6) |
 | A change in the project's repos names no task | applies the `Intake` answer: writes a task for it, or leaves it |
 | A release step's task closes | moves each task it blocked to its check's wait, or closes it citing the release task, whose outcome is the evidence |
-| A check comes due | starts a check child (unless the `Closing evidence` names another reader), which closes the task with what it observed or sends it back |
-| A child's run failed or is gone with its task open | closes the run `failed`; the task is ready again |
+| A check comes due | starts a check child (unless the `Closing evidence` names another reader), which closes the task with what it observed or sends it back; harm the change caused is reverted by its recorded path before the task goes back, and a change with no path waits on a person, naming the harm |
+| A child's run failed, is gone, or stays `running` past the `Runtime`'s `Stale after` with its task open | closes the run `failed`; the task is ready again |
+| Another agent's run, such as a person's session, holds an open task past `Stale after` | leaves it: the Chase tells the run's owner |
 
 A person reviewing a change has three outcomes: integrate it, ask for changes (the task goes back a round), or close it, which is the "closed without integrating" row.
 
@@ -95,7 +97,7 @@ An investigation delivers knowledge: its output is evidence or a proposal for a 
 
 ## Prerequisites
 
-- **The code host enforces the `Merge rule`.** Required checks, branch protection and required reviews make the rule true for everyone, not only for the agents. A change to the CI configuration needs a person's review there too (code owners or the host's equivalent), so no agent integrates a change to the checks that judge it on its own reading of the diff.
+- **The code host enforces the `Merge rule`.** Required checks, branch protection and required reviews make the rule true for everyone, not only for the agents. With a reviewer in `Review`, its verdict is the `flow/review` commit status on the head and a required check, so a verdict is bound to its commit and only an identity with write access can give it; without that, the tick integrates nothing and waits on a person. A change to the CI configuration needs a person's review there too (code owners or the host's equivalent), so no agent integrates a change to the checks that judge it on its own reading of the diff.
 - **The runtime allows every act the standing decision delegates.** An act the runtime refuses, such as a merge or a release step its permission rules block, moves the task to `waiting` on a person, naming the refusal (GTF-U3).
 - **Agent instructions change only through a merge a person approved**, so the standing decision can point at them (GTF-A6).
 - **Something fires the runs.** Flow keeps the state but wakes nobody (GTF-S5): the project's [routines](routines.md) start each run fresh from the graph.

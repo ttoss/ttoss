@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 5.0.2 (2026-11-03)
+
+### Bug Fixes
+
+- **components:** keep EnhancedTitle frontTitle on one line ([#1403](https://github.com/ttoss/ttoss/issues/1403)) ([0d8e45b](https://github.com/ttoss/ttoss/commit/0d8e45b77cfc99de89b8176c2337fe5428741a9a)), closes [oneclickads/monorepo#5373](https://github.com/oneclickads/monorepo/issues/5373)
+
 ## [5.0.1](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fcomponents%405.0.0...%40ttoss%2Fcomponents%405.0.1) (2026-10-21)
 
 **Note:** Version bump only for package @ttoss/components

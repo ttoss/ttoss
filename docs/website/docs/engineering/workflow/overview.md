@@ -33,11 +33,11 @@ stateDiagram-v2
     Done --> [*]
 ```
 
-The [Delivery Process](./process.md) defines every state, the seven stages that move a task between them with one owner each, and the [transitions](./process.md#transitions) a tick applies. The tick applies them in order every time it runs: it verifies what came due, runs the release steps, reviews and integrates the changes whose checks passed, and only then starts a child agent for each ready task, up to a cap.
+The [Delivery Process](./process.md) defines every state, the seven stages that move a task between them with one owner each, and the [transitions](./process.md#transitions) a tick applies, what ages fastest first.
 
 ## One Engine, Extended per Project
 
-The engine is the same for every project: the states, the stages and their owners, the transitions and the rules of the Delivery Process. A project extends it at defined [extension points](./parameters.md#extension-points), its parameters. An extension answers a question the engine asks and never changes the engine. A point left empty takes its default, so a project starts from the engine as it is and extends only where it differs, and a rule that turns out true of every project moves into the engine.
+The Delivery Process is the same for every project. A project answers its [extension points](./parameters.md#extension-points), its parameters, and never changes the engine; a point left empty takes its default. Why is [One engine, extended for any project](./principles.md#one-engine-extended-for-any-project).
 
 ```mermaid
 flowchart TB
@@ -49,7 +49,7 @@ flowchart TB
 
 ## Built on GTF and Flow
 
-A rule true of any work belongs in GTF; one true of software delivery belongs here; how an agent carries it out belongs in the [ttoss skills](https://github.com/ttoss/skills); and what is true of a single product is that project's [parameters](./parameters.md). The skills read the Delivery Process, the Project Parameters and the Routines from this repository's default branch, so a change to these pages reaches every agent at its next run.
+GTF holds what is true of any work, this workflow what is true of software delivery, the [ttoss skills](https://github.com/ttoss/skills) how an agent carries it out, and a project's [parameters](./parameters.md) what is true of one product; [precedence](https://github.com/ttoss/skills/blob/main/skills/flow-setup/SKILL.md#precedence) says what wins when two disagree. The skills read these pages from this repository's default branch, so a change here reaches every agent at its next run. [Principles](./principles.md) maps every rule of the workflow to the product development and agentic development principles behind it.
 
 ## Adopting It
 

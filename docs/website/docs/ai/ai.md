@@ -22,9 +22,9 @@ This section explains how product teams at ttoss integrate AI tools to accelerat
 
 ## Core Philosophy
 
-AI integration at ttoss follows [The Principle of Quantified Overall Economics](/docs/product/product-development/principles#e1-the-principle-of-quantified-overall-economics-select-actions-based-on-quantified-overall-economic-impact). Every AI tool and workflow must demonstrate measurable value—reduced cycle time, improved quality, or faster learning—not just novelty.
+AI integration at ttoss follows [The Principle of Quantified Overall Economics](/docs/product/product-development/principles/economic-view#e1-the-principle-of-quantified-overall-economics-select-actions-based-on-quantified-overall-economic-impact). Every AI tool and workflow must demonstrate measurable value—reduced cycle time, improved quality, or faster learning—not just novelty.
 
-We build on principles from [The Principles of Product Development Flow](/docs/product/product-development/principles) to ensure AI accelerates feedback loops ([B3: The Batch Size Feedback Principle](/docs/product/product-development/principles#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback)), preserves developer flow ([FF8: The Fast-Learning Principle](/docs/product/product-development/principles#ff8-the-fast-learning-principle-use-fast-feedback-to-make-learning-faster-and-more-efficient)), and reduces variability in outcomes.
+We build on principles from [The Principles of Product Development Flow](/docs/product/product-development/principles) to ensure AI accelerates feedback loops ([B3: The Batch Size Feedback Principle](/docs/product/product-development/principles/reducing-batch-size#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback)), preserves developer flow ([FF8: The Fast-Learning Principle](/docs/product/product-development/principles/using-fast-feedback#ff8-the-fast-learning-principle-use-fast-feedback-to-make-learning-faster-and-more-efficient)), and reduces variability in outcomes.
 
 ## What This is Not
 

@@ -86,18 +86,18 @@ For React/UI components, [Storybook](https://storybook.ttoss.dev/) at `storybook
 
 ### ttoss Principles Integration
 
-**CRITICAL**: The [Product Development Principles](https://ttoss.dev/docs/product/product-development/principles) documented in `/docs/website/docs/product/03-product-development/02-principles.md` are the **foundational framework** for all ttoss operations and decision-making.
+**CRITICAL**: The [Product Development Principles](https://ttoss.dev/docs/product/product-development/principles) documented in `docs/website/docs/product/product-development/principles/`, one page per chapter, are the **foundational framework** for all ttoss operations and decision-making.
 
 **When Writing Any Documentation:**
 
 - **Reference Principles When Relevant**: Always link to specific principles that support or explain the concepts being documented
 - **Use Principle-Based Reasoning**: When explaining "why" something is done a certain way, reference the underlying economic principles
 - **Maintain Consistency**: Ensure all processes, tools, and guidelines align with and reinforce these core principles
-- **Cross-Reference Format**: Use descriptive links like `[The Economic View](https://ttoss.dev/docs/product/product-development/principles#the-economic-view)` or `[E1: The Principle of Quantified Overall Economics](https://ttoss.dev/docs/product/product-development/principles#e1-the-principle-of-quantified-overall-economics-select-actions-based-on-quantified-overall-economic-impact)`
+- **Cross-Reference Format**: Use descriptive links like `[The Economic View](https://ttoss.dev/docs/product/product-development/principles/economic-view)` or `[E1: The Principle of Quantified Overall Economics](https://ttoss.dev/docs/product/product-development/principles/economic-view#e1-the-principle-of-quantified-overall-economics-select-actions-based-on-quantified-overall-economic-impact)`
 
 **Example Integration:**
 Instead of: "We use small iterations to get faster feedback"
-Write: "We use small iterations to get faster feedback, following [B3: The Batch Size Feedback Principle](https://ttoss.dev/docs/product/product-development/principles#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback) and [FF8: The Fast-Learning Principle](https://ttoss.dev/docs/product/product-development/principles#ff8-the-fast-learning-principle-use-fast-feedback-to-make-learning-faster-and-more-efficient)"
+Write: "We use small iterations to get faster feedback, following [B3: The Batch Size Feedback Principle](https://ttoss.dev/docs/product/product-development/principles/reducing-batch-size#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback) and [FF8: The Fast-Learning Principle](https://ttoss.dev/docs/product/product-development/principles/using-fast-feedback#ff8-the-fast-learning-principle-use-fast-feedback-to-make-learning-faster-and-more-efficient)"
 
 This approach transforms documentation from isolated instructions into an interconnected system grounded in proven economic principles.
 

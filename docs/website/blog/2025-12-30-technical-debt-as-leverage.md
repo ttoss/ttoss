@@ -20,11 +20,11 @@ The difference between leverage and negligence lies in how we manage it.
 
 ## The Economic Argument for Debt
 
-In product development, our primary goal is to maximize life-cycle profits, not to write perfect code. This aligns with [E1: The Principle of Quantified Overall Economics](/docs/product/product-development/principles#e1-the-principle-of-quantified-overall-economics-select-actions-based-on-quantified-overall-economic-impact).
+In product development, our primary goal is to maximize life-cycle profits, not to write perfect code. This aligns with [E1: The Principle of Quantified Overall Economics](/docs/product/product-development/principles/economic-view#e1-the-principle-of-quantified-overall-economics-select-actions-based-on-quantified-overall-economic-impact).
 
-Sometimes, the cost of delaying a release to write "perfect" code is far higher than the cost of fixing "imperfect" code later. This is [E3: The Principle of Quantified Cost of Delay](/docs/product/product-development/principles#e3-the-principle-of-quantified-cost-of-delay-if-you-only-quantify-one-thing-quantify-the-cost-of-delay).
+Sometimes, the cost of delaying a release to write "perfect" code is far higher than the cost of fixing "imperfect" code later. This is [E3: The Principle of Quantified Cost of Delay](/docs/product/product-development/principles/economic-view#e3-the-principle-of-quantified-cost-of-delay-if-you-only-quantify-one-thing-quantify-the-cost-of-delay).
 
-If taking on debt allows us to release a feature two weeks early, and those two weeks provide critical user feedback that invalidates our assumptions, the debt paid for itself by saving us from building the wrong thing. This is the essence of [The Fast-Learning Principle](/docs/product/product-development/principles#ff8-the-fast-learning-principle-use-fast-feedback-to-make-learning-faster-and-more-efficient).
+If taking on debt allows us to release a feature two weeks early, and those two weeks provide critical user feedback that invalidates our assumptions, the debt paid for itself by saving us from building the wrong thing. This is the essence of [The Fast-Learning Principle](/docs/product/product-development/principles/using-fast-feedback#ff8-the-fast-learning-principle-use-fast-feedback-to-make-learning-faster-and-more-efficient).
 
 ## The AI Velocity Shift
 

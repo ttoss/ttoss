@@ -31,9 +31,9 @@ Our system excels at supporting multiple brands through:
 
 Our design system delivers value aligned with [product development principles](/docs/product/product-development/principles):
 
-- **Single Source of Truth**: Centralized design decisions following [E1: Quantified Overall Economics](https://ttoss.dev/docs/product/product-development/principles#e1-the-principle-of-quantified-overall-economics-select-actions-based-on-quantified-overall-economic-impact)
+- **Single Source of Truth**: Centralized design decisions following [E1: Quantified Overall Economics](https://ttoss.dev/docs/product/product-development/principles/economic-view#e1-the-principle-of-quantified-overall-economics-select-actions-based-on-quantified-overall-economic-impact)
 - **Cross-Team Collaboration**: Shared vocabulary between design and engineering
-- **Rapid Prototyping**: Quick testing and iteration enabled by [FF8: Fast-Learning Principle](https://ttoss.dev/docs/product/product-development/principles#ff8-the-fast-learning-principle-use-fast-feedback-to-make-learning-faster-and-more-efficient)
+- **Rapid Prototyping**: Quick testing and iteration enabled by [FF8: Fast-Learning Principle](https://ttoss.dev/docs/product/product-development/principles/using-fast-feedback#ff8-the-fast-learning-principle-use-fast-feedback-to-make-learning-faster-and-more-efficient)
 - **Visual Consistency**: Unified experience across products
 - **Scalability**: Support for multiple products and brands
 

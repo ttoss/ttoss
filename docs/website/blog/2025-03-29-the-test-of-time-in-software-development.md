@@ -18,7 +18,7 @@ In software development, trust is not established at the moment a system is depl
 
 Unlike mathematical proofs or deterministic logic, software trust is built through real-world usage. Developers, stakeholders, and users may recognize that a system has been thoroughly tested, but they still harbor a level of skepticism until it has been operational for some time. This phenomenon is psychological rather than technical—no matter how rigorously a system is tested, confidence in its reliability grows only with prolonged uptime and observed stability.
 
-This aligns with [Fast Feedback Principle FF8: Use fast feedback to make learning faster and more efficient](/docs/product/product-development/principles#ff8-the-fast-learning-principle-use-fast-feedback-to-make-learning-faster-and-more-efficient). While we optimize for fast feedback loops during development, the Test of Time represents a natural, slower feedback loop that validates long-term system reliability.
+This aligns with [Fast Feedback Principle FF8: Use fast feedback to make learning faster and more efficient](/docs/product/product-development/principles/using-fast-feedback#ff8-the-fast-learning-principle-use-fast-feedback-to-make-learning-faster-and-more-efficient). While we optimize for fast feedback loops during development, the Test of Time represents a natural, slower feedback loop that validates long-term system reliability.
 
 ## Why Does the Test of Time Matter?
 
@@ -32,7 +32,7 @@ This aligns with [Fast Feedback Principle FF8: Use fast feedback to make learnin
 
 **Monitor Systems Closely Post-Deployment** – The first few weeks or months after deployment are crucial for observing unexpected behavior. Proper logging, monitoring, and alerting are essential. Our [engineering workflow](/docs/engineering/workflow) includes 30+ minutes of post-deployment monitoring as a standard practice.
 
-**Gradual Rollouts and Feature Flags** – Instead of deploying at full scale, gradual rollouts allow issues to be detected in smaller, controlled environments before full release. This implements [Principle F28: For fast responses, preplan and invest in flexibility](/docs/product/product-development/principles#f28-the-principle-of-preplanned-flexibility-for-fast-responses-preplan-and-invest-in-flexibility) through strategic deployment strategies.
+**Gradual Rollouts and Feature Flags** – Instead of deploying at full scale, gradual rollouts allow issues to be detected in smaller, controlled environments before full release. This implements [Principle F28: For fast responses, preplan and invest in flexibility](/docs/product/product-development/principles/controlling-flow-under-uncertainty#f28-the-principle-of-preplanned-flexibility-for-fast-responses-preplan-and-invest-in-flexibility) through strategic deployment strategies.
 
 **Acknowledging the Psychological Factor** – Developers and managers should recognize and accept that trust takes time to build. Even if all tests pass, skepticism is natural and should be addressed with transparency and data-driven validation.
 

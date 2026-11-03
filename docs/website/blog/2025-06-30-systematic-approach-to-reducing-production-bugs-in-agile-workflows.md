@@ -74,7 +74,7 @@ Rather than slow down our process, we added four strategic quality gates that ac
 
 **Problem**: Large PRs were difficult to review thoroughly, leading to missed issues.
 
-**Solution**: Enforce one small PR per day maximum. This implements [Principle V7: Many small experiments produce less variation than one big one](/docs/product/product-development/principles#v7-the-principle-of-small-experiments-many-small-experiments-produce-less-variation-than-one-big-one).
+**Solution**: Enforce one small PR per day maximum. This implements [Principle V7: Many small experiments produce less variation than one big one](/docs/product/product-development/principles/exploiting-variability#v7-the-principle-of-small-experiments-many-small-experiments-produce-less-variation-than-one-big-one).
 
 **Benefits**:
 
@@ -109,7 +109,7 @@ _Small batches enable thorough reviews and faster issue detection_
 - **A/B testing**: Compare feature performance
 - **Decoupled deployment**: Ship code without activating features
 
-This supports [Principle F28: For fast responses, preplan and invest in flexibility](/docs/product/product-development/principles#f28-the-principle-of-preplanned-flexibility-for-fast-responses-preplan-and-invest-in-flexibility).
+This supports [Principle F28: For fast responses, preplan and invest in flexibility](/docs/product/product-development/principles/controlling-flow-under-uncertainty#f28-the-principle-of-preplanned-flexibility-for-fast-responses-preplan-and-invest-in-flexibility).
 
 _Check out our [feature flags guidelines](/docs/engineering/guidelines/feature-flags) for implementation details._
 
@@ -132,15 +132,15 @@ Since each package has different complexity and requirements, teams can increase
 
 Our 4-task approach directly implements core [product development principles](/docs/product/product-development/principles):
 
-- **[Small Experiments (V7)](/docs/product/product-development/principles#v7-the-principle-of-small-experiments-many-small-experiments-produce-less-variation-than-one-big-one)**: Daily small PRs with feature flags create less overall risk than large releases, following the principle that many small experiments produce less variation than one big one.
+- **[Small Experiments (V7)](/docs/product/product-development/principles/exploiting-variability#v7-the-principle-of-small-experiments-many-small-experiments-produce-less-variation-than-one-big-one)**: Daily small PRs with feature flags create less overall risk than large releases, following the principle that many small experiments produce less variation than one big one.
 
-- **[Queue Reduction via Fast Feedback (FF7)](/docs/product/product-development/principles#ff7-the-queue-reduction-principle-of-feedback-fast-feedback-enables-smaller-queues)**: PR templates and small PRs provide faster feedback loops that reduce the queue of issues reaching production, enabling smaller buffers and minimizing delays.
+- **[Queue Reduction via Fast Feedback (FF7)](/docs/product/product-development/principles/using-fast-feedback#ff7-the-queue-reduction-principle-of-feedback-fast-feedback-enables-smaller-queues)**: PR templates and small PRs provide faster feedback loops that reduce the queue of issues reaching production, enabling smaller buffers and minimizing delays.
 
-- **[Small Batch Proximity (B17)](/docs/product/product-development/principles#b17-the-proximity-principle-proximity-enables-small-batch-sizes)**: Daily small PRs enable thorough code review by reducing communication costs and enabling real-time collaboration, unlocking the full advantages of small batch sizes.
+- **[Small Batch Proximity (B17)](/docs/product/product-development/principles/reducing-batch-size#b17-the-proximity-principle-proximity-enables-small-batch-sizes)**: Daily small PRs enable thorough code review by reducing communication costs and enabling real-time collaboration, unlocking the full advantages of small batch sizes.
 
-- **[Leading Indicators (FF3)](/docs/product/product-development/principles#ff3-the-principle-of-leading-indicators-select-control-variables-that-predict-future-system-behavior)**: Test coverage metrics and PR checklist completion serve as predictive control variables that enable early interventions before issues reach production.
+- **[Leading Indicators (FF3)](/docs/product/product-development/principles/using-fast-feedback#ff3-the-principle-of-leading-indicators-select-control-variables-that-predict-future-system-behavior)**: Test coverage metrics and PR checklist completion serve as predictive control variables that enable early interventions before issues reach production.
 
-- **[Watching Work Products (E5)](/docs/product/product-development/principles#e5-the-inactivity-principle-watch-the-work-product-not-the-worker)**: Our focus shifts from monitoring developer activity to tracking work products moving through quality gates, addressing the biggest waste—work sitting idle in queues.
+- **[Watching Work Products (E5)](/docs/product/product-development/principles/economic-view#e5-the-inactivity-principle-watch-the-work-product-not-the-worker)**: Our focus shifts from monitoring developer activity to tracking work products moving through quality gates, addressing the biggest waste—work sitting idle in queues.
 
 ## Expected Results
 
