@@ -35,9 +35,27 @@ title: Controlling Flow Under Uncertainty
 
 ## F16: The HDCF Scheduling Principle: When job durations are homogeneous, do the high cost-of-delay job first.
 
+When every job takes the same time but their [costs of delay](/docs/product/product-development/definitions#cost-of-delay) differ, do the job with the highest cost of delay first (HDCF). Jobs that lose little by waiting wait, so the ones that lose most are served first. With three equal-length jobs whose delay costs are 10, 3 and 1, running them in that order rather than in reverse is where the saving comes from.
+
 ## F17: The WSJF Scheduling Principle: When job durations and delay costs are not homogeneous, use WSJF.
 
+When both durations and [costs of delay](/docs/product/product-development/definitions#cost-of-delay) differ, the most common case in practice, do the weighted shortest job first (WSJF): rank each job by its cost of delay divided by its duration. The metric needs data from the job alone, which makes it easy to apply.
+
+| Job | Duration | Cost of delay | Weight (CoD / duration) |
+| --- | -------- | ------------- | ----------------------- |
+| 1   | 1        | 10            | 10                      |
+| 2   | 3        | 3             | 1                       |
+| 3   | 10       | 1             | 0.1                     |
+
+Serving a job blocks the resource for its duration. The benefit of serving it now is the delay cost it saves, and the price is the time every other job waits, so a correct sequence weighs both.
+
+Three common practices miss this. Ranking by return on investment ignores how sensitive each project's profit is to delay: a high-ROI project that loses little by waiting should go after a low-ROI one that loses a lot, because what matters is the portfolio's return adjusted for delay cost. First-in, first-out is simple but dangerous when delay costs differ, as an emergency room that served patients in arrival order would show. Critical Chain gives priority to the project with the least remaining buffer (minimum slack time first), which minimizes missed schedules but is not optimal when delay costs differ: a low-cost-of-delay project short on slack should not displace a high-cost-of-delay one that still has plenty.
+
 ## F18: The Local Priority Principle: Priorities are inherently local.
+
+WSJF has a subtle consequence. Priority depends on cost of delay, a property of the project, and on the time the job needs at a resource, a property of that resource. Priorities are therefore local to each resource, not global properties of projects.
+
+Ranking projects once and telling the whole organization to follow that ranking lets an unimportant task on a high-priority project displace an important task on a lower-priority one. The local nature of priority argues for [decentralized control](/docs/product/product-development/principles/achieving-decentralized-control).
 
 ## F19: The Round-Robin Principle: When task duration is unknown, share time among tasks.
 
