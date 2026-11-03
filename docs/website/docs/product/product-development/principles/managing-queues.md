@@ -13,7 +13,9 @@ title: Managing Queues
 
 ## Q1: The Principle of Invisible Inventory: Product development inventory is physically and financially invisible.
 
-Inventory in product development isn't physical objects but information. Then, it's virtually invisible, both physically and financially. Product development inventory's effects: increased [cycle time](/docs/product/product-development/definitions#cycle-time), delayed feedback, constantly shifting priorities, and status reporting.
+A factory's inventory sits on the floor and on the balance sheet, so everyone sees it grow. Product development's inventory is information: half-finished designs, untested code, decisions waiting on someone. It takes no space and accounting does not count it, so it is physically and financially invisible, and it can grow without anyone noticing.
+
+What cannot be seen is not managed. The damage shows up only in its effects: longer [cycle time](/docs/product/product-development/definitions#cycle-time), delayed feedback, priorities that keep shifting, and the status reporting needed to find out where the work is. The remedy is to make the inventory visible by measuring the queues themselves ([Q11](/docs/product/product-development/principles/managing-queues#q11-the-cumulative-flow-principle-use-cfds-to-monitor-queues)).
 
 ## Q2: The Principle of Queueing Waste: Queues are the root cause of the majority of economic waste in product development.
 
