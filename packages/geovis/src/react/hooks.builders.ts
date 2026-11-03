@@ -394,6 +394,11 @@ export interface BuildHandleGlobalCursorParams {
    * layer so the polygon handler skips its own `setHover` call.
    */
   pointHovering: { current: boolean };
+  /**
+   * The cursor off every pointer layer: `default`, or `crosshair` where a
+   * click on the bare map does something — a `proximitySearch.fromAnyPoint`.
+   */
+  idleCursor?: 'default' | 'crosshair';
 }
 
 /**
@@ -414,6 +419,7 @@ export const buildHandleGlobalCursor = ({
   trackedLayerIds,
   setHover,
   pointHovering,
+  idleCursor = 'default',
 }: BuildHandleGlobalCursorParams) => {
   return (event: { point: { x: number; y: number } }) => {
     const hits = queryLayerFeatures(
@@ -434,7 +440,7 @@ export const buildHandleGlobalCursor = ({
       });
       pointHovering.current = true;
     } else {
-      map.getCanvas().style.cursor = 'default';
+      map.getCanvas().style.cursor = idleCursor;
       if (pointHovering.current) {
         pointHovering.current = false;
         const polygonHits = queryLayerFeatures(

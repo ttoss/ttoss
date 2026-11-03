@@ -19,6 +19,11 @@ export interface GeoVisProximitySearchValue {
   origin: [number, number] | null;
   /** Whether the search started from the reader's location, not a pin. */
   fromUser: boolean;
+  /**
+   * Whether the search started from a point of the map the reader clicked,
+   * not a pin — see `proximitySearch.fromAnyPoint`.
+   */
+  fromPoint: boolean;
   /** The radius shown, in metres. */
   radius: number;
   /** The radii the reader can choose between, in metres, ascending. */

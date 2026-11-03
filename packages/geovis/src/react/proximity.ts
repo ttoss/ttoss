@@ -50,11 +50,14 @@ export type ProximityState = {
   focus: PinFocus | null;
   /** Whether the search started from the reader's location, not a pin. */
   fromUser: boolean;
+  /** Whether the search started from a point of the map, not a pin. */
+  fromPoint: boolean;
 };
 
 /**
- * The focus a search from the reader's location holds: no pin, so the engine
- * hides every pin while it is shown, as it does around a clicked one.
+ * The focus a search from the reader's location, or from a point of the map,
+ * holds: no pin, so the engine hides every pin while it is shown, as it does
+ * around a clicked one.
  */
 const NO_PIN: PinFocus = { layerId: null, featureId: null };
 
@@ -70,6 +73,7 @@ const idleState = (radius: number, request: number): ProximityState => {
     selectedId: null,
     focus: null,
     fromUser: false,
+    fromPoint: false,
   };
 };
 
@@ -220,10 +224,15 @@ const withWidening = ({
 type SearchStart = {
   /** The point, `[lng, lat]`. */
   origin: [number, number];
-  /** The pin clicked there, kept in focus while the search is shown. */
+  /**
+   * The pin clicked there, kept in focus while the search is shown —
+   * {@link NO_PIN} for the reader's location or a point of the map.
+   */
   focus: PinFocus | null;
   /** Whether the point is the reader's location. */
   fromUser: boolean;
+  /** Whether the point is one of the map the reader clicked, not a pin. */
+  fromPoint: boolean;
 };
 
 /**
@@ -244,7 +253,7 @@ const useSearchFrom = ({
   clear: () => void;
 }) => {
   return React.useCallback(
-    async ({ origin, focus, fromUser }: SearchStart) => {
+    async ({ origin, focus, fromUser, fromPoint }: SearchStart) => {
       const current = stateRef.current;
       const same =
         current.origin?.[0] === origin[0] && current.origin?.[1] === origin[1];
@@ -260,8 +269,9 @@ const useSearchFrom = ({
         ...idleState(initialRadius, request),
         status: 'loading',
         origin,
-        focus: fromUser ? NO_PIN : focus,
+        focus,
         fromUser,
+        fromPoint,
       });
       frame(origin, initialRadius);
       const hits = await ask({
@@ -320,8 +330,8 @@ const useSetRadius = ({
 };
 
 /**
- * The search's state and what changes it: searching from a point or from the
- * reader's location, clearing, widening or narrowing the radius, and opening a
+ * The search's state and what changes it: searching from a pin, from the
+ * reader's location or from a point of the map, clearing, widening or narrowing the radius, and opening a
  * place's card.
  * Each search frames its radius in the camera, so the circle is drawn at
  * `framePixels` on screen.
@@ -374,14 +384,21 @@ export const useProximitySearch = ({
   /** Searches from a point and the pin clicked there, if any. */
   const searchFrom = React.useCallback(
     (origin: [number, number], focus: PinFocus | null = null) => {
-      return start({ origin, focus, fromUser: false });
+      return start({ origin, focus, fromUser: false, fromPoint: false });
     },
     [start]
   );
   /** Searches from the reader's location, `[lng, lat]`. */
   const searchFromUser = React.useCallback(
     (origin: [number, number]) => {
-      return start({ origin, focus: null, fromUser: true });
+      return start({ origin, focus: NO_PIN, fromUser: true, fromPoint: false });
+    },
+    [start]
+  );
+  /** Searches from a point of the map the reader clicked, `[lng, lat]`. */
+  const searchFromPoint = React.useCallback(
+    (origin: [number, number]) => {
+      return start({ origin, focus: NO_PIN, fromUser: false, fromPoint: true });
     },
     [start]
   );
@@ -397,6 +414,7 @@ export const useProximitySearch = ({
     radii,
     searchFrom,
     searchFromUser,
+    searchFromPoint,
     clear,
     setRadius,
     select,

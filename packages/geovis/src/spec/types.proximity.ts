@@ -53,7 +53,8 @@ export interface ProximityCategory {
 
 /**
  * A search for the places within a radius of a feature the reader clicks — or,
- * with {@link fromUserLocation}, of where the reader is.
+ * with {@link fromUserLocation}, of where the reader is, and with
+ * {@link fromAnyPoint}, of any point of the map the reader clicks.
  *
  * Clicking a feature of one of {@link layers} calls {@link query} with its
  * position. While the search runs, a circle of the radius sweeps around the
@@ -70,9 +71,10 @@ export interface ProximitySearch {
   /**
    * Ids of the layers whose features start a search when clicked — e.g. the
    * hospitals' pins. A point feature is searched from its own position; any
-   * other, from where the click landed.
+   * other, from where the click landed. Optional only with
+   * {@link fromAnyPoint}, where any point of the map starts one.
    */
-  layers: string[];
+  layers?: string[];
   /**
    * Finds the places within a ring around a point — see
    * {@link ProximityQueryParams}. Only callable from code: a spec written as
@@ -106,4 +108,16 @@ export interface ProximitySearch {
    * the reader's location is the app's choice, not the search's.
    */
   fromUserLocation?: boolean;
+  /**
+   * Searches from any point of the map the reader clicks, not only from a
+   * feature of {@link layers}: the point is marked with a dot, and the bar
+   * reads "near this point". Clicking another point moves the search there;
+   * the bar's ×, or the dot, clears it.
+   *
+   * A click keeps its other meanings first — a feature of {@link layers}
+   * still searches from itself, and a feature of a layer that declares
+   * `click` or `clickAnchor` still opens its own card — and a double-click
+   * still zooms. Defaults to `false`.
+   */
+  fromAnyPoint?: boolean;
 }

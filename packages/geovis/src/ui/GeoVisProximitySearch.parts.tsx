@@ -8,7 +8,7 @@ import {
   KEYFRAMES,
   MONO,
 } from './GeoVisProximitySearch.styles';
-import { ACCENT, USER, USER_RGB } from './palette';
+import { ACCENT, TEXT_STRONG, USER, USER_RGB } from './palette';
 
 /** A distance tag over the circle, as the radius line carries it. */
 const RadiusTag = ({ text, left }: { text: string; left: number }) => {
@@ -241,5 +241,47 @@ export const YouMarker = ({
         {tag}
       </span>
     </>
+  );
+};
+
+/**
+ * The point of the map the search runs from, with `fromAnyPoint`: a dark dot
+ * in a white ring, set apart from the reader's blue one and from the answers'
+ * pins. Clicking it clears the search, as the clicked pin does.
+ */
+export const PointMarker = ({
+  title,
+  label,
+  onClick,
+}: {
+  title: string;
+  label: string;
+  onClick: () => void;
+}) => {
+  return (
+    <button
+      type="button"
+      onClick={(event) => {
+        event.stopPropagation();
+        onClick();
+      }}
+      aria-label={label}
+      title={title}
+      style={{
+        ...AT_ORIGIN,
+        zIndex: 2,
+        width: 18,
+        height: 18,
+        padding: 0,
+        boxSizing: 'border-box',
+        borderRadius: '50%',
+        background: TEXT_STRONG,
+        border: '4px solid #ffffff',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+        transform: 'translate(-50%,-50%)',
+        cursor: 'pointer',
+        animation: `${KEYFRAMES.fadeIn} .2s both`,
+      }}
+    />
   );
 };

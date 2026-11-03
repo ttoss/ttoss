@@ -30,7 +30,9 @@ const loadLocaleData = async (locale: string) => {
  * again, or the bar's ×, to clear the search and bring the hospitals back.
  *
  * With `fromUserLocation`, a button under the map's controls searches from
- * the reader's own location instead — see the "From user location" story.
+ * the reader's own location instead — see the "From user location" story. With
+ * `fromAnyPoint`, a click on any point of the map searches from there — see the
+ * "From any point" story.
  *
  * A fake request stands in for the search — it answers after a moment, with
  * services placed at random within the ring asked for.
@@ -180,5 +182,40 @@ FromUserLocation.argTypes = {
     control: 'inline-radio',
     options: ['granted', 'denied'],
     description: 'What the fake browser answers when asked for the location.',
+  },
+};
+
+/**
+ * **From any point of the map**, through `proximitySearch.fromAnyPoint`: click
+ * anywhere — a street, a square, an empty block — and the services within
+ * 1 km of that point drop in around it, the point marked with a dark dot and
+ * the bar saying "near this point". Clicking another point moves the search
+ * there; the bar's × or the dot clears it.
+ *
+ * A hospital's pin still searches from itself, and a double-click still
+ * zooms. Off the pins the cursor turns into a crosshair, showing that a click
+ * searches. Switch `fromAnyPoint` off to compare with the pins-only search.
+ */
+export const FromAnyPoint: StoryFn<{ fromAnyPoint: boolean }> = ({
+  fromAnyPoint,
+}) => {
+  const anyPointSpec: VisualizationSpec = {
+    ...spec,
+    title: 'Searching for services around any point',
+    description: fromAnyPoint
+      ? 'Click anywhere on the map: the services within 1 km of that point drop in around it.'
+      : "Click a hospital's pin: the services within 1 km of it drop in around it.",
+    proximitySearch: { ...PROXIMITY_SEARCH, fromAnyPoint },
+  };
+  // Keyed, so switching the field starts from a fresh map.
+  return <GeoVisFixtureStory key={String(fromAnyPoint)} spec={anyPointSpec} />;
+};
+
+FromAnyPoint.args = { fromAnyPoint: true };
+FromAnyPoint.argTypes = {
+  fromAnyPoint: {
+    control: 'boolean',
+    description:
+      'Whether a click on any point of the map searches from there, not only a click on a hospital.',
   },
 };

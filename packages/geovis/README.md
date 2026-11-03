@@ -1267,13 +1267,14 @@ The first search asks for the whole disc (`radiusMin` is `0`). Widening the radi
 
 | Field              | Type                                                           | Default              | Description                                                                             |
 | ------------------ | -------------------------------------------------------------- | -------------------- | --------------------------------------------------------------------------------------- |
-| `layers`           | `string[]`                                                     | —                    | Layers whose features start a search when clicked                                       |
+| `layers`           | `string[]`                                                     | —                    | Layers whose features start a search when clicked; optional only with `fromAnyPoint`    |
 | `query`            | `(params: ProximityQueryParams) => Promise<ProximityResult[]>` | —                    | Finds the places within a ring; only callable from code, so a JSON spec cannot carry it |
 | `radii`            | `number[]`                                                     | `[1000, 2000, 3000]` | The radii the reader chooses between, in metres, ascending                              |
 | `initialRadius`    | `number`                                                       | smallest of `radii`  | The radius of the first search                                                          |
 | `categories`       | `ProximityCategory[]`                                          | —                    | Each kind of place: `id`, `label`, pin `color` and optional `icon`                      |
 | `labels`           | `{ one?: string; other?: string }`                             | "result", "results"  | How the texts name what is searched                                                     |
 | `fromUserLocation` | `boolean`                                                      | `false`              | Adds a button that searches from the reader's own location (see below)                  |
+| `fromAnyPoint`     | `boolean`                                                      | `false`              | Searches from any point of the map the reader clicks, not only from a pin (see below)   |
 
 ### Searching from the reader's location
 
@@ -1287,6 +1288,30 @@ Clicking the button or the dot again clears the search. If the location cannot b
 
 The button is not shown where the browser offers no geolocation, as on a page served over plain HTTP. It is off by default, because asking for the reader's location is the app's choice.
 
+### Searching from any point of the map
+
+With `fromAnyPoint: true`, a click on any point of the map searches from there, not only a click on a pin of `layers`. `layers` becomes optional, for a map whose only search is the free one:
+
+```tsx
+proximitySearch: {
+  query,
+  fromAnyPoint: true,
+},
+```
+
+- **Marker.** The point is marked by a dark dot in a white ring, apart from the reader's blue one, and the bar reads "near this point". No pin is in focus, so every pin is hidden.
+- **Moving and clearing.** Clicking another point moves the search there. The bar's ×, or the dot, clears it.
+- **Cursor.** Off the pins, the cursor is a crosshair, showing that a click searches.
+
+A click keeps its other meanings first, in this order:
+
+1. A place the search found opens its card.
+2. A pin of `layers` searches from itself, as without the option.
+3. A feature of a layer that declares `click` or `clickAnchor` opens its own card, and does not search.
+4. Anywhere else, the click searches from where it landed.
+
+A click on the bare map waits 250 ms before searching, so a double-click still zooms instead. It is off by default, so a map that does not need it keeps its clicks as they were.
+
 ### Reading the search from the app
 
 `useGeoVisProximitySearch()` hands the search to any component under `<GeoVisProvider>`, so the app can draw its own view of the results — a list beside the map, say — kept in step with the pins. It returns `null` when the spec declares no `proximitySearch`.
@@ -1296,6 +1321,7 @@ The button is not shown where the browser offers no geolocation, as on a page se
 | `status`     | `'idle' \| 'loading' \| 'done'` | `loading` while an answer is awaited — the first one, or a widening               |
 | `origin`     | `[number, number] \| null`      | The searched point, `[lng, lat]`; `null` while idle                               |
 | `fromUser`   | `boolean`                       | Whether the search started from the reader's location rather than a pin           |
+| `fromPoint`  | `boolean`                       | Whether the search started from a point of the map (`fromAnyPoint`), not a pin    |
 | `radius`     | `number`                        | The radius shown, in metres                                                       |
 | `radii`      | `number[]`                      | The radii the reader can choose between                                           |
 | `results`    | `ProximityHit[]`                | The places within `radius`, nearest first, each with its `distance` from `origin` |

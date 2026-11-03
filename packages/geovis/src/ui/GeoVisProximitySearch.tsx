@@ -2,6 +2,7 @@ import { useI18n } from '@ttoss/react-i18n';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
+import { useGeoVis } from '../react/contexts';
 import { useGeoVisMapMode } from '../react/mapMode';
 import { type ProximityState, useProximitySearch } from '../react/proximity';
 import { metresPerPixel } from '../react/proximity.geo';
@@ -28,7 +29,11 @@ import {
 } from './GeoVisProximitySearch.locate';
 import { LocationDialog } from './GeoVisProximitySearch.locationDialog';
 import { messages } from './GeoVisProximitySearch.messages';
-import { RadiusArea, YouMarker } from './GeoVisProximitySearch.parts';
+import {
+  PointMarker,
+  RadiusArea,
+  YouMarker,
+} from './GeoVisProximitySearch.parts';
 import { StatusBar } from './GeoVisProximitySearch.statusBar';
 import { KEYFRAMES_CSS } from './GeoVisProximitySearch.styles';
 
@@ -144,6 +149,7 @@ const usePublishSearch = ({
         status: state.status,
         origin: state.origin,
         fromUser: state.fromUser,
+        fromPoint: state.fromPoint,
         radius: state.radius,
         radii,
         results: state.hits.filter((hit) => {
@@ -161,12 +167,73 @@ const usePublishSearch = ({
 };
 
 /**
+ * What marks the point the search runs from, each clearing it when clicked:
+ * the reader's blue dot, the dot on a point of the map, or the clicked pin.
+ */
+const OriginMarker = ({
+  state,
+  clear,
+}: {
+  state: ProximityState;
+  clear: () => void;
+}) => {
+  const { intl } = useI18n();
+  const focusedPin = useFocusedPinLook(state.focus);
+  const label = intl.formatMessage(messages.clear);
+  if (state.fromUser) {
+    return (
+      <YouMarker
+        tag={intl.formatMessage(messages.you)}
+        title={intl.formatMessage(messages.youClear)}
+        label={label}
+        onClick={clear}
+      />
+    );
+  }
+  if (state.fromPoint) {
+    return (
+      <PointMarker
+        title={intl.formatMessage(messages.pointClear)}
+        label={label}
+        onClick={clear}
+      />
+    );
+  }
+  return (
+    <FocusPin
+      pin={focusedPin.pin}
+      iconSize={focusedPin.iconSize}
+      label={label}
+      onClick={clear}
+    />
+  );
+};
+
+/**
+ * The layers whose click is their own — those that declare `click` or
+ * `clickAnchor` — which a click on the bare map must not take over.
+ */
+const useOwnClickLayerIds = () => {
+  const { spec } = useGeoVis();
+  return React.useMemo(() => {
+    return spec.layers
+      .filter((layer) => {
+        return layer.click != null || layer.clickAnchor != null;
+      })
+      .map((layer) => {
+        return layer.id;
+      });
+  }, [spec.layers]);
+};
+
+/**
  * The proximity search `<GeoVisProvider>` auto-mounts when the spec declares
  * `proximitySearch`: clicking a feature of its layers searches the places
  * around it — see {@link ProximitySearch}. Drawn over the map, in its own
  * container, so what it places at a point follows the camera. With
  * `fromUserLocation`, a button in the map's control column searches from the
- * reader's location instead.
+ * reader's location instead; with `fromAnyPoint`, a click on any point of the
+ * map searches from there.
  *
  * @example
  * // Mounted by the provider — the spec only declares the search:
@@ -183,12 +250,27 @@ export const GeoVisProximitySearch = ({
   const format = useFormatDistance();
 
   const nouns = useNouns(config);
-  const { state, radii, searchFrom, searchFromUser, clear, setRadius, select } =
-    useProximitySearch({ config, map, framePixels: framePixelsFor(width) });
-  useSearchOnClick({ map, layerIds: config.layers, searchFrom });
+  const {
+    state,
+    radii,
+    searchFrom,
+    searchFromUser,
+    searchFromPoint,
+    clear,
+    setRadius,
+    select,
+  } = useProximitySearch({ config, map, framePixels: framePixelsFor(width) });
+  const ownClickLayerIds = useOwnClickLayerIds();
+  useSearchOnClick({
+    map,
+    layerIds: config.layers ?? [],
+    ownClickLayerIds,
+    fromAnyPoint: config.fromAnyPoint,
+    searchFrom,
+    searchFromPoint,
+  });
   usePublishSearch({ state, radii, select, setRadius, clear });
   useFocusOnSearchedPin(state.status === 'idle' ? null : state.focus);
-  const focusedPin = useFocusedPinLook(state.focus);
 
   const fromUserLocation = config.fromUserLocation ? (
     <FromUserLocation
@@ -256,21 +338,7 @@ export const GeoVisProximitySearch = ({
             />
           );
         })}
-        {state.fromUser ? (
-          <YouMarker
-            tag={intl.formatMessage(messages.you)}
-            title={intl.formatMessage(messages.youClear)}
-            label={intl.formatMessage(messages.clear)}
-            onClick={clear}
-          />
-        ) : (
-          <FocusPin
-            pin={focusedPin.pin}
-            iconSize={focusedPin.iconSize}
-            label={intl.formatMessage(messages.clear)}
-            onClick={clear}
-          />
-        )}
+        <OriginMarker state={state} clear={clear} />
       </div>
       <div
         style={{

@@ -709,11 +709,18 @@
     "proximitySearch": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["layers", "query"],
-      "description": "A search for the places within a radius of a feature: clicking a feature of one of `layers` calls `query` with its position and drops the answers in around it. `query` is a function, so the search is only declared from code.",
+      "required": ["query"],
+      "anyOf": [
+        { "required": ["layers"] },
+        {
+          "required": ["fromAnyPoint"],
+          "properties": { "fromAnyPoint": { "const": true } }
+        }
+      ],
+      "description": "A search for the places within a radius of a feature: clicking a feature of one of `layers` calls `query` with its position and drops the answers in around it. With `fromAnyPoint`, any point of the map the reader clicks starts one too. `query` is a function, so the search is only declared from code.",
       "properties": {
         "layers": {
-          "description": "Ids of the layers whose features start a search when clicked.",
+          "description": "Ids of the layers whose features start a search when clicked. Optional only with `fromAnyPoint`.",
           "type": "array",
           "minItems": 1,
           "items": { "type": "string", "minLength": 1 }
@@ -756,6 +763,10 @@
         },
         "fromUserLocation": {
           "description": "Adds a button that searches from the reader's own location, asked of the browser. Defaults to false.",
+          "type": "boolean"
+        },
+        "fromAnyPoint": {
+          "description": "Searches from any point of the map the reader clicks, not only from a feature of `layers`. A feature of `layers`, or of a layer with `click` or `clickAnchor`, keeps its own click. Defaults to false.",
           "type": "boolean"
         }
       }
