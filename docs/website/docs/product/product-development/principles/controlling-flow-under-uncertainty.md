@@ -33,6 +33,8 @@ title: Controlling Flow Under Uncertainty
 
 ## F15: The SJF Scheduling Principle: When delay costs are homogeneous, do the shortest job first.
 
+When every job has the same [cost of delay](/docs/product/product-development/definitions#cost-of-delay), do the shortest job first (SJF). Each job waits for every job ahead of it, so its delay cost grows with the time those jobs take. With three jobs of durations 1, 3 and 10, running the shortest first keeps two of them waiting only briefly; running the longest first makes the two short jobs wait for the long one. This is the convoy effect, the one slow car on a narrow road that holds up every car behind it.
+
 ## F16: The HDCF Scheduling Principle: When job durations are homogeneous, do the high cost-of-delay job first.
 
 When every job takes the same time but their [costs of delay](/docs/product/product-development/definitions#cost-of-delay) differ, do the job with the highest cost of delay first (HDCF). Jobs that lose little by waiting wait, so the ones that lose most are served first. With three equal-length jobs whose delay costs are 10, 3 and 1, running them in that order rather than in reverse is where the saving comes from.

@@ -94,11 +94,31 @@ In a process with several linked queues, one queue usually slows down the entire
 
 ## Q11: The Cumulative Flow Principle: Use CFDs to monitor queues.
 
+The cumulative flow diagram (CFD) is one of the most useful tools for managing queues. It plots time on the horizontal axis and two cumulative counts on the vertical one: work that has arrived at a process and work that has left it.
+
+The vertical distance between the two lines is the work that has arrived but not left, the size of the queue at that moment. The horizontal distance is the time one item takes to get through, and the area between the lines is the queue over time. The arrival line's slope is the demand feeding the queue; the departure line's slope is the capacity draining it, so a change in either slope shows a trend in demand or capacity. Batches show up as jagged lines ([Reducing Batch Size](/docs/product/product-development/principles/reducing-batch-size)).
+
+Tracking queue size over time is a good start, but it only shows the balance between arrivals and departures. A CFD shows which side caused a growing queue, excess arrivals or too few departures, so it detects an emerging queue, sizes it, and tells what to do about it and when it will clear.
+
 ## Q12: Little's Formula: Wait Time = Queue Size/Processing Rate
+
+Average time in queue equals average queue size divided by average processing rate, a result John D. C. Little proved in 1961 that holds for virtually any queueing discipline, arrival process or departure process. It is like draining a tank: 10 liters at 1 liter a minute takes 10 minutes.
+
+The formula applies to a single queue or to the whole system. The system level is especially useful when it is hard to tell which work is waiting and which is being worked on, and it defeats the claim that "we are working on everything": count all design-in-process, divide by the completion rate, and the cycle time follows. A development process with 50 projects in progress that finishes 10 a year takes 5 years per project; a test area with 50 tests in progress that finishes 10 a week takes 5 weeks per test. Doing this per stage gives each stage's cycle time, the overall cycle time and the delay cost of each stage.
+
+Count only the critical path when totalling cycle time, since queue time off it adds no delay to the project. That does not make such queues free: a task's cost of delay is the project's times the probability the task ends up on the critical path, and every queue also delays feedback, adds overhead, lowers quality and raises variability.
+
+Queue time can be found two ways. Give one job preemption everywhere, a "hot lot" that never waits; its cycle time is pure service time, and the difference from the average cycle time is queue time. Or divide a process's applied hours by its throughput: 40 hours a week over 10 jobs is 4 hours of service per job, so a 40-hour average cycle time is 10% value-added time and 90% queue time.
 
 ## Q13: The First Queue Size Control Principle: Don't control capacity utilization, control queue size.
 
+Controlling cycle time through capacity utilization is impractical in product development, because neither demand nor capacity can be estimated accurately enough ([Q3](/docs/product/product-development/principles/managing-queues#q3-the-principle-of-queueing-capacity-utilization-capacity-utilization-increases-queues-exponentially)). Utilization is almost useless for real-time control.
+
+Queue size works instead, thanks to the steep queueing curve: a small change in utilization causes a large change in queue size and cycle time, so a fairly wide control band on queue size holds utilization in a tight range, and controlling queue size directly controls cycle time. Supermarkets do this: when more than three customers wait at a checkout, a cross-trained employee opens another, and closes it once the lines clear ([Applying WIP Constraints](/docs/product/product-development/principles/applying-wip-constraints)).
+
 ## Q14: The Second Queue Size Control Principle: Don't control cycle time, control queue size.
+
+Cycle time is a lagging indicator: it cannot be measured until a job leaves the system. Queue size reacts at once. If 400 passengers join a queue of 100 at an immigration area at time 21, the queue has more than doubled by time 22, but the first passenger to report a doubled cycle time leaves only at time 41. Watching the queue reveals the problem 20 times sooner than watching cycle time ([FF3](/docs/product/product-development/principles/using-fast-feedback#ff3-the-principle-of-leading-indicators-select-control-variables-that-predict-future-system-behavior)).
 
 ## Q15: The Diffusion Principle: Over time, queues will randomly spin seriously out of control and will remain in this state for long periods.
 
