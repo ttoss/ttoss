@@ -104,7 +104,7 @@ const VARIATIONS = [
   },
   {
     value: 'ivs',
-    label: 'IVS (Censo 2022)',
+    label: 'IVS (fictício)',
     icon: 'lucide:bar-chart-2',
     color: '#7C3AED',
     timeline: false,
@@ -112,7 +112,7 @@ const VARIATIONS = [
   },
   {
     value: 'idhm',
-    label: 'IDHM (Censo 2022)',
+    label: 'IDHM (fictício)',
     icon: 'lucide:trending-up',
     color: '#BE123C',
     timeline: false,

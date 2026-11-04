@@ -2,90 +2,95 @@ import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import type { VisualizationSpec } from '@ttoss/geovis';
 import { GeoVisCanvas, GeoVisProvider } from '@ttoss/geovis';
 
+/**
+ * Fictitious points: round, made-up coordinates and years, only to show the
+ * dots.
+ */
 const GEOJSON_DATA: GeoJSON.FeatureCollection = {
   type: 'FeatureCollection',
   features: [
     {
       type: 'Feature',
-      geometry: { type: 'Point', coordinates: [100.4933, 13.7551] },
-      properties: { pointId: 'p1', year: '2004' },
+      geometry: { type: 'Point', coordinates: [95, 15] },
+      properties: { pointId: 'p1', year: '2005' },
     },
     {
       type: 'Feature',
-      geometry: { type: 'Point', coordinates: [6.6523, 46.5535] },
+      geometry: { type: 'Point', coordinates: [10, 45] },
       properties: { pointId: 'p2', year: '2006' },
     },
     {
       type: 'Feature',
-      geometry: { type: 'Point', coordinates: [-123.3596, 48.4268] },
+      geometry: { type: 'Point', coordinates: [-120, 50] },
       properties: { pointId: 'p3', year: '2007' },
     },
     {
       type: 'Feature',
-      geometry: { type: 'Point', coordinates: [18.4264, -33.9224] },
+      geometry: { type: 'Point', coordinates: [20, -30] },
       properties: { pointId: 'p4', year: '2008' },
     },
     {
       type: 'Feature',
-      geometry: { type: 'Point', coordinates: [151.195, -33.8552] },
+      geometry: { type: 'Point', coordinates: [145, -30] },
       properties: { pointId: 'p5', year: '2009' },
     },
     {
       type: 'Feature',
-      geometry: { type: 'Point', coordinates: [2.1404, 41.3925] },
+      geometry: { type: 'Point', coordinates: [0, 40] },
       properties: { pointId: 'p6', year: '2010' },
     },
     {
       type: 'Feature',
-      geometry: { type: 'Point', coordinates: [-104.8548, 39.7644] },
+      geometry: { type: 'Point', coordinates: [-100, 40] },
       properties: { pointId: 'p7', year: '2011' },
     },
     {
       type: 'Feature',
-      geometry: { type: 'Point', coordinates: [-1.1665, 52.9539] },
-      properties: { pointId: 'p8', year: '2013' },
+      geometry: { type: 'Point', coordinates: [-5, 55] },
+      properties: { pointId: 'p8', year: '2012' },
     },
     {
       type: 'Feature',
-      geometry: { type: 'Point', coordinates: [-122.6544, 45.5428] },
-      properties: { pointId: 'p9', year: '2014' },
+      geometry: { type: 'Point', coordinates: [-115, 45] },
+      properties: { pointId: 'p9', year: '2013' },
     },
     {
       type: 'Feature',
-      geometry: { type: 'Point', coordinates: [126.974, 37.5651] },
-      properties: { pointId: 'p10', year: '2015' },
+      geometry: { type: 'Point', coordinates: [125, 35] },
+      properties: { pointId: 'p10', year: '2014' },
     },
     {
       type: 'Feature',
-      geometry: { type: 'Point', coordinates: [7.1112, 50.7255] },
-      properties: { pointId: 'p11', year: '2016' },
+      geometry: { type: 'Point', coordinates: [15, 50] },
+      properties: { pointId: 'p11', year: '2015' },
     },
     {
       type: 'Feature',
-      geometry: { type: 'Point', coordinates: [-71.0314, 42.3539] },
-      properties: { pointId: 'p12', year: '2017' },
+      geometry: { type: 'Point', coordinates: [-75, 40] },
+      properties: { pointId: 'p12', year: '2016' },
     },
     {
       type: 'Feature',
-      geometry: { type: 'Point', coordinates: [39.2794, -6.8173] },
-      properties: { pointId: 'p13', year: '2018' },
+      geometry: { type: 'Point', coordinates: [35, -5] },
+      properties: { pointId: 'p13', year: '2017' },
     },
     {
       type: 'Feature',
-      geometry: { type: 'Point', coordinates: [26.0961, 44.4379] },
-      properties: { pointId: 'p14', year: '2019' },
+      geometry: { type: 'Point', coordinates: [25, 45] },
+      properties: { pointId: 'p14', year: '2018' },
     },
     {
       type: 'Feature',
-      geometry: { type: 'Point', coordinates: [-114.0879, 51.0279] },
-      properties: { pointId: 'p15', year: '2020' },
+      geometry: { type: 'Point', coordinates: [-110, 55] },
+      properties: { pointId: 'p15', year: '2019' },
     },
   ],
 };
 
 const DEFAULT_SPEC: VisualizationSpec = {
   title: 'Dot Density Map',
-  description: 'Global points rendered as dot density with year on hover.',
+  description:
+    'Fictitious points around the world, rendered as dot density with year on hover.',
   engine: 'maplibre',
   mapType: 'dotDensity',
   view: {

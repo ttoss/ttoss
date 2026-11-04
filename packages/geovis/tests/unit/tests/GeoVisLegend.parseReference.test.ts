@@ -63,6 +63,25 @@ describe('parseReference', () => {
     });
   });
 
+  describe('link style', () => {
+    test('draws a link in blue, underlined only under the pointer or the keyboard focus', () => {
+      const [link] = findLinkElements(
+        parseReference(
+          'Fonte: {link:INFOSIGA-SP|https://infosiga.detran.sp.gov.br}.'
+        )
+      ) as React.ReactElement<{ sx: Record<string, unknown> }>[];
+
+      expect(link?.props.sx).toEqual({
+        color: '#2563EB',
+        textDecorationLine: 'none',
+        '&:hover, &:focus-visible': {
+          color: '#1D4ED8',
+          textDecorationLine: 'underline',
+        },
+      });
+    });
+  });
+
   describe('happy path: single link', () => {
     test('parses single HTTPS link in the middle of text', () => {
       const text =

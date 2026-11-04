@@ -32,7 +32,7 @@ export interface ContextPacketLayer {
 
 export interface ContextPacketLegend {
   id: string;
-  scaleKind?: 'categorical' | 'threshold';
+  scaleKind?: 'categorical' | 'threshold' | 'density';
   /** `[min, max]` of the scale's break points — never the full break list (ADR-0004). */
   domain?: [number, number];
   unit?: string;
@@ -83,6 +83,9 @@ const buildLegendSummary = (legend: LegendSpec): ContextPacketLegend => {
   if (!colorBy) return { id: legend.id };
   if (colorBy.type === 'categorical') {
     return { id: legend.id, scaleKind: 'categorical' };
+  }
+  if (colorBy.type === 'density') {
+    return { id: legend.id, scaleKind: 'density' };
   }
   const unit =
     legend.labelFormat?.type === 'range' ? legend.labelFormat.unit : undefined;

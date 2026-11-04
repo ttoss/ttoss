@@ -3,27 +3,28 @@ import type { GeoJSONFeatureCollection } from '@ttoss/geovis';
 import { GeoVisCanvas, GeoVisProvider } from '@ttoss/geovis';
 import * as React from 'react';
 
-import type {
-  ApiDistrictEntry,
-  DistrictEntry,
-  Year,
-} from './helpers/gender-dominance-helpers';
+import { fictitiousDistrictPopulation } from './helpers/fictitious-district-population';
+import type { DistrictEntry, Year } from './helpers/gender-dominance-helpers';
 import {
   buildCentroidGeoJson,
   buildSpec,
   buildTooltipData,
-  normalizePopulationData,
   sumValues,
 } from './helpers/gender-dominance-helpers';
 import { computeBbox, MapLabel } from './helpers/map-story-helpers';
 
+/**
+ * São Paulo's districts as circles sized by population and coloured by which
+ * sex leads. **The population is fictitious data**, made up for this story by
+ * `fictitiousDistrictPopulation` — only the district boundaries are real.
+ */
 export default {
   title: 'GeoVis/GenderDominanceBivariate',
   tags: ['autodocs'],
 } as Meta;
 
-const DATA_URL =
-  'https://api-forja.triangulos.tech/v1/files/8b7b245c-06e2-42de-9764-a2c180a75304/download';
+/** The fictitious population, by year then district — made once. */
+const POPULATION_DATA = fictitiousDistrictPopulation();
 
 const DISTRICTS_URL =
   'https://api-forja.triangulos.tech/v1/files/13984ef1-a4b4-4476-869d-9b9cfd9c6788/download';
@@ -53,27 +54,11 @@ export const GenderDominanceBivariate: StoryFn<{
   strokeWidth,
   strokeOpacity,
 }) => {
-  const [populationData, setPopulationData] = React.useState<Record<
-    string,
-    Record<string, DistrictEntry>
-  > | null>(null);
+  const populationData: Record<string, Record<string, DistrictEntry>> | null =
+    POPULATION_DATA;
 
   const [districtGeoJson, setDistrictGeoJson] =
     React.useState<GeoJSONFeatureCollection | null>(null);
-
-  React.useEffect(() => {
-    fetch(DATA_URL)
-      .then((res) => {
-        return res.json();
-      })
-      .then((json: Record<string, Record<string, ApiDistrictEntry>>) => {
-        setPopulationData(normalizePopulationData(json));
-      })
-      .catch((error) => {
-        // eslint-disable-next-line no-console
-        console.error('Failed to fetch population data', error);
-      });
-  }, []);
 
   React.useEffect(() => {
     fetch(DISTRICTS_URL)
@@ -191,7 +176,8 @@ export const GenderDominanceBivariate: StoryFn<{
           }}
         >
           <MapLabel>
-            São Paulo — size=population, colour=gender ({year})
+            São Paulo — size=population, colour=gender ({year}) · fictitious
+            data
           </MapLabel>
           <GeoVisCanvas
             viewId="primary"
@@ -207,7 +193,7 @@ GenderDominanceBivariate.argTypes = {
   year: {
     control: { type: 'select' },
     options: AVAILABLE_YEARS,
-    description: 'Census / projection year',
+    description: 'Year of the fictitious series',
   },
   legendEnabled: {
     control: { type: 'boolean' },

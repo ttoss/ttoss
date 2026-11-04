@@ -2,23 +2,28 @@ import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import type { VisualizationSpec } from '@ttoss/geovis';
 import { GeoVisCanvas, GeoVisLegend, GeoVisProvider } from '@ttoss/geovis';
 
+/**
+ * Cities as circles in fixed size steps. The cities are real places; **their
+ * populations are fictitious data**, round numbers made up to fill each step.
+ */
 export default {
   title: 'GeoVis/SteppedProportionalCircles',
   tags: ['autodocs'],
 } as Meta;
 
+/** Real city locations with fictitious populations. */
 const CITIES_GEOJSON: GeoJSON.FeatureCollection = {
   type: 'FeatureCollection',
   features: [
     {
       type: 'Feature',
       geometry: { type: 'Point', coordinates: [139.6917, 35.6895] },
-      properties: { cityId: 'tokyo', name: 'Tokyo', population: 13_960_000 },
+      properties: { cityId: 'tokyo', name: 'Tokyo', population: 14_000_000 },
     },
     {
       type: 'Feature',
       geometry: { type: 'Point', coordinates: [77.209, 28.6139] },
-      properties: { cityId: 'delhi', name: 'Delhi', population: 11_030_000 },
+      properties: { cityId: 'delhi', name: 'Delhi', population: 11_000_000 },
     },
     {
       type: 'Feature',
@@ -26,7 +31,7 @@ const CITIES_GEOJSON: GeoJSON.FeatureCollection = {
       properties: {
         cityId: 'shanghai',
         name: 'Shanghai',
-        population: 24_870_000,
+        population: 18_000_000,
       },
     },
     {
@@ -35,7 +40,7 @@ const CITIES_GEOJSON: GeoJSON.FeatureCollection = {
       properties: {
         cityId: 'sao-paulo',
         name: 'São Paulo',
-        population: 12_330_000,
+        population: 12_000_000,
       },
     },
     {
@@ -44,18 +49,18 @@ const CITIES_GEOJSON: GeoJSON.FeatureCollection = {
       properties: {
         cityId: 'mexico-city',
         name: 'Mexico City',
-        population: 9_210_000,
+        population: 9_000_000,
       },
     },
     {
       type: 'Feature',
       geometry: { type: 'Point', coordinates: [31.2357, 30.0444] },
-      properties: { cityId: 'cairo', name: 'Cairo', population: 9_540_000 },
+      properties: { cityId: 'cairo', name: 'Cairo', population: 7_000_000 },
     },
     {
       type: 'Feature',
       geometry: { type: 'Point', coordinates: [-0.1276, 51.5074] },
-      properties: { cityId: 'london', name: 'London', population: 8_982_000 },
+      properties: { cityId: 'london', name: 'London', population: 6_000_000 },
     },
     {
       type: 'Feature',
@@ -63,7 +68,7 @@ const CITIES_GEOJSON: GeoJSON.FeatureCollection = {
       properties: {
         cityId: 'new-york',
         name: 'New York',
-        population: 8_336_000,
+        population: 8_000_000,
       },
     },
     {
@@ -72,7 +77,7 @@ const CITIES_GEOJSON: GeoJSON.FeatureCollection = {
       properties: {
         cityId: 'bangkok',
         name: 'Bangkok',
-        population: 10_540_000,
+        population: 16_000_000,
       },
     },
     {
@@ -81,7 +86,7 @@ const CITIES_GEOJSON: GeoJSON.FeatureCollection = {
       properties: {
         cityId: 'buenos-aires',
         name: 'Buenos Aires',
-        population: 3_070_000,
+        population: 3_000_000,
       },
     },
   ],
@@ -90,7 +95,7 @@ const CITIES_GEOJSON: GeoJSON.FeatureCollection = {
 const spec: VisualizationSpec = {
   title: 'Stepped Proportional Circles',
   description:
-    'Cities sized by population using stepped mode. Each bin gets a fixed radius — no interpolation between thresholds.',
+    'Cities sized by a fictitious population using stepped mode. Each bin gets a fixed radius — no interpolation between thresholds.',
   engine: 'maplibre',
   sources: [
     {
@@ -118,6 +123,7 @@ const spec: VisualizationSpec = {
     {
       id: 'pop-legend',
       title: 'Population',
+      reference: 'Fictitious data',
       labelFormat: {
         type: 'labels',
         labels: ['< 5M', '5M – 10M', '10M – 15M', '> 15M'],

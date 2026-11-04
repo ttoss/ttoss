@@ -281,7 +281,7 @@ WithIconAndFooter.args = {
   icon: 'lucide:tractor',
   iconColor: '#0e9e6e',
   footerValue: '2024',
-  reference: 'Source: {link:IBGE Censo 2023|https://ibge.gov.br}',
+  reference: 'Fictitious data',
   labelFormat: { type: 'count', abbreviate: true },
   normalization: undefined,
   thresholds: [25, 75, 150],

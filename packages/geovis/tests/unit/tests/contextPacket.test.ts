@@ -55,6 +55,15 @@ describe('buildContextPacket — legend summary', () => {
     ]);
   });
 
+  test('a density legend reports scaleKind density, with no domain', () => {
+    const spec: VisualizationSpec = {
+      ...makeSpec(),
+      legends: [{ id: 'legend-1', colorBy: { type: 'density' } }],
+    };
+    const packet = buildContextPacket(spec, RESOLVED(spec), null, CAPABILITIES);
+    expect(packet.legends).toEqual([{ id: 'legend-1', scaleKind: 'density' }]);
+  });
+
   test('a threshold legend reports [min, max] as domain, never the full break list', () => {
     const spec: VisualizationSpec = {
       ...makeSpec(),

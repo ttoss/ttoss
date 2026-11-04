@@ -18,6 +18,8 @@ import * as React from 'react';
 
 import type { ColorStep } from './helpers/choropleth-helpers';
 import { MapOverlayLegend } from './helpers/choropleth-helpers';
+import { fictitiousDistrictPopulation } from './helpers/fictitious-district-population';
+import type { DistrictEntry } from './helpers/gender-dominance-helpers';
 import { MapLabel } from './helpers/map-story-helpers';
 
 const DISTRICTS_URL =
@@ -81,11 +83,7 @@ type MunicipalDistrictStoryArgs = {
   subprefeituraLineWidth: number;
 };
 
-const DATA_URL =
-  'https://api-forja.triangulos.tech/v1/files/8b7b245c-06e2-42de-9764-a2c180a75304/download';
-
-// Population ranges for São Paulo districts (estimated from census data).
-// Most districts: 30k–250k. Outliers: Marsilac ~8k, Grajaú/Campo Limpo ~240k+.
+// Population ranges for the fictitious district populations: 8k–260k or so.
 const populationSteps: ColorStep[] = [
   { threshold: 50_000, color: '#bfdbfe' },
   { threshold: 100_000, color: '#60a5fa' },
@@ -106,6 +104,9 @@ const populationStepsIBGE: ColorStep[] = [
   { threshold: 500_000, color: '#1e3a8a' },
 ];
 
+/** The fictitious population, by year then district — made once. */
+const POPULATION_DATA = fictitiousDistrictPopulation();
+
 const DEFAULT_COLOR = '#f0f9ff';
 
 const AVAILABLE_YEARS = [
@@ -114,8 +115,8 @@ const AVAILABLE_YEARS = [
 
 type Year = (typeof AVAILABLE_YEARS)[number];
 
-/** Approximate population of São Paulo Municipality (2020 estimate) — used as denominator for percentage calculations. */
-const SAO_PAULO_POPULATION = 12_272_000;
+/** A made-up city total — the denominator for the percentage labels. */
+const FICTITIOUS_CITY_POPULATION = 10_000_000;
 
 const fmtPop = (v: number) => {
   return `${(v / 1_000).toFixed(0)}k`;
@@ -139,48 +140,6 @@ const customRangeFormatter = (
   if (lower === null) return `0 - ${fmt(upper!)} ${numeratorLabel}`;
   if (upper === null) return `${fmt(lower!)} ${numeratorLabel} or more`;
   return `${fmt(lower!)} – ${fmt(upper!)} ${numeratorLabel}`;
-};
-
-/** Raw shape returned by the external API (Portuguese field names). */
-interface ApiDistrictEntry {
-  total: number;
-  nome_distr: string;
-  Homens: Record<string, number>;
-  Mulheres: Record<string, number>;
-}
-
-/** Normalised internal shape with English identifiers. */
-interface DistrictEntry {
-  total: number;
-  districtName: string;
-  men: Record<string, number>;
-  women: Record<string, number>;
-}
-
-const normalizeEntry = (e: ApiDistrictEntry): DistrictEntry => {
-  return {
-    total: e.total,
-    districtName: e.nome_distr,
-    men: e.Homens,
-    women: e.Mulheres,
-  };
-};
-
-const normalizePopulationData = (
-  raw: Record<string, Record<string, ApiDistrictEntry>>
-): Record<string, Record<string, DistrictEntry>> => {
-  return Object.fromEntries(
-    Object.entries(raw).map(([yr, districts]) => {
-      return [
-        yr,
-        Object.fromEntries(
-          Object.entries(districts).map(([id, e]) => {
-            return [id, normalizeEntry(e)];
-          })
-        ),
-      ];
-    })
-  );
 };
 
 const getDistrictValue = (
@@ -248,7 +207,7 @@ export default {
     year: {
       control: { type: 'select' },
       options: AVAILABLE_YEARS,
-      description: 'Census / projection year used in `mapData` rows',
+      description: 'Year of the fictitious series used in `mapData` rows',
     },
     dataProperty: {
       control: { type: 'select' },
@@ -381,15 +340,15 @@ export default {
 } satisfies Meta<MunicipalDistrictStoryArgs>;
 
 /**
- * Choropleth of São Paulo municipal districts coloured by total population
- * for a selected census year (2000–2050, projected past 2025).
+ * Choropleth of São Paulo municipal districts coloured by population for a
+ * selected year (2000–2050). **The population is fictitious data**, made up
+ * for this story by `fictitiousDistrictPopulation` — only the district
+ * boundaries are real.
  *
- * Population data comes from an external dataset joined to the GeoJSON geometry
- * via `mapData` — the GeoJSON itself has no properties, only `feature.id`
- * (set to `cd_distrit`, an integer 1–96). `geometryId` in each `MapDataRow`
- * matches directly against `feature.id`, no `joinKey` needed.
- *
- * Source: SMUL/GEOINFO — Resident population evolution, São Paulo Municipality.
+ * The population is joined to the GeoJSON geometry via `mapData` — the
+ * GeoJSON itself has no properties, only `feature.id` (set to `cd_distrit`,
+ * an integer 1–96). `geometryId` in each `MapDataRow` matches directly
+ * against `feature.id`, no `joinKey` needed.
  */
 /* eslint-disable max-lines-per-function, max-lines */
 const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
@@ -424,27 +383,10 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
 
   const position = resolveLegendPosition(legendPosition);
   const trimmedNoDataLabel = noDataLabel.trim() || undefined;
-  const [populationData, setPopulationData] = React.useState<Record<
-    string,
-    Record<string, DistrictEntry>
-  > | null>(null);
+  const populationData: Record<string, Record<string, DistrictEntry>> | null =
+    POPULATION_DATA;
   const [districtGeoJson, setDistrictGeoJson] =
     React.useState<GeoJSONFeatureCollection | null>(null);
-
-  React.useEffect(() => {
-    fetch(DATA_URL)
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then((json: Record<string, Record<string, ApiDistrictEntry>>) => {
-        return setPopulationData(normalizePopulationData(json));
-      })
-      .catch((error) => {
-        // eslint-disable-next-line no-console
-        console.error('Failed to fetch population data', error);
-      });
-  }, []);
 
   React.useEffect(() => {
     fetch(DISTRICTS_URL)
@@ -489,7 +431,7 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
         return {
           type: 'percentage',
           decimals: 1,
-          denominator: SAO_PAULO_POPULATION,
+          denominator: FICTITIOUS_CITY_POPULATION,
           extended,
         };
       case 'stdDev':
@@ -613,14 +555,13 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
         {
           id: 'population',
           title: 'Population by district',
-          subtitle: `São Paulo Municipality (SMUL/GEOINFO, 2000–2050 projection)`,
+          subtitle: 'São Paulo districts — fictitious data, 2000–2050',
           labelFormat: getLabelFormat(),
           normalization: resolveNormalization({
             labelFormatType,
             normalizationType,
           }),
-          reference:
-            'Population by district, {link:São Paulo Municipality (SMUL/GEOINFO, 2000–2050 projection)|https://example.com}',
+          reference: 'Fictitious data',
           ...(trimmedNoDataLabel && { noDataLabel: trimmedNoDataLabel }),
           ...(position && { position }),
           colorBy: {

@@ -32,9 +32,10 @@ export const PolicyWarningBanner = ({
           Cartographic guardrail: absolute count in choropleth
         </strong>
         Rwanda provinces encoded by <strong>absolute population count</strong>{' '}
-        (left) vs <strong>density</strong> (hab/km², right). Kigali has a small
-        population (854K) yet is the densest province (1,551 hab/km²). On the
-        left map Kigali appears almost white; on the right it is the darkest.
+        (left) vs <strong>density</strong> (hab/km², right), on fictitious
+        figures. Kigali has a small population (900K) yet is the densest
+        province (1,500 hab/km²). On the left map Kigali appears almost white;
+        on the right it is the darkest.
         <br />
         <strong>Correct:</strong> divide by area before encoding in colour.
         {warnings.map((w) => {

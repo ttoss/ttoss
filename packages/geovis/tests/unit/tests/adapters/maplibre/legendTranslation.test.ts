@@ -5,6 +5,11 @@ import {
 import type { LegendSpec, SizeBy } from 'src/spec/types';
 
 describe('buildFillColorExpression', () => {
+  test('builds no expression for a density legend: a heatmap colours itself', () => {
+    const legend: LegendSpec = { id: 'density', colorBy: { type: 'density' } };
+    expect(buildFillColorExpression({ legend })).toBeUndefined();
+  });
+
   test('builds match expression for categorical legends', () => {
     const legend: LegendSpec = {
       id: 'status-legend',

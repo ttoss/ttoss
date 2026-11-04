@@ -14,6 +14,7 @@ import type {
 } from '../../spec/types';
 import type { LegendSpec } from '../../spec/types.legend';
 import { buildExtrusionHeightExpression } from './extrusion';
+import { buildHeatmapPaint } from './heatmap';
 import {
   resolveDimensionMapData,
   resolveDimensionStateKey,
@@ -364,16 +365,10 @@ const buildPoint: Builder = (base, layer, paint, ctx) => {
 
 /** Builds a MapLibre `heatmap` layer spec from a GeoVis heatmap layer. */
 const buildHeatmap: Builder = (base, _layer, paint, _ctx) => {
-  const hp = (paint ?? {}) as HeatmapPaint;
   return {
     ...base,
     type: 'heatmap',
-    paint: {
-      'heatmap-radius': hp.heatmapRadius ?? 15,
-      'heatmap-opacity': hp.heatmapOpacity ?? 1,
-      'heatmap-intensity': hp.heatmapIntensity ?? 1,
-      'heatmap-weight': hp.heatmapWeight ?? 1,
-    },
+    paint: buildHeatmapPaint((paint ?? {}) as HeatmapPaint),
   } as maplibregl.LayerSpecification;
 };
 

@@ -28,6 +28,7 @@ const SPEC_PAINT_KEY_MAP: Record<
   heatmapOpacity: 'heatmap-opacity',
   heatmapIntensity: 'heatmap-intensity',
   heatmapWeight: 'heatmap-weight',
+  heatmapColors: 'heatmap-color',
   textColor: 'text-color',
   textOpacity: 'text-opacity',
   textHaloColor: 'text-halo-color',

@@ -1,7 +1,6 @@
 import type { SizeBy } from '../../spec/types';
 import type {
   CategoricalColorBy,
-  ColorBy,
   LegendSpec,
   QuantitativeColorBy,
 } from '../../spec/types.legend';
@@ -43,7 +42,7 @@ const uniqueAscending = (values: ReadonlyArray<number>): number[] => {
  * MapLibre paint expression produced by {@link buildFillColorExpression}.
  */
 export const resolvePalette = (
-  colorBy: ColorBy,
+  colorBy: CategoricalColorBy | QuantitativeColorBy,
   minimumLength: number
 ): string[] => {
   const seed = colorBy.colors?.length ? colorBy.colors : DEFAULT_LEGEND_COLORS;
@@ -161,6 +160,9 @@ export const buildFillColorExpression = ({
   if (colorBy.type === 'categorical') {
     return buildCategoricalExpression(colorBy, stateKey);
   }
+  // A density legend colours a heatmap by its own `heatmapColors`, read from
+  // `heatmap-density`, never a feature-state value.
+  if (colorBy.type === 'density') return undefined;
   return buildQuantitativeExpression(colorBy, breaks, stateKey);
 };
 
