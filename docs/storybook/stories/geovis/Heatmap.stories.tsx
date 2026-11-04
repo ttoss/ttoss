@@ -3,20 +3,18 @@ import type { HeatmapPaint, VisualizationSpec } from '@ttoss/geovis';
 import { GeoVisCanvas, GeoVisProvider } from '@ttoss/geovis';
 
 /**
- * A density heatmap of the traffic crashes with severe or fatal victims in
- * the city of São Paulo in 2024 — 2,893 points from INFOSIGA-SP (DETRAN-SP,
- * CC BY 4.0). Each point carries `peso`: `10` for a crash with a death, `3`
- * for one with severely injured victims only.
+ * A density heatmap of fictitious food delivery orders across São Paulo —
+ * 2,660 made-up points gathered around a few hubs, only to show how the
+ * layer works. Each point carries `itens`, the order's size, from `1` to `10`.
  */
 export default {
   title: 'GeoVis/Heatmap',
   tags: ['autodocs'],
 } as Meta;
 
-const CRASHES_PATH = '/geovis/infosiga-sp-2024-severe-crashes.geojson';
+const ORDERS_PATH = '/geovis/fictitious-delivery-orders.geojson';
 
-const REFERENCE =
-  'Source: {link:INFOSIGA-SP / DETRAN-SP|https://infosiga.detran.sp.gov.br}, 2024 (CC BY 4.0)';
+const REFERENCE = 'Fictitious data';
 
 const RAMP: HeatmapPaint['heatmapColors'] = [
   '#fde68a',
@@ -53,14 +51,14 @@ const buildSpec = ({
     basemap: { styleUrl: 'https://tiles.openfreemap.org/styles/positron' },
     view: { center: [-46.63, -23.6], zoom: 10 },
     sources: [
-      { id: 'crashes', type: 'geojson', data: `${origin}${CRASHES_PATH}` },
+      { id: 'orders', type: 'geojson', data: `${origin}${ORDERS_PATH}` },
     ],
     layers: [
       {
-        id: 'crashes-heat',
-        sourceId: 'crashes',
+        id: 'orders-heat',
+        sourceId: 'orders',
         geometry: 'heatmap',
-        activeLegendId: legend ? 'crashes-density' : undefined,
+        activeLegendId: legend ? 'orders-density' : undefined,
         paint,
       },
       ...extraLayers,
@@ -68,14 +66,14 @@ const buildSpec = ({
     legends: legend
       ? [
           {
-            id: 'crashes-density',
-            title: 'Severe traffic crashes',
+            id: 'orders-density',
+            title: 'Delivery orders',
             position: 'bottom-right',
             reference: REFERENCE,
             colorBy: {
               type: 'density',
-              lowLabel: 'Fewer crashes',
-              highLabel: 'More crashes',
+              lowLabel: 'Fewer orders',
+              highLabel: 'More orders',
             },
           },
         ]
@@ -105,7 +103,7 @@ const HeatmapMap = ({ spec }: { spec: VisualizationSpec }) => {
 };
 
 /**
- * Density only: every crash counts the same, in a four-colour ramp whose
+ * Density only: every order counts the same, in a four-colour ramp whose
  * radius and intensity follow the zoom. The legend reads its gradient from
  * the layer's `heatmapColors`.
  */
@@ -118,18 +116,18 @@ export const Density: StoryFn = () => {
 };
 
 /**
- * Weighted by severity: `heatmapWeight` reads each crash's `peso`, so a fatal
- * crash (`10`) weighs a full point and a severe one (`3`) under a third of
- * one — the heat gathers where people die.
+ * Weighted by order size: `heatmapWeight` reads each order's `itens`, so an
+ * order of `10` items weighs a full point and one of `3` under a third of one
+ * — the heat gathers where the large orders go.
  */
-export const WeightedBySeverity: StoryFn = () => {
+export const WeightedByOrderSize: StoryFn = () => {
   return (
     <HeatmapMap
       spec={buildSpec({
         paint: {
           ...BY_ZOOM,
           heatmapColors: RAMP,
-          heatmapWeight: { property: 'peso', max: 10 },
+          heatmapWeight: { property: 'itens', max: 10 },
         },
       })}
     />
@@ -138,7 +136,7 @@ export const WeightedBySeverity: StoryFn = () => {
 
 /**
  * Heat to points: zoomed in to street level, the heat fades out between zoom
- * 14 and 16 while the crashes appear as points — two layers on one source,
+ * 14 and 16 while the orders appear as points — two layers on one source,
  * no API of their own.
  */
 export const HeatToPoints: StoryFn = () => {
@@ -155,8 +153,8 @@ export const HeatToPoints: StoryFn = () => {
         },
         extraLayers: [
           {
-            id: 'crashes-points',
-            sourceId: 'crashes',
+            id: 'orders-points',
+            sourceId: 'orders',
             geometry: 'point',
             minzoom: 14,
             paint: {
