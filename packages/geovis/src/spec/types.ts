@@ -836,9 +836,29 @@ export interface VisualizationSpec {
    * while the map is split.
    */
   proximitySearch?: ProximitySearch;
+
+  /**
+   * How many pixels of the map, from each edge, the app covers with its own
+   * panels — a sidebar opened over the map, say. What the camera frames by
+   * itself, as the proximity search's circle, is fitted to the rest and
+   * centred in it. Omitted, or 0, the whole map is free.
+   *
+   * @example
+   * // A 320 px panel open over the map's right side:
+   * viewInsets: { right: 320 }
+   */
+  viewInsets?: ViewInsets;
 }
 
 export type GeovisSpec = VisualizationSpec;
+
+/** Pixels covered from each edge of the map — see `VisualizationSpec.viewInsets`. */
+export interface ViewInsets {
+  top?: number;
+  right?: number;
+  bottom?: number;
+  left?: number;
+}
 
 /**
  * How the camera travels to a {@link ViewPreset}.

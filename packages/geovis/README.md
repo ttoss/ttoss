@@ -1265,6 +1265,8 @@ const spec: VisualizationSpec = {
 
 The first search asks for the whole disc (`radiusMin` is `0`). Widening the radius asks only for the ring beyond the radius already searched, so a place never comes back twice. `signal` aborts once the reader clears the search or starts another.
 
+Each search, and each change of radius, moves the camera to frame the circle. With `frame: 'fill'`, the default, the circle fills most of the map, keeping room for the bar under it; `frame: 'compact'` keeps it 110–150 px across, with the map around it in view. When the app covers part of the map with its own panels, `spec.viewInsets` tells GeoVis how many pixels each edge loses (`{ right: 320 }` for a panel on the right). The circle is then sized to the free area and centred in it, and it moves again when the insets change while a search is shown, as when a panel opens. `@ttoss/geovis-workspace` sets the insets for its sidebars by itself.
+
 ### `ProximitySearch` fields
 
 | Field              | Type                                                           | Default              | Description                                                                             |
@@ -1277,6 +1279,7 @@ The first search asks for the whole disc (`radiusMin` is `0`). Widening the radi
 | `labels`           | `{ one?: string; other?: string }`                             | "result", "results"  | How the texts name what is searched                                                     |
 | `fromUserLocation` | `boolean`                                                      | `false`              | Adds a button that searches from the reader's own location (see below)                  |
 | `fromAnyPoint`     | `boolean`                                                      | `false`              | Adds a button that turns on searching from any point of the map (see below)             |
+| `frame`            | `'fill' \| 'compact'`                                          | `'fill'`             | How large the camera frames the circle (see below)                                      |
 
 ### Searching from the reader's location
 
@@ -1334,6 +1337,10 @@ A click on the bare map waits 250 ms before searching, so a double-click still z
 | `select`      | `(id) => void`                  | Opens a place's card on the map, or closes it when it is the open one              |
 | `setRadius`   | `(radius: number) => void`      | Shows another radius, asking `query` only for the ring beyond the widest searched  |
 | `clear`       | `() => void`                    | Clears the search, as the bar's × does                                             |
+| `categoryId`  | `string \| null`                | The category whose pins the map shows; `null` shows every place                    |
+| `setCategory` | `(categoryId) => void`          | Shows only one category's pins on the map — `null` shows them all                  |
+
+A filter by kind of place in the app's view can narrow the map too: `setCategory('ubs')` takes every other category's pins off the map, and closes the open card when its place is of another category. `results` still holds every category's places, so the view can keep counting them all. Each new search shows every place again.
 
 Each result carries every field your `query` returned, so extra data (an address, a phone) reaches the app's view as-is:
 

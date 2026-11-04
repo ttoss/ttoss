@@ -256,7 +256,14 @@ export const ServicesNearbyPanel = () => {
         >
           {sub}
         </div>
-        {status !== 'idle' && <Counts results={results} pending={pending} />}
+        {status !== 'idle' && (
+          <Counts
+            results={results}
+            pending={pending}
+            categoryId={search.categoryId}
+            onPick={search.setCategory}
+          />
+        )}
       </div>
 
       <div
@@ -265,18 +272,24 @@ export const ServicesNearbyPanel = () => {
       >
         {pending && <Skeleton />}
         {status === 'done' && results.length === 0 && <EmptyResults />}
-        {results.map((hit) => {
-          return (
-            <PlaceRow
-              key={hit.id}
-              hit={hit}
-              expanded={selectedId === hit.id}
-              onToggle={() => {
-                search.select(hit.id);
-              }}
-            />
-          );
-        })}
+        {results
+          .filter((hit) => {
+            return (
+              search.categoryId === null || hit.categoryId === search.categoryId
+            );
+          })
+          .map((hit) => {
+            return (
+              <PlaceRow
+                key={hit.id}
+                hit={hit}
+                expanded={selectedId === hit.id}
+                onToggle={() => {
+                  search.select(hit.id);
+                }}
+              />
+            );
+          })}
       </div>
 
       {status !== 'idle' && <Footer fromUser={fromUser} radius={radiusLabel} />}

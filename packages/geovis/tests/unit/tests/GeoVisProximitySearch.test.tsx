@@ -725,6 +725,41 @@ describe('the searched area on the map', () => {
     expect(drawnKinds()).toEqual(['area', 'radius']);
   });
 
+  test("goes above the app's areas drawn over the basemap's labels, beneath the symbols above them", async () => {
+    await renderSearch();
+    // A choropleth over the basemap's labels, and pins over it.
+    mockMap.layers.set('choropleth', { id: 'choropleth', type: 'fill' });
+    mockMap.layers.set('pins', { id: 'pins', type: 'symbol' });
+    clickPin();
+
+    const order = [...mockMap.layers.keys()];
+    expect(order.indexOf(AREA_IDS.fill)).toBeGreaterThan(
+      order.indexOf('choropleth')
+    );
+    expect(order.indexOf(AREA_IDS.dashes)).toBeLessThan(order.indexOf('pins'));
+  });
+
+  test('a layer the app adds over it later sends it back on top', async () => {
+    const { calls } = await renderSearch();
+    clickPin();
+    growIn();
+    calls[0].resolve([]);
+    await settle();
+
+    mockMap.layers.set('heat', { id: 'heat', type: 'heatmap' });
+    act(() => {
+      mockMap.fire('styledata');
+    });
+
+    const order = [...mockMap.layers.keys()];
+    expect(order.indexOf(AREA_IDS.fill)).toBeGreaterThan(order.indexOf('heat'));
+    expect(order.slice(-3)).toEqual([
+      AREA_IDS.fill,
+      AREA_IDS.outline,
+      AREA_IDS.dashes,
+    ]);
+  });
+
   test('widening redraws at once, with a ring at the smaller radius; clearing takes the circle off', async () => {
     const { calls } = await renderSearch();
     clickPin();

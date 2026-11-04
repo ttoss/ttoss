@@ -123,4 +123,11 @@ export interface ProximitySearch {
    * still zooms. Defaults to `false`.
    */
   fromAnyPoint?: boolean;
+  /**
+   * How large the camera frames the circle of a search: `'fill'` (the
+   * default) zooms until the circle fills most of the map's free area — the
+   * map less `viewInsets` — leaving room for the bar under it; `'compact'`
+   * keeps it between 110 and 150 px across, the map around it in view.
+   */
+  frame?: 'fill' | 'compact';
 }

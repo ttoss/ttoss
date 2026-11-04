@@ -287,6 +287,11 @@ reader does. An accepted click opens it when the detail API is set, and the app
 opens or closes it with `setRightSidebarOpen` from `useGeovisWorkspace()`. Its
 × closes it; `initialState: 'open'` mounts it open.
 
+While a sidebar is open on a wide screen, the workspace adds the part of the map
+it covers to the spec's `viewInsets`. What GeoVis frames by itself, such as the
+proximity search's circle, then fits the part of the map the sidebars leave
+free instead of sliding under one.
+
 ### Replacing the right sidebar's content
 
 Set `rightSidebar.content` when the sidebar's content belongs to the app — a

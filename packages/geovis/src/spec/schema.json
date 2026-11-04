@@ -706,6 +706,17 @@
         }
       }
     },
+    "viewInsets": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Pixels of the map, from each edge, the app covers with its own panels. What the camera frames by itself, as the proximity search's circle, is fitted to the rest.",
+      "properties": {
+        "top": { "type": "number", "minimum": 0 },
+        "right": { "type": "number", "minimum": 0 },
+        "bottom": { "type": "number", "minimum": 0 },
+        "left": { "type": "number", "minimum": 0 }
+      }
+    },
     "proximitySearch": {
       "type": "object",
       "additionalProperties": false,
@@ -764,6 +775,10 @@
         "fromUserLocation": {
           "description": "Adds a button that searches from the reader's own location, asked of the browser. Defaults to false.",
           "type": "boolean"
+        },
+        "frame": {
+          "description": "How large the camera frames the search's circle: `fill` (default) fills most of the map's free area, `compact` keeps it 110–150 px across.",
+          "enum": ["fill", "compact"]
         },
         "fromAnyPoint": {
           "description": "Adds a button that turns on searching from any point of the map the reader clicks, not only from a feature of `layers`. A feature of `layers`, or of a layer with `click` or `clickAnchor`, keeps its own click. Defaults to false.",

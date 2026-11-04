@@ -20,6 +20,7 @@ import {
   type GeovisWorkspaceProviderProps,
 } from './GeovisWorkspaceProvider';
 import { useHasResolvedOnce } from './hooks/useHasResolvedOnce';
+import { applySidebarViewInsets } from './viewInsets';
 
 /**
  * Reads whether the GeoVis runtime has ever resolved and forwards it into
@@ -113,15 +114,22 @@ export const GeovisWorkspace = ({
       spec: withControlOffset,
       hudVisible: isTimelineHudVisible,
     });
-    return applyRightSidebarLegendOffset({
+    const withLegendOffset = applyRightSidebarLegendOffset({
       spec: withHudOffset,
       rightSidebarOpen: isRightSidebarOpen,
+    });
+    return applySidebarViewInsets({
+      spec: withLegendOffset,
+      leftSidebarOpen: isLeftSidebarOpen,
+      rightSidebarOpen: isRightSidebarOpen,
+      compact: isCompact,
     });
   }, [
     visualizationSpec,
     isLeftSidebarOpen,
     isRightSidebarOpen,
     isTimelineHudVisible,
+    isCompact,
   ]);
 
   return (

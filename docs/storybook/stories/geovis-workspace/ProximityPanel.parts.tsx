@@ -118,13 +118,22 @@ export const fieldLabel: React.CSSProperties = {
   color: MUTED,
 };
 
-/** The counts by kind, one cell per category, dimmed when none is near. */
+/**
+ * The counts by kind, one cell per category, dimmed when none is near.
+ * Clicking a cell shows only that kind, in the list and on the map, through
+ * the search's `setCategory`; clicking it again shows them all.
+ */
 export const Counts = ({
   results,
   pending,
+  categoryId,
+  onPick,
 }: {
   results: ProximityHit[];
   pending: boolean;
+  /** The kind shown alone, or `null` for every kind. */
+  categoryId: string | null;
+  onPick: (categoryId: string | null) => void;
 }) => {
   return (
     <div
@@ -140,11 +149,24 @@ export const Counts = ({
         const count = results.filter((hit) => {
           return hit.categoryId === category.id;
         }).length;
+        const on = categoryId === category.id;
+        const dim = categoryId !== null && !on;
         return (
-          <div
+          <button
+            type="button"
             key={category.id}
             title={category.label}
+            aria-pressed={on}
+            disabled={!count}
+            onClick={() => {
+              onPick(on ? null : category.id);
+            }}
             style={{
+              border: 'none',
+              font: 'inherit',
+              textAlign: 'left',
+              cursor: count ? 'pointer' : 'default',
+              background: on ? `${category.color}1a` : 'transparent',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'flex-start',
@@ -153,7 +175,7 @@ export const Counts = ({
               minHeight: 58,
               padding: '11px 10px 12px',
               boxShadow: '1px 0 0 rgba(0,0,0,0.07), 0 1px 0 rgba(0,0,0,0.07)',
-              opacity: count || pending ? 1 : 0.45,
+              opacity: (count || pending) && !dim ? 1 : 0.45,
             }}
           >
             <div
@@ -198,7 +220,7 @@ export const Counts = ({
             >
               {SHORT_LABELS[category.id] ?? category.label}
             </div>
-          </div>
+          </button>
         );
       })}
     </div>

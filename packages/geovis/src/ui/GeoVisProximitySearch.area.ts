@@ -93,14 +93,59 @@ const areaData = ({
   return { type: 'FeatureCollection' as const, features };
 };
 
+/** The search's own layers, bottom to top. */
+const OWN_LAYER_IDS: string[] = [
+  AREA_IDS.fill,
+  AREA_IDS.outline,
+  AREA_IDS.dashes,
+  AREA_IDS.sweep,
+];
+
+/** The style's layers but the search's own. */
+const foreignLayers = (map: MapLibreMap) => {
+  return (map.getStyle()?.layers ?? []).filter((layer) => {
+    return !OWN_LAYER_IDS.includes(layer.id);
+  });
+};
+
 /**
- * The first `symbol` layer of the style: the area goes beneath it, so the
- * map's labels and pins stay readable over the circle.
+ * The layer the area goes beneath: the first `symbol` layer above every layer
+ * that draws areas or lines — the basemap's land and roads, and the app's own
+ * choropleths and heatmaps, which would otherwise cover the circle — so only
+ * the labels and pins above them stay over it. `undefined`, the top of the
+ * map, when no symbol layer sits above them.
+ *
+ * Not simply the style's first `symbol` layer: an app's choropleth is drawn
+ * above the basemap's labels, and an area beneath those would be hidden by it.
  */
-const firstSymbolLayerId = (map: MapLibreMap) => {
-  return (map.getStyle()?.layers ?? []).find((layer) => {
-    return layer.type === 'symbol';
-  })?.id;
+const areaBeforeId = (map: MapLibreMap) => {
+  const layers = foreignLayers(map);
+  const lastShape = layers.findLastIndex((layer) => {
+    return layer.type !== 'symbol';
+  });
+  return layers[lastShape + 1]?.id;
+};
+
+/**
+ * Moves the search's layers back above the app's areas when a layer the app
+ * added later — a choropleth, a heatmap — landed over them.
+ */
+const keepOwnLayersOnTop = (map: MapLibreMap) => {
+  const ids = (map.getStyle()?.layers ?? []).map((layer) => {
+    return layer.id;
+  });
+  const lowest = ids.findIndex((id) => {
+    return OWN_LAYER_IDS.includes(id);
+  });
+  if (lowest === -1) return;
+  const coveredBy = foreignLayers(map).some((layer) => {
+    return layer.type !== 'symbol' && ids.indexOf(layer.id) > lowest;
+  });
+  if (!coveredBy) return;
+  const beforeId = areaBeforeId(map);
+  for (const id of OWN_LAYER_IDS) {
+    if (map.getLayer(id)) map.moveLayer(id, beforeId);
+  }
 };
 
 /** The area's layers, bottom to top. */
@@ -144,10 +189,11 @@ const ensureAreaLayers = (map: MapLibreMap) => {
       data: { type: 'FeatureCollection', features: [] },
     });
   }
-  const beforeId = firstSymbolLayerId(map);
+  const beforeId = areaBeforeId(map);
   for (const layer of AREA_LAYERS) {
     if (!map.getLayer(layer.id)) map.addLayer(layer, beforeId);
   }
+  keepOwnLayersOnTop(map);
 };
 
 /**
@@ -351,7 +397,10 @@ export const useLoadingSweep = ({
     let frame = 0;
 
     const ensure = () => {
-      if (map.getLayer(AREA_IDS.sweep)) return;
+      if (map.getLayer(AREA_IDS.sweep)) {
+        keepOwnLayersOnTop(map);
+        return;
+      }
       addWhenStyleReady(() => {
         if (!map.getSource(AREA_IDS.sweepSource)) {
           map.addSource(AREA_IDS.sweepSource, {
@@ -368,7 +417,7 @@ export const useLoadingSweep = ({
             source: AREA_IDS.sweepSource,
             paint: { 'raster-fade-duration': 0 },
           },
-          firstSymbolLayerId(map)
+          areaBeforeId(map)
         );
       });
     };

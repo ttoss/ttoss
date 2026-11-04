@@ -42,6 +42,18 @@ export interface GeoVisProximitySearchValue {
   /** Clears the search, as the bar's × does. */
   clear: () => void;
   /**
+   * The category whose places the map shows, the others' pins taken off it;
+   * `null` while every place is shown. {@link results} still holds every
+   * category's places, so the app's own view can count them all.
+   */
+  categoryId: string | null;
+  /**
+   * Shows only one category's places on the map — `null` shows them all —
+   * closing the open card when its place is not of that category. Each new
+   * search shows them all again.
+   */
+  setCategory: (categoryId: string | null) => void;
+  /**
    * Whether a click on any point of the map searches from there — the mode
    * the reader turns on with the button `proximitySearch.fromAnyPoint` offers,
    * and that the search from a point turns off again. Always `false` without

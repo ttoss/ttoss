@@ -15,10 +15,36 @@ export const METRES_PER_DEGREE = 111_195;
 
 export const ORIGIN: [number, number] = [-46.63, -23.55];
 
+type MockLayer = { id: string; type: string };
+
+/**
+ * Puts `layer` beneath `beforeId` — or on top without one — as MapLibre's
+ * `addLayer` and `moveLayer` do: the Map keeps the layers bottom to top.
+ */
+const placeLayer = ({
+  layers,
+  layer,
+  beforeId,
+}: {
+  layers: Map<string, MockLayer>;
+  layer: MockLayer;
+  beforeId?: string;
+}) => {
+  const ordered = [...layers.values()];
+  const at = beforeId
+    ? ordered.findIndex((known) => {
+        return known.id === beforeId;
+      })
+    : -1;
+  ordered.splice(at === -1 ? ordered.length : at, 0, layer);
+  layers.clear();
+  for (const known of ordered) layers.set(known.id, known);
+};
+
 /** The sources and layers added to the map, as the searched area adds its own. */
 const buildStyle = () => {
   const sources = new Map<string, { spec: unknown; setData: jest.Mock }>();
-  const layers = new Map<string, { id: string; type: string }>([
+  const layers = new Map<string, MockLayer>([
     // The basemap's labels, which the area goes beneath.
     ['labels', { id: 'labels', type: 'symbol' }],
   ]);
@@ -34,8 +60,16 @@ const buildStyle = () => {
     removeSource: jest.fn((id: string) => {
       sources.delete(id);
     }),
-    addLayer: jest.fn((layer: { id: string; type: string }) => {
-      layers.set(layer.id, layer);
+    addLayer: jest.fn(
+      (layer: { id: string; type: string }, beforeId?: string) => {
+        placeLayer({ layers, layer, beforeId });
+      }
+    ),
+    moveLayer: jest.fn((id: string, beforeId?: string) => {
+      const layer = layers.get(id);
+      if (!layer) return;
+      layers.delete(id);
+      placeLayer({ layers, layer, beforeId });
     }),
     removeLayer: jest.fn((id: string) => {
       layers.delete(id);

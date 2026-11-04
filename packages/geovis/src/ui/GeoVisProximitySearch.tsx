@@ -17,6 +17,7 @@ import {
   useClickToSearch,
 } from './GeoVisProximitySearch.controls';
 import { FocusPin } from './GeoVisProximitySearch.focusPin';
+import { COMPACT_WIDTH, useCircleFrame } from './GeoVisProximitySearch.frame';
 import { HitPin } from './GeoVisProximitySearch.hitPin';
 import {
   useFocusedPinLook,
@@ -34,8 +35,6 @@ import {
 import { StatusBar } from './GeoVisProximitySearch.statusBar';
 import { KEYFRAMES_CSS } from './GeoVisProximitySearch.styles';
 
-/** Below this map width the bar drops the counts by kind. */
-const COMPACT_WIDTH = 480;
 /** Below this map width the bar shortens its texts too. */
 const TIGHT_WIDTH = 360;
 
@@ -58,17 +57,9 @@ const categoriesById = (config: ProximitySearch) => {
 };
 
 /**
- * The circle's radius on screen while the camera frames a search: as large as
- * the map allows, between 110 and 150 px — 110 on a compact map.
- */
-const framePixelsFor = (width: number) => {
-  const largest = width < COMPACT_WIDTH ? 110 : 150;
-  return Math.max(110, Math.min(largest, Math.floor(width / 2) - 30));
-};
-
-/**
  * Hands the search to the app through the provider's store — see
- * `useGeoVisProximitySearch` — as the places within the radius shown.
+ * `useGeoVisProximitySearch` — as the places within the radius shown, every
+ * category's: the app's own view counts them all, whichever one the map shows.
  */
 const usePublishSearch = ({
   state,
@@ -76,11 +67,12 @@ const usePublishSearch = ({
   select,
   setRadius,
   clear,
+  setCategory,
   anyPoint,
   setAnyPoint,
 }: Pick<
   ReturnType<typeof useProximitySearch>,
-  'state' | 'radii' | 'select' | 'setRadius' | 'clear'
+  'state' | 'radii' | 'select' | 'setRadius' | 'clear' | 'setCategory'
 > &
   AnyPointMode) => {
   usePublishProximitySearch(
@@ -101,11 +93,35 @@ const usePublishSearch = ({
           void setRadius(radius);
         },
         clear,
+        categoryId: state.categoryId,
+        setCategory,
         anyPoint,
         setAnyPoint,
       };
-    }, [state, radii, select, setRadius, clear, anyPoint, setAnyPoint])
+    }, [
+      state,
+      radii,
+      select,
+      setRadius,
+      clear,
+      setCategory,
+      anyPoint,
+      setAnyPoint,
+    ])
   );
+};
+
+/**
+ * The places the map draws: those within the radius shown and, while a
+ * category is picked, of that category only.
+ */
+const shownHits = (state: ProximityState) => {
+  return state.hits.filter((hit) => {
+    return (
+      hit.distance <= state.radius &&
+      (state.categoryId === null || hit.categoryId === state.categoryId)
+    );
+  });
 };
 
 /**
@@ -192,22 +208,18 @@ export const GeoVisProximitySearch = ({
 }) => {
   const { intl } = useI18n();
   const map = useNativeMap();
-  const { width } = useMapFrame(map);
+  const { width, height } = useMapFrame(map);
   const format = useFormatDistance();
 
   const nouns = useNouns(config);
-  const {
-    state,
-    radii,
-    searchFrom,
-    searchFromUser,
-    searchFromPoint,
-    clear,
-    setRadius,
-    select,
-  } = useProximitySearch({ config, map, framePixels: framePixelsFor(width) });
-  const mode = useClickToSearch({ map, config, searchFrom, searchFromPoint });
-  usePublishSearch({ state, radii, select, setRadius, clear, ...mode });
+  const proximity = useProximitySearch({
+    config,
+    map,
+    frame: useCircleFrame({ config, width, height }),
+  });
+  const { state, radii, searchFromUser, clear, setRadius, select } = proximity;
+  const mode = useClickToSearch({ map, config, ...proximity });
+  usePublishSearch({ ...proximity, ...mode });
   useFocusOnSearchedPin(state.status === 'idle' ? null : state.focus);
   const { origin } = state;
   useRadiusArea({
@@ -246,6 +258,7 @@ export const GeoVisProximitySearch = ({
   const visible = state.hits.filter((hit) => {
     return hit.distance <= state.radius;
   });
+  const shown = shownHits(state);
   const fresh = new Set(state.fresh);
 
   const search = ReactDOM.createPortal(
@@ -272,7 +285,7 @@ export const GeoVisProximitySearch = ({
           }}
           formatRadius={format}
         />
-        {visible.map((hit) => {
+        {shown.map((hit) => {
           const point = map.project(hit.lngLat);
           return (
             <HitPin

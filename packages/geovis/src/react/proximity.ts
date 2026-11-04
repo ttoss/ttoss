@@ -52,6 +52,11 @@ export type ProximityState = {
   fromUser: boolean;
   /** Whether the search started from a point of the map, not a pin. */
   fromPoint: boolean;
+  /**
+   * The category whose places the map shows, the others' pins taken off it;
+   * `null` shows every place. Each new search starts with `null`.
+   */
+  categoryId: string | null;
 };
 
 /**
@@ -74,6 +79,7 @@ const idleState = (radius: number, request: number): ProximityState => {
     focus: null,
     fromUser: false,
     fromPoint: false,
+    categoryId: null,
   };
 };
 
@@ -103,22 +109,51 @@ type StateHandle = {
   setState: React.Dispatch<React.SetStateAction<ProximityState>>;
 };
 
-/** Eases the camera to frame a radius around a point at `framePixels`. */
-const useFrameRadius = (map: MapLibreMap | null, framePixels: number) => {
+/**
+ * How the camera frames a search: the circle's radius on screen, in pixels,
+ * and where its centre sits, in pixels from the map's centre — off it when
+ * the app's panels cover part of the map (see `VisualizationSpec.viewInsets`).
+ */
+export type CircleFrame = { pixels: number; offset: [number, number] };
+
+/** Eases the camera to frame a radius around a point as `frame` says. */
+const useFrameRadius = (map: MapLibreMap | null, frame: CircleFrame) => {
+  const { pixels } = frame;
+  const [dx, dy] = frame.offset;
   return React.useCallback(
     (origin: [number, number], radius: number) => {
       map?.easeTo({
         center: origin,
-        zoom: zoomForRadius({
-          lat: origin[1],
-          metres: radius,
-          pixels: framePixels,
-        }),
+        zoom: zoomForRadius({ lat: origin[1], metres: radius, pixels }),
+        offset: [dx, dy],
         duration: FRAME_DURATION_MS,
       });
     },
-    [map, framePixels]
+    [map, pixels, dx, dy]
   );
+};
+
+/**
+ * Frames the search shown again when the frame changes — a panel opened over
+ * the map, the map resized — so the circle keeps fitting the free area.
+ */
+const useReframe = ({
+  stateRef,
+  frame,
+}: {
+  stateRef: StateHandle['stateRef'];
+  frame: (origin: [number, number], radius: number) => void;
+}) => {
+  const first = React.useRef(true);
+  React.useEffect(() => {
+    // Not on mount: a search frames itself as it starts.
+    if (first.current) {
+      first.current = false;
+      return;
+    }
+    const { origin, radius, status } = stateRef.current;
+    if (origin && status !== 'idle') frame(origin, radius);
+  }, [stateRef, frame]);
 };
 
 /** What {@link useRingQuery}'s `ask` asks for. */
@@ -330,24 +365,62 @@ const useSetRadius = ({
 };
 
 /**
+ * What narrows the search's view: the place whose card is open, and the
+ * category whose places alone the map shows.
+ */
+const useFocusOnPlaces = (setState: StateHandle['setState']) => {
+  const select = React.useCallback(
+    (id: string | number | null) => {
+      setState((prev) => {
+        return { ...prev, selectedId: prev.selectedId === id ? null : id };
+      });
+    },
+    [setState]
+  );
+  /**
+   * Shows only the places of one category on the map — `null` shows them
+   * all — closing the open card when its place is not among them.
+   */
+  const setCategory = React.useCallback(
+    (categoryId: string | null) => {
+      setState((prev) => {
+        const selected = prev.hits.find((hit) => {
+          return hit.id === prev.selectedId;
+        });
+        const keepsCard =
+          categoryId === null || selected?.categoryId === categoryId;
+        return {
+          ...prev,
+          categoryId,
+          selectedId: keepsCard ? prev.selectedId : null,
+        };
+      });
+    },
+    [setState]
+  );
+  return { select, setCategory };
+};
+
+/**
  * The search's state and what changes it: searching from a pin, from the
- * reader's location or from a point of the map, clearing, widening or narrowing the radius, and opening a
- * place's card.
+ * reader's location or from a point of the map, clearing, widening or
+ * narrowing the radius, opening a place's card, and showing one category's
+ * places only.
  * Each search frames its radius in the camera, so the circle is drawn at
- * `framePixels` on screen.
+ * `frame.pixels` on screen, centred in the map's free area.
  *
  * @param params.config - The spec's {@link ProximitySearch}.
  * @param params.map - The live map, `null` before it mounts.
- * @param params.framePixels - The circle's radius on screen, in pixels.
+ * @param params.frame - The circle's radius on screen and its centre's offset.
  */
 export const useProximitySearch = ({
   config,
   map,
-  framePixels,
+  frame: circleFrame,
 }: {
   config: ProximitySearch;
   map: MapLibreMap | null;
-  framePixels: number;
+  frame: CircleFrame;
 }) => {
   const radii = config.radii?.length ? config.radii : DEFAULT_PROXIMITY_RADII;
   const initialRadius =
@@ -365,7 +438,8 @@ export const useProximitySearch = ({
     stateRef.current = state;
   });
 
-  const frame = useFrameRadius(map, framePixels);
+  const frame = useFrameRadius(map, circleFrame);
+  useReframe({ stateRef, frame });
   const { ask, abort } = useRingQuery(config.query, stateRef);
   const clear = React.useCallback(() => {
     abort();
@@ -403,11 +477,7 @@ export const useProximitySearch = ({
     [start]
   );
   const setRadius = useSetRadius({ ...handle, frame, ask });
-  const select = React.useCallback((id: string | number | null) => {
-    setState((prev) => {
-      return { ...prev, selectedId: prev.selectedId === id ? null : id };
-    });
-  }, []);
+  const { select, setCategory } = useFocusOnPlaces(setState);
 
   return {
     state,
@@ -418,5 +488,6 @@ export const useProximitySearch = ({
     clear,
     setRadius,
     select,
+    setCategory,
   };
 };
