@@ -14,6 +14,14 @@ describe('EnhancedTitle', () => {
     expect(screen.getByText('$99/month')).toBeInTheDocument();
   });
 
+  test('keeps frontTitle on one line so a price never breaks mid-number', () => {
+    render(<EnhancedTitle title="Plan Name" frontTitle="R$ 1.997,00/mês" />);
+    expect(screen.getByText('R$ 1.997,00/mês')).toHaveStyle({
+      whiteSpace: 'nowrap',
+      flexShrink: '0',
+    });
+  });
+
   test('renders description when provided', () => {
     render(
       <EnhancedTitle

@@ -15,11 +15,11 @@ To identify effective control variables, find the intersection of economic influ
 
 ## FF3: The Principle of Leading Indicators: Select control variables that predict future system behavior.
 
-[Leading indicators](/docs/product/product-development/definitions#leading-indicators) are valuable for efficient control because they enable early interventions, which are economically beneficial. As development progresses, intervention costs rise exponentially, while the value of acting early increases significantly. These combined effects make early interventions highly efficient.
+[Leading indicators](/docs/product/product-development/definitions#leading-indicators) are a shortcut to efficient control because they allow early intervention. Intervening gets exponentially more expensive as development progresses, while acting early is worth exponentially more, so the two effects together make early intervention very efficient.
 
-For instance, a manager focused on monitoring task start times instead of completion times. He observed a strong correlation: when the right person started a task on time, it usually finished on schedule. Conversely, tasks that started late or with incorrect resources often finished late. By using start times as a leading indicator, he could intervene early—adjusting resources or priorities—before delays became costly.
+One experienced manager watched when tasks started rather than when they finished. In his organization, a task started on time by the right person almost always finished on time, and one started late or by the wrong people almost always finished late. Watching completion meant learning about a delay only once it had happened, when little could still be done. A late start left many options: adding resources, shifting priorities or changing the project's constraints.
 
-However, these conditions—predictive [leading indicators](/docs/product/product-development/definitions#leading-indicators) and the potential for impactful early interventions—may not always be present. When absent, the benefits of using [leading indicators](/docs/product/product-development/definitions#leading-indicators) can diminish or even become counterproductive.
+The approach needs two conditions: an indicator that truly predicts the outcome, and an early intervention with real leverage. When either is missing, the payoff of watching leading indicators can disappear or even reverse.
 
 ## FF4: The Principle of Balanced Set Points: Set tripwires at points of equal economic impact.
 
@@ -41,7 +41,7 @@ Fast feedback loops not only provide insights more quickly but also reduce the n
 
 Fast feedback is essential for accelerating learning and making it more precise. It achieves this by shortening the time between cause and effect, reducing noise, and improving clarity in the results. Investing in environments that enhance feedback, like Team New Zealand's (they designed the yacht that won the America's Cup) use of two boats for direct comparison, allows for more cycles of testing and better insights in each iteration. This approach demonstrates that faster feedback not only provides quicker answers but also leads to more efficient and reliable learning processes.
 
-## FF6: The Exploitation Principle: Exploit unplanned economic opportunities.
+## FF9: The Principle of Useless Measurement: What gets measured may not get done.
 
 ## FF10: The First Agility Principle: We don't need long planning horizons when we have a short turning radius.
 
@@ -82,3 +82,7 @@ Scope: human-to-human communication. What people decide this way reaches agents 
 ## FF23: The Principle of Overlapping Measurement: To align behaviors, reward people for the work of others.
 
 ## FF24: The Attention Principle: Time counts more than money.
+
+Money is not the scarcest resource; time is. An organization reads what matters to its leaders from how they spend their time, so giving personal time to a program or project is the most effective way to signal that it is important.
+
+To make an issue important, spend time on it. An issue that opens every staff meeting is read as a priority; one that comes last and is often pushed to the next meeting is read as unimportant, whatever anyone says about it.

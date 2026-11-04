@@ -1,0 +1,58 @@
+{
+  "name": "@ttoss/react-pwa",
+  "version": "0.2.0",
+  "description": "Progressive Web App building blocks for React apps: a prebuilt service worker, its registration and a Web Push subscription hook.",
+  "keywords": [
+    "React",
+    "PWA",
+    "service worker",
+    "web push"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/react-pwa"
+  },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./sw.js": "./dist/sw.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "test": "jest --projects tests/unit"
+  },
+  "devDependencies": {
+    "@ttoss/config": "workspace:^",
+    "@ttoss/test-utils": "workspace:^",
+    "@types/react": "^19.3.0",
+    "jest": "^30.5.2",
+    "react": "^19.3.0",
+    "tsdown": "^0.23.1"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.mts",
+        "module": "./dist/index.mjs",
+        "browser": "./dist/index.mjs",
+        "import": "./dist/index.mjs",
+        "default": "./dist/index.mjs"
+      },
+      "./sw.js": "./dist/sw.js"
+    },
+    "provenance": true
+  }
+}

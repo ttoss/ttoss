@@ -119,6 +119,8 @@ export const EnhancedTitle = ({
                 sx={{
                   fontSize: 'xl',
                   color: 'display.text.secondary.default',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0,
                 }}
               >
                 {frontTitle}
