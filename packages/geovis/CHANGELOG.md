@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.34.0 (2026-11-04)
+
+### Features
+
+- **geovis:** heatmap colours, zoom stops, property weight and densit… ([#1373](https://github.com/ttoss/ttoss/issues/1373)) ([3715b61](https://github.com/ttoss/ttoss/commit/3715b610c051451fa75bd733e43e4f21d56a4efb))
+
 # [0.33.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fgeovis%400.32.1...%40ttoss%2Fgeovis%400.33.0) (2026-10-29)
 
 ### Features
