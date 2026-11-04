@@ -10,18 +10,19 @@ import type {
 /**
  * The map the proximity-search stories share: hospitals and health posts as
  * pins around central São Paulo, and a fake search for the food services
- * around a hospital.
+ * around a hospital. Every place is fictitious data — made-up names at
+ * made-up points.
  */
 
 /** Central São Paulo, where the map opens. */
 const CENTER: [number, number] = [-46.65, -23.56];
 
 const HOSPITAL_PLACES: { name: string; coordinates: [number, number] }[] = [
-  { name: 'Hospital das Clínicas', coordinates: [-46.6695, -23.5573] },
-  { name: 'Santa Casa de São Paulo', coordinates: [-46.6497, -23.5441] },
-  { name: 'Hospital São Paulo', coordinates: [-46.6432, -23.5979] },
-  { name: 'Hospital Sírio-Libanês', coordinates: [-46.6545, -23.5571] },
-  { name: 'Hospital Pérola Byington', coordinates: [-46.6385, -23.5532] },
+  { name: 'Hospital A', coordinates: [-46.6671, -23.5592] },
+  { name: 'Hospital B', coordinates: [-46.6519, -23.5462] },
+  { name: 'Hospital C', coordinates: [-46.6408, -23.5951] },
+  { name: 'Hospital D', coordinates: [-46.6566, -23.5598] },
+  { name: 'Hospital E', coordinates: [-46.6362, -23.5512] },
 ];
 
 /**
@@ -29,10 +30,10 @@ const HOSPITAL_PLACES: { name: string; coordinates: [number, number] }[] = [
  * show that a search hides every pin on the map but the one clicked.
  */
 const CLINIC_PLACES: { name: string; coordinates: [number, number] }[] = [
-  { name: 'UBS Sé', coordinates: [-46.6333, -23.5497] },
-  { name: 'UBS República', coordinates: [-46.6428, -23.5431] },
-  { name: 'UBS Vila Mariana', coordinates: [-46.6358, -23.5891] },
-  { name: 'UBS Pinheiros', coordinates: [-46.6862, -23.5654] },
+  { name: 'UBS 1', coordinates: [-46.6355, -23.5521] },
+  { name: 'UBS 2', coordinates: [-46.6451, -23.5408] },
+  { name: 'UBS 3', coordinates: [-46.6331, -23.5866] },
+  { name: 'UBS 4', coordinates: [-46.6839, -23.5677] },
 ];
 
 /** One point feature per place, numbered from 1 — MapLibre needs the ids. */

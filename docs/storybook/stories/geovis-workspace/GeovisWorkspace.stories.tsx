@@ -95,11 +95,8 @@ const legendWorkspaceConfig: GeovisWorkspaceConfig = {
     sources: {
       title: 'Fonte dos dados:',
       items: [
-        {
-          label: 'Projeções populacionais por sexo e idade do SEADE (2025)',
-          href: 'https://repositorio.seade.gov.br/dataset/populacao-residente-municipio-de-sao-paulo-evolucao',
-        },
-        { label: 'Geometria: Distritos Municipais de São Paulo.' },
+        { label: 'Dados fictícios, criados para esta demonstração.' },
+        { label: 'Geometria: regiões fictícias.' },
       ],
     },
   },
