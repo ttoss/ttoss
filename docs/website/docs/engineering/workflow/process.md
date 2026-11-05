@@ -86,7 +86,7 @@ The tick applies these on every tick, under the standing decision:
 | A release step's task closes | moves each task it blocked to its check's wait, or closes it citing the release task, whose outcome is the evidence |
 | A check comes due | starts a check child (unless the `Closing evidence` names another reader), which closes the task with what it observed or sends it back; harm the change caused is reverted by its recorded path before the task goes back, and a change with no path waits on a person, naming the harm |
 | A child's run failed, is gone, or stays `running` past the `Runtime`'s `Stale after` with its task open | closes the run `failed`; the task is ready again. Every run records `Stale after` as its hold, so Flow keeps its tasks from other runs exactly that long |
-| Another agent's run, such as a person's session, holds an open task past `Stale after` | leaves it: the Chase tells the run's owner |
+| Another agent's run, such as a person's session, holds an open task past `Stale after` | leaves it to the run's owner |
 
 A person reviewing a change has three outcomes: integrate it, ask for changes (the task goes back a round), or close it, which is the "closed without integrating" row.
 
