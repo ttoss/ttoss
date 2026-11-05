@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-pwa",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Progressive Web App building blocks for React apps: a prebuilt service worker, its registration and a Web Push subscription hook.",
   "keywords": [
     "React",
