@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [11.4.0](https://github.com/ttoss/ttoss/compare/%40docs%2Fstorybook%4011.3.0...%40docs%2Fstorybook%4011.4.0) (2026-11-05)
+
+### Features
+
+- **geovis:** search the places around any point of the map the reade… ([#1401](https://github.com/ttoss/ttoss/issues/1401)) ([0d6fd01](https://github.com/ttoss/ttoss/commit/0d6fd01cd1f0541d5b1896860f590811ff0932a0))
+
 # [11.3.0](https://github.com/ttoss/ttoss/compare/%40docs%2Fstorybook%4011.2.1...%40docs%2Fstorybook%4011.3.0) (2026-11-04)
 
 ### Features
