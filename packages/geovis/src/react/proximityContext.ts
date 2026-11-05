@@ -19,6 +19,11 @@ export interface GeoVisProximitySearchValue {
   origin: [number, number] | null;
   /** Whether the search started from the reader's location, not a pin. */
   fromUser: boolean;
+  /**
+   * Whether the search started from a point of the map the reader clicked,
+   * not a pin — see `proximitySearch.fromAnyPoint`.
+   */
+  fromPoint: boolean;
   /** The radius shown, in metres. */
   radius: number;
   /** The radii the reader can choose between, in metres, ascending. */
@@ -36,6 +41,31 @@ export interface GeoVisProximitySearchValue {
   setRadius: (radius: number) => void;
   /** Clears the search, as the bar's × does. */
   clear: () => void;
+  /**
+   * The category whose places the map shows, the others' pins taken off it;
+   * `null` while every place is shown. {@link results} still holds every
+   * category's places, so the app's own view can count them all.
+   */
+  categoryId: string | null;
+  /**
+   * Shows only one category's places on the map — `null` shows them all —
+   * closing the open card when its place is not of that category. Each new
+   * search shows them all again.
+   */
+  setCategory: (categoryId: string | null) => void;
+  /**
+   * Whether a click on any point of the map searches from there — the mode
+   * the reader turns on with the button `proximitySearch.fromAnyPoint` offers,
+   * and that the search from a point turns off again. Always `false` without
+   * it.
+   */
+  anyPoint: boolean;
+  /**
+   * Turns that mode on or off, as the button does. Turning it off keeps the
+   * search shown; only new clicks off the pins stop searching. Does nothing
+   * without `fromAnyPoint`.
+   */
+  setAnyPoint: (on: boolean) => void;
 }
 
 /**

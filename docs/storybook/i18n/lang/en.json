@@ -147,6 +147,11 @@
     "defaultMessage": "Searching {results}…",
     "description": "Proximity search: shown while the first answer is awaited. \"results\" names what is searched."
   },
+  "0tpCri": {
+    "module": "@ttoss/geovis",
+    "defaultMessage": "Searched point · clear search",
+    "description": "Proximity search: tooltip of the dot marking the point of the map the reader clicked, which clears the search when clicked."
+  },
   "2YFPLq": {
     "module": "@ttoss/geovis",
     "defaultMessage": "Radius of {radius}",
@@ -212,6 +217,11 @@
     "defaultMessage": "result",
     "description": "Proximity search: what a found place is called when the app names it nothing else, singular."
   },
+  "P/ahxW": {
+    "module": "@ttoss/geovis",
+    "defaultMessage": "{count, plural, one {# {one}} other {# {other}}} within {radius} of this point",
+    "description": "Proximity search from a point of the map the reader clicked: how many places were found. \"one\" and \"other\" name what is searched, singular and plural; \"radius\" is a distance like \"1 km\"."
+  },
   "RJi0HT": {
     "module": "@ttoss/geovis",
     "defaultMessage": "You are here · clear search",
@@ -257,6 +267,11 @@
     "defaultMessage": "{results} near me",
     "description": "Proximity search: tooltip of the button that searches from the reader's location. \"results\" names what is searched, plural, e.g. \"services near me\"."
   },
+  "Z0O4wv": {
+    "module": "@ttoss/geovis",
+    "defaultMessage": "Searching {results} near this point…",
+    "description": "Proximity search from a point of the map the reader clicked: shown while the first answer is awaited. \"results\" names what is searched."
+  },
   "g65tjJ": {
     "module": "@ttoss/geovis",
     "defaultMessage": "To show the {results} around you, the map needs your current location. Your browser will ask you to confirm next.",
@@ -271,6 +286,11 @@
     "module": "@ttoss/geovis",
     "defaultMessage": "{count, plural, one {# {one}} other {# {other}}} within {radius}",
     "description": "Proximity search: how many places were found. \"one\" and \"other\" name what is searched, singular and plural; \"radius\" is a distance like \"1 km\"."
+  },
+  "jD634V": {
+    "module": "@ttoss/geovis",
+    "defaultMessage": "Search {results} from any point of the map",
+    "description": "Proximity search: accessible name of the button that turns on searching from any point of the map the reader clicks. \"results\" names what is searched, plural."
   },
   "jFZRGK": {
     "module": "@ttoss/geovis",
@@ -336,6 +356,11 @@
     "module": "@ttoss/geovis",
     "defaultMessage": "{count} within {radius}",
     "description": "Proximity search: how many places were found, on a narrow map. \"radius\" is a distance like \"1 km\"."
+  },
+  "xEeif3": {
+    "module": "@ttoss/geovis",
+    "defaultMessage": "{results} around any point",
+    "description": "Proximity search: tooltip of the button that turns on searching from any point of the map the reader clicks. \"results\" names what is searched, plural, e.g. \"services around any point\"."
   },
   "ydJlsv": {
     "module": "@ttoss/geovis",

@@ -53,6 +53,12 @@ export const GeoVisCanvas = ({
   const containerStyle: React.CSSProperties = {
     width: '100%',
     height: '100%',
+    // Its own stacking context, so what GeoVis draws over the map in HTML —
+    // the proximity search's pins, bar and cards, at z-index 4–6 — stays
+    // inside the map: a panel the app opens over the map, at any z-index of
+    // its own, covers them as it covers the map's canvas, instead of them
+    // showing through it.
+    isolation: 'isolate',
     ...(isBasemapHidden && { backgroundColor: '#fcfcfc' }),
     ...style,
   };

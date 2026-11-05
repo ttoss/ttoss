@@ -84,49 +84,104 @@ export const useFormatDistance = () => {
 };
 
 /**
+ * How long a click on the bare map waits, in milliseconds, before it searches:
+ * long enough for a second click to make it a double-click, which zooms.
+ */
+export const DOUBLE_CLICK_WAIT_MS = 250;
+
+/** The ids among `ids` of the layers on the map: querying a missing one throws. */
+const presentLayers = (map: MapLibreMap, ids: string[]) => {
+  return ids.filter((id) => {
+    return map.getLayer(id) != null;
+  });
+};
+
+/** The first feature of `ids` rendered under the click, if any. */
+const featureAt = ({
+  map,
+  event,
+  ids,
+}: {
+  map: MapLibreMap;
+  event: MapMouseEvent;
+  ids: string[];
+}) => {
+  const present = presentLayers(map, ids);
+  if (present.length === 0) return undefined;
+  const [feature] = map.queryRenderedFeatures(event.point, {
+    layers: present,
+  });
+  return feature;
+};
+
+/**
  * Searches from a feature of `layerIds` when one is clicked: from a point's
  * own position, or from where the click landed on any other geometry.
+ *
+ * With `fromAnyPoint`, a click anywhere else searches from where it landed —
+ * unless it hit a feature of `ownClickLayerIds`, whose click opens its own
+ * card, or turns out to be the first of a double-click, which zooms.
  */
 export const useSearchOnClick = ({
   map,
   layerIds,
+  ownClickLayerIds = [],
+  fromAnyPoint = false,
   searchFrom,
+  searchFromPoint,
 }: {
   map: MapLibreMap | null;
   layerIds: string[];
+  /** Layers that declare `click` or `clickAnchor`: a click on them is theirs. */
+  ownClickLayerIds?: string[];
+  fromAnyPoint?: boolean;
   searchFrom: (
     origin: [number, number],
     focus: PinFocus | null
   ) => Promise<void>;
+  searchFromPoint?: (origin: [number, number]) => Promise<void>;
 }) => {
   // Joined, so an inline array in the spec does not re-bind on every render.
   const layerKey = layerIds.join(',');
+  const ownClickKey = ownClickLayerIds.join(',');
+  const anyPoint = fromAnyPoint && searchFromPoint != null;
   React.useEffect(() => {
-    if (!map || !layerKey) return;
-    const ids = layerKey.split(',');
+    if (!map || (!layerKey && !anyPoint)) return;
+    const ids = layerKey ? layerKey.split(',') : [];
+    const ownClickIds = ownClickKey ? ownClickKey.split(',') : [];
+    let pending: ReturnType<typeof setTimeout> | undefined;
+    const cancelPending = () => {
+      clearTimeout(pending);
+      pending = undefined;
+    };
     const onClick = (event: MapMouseEvent) => {
-      // Only the layers on the map: querying a missing one throws.
-      const present = ids.filter((id) => {
-        return map.getLayer(id) != null;
-      });
-      if (present.length === 0) return;
-      const [feature] = map.queryRenderedFeatures(event.point, {
-        layers: present,
-      });
-      if (!feature) return;
-      const { geometry } = feature;
-      void searchFrom(
-        geometry.type === 'Point'
-          ? (geometry.coordinates as [number, number])
-          : [event.lngLat.lng, event.lngLat.lat],
-        { layerId: feature.layer.id, featureId: feature.id ?? null }
-      );
+      cancelPending();
+      const feature = featureAt({ map, event, ids });
+      if (feature) {
+        const { geometry } = feature;
+        void searchFrom(
+          geometry.type === 'Point'
+            ? (geometry.coordinates as [number, number])
+            : [event.lngLat.lng, event.lngLat.lat],
+          { layerId: feature.layer.id, featureId: feature.id ?? null }
+        );
+        return;
+      }
+      if (!anyPoint || featureAt({ map, event, ids: ownClickIds })) return;
+      const origin: [number, number] = [event.lngLat.lng, event.lngLat.lat];
+      pending = setTimeout(() => {
+        pending = undefined;
+        void searchFromPoint?.(origin);
+      }, DOUBLE_CLICK_WAIT_MS);
     };
     map.on('click', onClick);
+    map.on('dblclick', cancelPending);
     return () => {
+      cancelPending();
       map.off('click', onClick);
+      map.off('dblclick', cancelPending);
     };
-  }, [map, layerKey, searchFrom]);
+  }, [map, layerKey, ownClickKey, anyPoint, searchFrom, searchFromPoint]);
 };
 
 /**

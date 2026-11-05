@@ -7,6 +7,10 @@
     "defaultMessage": "Buscando {results}…",
     "description": "Proximity search: shown while the first answer is awaited. \"results\" names what is searched."
   },
+  "0tpCri": {
+    "defaultMessage": "Ponto buscado · limpar busca",
+    "description": "Proximity search: tooltip of the dot marking the point of the map the reader clicked, which clears the search when clicked."
+  },
   "2YFPLq": {
     "defaultMessage": "Raio de {radius}",
     "description": "Proximity search: tooltip of one radius option. \"radius\" is a distance like \"2 km\"."
@@ -59,6 +63,10 @@
     "defaultMessage": "resultado",
     "description": "Proximity search: what a found place is called when the app names it nothing else, singular."
   },
+  "P/ahxW": {
+    "defaultMessage": "{count, plural, one {# {one}} other {# {other}}} a até {radius} deste ponto",
+    "description": "Proximity search from a point of the map the reader clicked: how many places were found. \"one\" and \"other\" name what is searched, singular and plural; \"radius\" is a distance like \"1 km\"."
+  },
   "RJi0HT": {
     "defaultMessage": "Você está aqui · limpar busca",
     "description": "Proximity search: tooltip of the dot marking the reader's location, which clears the search when clicked."
@@ -95,6 +103,10 @@
     "defaultMessage": "{results} perto de mim",
     "description": "Proximity search: tooltip of the button that searches from the reader's location. \"results\" names what is searched, plural, e.g. \"services near me\"."
   },
+  "Z0O4wv": {
+    "defaultMessage": "Buscando {results} perto deste ponto…",
+    "description": "Proximity search from a point of the map the reader clicked: shown while the first answer is awaited. \"results\" names what is searched."
+  },
   "g65tjJ": {
     "defaultMessage": "Para mostrar os {results} disponíveis ao seu redor, o mapa precisa da sua localização atual. Seu navegador vai pedir uma confirmação em seguida.",
     "description": "Proximity search: why the reader's location is needed, before the browser asks for it. \"results\" names what is searched, plural."
@@ -106,6 +118,10 @@
   "j1cP/t": {
     "defaultMessage": "{count, plural, one {# {one}} other {# {other}}} em até {radius}",
     "description": "Proximity search: how many places were found. \"one\" and \"other\" name what is searched, singular and plural; \"radius\" is a distance like \"1 km\"."
+  },
+  "jD634V": {
+    "defaultMessage": "Buscar {results} a partir de qualquer ponto do mapa",
+    "description": "Proximity search: accessible name of the button that turns on searching from any point of the map the reader clicks. \"results\" names what is searched, plural."
   },
   "jFZRGK": {
     "defaultMessage": "Raio da busca",
@@ -158,6 +174,10 @@
   "ulc096": {
     "defaultMessage": "{count} em até {radius}",
     "description": "Proximity search: how many places were found, on a narrow map. \"radius\" is a distance like \"1 km\"."
+  },
+  "xEeif3": {
+    "defaultMessage": "{results} em qualquer ponto",
+    "description": "Proximity search: tooltip of the button that turns on searching from any point of the map the reader clicks. \"results\" names what is searched, plural, e.g. \"services around any point\"."
   },
   "ydJlsv": {
     "defaultMessage": "Buscar {results} perto da minha localização",

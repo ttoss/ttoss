@@ -34,7 +34,8 @@ const loadLocaleData = async (locale: string) => {
  * const ServicesNearbyPanel = () => {
  *   const search = useGeoVisProximitySearch();
  *   const { setRightSidebarOpen } = useGeovisWorkspace();
- *   // search.status, search.results, search.select(id), search.setRadius(m)…
+ *   // search.status, search.results, search.select(id), search.setRadius(m),
+ *   // search.setCategory(id)…
  * };
  * ```
  *
@@ -50,7 +51,9 @@ const loadLocaleData = async (locale: string) => {
  * 3. Widen the radius in the bar under the circle: the title reads "Ampliando
  *    a busca…", then the new places join the list. Narrow it back: the list
  *    drops them at once, with no new request.
- * 4. Close the sidebar with its ×: the search stays on the map. Clear the
+ * 4. Click a kind in the counts: the list and the map keep only that kind's
+ *    places, through `search.setCategory(id)`. Click it again for every kind.
+ * 5. Close the sidebar with its ×: the search stays on the map. Clear the
  *    search — the bar's ×, or the hospital again — and the sidebar closes.
  */
 export default {

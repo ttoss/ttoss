@@ -7,6 +7,7 @@ import * as React from 'react';
 
 import type { GeoVisRuntime } from '../runtime/createRuntime';
 import type { VisualizationSpec } from '../spec/types';
+import { AREA_IDS } from '../ui/GeoVisProximitySearch.area';
 import { createPinElement } from '../ui/pinElement';
 import type { MapClickInfo, MapHoverInfo } from './contexts';
 import { useGeoVis } from './contexts';
@@ -29,6 +30,7 @@ import {
   buildHandleClick,
   dispatchClearSelection,
 } from './hooks.builders.click';
+import { useGeoVisProximitySearch } from './proximityContext';
 
 export type { MapClickInfo, MapHoverInfo } from './contexts';
 
@@ -53,7 +55,10 @@ const EMPTY_HOVER_TRACKING: DecodedHoverTracking = {
 const usePointerLayerIds = (spec: VisualizationSpec): Set<string> => {
   // Joined, so an inline array in the spec does not re-run the memo on every
   // render.
-  const proximityLayerKey = spec.proximitySearch?.layers.join(',') ?? '';
+  // The search's own pins too, once a search drew them.
+  const proximityLayerKey = spec.proximitySearch
+    ? [...(spec.proximitySearch.layers ?? []), AREA_IDS.hits].join(',')
+    : '';
   return React.useMemo(() => {
     return buildPointerLayerIds(
       spec.layers,
@@ -63,13 +68,24 @@ const usePointerLayerIds = (spec: VisualizationSpec): Set<string> => {
 };
 
 /**
+ * The cursor off every pointer layer: a crosshair while a click on the bare
+ * map searches — the reader turned on the proximity search's any-point mode —
+ * the default otherwise.
+ */
+const useIdleCursor = () => {
+  return useGeoVisProximitySearch()?.anyPoint ? 'crosshair' : 'default';
+};
+
+/**
  * Tracks the hovered feature on every polygon layer that has an `activeLegendId`
  * declared. The hook centralises the MapLibre `mousemove`/`mouseleave` wiring
  * so consumers can render hover-driven UI (`GeoVisHoverTooltip`, custom panels)
  * without touching the native map instance directly.
  *
  * Cursor feedback is also handled here: the canvas cursor switches to
- * `pointer` while a tracked feature is under the mouse and reverts on leave.
+ * `pointer` while a tracked feature is under the mouse and reverts on leave —
+ * to `crosshair` while the proximity search's any-point mode is on, where a
+ * click on the bare map searches from there.
  */
 export const useMapHover = ({
   runtime,
@@ -89,9 +105,11 @@ export const useMapHover = ({
   }, [spec.layers]);
 
   const pointerLayerIds = usePointerLayerIds(spec);
+  const idleCursor = useIdleCursor();
+  const noCursorToSet = pointerLayerIds.size === 0 && idleCursor === 'default';
 
   React.useEffect(() => {
-    if (!runtime || (!trackedKey && pointerLayerIds.size === 0)) return;
+    if (!runtime || (!trackedKey && noCursorToSet)) return;
 
     const map = runtime.getAdapter().getNativeInstance() as MapLibreMap | null;
     if (!map) return;
@@ -131,6 +149,7 @@ export const useMapHover = ({
       trackedLayerIds,
       setHover,
       pointHovering,
+      idleCursor,
     });
     map.on('mousemove', handleGlobalCursor);
 
@@ -170,7 +189,7 @@ export const useMapHover = ({
       lastPointRef.current = null;
       clearHover(map, setHover, prevHoveredState);
     };
-  }, [runtime, trackedKey, pointerLayerIds]);
+  }, [runtime, trackedKey, pointerLayerIds, idleCursor, noCursorToSet]);
 
   return hover;
 };

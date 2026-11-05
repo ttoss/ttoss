@@ -226,7 +226,10 @@ const loadPin = async ({
   registered: Map<string, string>;
 }): Promise<void> => {
   try {
-    const { attributes, body } = buildIcon(await loadIcon(image.icon));
+    // No icon — a place of no category — draws the bare drop.
+    const { attributes, body } = image.icon
+      ? buildIcon(await loadIcon(image.icon))
+      : { attributes: { viewBox: '0 0 1 1' }, body: '' };
     const pixelRatio = pinPixelRatio();
     const pinSvg = buildPinSvg({
       pin: image,
@@ -245,6 +248,31 @@ const loadPin = async ({
       error
     );
   }
+};
+
+/**
+ * Registers one pin on the map outside `spec.images` — as the proximity
+ * search does for its categories' pins — built as the spec's pins are: a
+ * transparent placeholder at once, the pin itself once its icon has loaded. A
+ * pin already on the map is left as it is.
+ *
+ * @param params.map - The live map.
+ * @param params.image - The pin; an empty `icon` draws the bare drop.
+ *
+ * @example
+ * addPinImage({ map, image: { id: 'search-pin-ubs', kind: 'pin', icon: 'maki:doctor', color: '#1E8449', size: 30 } });
+ */
+export const addPinImage = ({
+  map,
+  image,
+}: {
+  map: maplibregl.Map;
+  image: PinImage;
+}): void => {
+  if (map.hasImage(image.id)) return;
+  const key = imageKey(image);
+  map.addImage(image.id, PLACEHOLDER);
+  void loadPin({ map, image, key, registered: new Map([[image.id, key]]) });
 };
 
 /**

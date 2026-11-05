@@ -17,8 +17,8 @@ import {
 /** How long the browser may take to find the reader, in milliseconds. */
 const LOCATE_TIMEOUT_MS = 10_000;
 
-/** The gap between the map mode button and this one, stacked under it. */
-const STACK_GAP = 10;
+/** The gap between the buttons stacked in the map's control column. */
+export const STACK_GAP = 10;
 
 /**
  * Where the location flow stands: `idle`, `ask` while the dialog explains why

@@ -12,8 +12,24 @@ import { distanceInMetres, zoomForRadius } from './proximity.geo';
 /** The radii a search offers when the spec declares none, in metres. */
 export const DEFAULT_PROXIMITY_RADII = [1000, 2000, 3000];
 
-/** How long the camera takes to frame a new radius, in milliseconds. */
-const FRAME_DURATION_MS = 450;
+/**
+ * How long the camera takes to frame a search, in milliseconds: a base, and
+ * more for each zoom level it travels, within bounds — a nearby radius
+ * frames quickly, while a jump from the whole city to a block takes long
+ * enough for the eye to follow and the map to load its tiles on the way.
+ */
+const FRAME_MS = { base: 300, perZoomLevel: 200, min: 500, max: 1500 };
+
+/** The time a framing of `zoomLevels` levels takes, in milliseconds. */
+export const frameDuration = (zoomLevels: number) => {
+  const { base, perZoomLevel, min, max } = FRAME_MS;
+  return Math.min(max, Math.max(min, base + perZoomLevel * zoomLevels));
+};
+
+/** Slow in, slow out: the camera neither lurches off nor slams to a stop. */
+const easeInOutCubic = (t: number) => {
+  return t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2;
+};
 
 /**
  * A place the search found, with what drawing it needs: its distance from the
@@ -50,11 +66,19 @@ export type ProximityState = {
   focus: PinFocus | null;
   /** Whether the search started from the reader's location, not a pin. */
   fromUser: boolean;
+  /** Whether the search started from a point of the map, not a pin. */
+  fromPoint: boolean;
+  /**
+   * The category whose places the map shows, the others' pins taken off it;
+   * `null` shows every place. Each new search starts with `null`.
+   */
+  categoryId: string | null;
 };
 
 /**
- * The focus a search from the reader's location holds: no pin, so the engine
- * hides every pin while it is shown, as it does around a clicked one.
+ * The focus a search from the reader's location, or from a point of the map,
+ * holds: no pin, so the engine hides every pin while it is shown, as it does
+ * around a clicked one.
  */
 const NO_PIN: PinFocus = { layerId: null, featureId: null };
 
@@ -70,6 +94,8 @@ const idleState = (radius: number, request: number): ProximityState => {
     selectedId: null,
     focus: null,
     fromUser: false,
+    fromPoint: false,
+    categoryId: null,
   };
 };
 
@@ -99,22 +125,57 @@ type StateHandle = {
   setState: React.Dispatch<React.SetStateAction<ProximityState>>;
 };
 
-/** Eases the camera to frame a radius around a point at `framePixels`. */
-const useFrameRadius = (map: MapLibreMap | null, framePixels: number) => {
+/**
+ * How the camera frames a search: the circle's radius on screen, in pixels,
+ * and where its centre sits, in pixels from the map's centre — off it when
+ * the app's panels cover part of the map (see `VisualizationSpec.viewInsets`).
+ */
+export type CircleFrame = { pixels: number; offset: [number, number] };
+
+/**
+ * Eases the camera to frame a radius around a point as `frame` says, taking
+ * longer the more zoom levels it travels (see {@link frameDuration}).
+ */
+const useFrameRadius = (map: MapLibreMap | null, frame: CircleFrame) => {
+  const { pixels } = frame;
+  const [dx, dy] = frame.offset;
   return React.useCallback(
     (origin: [number, number], radius: number) => {
-      map?.easeTo({
+      if (!map) return;
+      const zoom = zoomForRadius({ lat: origin[1], metres: radius, pixels });
+      map.easeTo({
         center: origin,
-        zoom: zoomForRadius({
-          lat: origin[1],
-          metres: radius,
-          pixels: framePixels,
-        }),
-        duration: FRAME_DURATION_MS,
+        zoom,
+        offset: [dx, dy],
+        duration: frameDuration(Math.abs(zoom - map.getZoom())),
+        easing: easeInOutCubic,
       });
     },
-    [map, framePixels]
+    [map, pixels, dx, dy]
   );
+};
+
+/**
+ * Frames the search shown again when the frame changes — a panel opened over
+ * the map, the map resized — so the circle keeps fitting the free area.
+ */
+const useReframe = ({
+  stateRef,
+  frame,
+}: {
+  stateRef: StateHandle['stateRef'];
+  frame: (origin: [number, number], radius: number) => void;
+}) => {
+  const first = React.useRef(true);
+  React.useEffect(() => {
+    // Not on mount: a search frames itself as it starts.
+    if (first.current) {
+      first.current = false;
+      return;
+    }
+    const { origin, radius, status } = stateRef.current;
+    if (origin && status !== 'idle') frame(origin, radius);
+  }, [stateRef, frame]);
 };
 
 /** What {@link useRingQuery}'s `ask` asks for. */
@@ -220,10 +281,15 @@ const withWidening = ({
 type SearchStart = {
   /** The point, `[lng, lat]`. */
   origin: [number, number];
-  /** The pin clicked there, kept in focus while the search is shown. */
+  /**
+   * The pin clicked there, kept in focus while the search is shown —
+   * {@link NO_PIN} for the reader's location or a point of the map.
+   */
   focus: PinFocus | null;
   /** Whether the point is the reader's location. */
   fromUser: boolean;
+  /** Whether the point is one of the map the reader clicked, not a pin. */
+  fromPoint: boolean;
 };
 
 /**
@@ -244,7 +310,7 @@ const useSearchFrom = ({
   clear: () => void;
 }) => {
   return React.useCallback(
-    async ({ origin, focus, fromUser }: SearchStart) => {
+    async ({ origin, focus, fromUser, fromPoint }: SearchStart) => {
       const current = stateRef.current;
       const same =
         current.origin?.[0] === origin[0] && current.origin?.[1] === origin[1];
@@ -260,8 +326,9 @@ const useSearchFrom = ({
         ...idleState(initialRadius, request),
         status: 'loading',
         origin,
-        focus: fromUser ? NO_PIN : focus,
+        focus,
         fromUser,
+        fromPoint,
       });
       frame(origin, initialRadius);
       const hits = await ask({
@@ -320,24 +387,62 @@ const useSetRadius = ({
 };
 
 /**
- * The search's state and what changes it: searching from a point or from the
- * reader's location, clearing, widening or narrowing the radius, and opening a
- * place's card.
+ * What narrows the search's view: the place whose card is open, and the
+ * category whose places alone the map shows.
+ */
+const useFocusOnPlaces = (setState: StateHandle['setState']) => {
+  const select = React.useCallback(
+    (id: string | number | null) => {
+      setState((prev) => {
+        return { ...prev, selectedId: prev.selectedId === id ? null : id };
+      });
+    },
+    [setState]
+  );
+  /**
+   * Shows only the places of one category on the map — `null` shows them
+   * all — closing the open card when its place is not among them.
+   */
+  const setCategory = React.useCallback(
+    (categoryId: string | null) => {
+      setState((prev) => {
+        const selected = prev.hits.find((hit) => {
+          return hit.id === prev.selectedId;
+        });
+        const keepsCard =
+          categoryId === null || selected?.categoryId === categoryId;
+        return {
+          ...prev,
+          categoryId,
+          selectedId: keepsCard ? prev.selectedId : null,
+        };
+      });
+    },
+    [setState]
+  );
+  return { select, setCategory };
+};
+
+/**
+ * The search's state and what changes it: searching from a pin, from the
+ * reader's location or from a point of the map, clearing, widening or
+ * narrowing the radius, opening a place's card, and showing one category's
+ * places only.
  * Each search frames its radius in the camera, so the circle is drawn at
- * `framePixels` on screen.
+ * `frame.pixels` on screen, centred in the map's free area.
  *
  * @param params.config - The spec's {@link ProximitySearch}.
  * @param params.map - The live map, `null` before it mounts.
- * @param params.framePixels - The circle's radius on screen, in pixels.
+ * @param params.frame - The circle's radius on screen and its centre's offset.
  */
 export const useProximitySearch = ({
   config,
   map,
-  framePixels,
+  frame: circleFrame,
 }: {
   config: ProximitySearch;
   map: MapLibreMap | null;
-  framePixels: number;
+  frame: CircleFrame;
 }) => {
   const radii = config.radii?.length ? config.radii : DEFAULT_PROXIMITY_RADII;
   const initialRadius =
@@ -355,7 +460,8 @@ export const useProximitySearch = ({
     stateRef.current = state;
   });
 
-  const frame = useFrameRadius(map, framePixels);
+  const frame = useFrameRadius(map, circleFrame);
+  useReframe({ stateRef, frame });
   const { ask, abort } = useRingQuery(config.query, stateRef);
   const clear = React.useCallback(() => {
     abort();
@@ -374,31 +480,36 @@ export const useProximitySearch = ({
   /** Searches from a point and the pin clicked there, if any. */
   const searchFrom = React.useCallback(
     (origin: [number, number], focus: PinFocus | null = null) => {
-      return start({ origin, focus, fromUser: false });
+      return start({ origin, focus, fromUser: false, fromPoint: false });
     },
     [start]
   );
   /** Searches from the reader's location, `[lng, lat]`. */
   const searchFromUser = React.useCallback(
     (origin: [number, number]) => {
-      return start({ origin, focus: null, fromUser: true });
+      return start({ origin, focus: NO_PIN, fromUser: true, fromPoint: false });
+    },
+    [start]
+  );
+  /** Searches from a point of the map the reader clicked, `[lng, lat]`. */
+  const searchFromPoint = React.useCallback(
+    (origin: [number, number]) => {
+      return start({ origin, focus: NO_PIN, fromUser: false, fromPoint: true });
     },
     [start]
   );
   const setRadius = useSetRadius({ ...handle, frame, ask });
-  const select = React.useCallback((id: string | number | null) => {
-    setState((prev) => {
-      return { ...prev, selectedId: prev.selectedId === id ? null : id };
-    });
-  }, []);
+  const { select, setCategory } = useFocusOnPlaces(setState);
 
   return {
     state,
     radii,
     searchFrom,
     searchFromUser,
+    searchFromPoint,
     clear,
     setRadius,
     select,
+    setCategory,
   };
 };

@@ -1302,6 +1302,8 @@ Declaring `proximitySearch` makes `<GeoVisProvider>` search the places within a 
 
 While a search is shown, every other pin is hidden.
 
+The circle is drawn on the map itself, beneath the map's labels: a polygon of the radius in metres, with a dashed ring at each smaller radius on offer and the radius line. It tilts and turns with the map. While the query runs, the sweep and the pulses are drawn on a `canvas` source laid over the circle, so they tilt with it too. The distance labels, the found places and the bar stay upright, at the points they mark. The map's own sources and layers are prefixed `geovis-proximity-`; avoid that prefix for your own ids.
+
 ```tsx
 const spec: VisualizationSpec = {
   // ...sources and layers, among them the `hospitals` pins
@@ -1326,17 +1328,21 @@ const spec: VisualizationSpec = {
 
 The first search asks for the whole disc (`radiusMin` is `0`). Widening the radius asks only for the ring beyond the radius already searched, so a place never comes back twice. `signal` aborts once the reader clears the search or starts another.
 
+Each search, and each change of radius, moves the camera to frame the circle. With `frame: 'fill'`, the default, the circle fills most of the map, keeping room for the bar under it; `frame: 'compact'` keeps it 110–150 px across, with the map around it in view. When the app covers part of the map with its own panels, `spec.viewInsets` tells GeoVis how many pixels each edge loses (`{ right: 320 }` for a panel on the right). The circle is then sized to the free area and centred in it, and it moves again when the insets change while a search is shown, as when a panel opens. `@ttoss/geovis-workspace` sets the insets for its sidebars by itself.
+
 ### `ProximitySearch` fields
 
 | Field              | Type                                                           | Default              | Description                                                                             |
 | ------------------ | -------------------------------------------------------------- | -------------------- | --------------------------------------------------------------------------------------- |
-| `layers`           | `string[]`                                                     | —                    | Layers whose features start a search when clicked                                       |
+| `layers`           | `string[]`                                                     | —                    | Layers whose features start a search when clicked; optional only with `fromAnyPoint`    |
 | `query`            | `(params: ProximityQueryParams) => Promise<ProximityResult[]>` | —                    | Finds the places within a ring; only callable from code, so a JSON spec cannot carry it |
 | `radii`            | `number[]`                                                     | `[1000, 2000, 3000]` | The radii the reader chooses between, in metres, ascending                              |
 | `initialRadius`    | `number`                                                       | smallest of `radii`  | The radius of the first search                                                          |
 | `categories`       | `ProximityCategory[]`                                          | —                    | Each kind of place: `id`, `label`, pin `color` and optional `icon`                      |
 | `labels`           | `{ one?: string; other?: string }`                             | "result", "results"  | How the texts name what is searched                                                     |
 | `fromUserLocation` | `boolean`                                                      | `false`              | Adds a button that searches from the reader's own location (see below)                  |
+| `fromAnyPoint`     | `boolean`                                                      | `false`              | Adds a button that turns on searching from any point of the map (see below)             |
+| `frame`            | `'fill' \| 'compact'`                                          | `'fill'`             | How large the camera frames the circle (see below)                                      |
 
 ### Searching from the reader's location
 
@@ -1350,22 +1356,54 @@ Clicking the button or the dot again clears the search. If the location cannot b
 
 The button is not shown where the browser offers no geolocation, as on a page served over plain HTTP. It is off by default, because asking for the reader's location is the app's choice.
 
+### Searching from any point of the map
+
+With `fromAnyPoint: true`, a button joins the map's control column, under the map mode and location buttons when they are shown. It starts off. While the reader has it on — tinted and pressed — a click on any point of the map searches from there, not only a click on a pin of `layers`. `layers` becomes optional, for a map whose only search is the free one:
+
+```tsx
+proximitySearch: {
+  query,
+  fromAnyPoint: true,
+},
+```
+
+- **Marker.** The point is marked by a dark dot in a white ring, apart from the reader's blue one, and the bar reads "near this point". No pin is in focus, so every pin is hidden.
+- **One point per press.** The search turns the button off, so searching from another point takes the button again. The bar's ×, or the dot, clears the search.
+- **Cursor.** While the button is on, the cursor is a crosshair off the pins, showing that a click searches.
+- **Turning it off.** Whether by the search or by hand, the search shown stays; only new clicks off the pins stop searching.
+
+A click keeps its other meanings first, in this order:
+
+1. A place the search found opens its card.
+2. A pin of `layers` searches from itself, as without the option.
+3. A feature of a layer that declares `click` or `clickAnchor` opens its own card, and does not search.
+4. Anywhere else, the click searches from where it landed.
+
+A click on the bare map waits 250 ms before searching, so a double-click still zooms instead. The option is off by default, and so is the button, so a map keeps its clicks as they were until the reader asks otherwise. The app can read and turn the mode itself through `anyPoint` and `setAnyPoint` (below).
+
 ### Reading the search from the app
 
 `useGeoVisProximitySearch()` hands the search to any component under `<GeoVisProvider>`, so the app can draw its own view of the results — a list beside the map, say — kept in step with the pins. It returns `null` when the spec declares no `proximitySearch`.
 
-| Field        | Type                            | Description                                                                       |
-| ------------ | ------------------------------- | --------------------------------------------------------------------------------- |
-| `status`     | `'idle' \| 'loading' \| 'done'` | `loading` while an answer is awaited — the first one, or a widening               |
-| `origin`     | `[number, number] \| null`      | The searched point, `[lng, lat]`; `null` while idle                               |
-| `fromUser`   | `boolean`                       | Whether the search started from the reader's location rather than a pin           |
-| `radius`     | `number`                        | The radius shown, in metres                                                       |
-| `radii`      | `number[]`                      | The radii the reader can choose between                                           |
-| `results`    | `ProximityHit[]`                | The places within `radius`, nearest first, each with its `distance` from `origin` |
-| `selectedId` | `string \| number \| null`      | The place whose card is open on the map                                           |
-| `select`     | `(id) => void`                  | Opens a place's card on the map, or closes it when it is the open one             |
-| `setRadius`  | `(radius: number) => void`      | Shows another radius, asking `query` only for the ring beyond the widest searched |
-| `clear`      | `() => void`                    | Clears the search, as the bar's × does                                            |
+| Field         | Type                            | Description                                                                        |
+| ------------- | ------------------------------- | ---------------------------------------------------------------------------------- |
+| `status`      | `'idle' \| 'loading' \| 'done'` | `loading` while an answer is awaited — the first one, or a widening                |
+| `origin`      | `[number, number] \| null`      | The searched point, `[lng, lat]`; `null` while idle                                |
+| `fromUser`    | `boolean`                       | Whether the search started from the reader's location rather than a pin            |
+| `fromPoint`   | `boolean`                       | Whether the search started from a point of the map (`fromAnyPoint`), not a pin     |
+| `anyPoint`    | `boolean`                       | Whether a click on any point of the map searches — the button's mode is on         |
+| `setAnyPoint` | `(on: boolean) => void`         | Turns that mode on or off, as the button does; does nothing without `fromAnyPoint` |
+| `radius`      | `number`                        | The radius shown, in metres                                                        |
+| `radii`       | `number[]`                      | The radii the reader can choose between                                            |
+| `results`     | `ProximityHit[]`                | The places within `radius`, nearest first, each with its `distance` from `origin`  |
+| `selectedId`  | `string \| number \| null`      | The place whose card is open on the map                                            |
+| `select`      | `(id) => void`                  | Opens a place's card on the map, or closes it when it is the open one              |
+| `setRadius`   | `(radius: number) => void`      | Shows another radius, asking `query` only for the ring beyond the widest searched  |
+| `clear`       | `() => void`                    | Clears the search, as the bar's × does                                             |
+| `categoryId`  | `string \| null`                | The category whose pins the map shows; `null` shows every place                    |
+| `setCategory` | `(categoryId) => void`          | Shows only one category's pins on the map — `null` shows them all                  |
+
+A filter by kind of place in the app's view can narrow the map too: `setCategory('ubs')` takes every other category's pins off the map, and closes the open card when its place is of another category. `results` still holds every category's places, so the view can keep counting them all. Each new search shows every place again.
 
 Each result carries every field your `query` returned, so extra data (an address, a phone) reaches the app's view as-is:
 

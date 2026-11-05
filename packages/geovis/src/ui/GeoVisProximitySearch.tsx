@@ -1,39 +1,42 @@
 import { useI18n } from '@ttoss/react-i18n';
+import type { Map as MapLibreMap } from 'maplibre-gl';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import { useGeoVisMapMode } from '../react/mapMode';
-import { type ProximityState, useProximitySearch } from '../react/proximity';
-import { metresPerPixel } from '../react/proximity.geo';
+import {
+  type ProximityHit,
+  type ProximityState,
+  useProximitySearch,
+} from '../react/proximity';
+import { circleRing } from '../react/proximity.geo';
 import { usePublishProximitySearch } from '../react/proximityContext';
-import type {
-  ProximityCategory,
-  ProximitySearch,
-} from '../spec/types.proximity';
+import type { ProximitySearch } from '../spec/types.proximity';
+import { useLoadingSweep, useRadiusArea } from './GeoVisProximitySearch.area';
+import {
+  type AnyPointMode,
+  ColumnControls,
+  useClickToSearch,
+} from './GeoVisProximitySearch.controls';
 import { FocusPin } from './GeoVisProximitySearch.focusPin';
-import { HitPin } from './GeoVisProximitySearch.hitPin';
+import { COMPACT_WIDTH, useCircleFrame } from './GeoVisProximitySearch.frame';
+import { HitCard, HitPin } from './GeoVisProximitySearch.hitPin';
 import {
   useFocusedPinLook,
   useFocusOnSearchedPin,
   useFormatDistance,
   useMapFrame,
   useNativeMap,
-  useSearchOnClick,
 } from './GeoVisProximitySearch.hooks';
-import {
-  canLocate,
-  LocateButton,
-  LocatingToast,
-  useUserLocation,
-} from './GeoVisProximitySearch.locate';
-import { LocationDialog } from './GeoVisProximitySearch.locationDialog';
 import { messages } from './GeoVisProximitySearch.messages';
-import { RadiusArea, YouMarker } from './GeoVisProximitySearch.parts';
+import {
+  PointMarker,
+  RadiusLabels,
+  YouMarker,
+} from './GeoVisProximitySearch.parts';
+import { useSearchPins } from './GeoVisProximitySearch.pins';
 import { StatusBar } from './GeoVisProximitySearch.statusBar';
 import { KEYFRAMES_CSS } from './GeoVisProximitySearch.styles';
 
-/** Below this map width the bar drops the counts by kind. */
-const COMPACT_WIDTH = 480;
 /** Below this map width the bar shortens its texts too. */
 const TIGHT_WIDTH = 360;
 
@@ -46,87 +49,10 @@ const useNouns = (config: ProximitySearch) => {
   };
 };
 
-/** The spec's categories, by id. */
-const categoriesById = (config: ProximitySearch) => {
-  return new Map<string, ProximityCategory>(
-    (config.categories ?? []).map((category) => {
-      return [category.id, category];
-    })
-  );
-};
-
-/**
- * The circle's radius on screen while the camera frames a search: as large as
- * the map allows, between 110 and 150 px — 110 on a compact map.
- */
-const framePixelsFor = (width: number) => {
-  const largest = width < COMPACT_WIDTH ? 110 : 150;
-  return Math.max(110, Math.min(largest, Math.floor(width / 2) - 30));
-};
-
-/**
- * The search from the reader's location, when the spec offers it: the button,
- * the dialog around the browser's request and the note while it looks the
- * reader up. Clicking the button while a search from the reader is shown
- * clears it instead.
- */
-const FromUserLocation = ({
-  state,
-  results,
-  searchFromUser,
-  clear,
-}: {
-  state: ProximityState;
-  results: string;
-  searchFromUser: (origin: [number, number]) => Promise<void>;
-  clear: () => void;
-}) => {
-  const { intl } = useI18n();
-  const { enabled: mapModeShown } = useGeoVisMapMode();
-  const onLocated = React.useCallback(
-    (origin: [number, number]) => {
-      void searchFromUser(origin);
-    },
-    [searchFromUser]
-  );
-  const { phase, start, locate, dismiss } = useUserLocation(onLocated);
-  // Asked once: whether the browser can locate does not change on a page.
-  const [available] = React.useState(canLocate);
-  if (!available) return null;
-
-  const active = state.fromUser && state.status !== 'idle';
-  const title = intl.formatMessage(messages.locate, { results });
-  return (
-    <>
-      <LocateButton
-        belowMapMode={mapModeShown}
-        active={active}
-        locating={phase === 'locating'}
-        // Capitalised: the label opens with the app's plural noun.
-        title={title.charAt(0).toLocaleUpperCase(intl.locale) + title.slice(1)}
-        label={intl.formatMessage(messages.locateLabel, { results })}
-        onClick={() => {
-          if (phase === 'locating') return;
-          if (active) clear();
-          else void start();
-        }}
-      />
-      {phase === 'locating' && <LocatingToast />}
-      {(phase === 'ask' || phase === 'denied') && (
-        <LocationDialog
-          phase={phase}
-          results={results}
-          onConfirm={locate}
-          onCancel={dismiss}
-        />
-      )}
-    </>
-  );
-};
-
 /**
  * Hands the search to the app through the provider's store — see
- * `useGeoVisProximitySearch` — as the places within the radius shown.
+ * `useGeoVisProximitySearch` — as the places within the radius shown, every
+ * category's: the app's own view counts them all, whichever one the map shows.
  */
 const usePublishSearch = ({
   state,
@@ -134,16 +60,21 @@ const usePublishSearch = ({
   select,
   setRadius,
   clear,
+  setCategory,
+  anyPoint,
+  setAnyPoint,
 }: Pick<
   ReturnType<typeof useProximitySearch>,
-  'state' | 'radii' | 'select' | 'setRadius' | 'clear'
->) => {
+  'state' | 'radii' | 'select' | 'setRadius' | 'clear' | 'setCategory'
+> &
+  AnyPointMode) => {
   usePublishProximitySearch(
     React.useMemo(() => {
       return {
         status: state.status,
         origin: state.origin,
         fromUser: state.fromUser,
+        fromPoint: state.fromPoint,
         radius: state.radius,
         radii,
         results: state.hits.filter((hit) => {
@@ -155,8 +86,119 @@ const usePublishSearch = ({
           void setRadius(radius);
         },
         clear,
+        categoryId: state.categoryId,
+        setCategory,
+        anyPoint,
+        setAnyPoint,
       };
-    }, [state, radii, select, setRadius, clear])
+    }, [
+      state,
+      radii,
+      select,
+      setRadius,
+      clear,
+      setCategory,
+      anyPoint,
+      setAnyPoint,
+    ])
+  );
+};
+
+/**
+ * What an HTML pin, or the open place's card, is drawn from: the place, its
+ * category, where it is on screen from the searched point, the pins' scale,
+ * and the card's texts.
+ */
+const hitPropsFor = ({
+  hit,
+  map,
+  originPx,
+  pins,
+  intl,
+  format,
+}: {
+  hit: ProximityHit;
+  map: MapLibreMap;
+  originPx: { x: number; y: number };
+  pins: ReturnType<typeof useSearchPins>;
+  intl: ReturnType<typeof useI18n>['intl'];
+  format: (metres: number) => string;
+}) => {
+  const point = map.project(hit.lngLat);
+  return {
+    hit,
+    category: pins.categories.get(hit.categoryId ?? ''),
+    x: point.x - originPx.x,
+    y: point.y - originPx.y,
+    scale: pins.scale,
+    distance: intl.formatMessage(messages.fromPoint, {
+      distance: format(hit.distance),
+    }),
+    closeLabel: intl.formatMessage(messages.closeCard),
+  };
+};
+
+/**
+ * The lowest point on screen of the circle the map draws around `origin`,
+ * in pixels from the map's top: where the bar goes, under the circle however
+ * the map is tilted or turned.
+ */
+const circleBottom = ({
+  map,
+  origin,
+  radius,
+}: {
+  map: MapLibreMap;
+  origin: [number, number];
+  radius: number;
+}) => {
+  return Math.max(
+    ...circleRing({ origin, metres: radius, steps: 32 }).map((point) => {
+      return map.project(point).y;
+    })
+  );
+};
+
+/**
+ * What marks the point the search runs from, each clearing it when clicked:
+ * the reader's blue dot, the dot on a point of the map, or the clicked pin.
+ */
+const OriginMarker = ({
+  state,
+  clear,
+}: {
+  state: ProximityState;
+  clear: () => void;
+}) => {
+  const { intl } = useI18n();
+  const focusedPin = useFocusedPinLook(state.focus);
+  const label = intl.formatMessage(messages.clear);
+  if (state.fromUser) {
+    return (
+      <YouMarker
+        tag={intl.formatMessage(messages.you)}
+        title={intl.formatMessage(messages.youClear)}
+        label={label}
+        onClick={clear}
+      />
+    );
+  }
+  if (state.fromPoint) {
+    return (
+      <PointMarker
+        title={intl.formatMessage(messages.pointClear)}
+        label={label}
+        onClick={clear}
+      />
+    );
+  }
+  return (
+    <FocusPin
+      pin={focusedPin.pin}
+      iconSize={focusedPin.iconSize}
+      label={label}
+      onClick={clear}
+    />
   );
 };
 
@@ -166,7 +208,8 @@ const usePublishSearch = ({
  * around it — see {@link ProximitySearch}. Drawn over the map, in its own
  * container, so what it places at a point follows the camera. With
  * `fromUserLocation`, a button in the map's control column searches from the
- * reader's location instead.
+ * reader's location instead; with `fromAnyPoint`, another button there turns
+ * on searching from any point of the map the reader clicks.
  *
  * @example
  * // Mounted by the provider — the spec only declares the search:
@@ -179,39 +222,57 @@ export const GeoVisProximitySearch = ({
 }) => {
   const { intl } = useI18n();
   const map = useNativeMap();
-  const { width } = useMapFrame(map);
+  const { width, height } = useMapFrame(map);
   const format = useFormatDistance();
 
   const nouns = useNouns(config);
-  const { state, radii, searchFrom, searchFromUser, clear, setRadius, select } =
-    useProximitySearch({ config, map, framePixels: framePixelsFor(width) });
-  useSearchOnClick({ map, layerIds: config.layers, searchFrom });
-  usePublishSearch({ state, radii, select, setRadius, clear });
+  const proximity = useProximitySearch({
+    config,
+    map,
+    frame: useCircleFrame({ config, width, height }),
+  });
+  const { state, radii, searchFromUser, clear, setRadius, select } = proximity;
+  const mode = useClickToSearch({ map, config, ...proximity });
+  usePublishSearch({ ...proximity, ...mode });
   useFocusOnSearchedPin(state.status === 'idle' ? null : state.focus);
-  const focusedPin = useFocusedPinLook(state.focus);
+  const { origin } = state;
+  useRadiusArea({
+    map,
+    origin,
+    radius: state.radius,
+    radii,
+    request: state.request,
+  });
+  useLoadingSweep({
+    map,
+    origin,
+    radius: state.radius,
+    loading: state.status === 'loading',
+  });
+  const pins = useSearchPins({ map, config, state, select });
 
-  const fromUserLocation = config.fromUserLocation ? (
-    <FromUserLocation
+  const controls = (
+    <ColumnControls
+      config={config}
       state={state}
       results={nouns.other}
       searchFromUser={searchFromUser}
       clear={clear}
+      {...mode}
     />
-  ) : null;
+  );
 
   // Idle, there is no origin: only a search draws anything.
-  const { origin } = state;
-  if (!map || width === 0 || !origin) return fromUserLocation;
+  if (!map || width === 0 || !origin) return controls;
 
   const originPx = map.project(origin);
-  const pixelsPerMetre = 1 / metresPerPixel(origin[1], map.getZoom());
-  const R = state.radius * pixelsPerMetre;
-  const scale = R < 120 ? 0.8 : 1;
-  const categories = categoriesById(config);
   const visible = state.hits.filter((hit) => {
     return hit.distance <= state.radius;
   });
   const fresh = new Set(state.fresh);
+  const hitProps = (hit: ProximityHit) => {
+    return hitPropsFor({ hit, map, originPx, pins, intl, format });
+  };
 
   const search = ReactDOM.createPortal(
     <>
@@ -226,51 +287,41 @@ export const GeoVisProximitySearch = ({
           zIndex: 4,
         }}
       >
-        <RadiusArea
+        <RadiusLabels
           request={state.request}
+          origin={origin}
           radius={state.radius}
           radii={radii}
-          pixelsPerMetre={pixelsPerMetre}
-          loading={state.status === 'loading'}
+          originPx={originPx}
+          project={(lngLat) => {
+            return map.project(lngLat);
+          }}
           formatRadius={format}
         />
-        {visible.map((hit) => {
-          const point = map.project(hit.lngLat);
+        {/* The nearest places fall in as HTML pins, then join the map's
+            layer of pins; the open place's card is HTML. */}
+        {pins.falling.map((hit) => {
           return (
             <HitPin
               key={`s${state.request}-${hit.id}`}
-              hit={hit}
-              category={categories.get(hit.categoryId ?? '')}
-              x={point.x - originPx.x}
-              y={point.y - originPx.y}
-              scale={scale}
+              {...hitProps(hit)}
               selected={state.selectedId === hit.id}
               late={fresh.has(hit.id)}
-              distance={intl.formatMessage(messages.fromPoint, {
-                distance: format(hit.distance),
-              })}
-              closeLabel={intl.formatMessage(messages.closeCard)}
               onSelect={() => {
                 select(hit.id);
               }}
             />
           );
         })}
-        {state.fromUser ? (
-          <YouMarker
-            tag={intl.formatMessage(messages.you)}
-            title={intl.formatMessage(messages.youClear)}
-            label={intl.formatMessage(messages.clear)}
-            onClick={clear}
-          />
-        ) : (
-          <FocusPin
-            pin={focusedPin.pin}
-            iconSize={focusedPin.iconSize}
-            label={intl.formatMessage(messages.clear)}
-            onClick={clear}
+        {pins.selectedOnLayer && (
+          <HitCard
+            {...hitProps(pins.selectedOnLayer)}
+            onClose={() => {
+              select(pins.selectedOnLayer!.id);
+            }}
           />
         )}
+        <OriginMarker state={state} clear={clear} />
       </div>
       <div
         style={{
@@ -278,7 +329,7 @@ export const GeoVisProximitySearch = ({
           zIndex: 5,
           left: 8,
           right: 8,
-          top: originPx.y + R + 14,
+          top: circleBottom({ map, origin, radius: state.radius }) + 14,
           display: 'flex',
           justifyContent: 'center',
           transform: `translateX(${originPx.x - width / 2}px)`,
@@ -305,7 +356,7 @@ export const GeoVisProximitySearch = ({
   );
   return (
     <>
-      {fromUserLocation}
+      {controls}
       {search}
     </>
   );

@@ -4,7 +4,9 @@
 import { act, renderHook } from '@testing-library/react';
 import type { Map as MapLibreMap } from 'maplibre-gl';
 import {
+  type CircleFrame,
   DEFAULT_PROXIMITY_RADII,
+  frameDuration,
   useProximitySearch,
 } from 'src/react/proximity';
 import type {
@@ -45,14 +47,22 @@ const buildQuery = () => {
 
 const setup = (config: Partial<ProximitySearch> = {}) => {
   const { query, calls } = buildQuery();
-  const map = { easeTo: jest.fn() } as unknown as MapLibreMap;
-  const hook = renderHook(() => {
-    return useProximitySearch({
-      config: { layers: ['pins'], query, ...config },
-      map,
-      framePixels: 150,
-    });
-  });
+  const map = {
+    easeTo: jest.fn(),
+    getZoom: () => {
+      return 12;
+    },
+  } as unknown as MapLibreMap;
+  const hook = renderHook(
+    ({ frame }: { frame: CircleFrame }) => {
+      return useProximitySearch({
+        config: { layers: ['pins'], query, ...config },
+        map,
+        frame,
+      });
+    },
+    { initialProps: { frame: { pixels: 150, offset: [0, 0] } } }
+  );
   return { ...hook, query, calls, map };
 };
 
@@ -114,6 +124,48 @@ describe('useProximitySearch', () => {
       [2, 0, 200],
       [1, 1, 800],
     ]);
+  });
+
+  test('takes longer the more zoom levels it travels, easing in and out', () => {
+    const { result, map } = setup();
+
+    act(() => {
+      void result.current.searchFrom(ORIGIN);
+    });
+
+    const options = jest.mocked(map.easeTo).mock.calls[0][0] as {
+      zoom: number;
+      duration: number;
+      easing: (t: number) => number;
+    };
+    expect(options.duration).toBe(frameDuration(Math.abs(options.zoom - 12)));
+    expect(options.easing(0.25)).toBeCloseTo(0.0625);
+    expect(options.easing(0.75)).toBeCloseTo(0.9375);
+    // Between its bounds: half a second for a short hop, 1.5 s at most.
+    expect(frameDuration(0)).toBe(500);
+    expect(frameDuration(3)).toBe(900);
+    expect(frameDuration(10)).toBe(1500);
+  });
+
+  test('frames the search shown again, offset, when the frame changes', async () => {
+    const { result, rerender, calls, map } = setup();
+    // A new frame while idle moves nothing.
+    rerender({ frame: { pixels: 300, offset: [0, 0] } });
+    expect(map.easeTo).not.toHaveBeenCalled();
+
+    act(() => {
+      void result.current.searchFrom(ORIGIN);
+    });
+    calls[0].resolve([]);
+    await settle();
+    jest.mocked(map.easeTo).mockClear();
+
+    // A panel opened over the map's right: the circle moves into what is left.
+    rerender({ frame: { pixels: 200, offset: [-160, 0] } });
+
+    expect(map.easeTo).toHaveBeenCalledWith(
+      expect.objectContaining({ center: ORIGIN, offset: [-160, 0] })
+    );
   });
 
   test('clicked again on the point it shows, clears the search', async () => {

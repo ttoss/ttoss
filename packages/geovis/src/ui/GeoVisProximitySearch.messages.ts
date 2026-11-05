@@ -77,6 +77,32 @@ export const messages = defineMessages({
     description:
       'Proximity search from the reader\'s location: how many places were found. "one" and "other" name what is searched, singular and plural; "radius" is a distance like "1 km".',
   },
+  anyPoint: {
+    defaultMessage: '{results} around any point',
+    description:
+      'Proximity search: tooltip of the button that turns on searching from any point of the map the reader clicks. "results" names what is searched, plural, e.g. "services around any point".',
+  },
+  anyPointLabel: {
+    defaultMessage: 'Search {results} from any point of the map',
+    description:
+      'Proximity search: accessible name of the button that turns on searching from any point of the map the reader clicks. "results" names what is searched, plural.',
+  },
+  searchingNearPoint: {
+    defaultMessage: 'Searching {results} near this point…',
+    description:
+      'Proximity search from a point of the map the reader clicked: shown while the first answer is awaited. "results" names what is searched.',
+  },
+  foundNearPoint: {
+    defaultMessage:
+      '{count, plural, one {# {one}} other {# {other}}} within {radius} of this point',
+    description:
+      'Proximity search from a point of the map the reader clicked: how many places were found. "one" and "other" name what is searched, singular and plural; "radius" is a distance like "1 km".',
+  },
+  pointClear: {
+    defaultMessage: 'Searched point · clear search',
+    description:
+      'Proximity search: tooltip of the dot marking the point of the map the reader clicked, which clears the search when clicked.',
+  },
   you: {
     defaultMessage: 'You',
     description:

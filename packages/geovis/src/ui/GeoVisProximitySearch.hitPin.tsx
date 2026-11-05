@@ -21,7 +21,7 @@ const CONDENSED = "'Barlow Condensed', sans-serif";
  * A place's card: its kind in its colour, its name and its distance, over a
  * tail pointing at the pin, with a button that closes it.
  */
-const HitCard = ({
+export const HitCard = ({
   hit,
   category,
   x,

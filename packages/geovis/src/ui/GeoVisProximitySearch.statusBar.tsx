@@ -108,6 +108,7 @@ const FoundSummary = ({
   compact,
   tight,
   fromUser,
+  fromPoint,
   format,
 }: {
   visible: ProximityHit[];
@@ -117,6 +118,7 @@ const FoundSummary = ({
   compact: boolean;
   tight: boolean;
   fromUser: boolean;
+  fromPoint: boolean;
   format: (metres: number) => string;
 }) => {
   const { intl } = useI18n();
@@ -130,7 +132,9 @@ const FoundSummary = ({
             ? messages.foundShort
             : fromUser
               ? messages.foundNearYou
-              : messages.found,
+              : fromPoint
+                ? messages.foundNearPoint
+                : messages.found,
           values
         );
   const counts = countByCategory(visible, categories);
@@ -215,7 +219,11 @@ export const StatusBar = ({
         <Spinner />
         {state.fetched === 0
           ? intl.formatMessage(
-              state.fromUser ? messages.searchingNearYou : messages.searching,
+              state.fromUser
+                ? messages.searchingNearYou
+                : state.fromPoint
+                  ? messages.searchingNearPoint
+                  : messages.searching,
               { results: nouns.other }
             )
           : intl.formatMessage(messages.widening, { radius })}
@@ -232,6 +240,7 @@ export const StatusBar = ({
           compact={compact}
           tight={tight}
           fromUser={state.fromUser}
+          fromPoint={state.fromPoint}
           format={format}
         />
         {radii.length > 1 && (

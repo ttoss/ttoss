@@ -1,6 +1,11 @@
 import { buildIcon, loadIcon } from '@ttoss/react-icons';
 import type * as maplibregl from 'maplibre-gl';
-import { buildPinSvg, syncImages } from 'src/adapters/maplibre/pinImages';
+import {
+  addPinImage,
+  buildPinSvg,
+  renderPinSvg,
+  syncImages,
+} from 'src/adapters/maplibre/pinImages';
 import type { PinImage, VisualizationSpec } from 'src/spec/types';
 
 jest.mock('@ttoss/react-icons', () => {
@@ -235,5 +240,40 @@ describe('syncImages', () => {
     );
     expect(images.get('hospital-pin')).toMatchObject({ width: 1, height: 1 });
     warnSpy.mockRestore();
+  });
+});
+
+describe('addPinImage', () => {
+  test('registers a placeholder at once, then the built pin, and leaves one already there', async () => {
+    const { map, mock, images } = createMap();
+
+    addPinImage({ map, image: HOSPITAL });
+    expect(images.get('hospital-pin')).toMatchObject({ width: 1, height: 1 });
+    await settle();
+    expect(images.get('hospital-pin')).toBeInstanceOf(FakeImage);
+
+    addPinImage({ map, image: HOSPITAL });
+    expect(mock.addImage).toHaveBeenCalledTimes(2);
+  });
+
+  test('without an icon, draws the bare drop and loads none', async () => {
+    const { map, images } = createMap();
+
+    addPinImage({ map, image: { ...HOSPITAL, id: 'bare-pin', icon: '' } });
+    await settle();
+
+    expect(loadIcon).not.toHaveBeenCalled();
+    expect(images.get('bare-pin')).toBeInstanceOf(FakeImage);
+  });
+});
+
+describe('renderPinSvg', () => {
+  test('draws a pin with its icon at one device pixel per CSS pixel', async () => {
+    const { svg, width, height } = await renderPinSvg(HOSPITAL);
+
+    expect(loadIcon).toHaveBeenCalledWith('maki:hospital');
+    expect(svg).toContain('fill="#C0392B"');
+    expect(width).toBeGreaterThan(0);
+    expect(height).toBeGreaterThan(width / 2);
   });
 });
