@@ -24,6 +24,7 @@ The file is a list of `- **Name**: value` items, because the routines' scripts r
 How this project's runtime runs the tick and its children, usually a pointer to the file the scheduler runs. Empty: the tick uses what its tools offer and the defaults below.
 
 - **Child runs:** how the runtime starts a child (prompt, model, repos), reads it (working, idle, failed, gone), ends it and, where it can, messages it; which tools a tick loads.
+- **Code host:** how a run reads a change and integrates it, when its tools offer more than one way and only one is permitted. Empty: what its tools offer.
 - **Run records:** whether a hook records each session's run (GTF-S7); without one, the tick records its children and a session nobody started records itself.
 - **Max runs:** how many children each person's ticks run at once: the `running` children their Flow credential wrote, never another person's. Default 2.
 - **Review queue:** how many changes may wait to be reviewed or validated before the tick stops starting new work: each open change past draft, at its gates or with a person to integrate it, and each integrated change whose task waits on a person to see it in effect. A child ends at its handoff, so `Max runs` alone leaves that queue unbounded. Decisions are not in it, since a decision holds only the work it blocks. Integrating, releases, checks, rounds, a `very_high` task and a `high` bug go on. Default 20.
