@@ -20,6 +20,7 @@ import {
 } from './validateSpec.checks';
 import { validateLayerControlIds } from './validateSpec.controlChecks';
 import { validateExtrusionData } from './validateSpec.extrusionChecks';
+import { validateHeatmaps } from './validateSpec.heatmapChecks';
 import { validateLegendRefs } from './validateSpec.legendChecks';
 import { validatePaintKeys } from './validateSpec.paintChecks';
 import { validateReferences } from './validateSpec.referenceChecks';
@@ -68,6 +69,7 @@ export const validateSpec = (
     ...validatePaintKeys(spec),
     ...validateLegendRefs(spec),
     ...validateExtrusionData(spec),
+    ...validateHeatmaps(spec),
     ...validateLayerControlIds(spec),
     ...(capabilities ? validateEngineCapability(spec, capabilities) : []),
     ...(capabilities ? validateSourceCapabilities(spec, capabilities) : []),

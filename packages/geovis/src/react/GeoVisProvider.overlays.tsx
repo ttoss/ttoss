@@ -4,7 +4,10 @@ import type { LegendPosition, VisualizationSpec } from '../spec/types';
 import { GeoVisLayerControl } from '../ui/GeoVisLayerControl';
 import { buildOuterStyle } from '../ui/GeoVisLayerControl.styles';
 import { GeoVisLegend } from '../ui/GeoVisLegend';
-import { buildContainerStyle, resolveLegend } from '../ui/GeoVisLegend.utils';
+import {
+  buildGroupContainerStyle,
+  resolveLegend,
+} from '../ui/GeoVisLegend.utils';
 import { GeoVisMapModeControl } from '../ui/GeoVisMapModeControl';
 import { GeoVisProximitySearch } from '../ui/GeoVisProximitySearch';
 import { useGeoVisMapMode } from './mapMode';
@@ -37,7 +40,10 @@ const PositionedLegends = ({
     // workspace pushing legends clear of an open sidebar).
     const groupOffset = resolveLegend(spec, ids[0])?.offset;
     return (
-      <div key={position} style={buildContainerStyle(position, groupOffset)}>
+      <div
+        key={position}
+        style={buildGroupContainerStyle(position, groupOffset)}
+      >
         {ids.map((id) => {
           return <GeoVisLegend key={id} legendId={id} noPositionWrap />;
         })}

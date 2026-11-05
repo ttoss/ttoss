@@ -1,0 +1,133 @@
+{
+  "title": "Heatmap Density",
+  "description": "Traffic crashes as a density heatmap: a palette ramp, radius and intensity by zoom, a weight read from each point's severity, and a density legend reading the layer's colours.",
+  "engine": "maplibre",
+  "view": {
+    "center": [-46.63, -23.55],
+    "zoom": 11
+  },
+  "sources": [
+    {
+      "id": "crashes",
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "id": 1,
+            "geometry": {
+              "type": "Point",
+              "coordinates": [-46.6333, -23.5505]
+            },
+            "properties": {
+              "peso": 10
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 2,
+            "geometry": {
+              "type": "Point",
+              "coordinates": [-46.634, -23.5512]
+            },
+            "properties": {
+              "peso": 1
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 3,
+            "geometry": {
+              "type": "Point",
+              "coordinates": [-46.6321, -23.5498]
+            },
+            "properties": {
+              "peso": 3
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 4,
+            "geometry": {
+              "type": "Point",
+              "coordinates": [-46.656, -23.5614]
+            },
+            "properties": {
+              "peso": 1
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 5,
+            "geometry": {
+              "type": "Point",
+              "coordinates": [-46.6555, -23.562]
+            },
+            "properties": {
+              "peso": 1
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 6,
+            "geometry": {
+              "type": "Point",
+              "coordinates": [-46.69, -23.533]
+            },
+            "properties": {
+              "peso": 3
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 7,
+            "geometry": {
+              "type": "Point",
+              "coordinates": [-46.625, -23.588]
+            },
+            "properties": {
+              "peso": 1
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "layers": [
+    {
+      "id": "crashes-heat",
+      "sourceId": "crashes",
+      "geometry": "heatmap",
+      "activeLegendId": "crashes-density",
+      "paint": {
+        "heatmapColors": "red",
+        "heatmapRadius": [
+          [10, 6],
+          [13, 18],
+          [16, 40]
+        ],
+        "heatmapIntensity": [
+          [10, 0.6],
+          [16, 2]
+        ],
+        "heatmapWeight": {
+          "property": "peso",
+          "max": 10
+        }
+      }
+    }
+  ],
+  "legends": [
+    {
+      "id": "crashes-density",
+      "title": "Traffic crashes",
+      "position": "bottom-right",
+      "colorBy": {
+        "type": "density",
+        "lowLabel": "Fewer",
+        "highLabel": "More"
+      }
+    }
+  ]
+}

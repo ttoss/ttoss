@@ -17,6 +17,8 @@ import { computeBbox } from './helpers/map-story-helpers';
  * layer draws it at each feature through `paint.iconImage`. GeoVis builds the
  * pin images itself and registers them on the map; there are no image files.
  *
+ * The places are fictitious data: made-up names at made-up points.
+ *
  * Each pin layer sets `iconAnchor: 'bottom'`, so the pin stands on the place
  * (rather than being centred on it), and `iconAllowOverlap: true`, so
  * neighbouring places keep their pins instead of MapLibre hiding the ones that
@@ -43,49 +45,33 @@ const places = (entries: Place[]): GeoJSONFeatureCollection => {
   };
 };
 
+/**
+ * Fictitious places: made-up names at made-up points around central São
+ * Paulo, only to show the pins.
+ */
 const hospitals = places([
-  {
-    name: 'Hospital das Clínicas',
-    kind: 'Hospital',
-    coordinates: [-46.6695, -23.5573],
-  },
-  {
-    name: 'Santa Casa de São Paulo',
-    kind: 'Hospital',
-    coordinates: [-46.6497, -23.5441],
-  },
-  {
-    name: 'Hospital São Paulo',
-    kind: 'Hospital',
-    coordinates: [-46.6432, -23.5979],
-  },
+  { name: 'Hospital A', kind: 'Hospital', coordinates: [-46.6655, -23.5551] },
+  { name: 'Hospital B', kind: 'Hospital', coordinates: [-46.6524, -23.5468] },
+  { name: 'Hospital C', kind: 'Hospital', coordinates: [-46.6401, -23.5952] },
 ]);
 
 const clinics = places([
-  { name: 'UBS Sé', kind: 'UBS', coordinates: [-46.6333, -23.5497] },
-  {
-    name: 'UBS República',
-    kind: 'UBS',
-    coordinates: [-46.6428, -23.5431],
-  },
-  {
-    name: 'UBS Vila Mariana',
-    kind: 'UBS',
-    coordinates: [-46.6358, -23.5891],
-  },
-  { name: 'UBS Pinheiros', kind: 'UBS', coordinates: [-46.6862, -23.5654] },
+  { name: 'UBS 1', kind: 'UBS', coordinates: [-46.6361, -23.5522] },
+  { name: 'UBS 2', kind: 'UBS', coordinates: [-46.6457, -23.5409] },
+  { name: 'UBS 3', kind: 'UBS', coordinates: [-46.6322, -23.5864] },
+  { name: 'UBS 4', kind: 'UBS', coordinates: [-46.6831, -23.5682] },
 ]);
 
 const restaurants = places([
   {
-    name: 'Bom Prato Centro',
+    name: 'Restaurante 1',
     kind: 'Restaurante público',
-    coordinates: [-46.6364, -23.5418],
+    coordinates: [-46.6391, -23.5395],
   },
   {
-    name: 'Bom Prato Lapa',
+    name: 'Restaurante 2',
     kind: 'Restaurante público',
-    coordinates: [-46.7029, -23.5236],
+    coordinates: [-46.6998, -23.5261],
   },
 ]);
 
@@ -170,7 +156,7 @@ const buildSpec = (pins: PinImage[]): VisualizationSpec => {
     description:
       'Each kind of place draws its own pin — colour and icon declared in ' +
       '`spec.images`. Hover a pin for its name; toggle the kinds from the ' +
-      'layer control.',
+      'layer control. The places are fictitious data.',
     engine: 'maplibre',
     images: pins,
     sources: LAYERS.map((layer) => {

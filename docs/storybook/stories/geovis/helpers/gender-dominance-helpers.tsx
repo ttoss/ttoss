@@ -12,45 +12,12 @@ import type {
 export const GENDER_COLOR_MEN = '#3b82f6';
 export const GENDER_COLOR_WOMEN = '#ec4899';
 
-export interface ApiDistrictEntry {
-  total: number;
-  nome_distr: string;
-  Homens: Record<string, number>;
-  Mulheres: Record<string, number>;
-}
-
 export interface DistrictEntry {
   total: number;
   districtName: string;
   men: Record<string, number>;
   women: Record<string, number>;
 }
-
-export const normalizeEntry = (e: ApiDistrictEntry): DistrictEntry => {
-  return {
-    total: e.total,
-    districtName: e.nome_distr,
-    men: e.Homens,
-    women: e.Mulheres,
-  };
-};
-
-export const normalizePopulationData = (
-  raw: Record<string, Record<string, ApiDistrictEntry>>
-): Record<string, Record<string, DistrictEntry>> => {
-  return Object.fromEntries(
-    Object.entries(raw).map(([yr, districts]) => {
-      return [
-        yr,
-        Object.fromEntries(
-          Object.entries(districts).map(([id, e]) => {
-            return [id, normalizeEntry(e)];
-          })
-        ),
-      ];
-    })
-  );
-};
 
 export const sumValues = (obj: Record<string, number>): number => {
   return Object.values(obj).reduce((a, b) => {
@@ -246,6 +213,7 @@ export const buildSpec = ({
       {
         id: 'gender',
         title: `Gender dominance \u2014 ${year}`,
+        reference: 'Fictitious data',
         colorBy: {
           type: 'categorical',
           property: 'gender',

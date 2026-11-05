@@ -22,6 +22,12 @@ import {
   MapSync,
 } from './helpers/map-story-helpers';
 
+/**
+ * A choropleth coloured by raw counts, which the cartography policy flags,
+ * beside the same map coloured by density. Drawn on Rwanda's province
+ * boundaries; **the population and density figures are fictitious data**,
+ * made up to show the difference.
+ */
 export default {
   title: 'GeoVis/InvalidRawCountChoropleth',
   tags: ['autodocs'],
@@ -36,12 +42,13 @@ const fmtDensity = (v: number) => {
   return `${v} hab/km²`;
 };
 
+/** Fictitious populations, rounded so they read as made up. */
 const populationData: MapDataRow[] = [
-  { geometryId: 'Kigali City', value: 854_000 },
-  { geometryId: 'East Province', value: 2_595_703 },
-  { geometryId: 'Western Province', value: 2_471_239 },
-  { geometryId: 'Southern Province', value: 2_589_975 },
-  { geometryId: 'Northern Province', value: 1_726_370 },
+  { geometryId: 'Kigali City', value: 900_000 },
+  { geometryId: 'East Province', value: 2_400_000 },
+  { geometryId: 'Western Province', value: 2_200_000 },
+  { geometryId: 'Southern Province', value: 2_300_000 },
+  { geometryId: 'Northern Province', value: 1_700_000 },
   { geometryId: 'Gasabo District', value: 1_200_000 },
   { geometryId: 'Huye District', value: 980_000 },
   { geometryId: 'Musanze District', value: 1_450_000 },
@@ -49,12 +56,13 @@ const populationData: MapDataRow[] = [
   { geometryId: 'Nyagatare District', value: 3_100_000 },
 ];
 
+/** Fictitious densities, Kigali the densest despite its small population. */
 const densityData: MapDataRow[] = [
-  { geometryId: 'Kigali City', value: 1_551 },
-  { geometryId: 'East Province', value: 274 },
-  { geometryId: 'Western Province', value: 420 },
-  { geometryId: 'Southern Province', value: 434 },
-  { geometryId: 'Northern Province', value: 527 },
+  { geometryId: 'Kigali City', value: 1_500 },
+  { geometryId: 'East Province', value: 260 },
+  { geometryId: 'Western Province', value: 400 },
+  { geometryId: 'Southern Province', value: 410 },
+  { geometryId: 'Northern Province', value: 500 },
   { geometryId: 'Gasabo District', value: 1_200 },
   { geometryId: 'Huye District', value: 310 },
   { geometryId: 'Musanze District', value: 890 },
@@ -145,6 +153,7 @@ const leftSpec = buildChoroplethSpec({
   data: populationData,
   legendId: 'pop-legend',
   title: 'Population (raw count) — invalid',
+  legendReference: 'Fictitious data',
   // Wires the fixture's cartography-policy metadata into the actual spec the
   // provider validates — without this, `GeoVisProvider`'s policy check never
   // sees `isPolicyInvalid` and the warning banner below never renders.
@@ -160,8 +169,7 @@ const rightSpec = buildChoroplethSpec({
     type: 'quantitative',
     colors: [...SEQUENTIAL_PALETTES.green],
   },
-  legendReference:
-    '{link:MapLibre — Visualize population density (normalized)|https://maplibre.org/maplibre-gl-js/docs/examples/visualize-population-density/}',
+  legendReference: 'Fictitious data',
 });
 
 /** Extracts color steps from the resolved spec's legend for the gradient overlay. */

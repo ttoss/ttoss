@@ -1,6 +1,6 @@
-import { Icon } from '@ttoss/react-icons';
 import * as React from 'react';
 
+import { resolveDensityLegendColors } from '../spec/heatmap';
 import type { LegendSpec, VisualizationSpec } from '../spec/types';
 import { useGeoVis } from './contexts';
 import type { CircledLegendItem } from './GeoVisLegend.circles';
@@ -9,6 +9,8 @@ import {
   CirclesLegendItems,
   findProportionalCirclesConfig,
 } from './GeoVisLegend.circles';
+import { DensityGradient, resolveLegendScale } from './GeoVisLegend.gradient';
+import { GeoVisLegendHeader } from './GeoVisLegend.header';
 import type { LegendItem } from './GeoVisLegend.utils';
 import {
   BORDER_COLOR,
@@ -17,22 +19,17 @@ import {
   buildReferenceContent,
   collectLegendIdsForPosition,
   computeNormalizedBreaks,
-  DESCRIPTION_COLOR,
-  FONT_HEAD,
   FONT_MONO,
   footerSectionStyle,
   hasLegendContent,
-  headerSectionStyle,
   MUTED_COLOR,
   resolveFormatter,
   resolveLegend,
-  resolveSwatchColor,
   rowStyle,
   scaleSectionStyle,
   SECTION_DIVIDER,
   shouldShowCircleItems,
   swatchBase,
-  TITLE_COLOR,
 } from './GeoVisLegend.utils';
 
 export { parseReference } from './GeoVisLegend.utils';
@@ -89,111 +86,20 @@ const listStyle: React.CSSProperties = {
   listStyle: 'none',
 };
 
-const titleTextStyle: React.CSSProperties = {
-  fontFamily: FONT_HEAD,
-  fontWeight: 600,
-  fontSize: 15,
-  color: TITLE_COLOR,
-  lineHeight: 1.2,
-};
-
-const descriptionStyle: React.CSSProperties = {
-  fontSize: 12,
-  color: DESCRIPTION_COLOR,
-  lineHeight: 1.55,
-  margin: 0,
-};
-
+/**
+ * The reference wraps to a second line before it is cut, with an ellipsis at
+ * the end of that line: a source and its links rarely fit one line of the
+ * card, and a single line left most of them out.
+ */
 const referenceStyle: React.CSSProperties = {
   fontSize: 11,
+  lineHeight: 1.4,
   color: MUTED_COLOR,
   flex: 1,
   overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
-};
-
-/** Tinted rounded chip holding the legend's `@ttoss/react-icons` glyph. */
-const IconChip = ({ icon, color }: { icon: string; color: string }) => {
-  return (
-    <span
-      aria-hidden="true"
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 24,
-        height: 24,
-        borderRadius: 5,
-        flexShrink: 0,
-        backgroundColor: `${color}18`,
-        color,
-      }}
-    >
-      <Icon icon={icon} style={{ fontSize: 11, color }} />
-    </span>
-  );
-};
-
-const LegendTitleRow = ({
-  icon,
-  color,
-  title,
-  hasSubtitle,
-}: {
-  icon: string | undefined;
-  color: string;
-  title: string | undefined;
-  hasSubtitle: boolean;
-}) => {
-  if (!icon && !title) return null;
-  return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 10,
-        marginBottom: hasSubtitle ? 5 : 0,
-      }}
-    >
-      {!!icon && <IconChip icon={icon} color={color} />}
-      {!!title && <span style={titleTextStyle}>{title}</span>}
-    </div>
-  );
-};
-
-const GeoVisLegendHeader = ({
-  icon,
-  iconColor,
-  title,
-  subtitle,
-  hasContentBelow,
-}: {
-  icon: string | undefined;
-  iconColor: string;
-  title: string | undefined;
-  subtitle: string | undefined;
-  hasContentBelow: boolean;
-}) => {
-  if (!icon && !title && !subtitle) return null;
-  return (
-    <div
-      style={{
-        ...headerSectionStyle,
-        ...(hasContentBelow
-          ? { borderBottom: `1px solid ${SECTION_DIVIDER}` }
-          : {}),
-      }}
-    >
-      <LegendTitleRow
-        icon={icon}
-        color={iconColor}
-        title={title}
-        hasSubtitle={!!subtitle}
-      />
-      {!!subtitle && <p style={descriptionStyle}>{subtitle}</p>}
-    </div>
-  );
+  display: '-webkit-box',
+  WebkitBoxOrient: 'vertical',
+  WebkitLineClamp: 2,
 };
 
 const GeoVisLegendItems = ({
@@ -331,6 +237,7 @@ const GeoVisLegendBody = ({
   legend,
   items,
   circleItems,
+  densityColors,
   referenceContent,
   extraStyle,
 }: {
@@ -338,12 +245,17 @@ const GeoVisLegendBody = ({
   legend: LegendSpec;
   items: LegendItem[];
   circleItems: CircledLegendItem[];
+  densityColors: string[] | undefined;
   referenceContent: React.ReactNode;
   extraStyle: React.CSSProperties | undefined;
 }) => {
-  const swatchColor = resolveSwatchColor(items, legend);
+  const { swatchColor, hasItems } = resolveLegendScale({
+    legend,
+    items,
+    circleItems,
+    densityColors,
+  });
   const iconColor = legend.iconColor ?? swatchColor;
-  const hasItems = items.length > 0 || circleItems.length > 0;
   const hasFooter = referenceContent != null || !!legend.footerValue;
   return (
     <div
@@ -363,15 +275,22 @@ const GeoVisLegendBody = ({
         subtitle={legend.subtitle}
         hasContentBelow={hasItems || hasFooter}
       />
-      {hasItems && (
-        <LegendScale
-          legend={legend}
-          items={items}
-          circleItems={circleItems}
-          swatchColor={swatchColor}
-          hasFooter={hasFooter}
-        />
-      )}
+      {hasItems &&
+        (densityColors ? (
+          <DensityGradient
+            legend={legend}
+            colors={densityColors}
+            hasFooter={hasFooter}
+          />
+        ) : (
+          <LegendScale
+            legend={legend}
+            items={items}
+            circleItems={circleItems}
+            swatchColor={swatchColor}
+            hasFooter={hasFooter}
+          />
+        ))}
       {hasFooter && (
         <LegendFooter
           referenceContent={referenceContent}
@@ -414,6 +333,10 @@ export const GeoVisLegend = ({
     return buildCircledItems(circleConfig!, resolvedFormatValue);
   }, [circleConfig, resolvedFormatValue, legend, spec]);
 
+  const densityColors = React.useMemo(() => {
+    return legend ? resolveDensityLegendColors(spec, legend) : undefined;
+  }, [legend, spec]);
+
   /**
    * When several legends stack inside one shared position group, every card
    * after the first gets a top margin so the cards don't touch.
@@ -434,7 +357,12 @@ export const GeoVisLegend = ({
   }, [legend, noPositionWrap]);
 
   if (!effectiveLegend) return null;
-  if (!hasLegendContent(effectiveLegend, items, circleItems)) return null;
+  if (
+    !densityColors?.length &&
+    !hasLegendContent(effectiveLegend, items, circleItems)
+  ) {
+    return null;
+  }
 
   const referenceContent = buildReferenceContent(sourceNode, effectiveLegend);
 
@@ -451,6 +379,7 @@ export const GeoVisLegend = ({
       legend={effectiveLegend}
       items={items}
       circleItems={circleItems}
+      densityColors={densityColors}
       referenceContent={referenceContent}
       extraStyle={extraStyle}
     />

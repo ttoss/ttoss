@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [11.3.0](https://github.com/ttoss/ttoss/compare/%40docs%2Fstorybook%4011.2.1...%40docs%2Fstorybook%4011.3.0) (2026-11-04)
+
+### Features
+
+- **geovis:** heatmap colours, zoom stops, property weight and densit… ([#1373](https://github.com/ttoss/ttoss/issues/1373)) ([3715b61](https://github.com/ttoss/ttoss/commit/3715b610c051451fa75bd733e43e4f21d56a4efb))
+
 ## 11.2.1 (2026-11-03)
 
 **Note:** Version bump only for package @docs/storybook

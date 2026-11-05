@@ -289,6 +289,22 @@ export const resolveSourceLayerFor = (
 };
 
 /**
+ * A heatmap whose `heatmapColors` was removed builds no `heatmap-color`, and a
+ * paint key left out is never written: `null` resets the ramp it was drawn in
+ * to MapLibre's own.
+ */
+const resetUnsetHeatmapColor = (
+  map: maplibregl.Map,
+  desiredLayer: maplibregl.LayerSpecification
+): void => {
+  if (desiredLayer.type !== 'heatmap') return;
+  if (desiredLayer.paint && 'heatmap-color' in desiredLayer.paint) return;
+  // MapLibre resets a paint property set to `null`; its types only say so for
+  // `undefined`.
+  map.setPaintProperty(desiredLayer.id, 'heatmap-color', null as never);
+};
+
+/**
  * Recomputes one already-mounted layer's paint from its current spec-driven
  * bindings (`mapData`, legends, `sizeBy`) and writes every property via
  * `setPaintProperty`. This is the same recomputation `upsertLayers` performs
@@ -317,6 +333,7 @@ export const reapplyLayerPaint = (
   if (mountedType !== undefined && mountedType !== desiredLayer.type) return;
   const paint = (desiredLayer as { paint?: Record<string, unknown> }).paint;
   if (!paint) return;
+  resetUnsetHeatmapColor(map, desiredLayer);
   for (const [property, value] of Object.entries(paint)) {
     if (property === 'fill-extrusion-height') {
       // Eased, not written: MapLibre would land a new height expression at once.

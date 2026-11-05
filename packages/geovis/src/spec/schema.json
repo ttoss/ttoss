@@ -1019,6 +1019,22 @@
         }
       }
     },
+    "DensityColorBy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "const": "density"
+        },
+        "lowLabel": {
+          "type": "string"
+        },
+        "highLabel": {
+          "type": "string"
+        }
+      }
+    },
     "ColorBy": {
       "oneOf": [
         {
@@ -1026,6 +1042,9 @@
         },
         {
           "$ref": "#/$defs/QuantitativeColorBy"
+        },
+        {
+          "$ref": "#/$defs/DensityColorBy"
         }
       ]
     },
