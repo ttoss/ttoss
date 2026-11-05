@@ -22,6 +22,7 @@ export {
 export {
   type PushPermissionState,
   type PushSubscriptionData,
+  unsubscribePushNotifications,
   urlBase64ToUint8Array,
   usePushNotifications,
   type UsePushNotificationsOptions,

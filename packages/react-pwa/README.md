@@ -105,6 +105,26 @@ const PushToggle = () => {
 
 Pass the same `enabled` as the registration: where no worker is registered the hook reports `unsupported`. On iOS, Web Push works only once the app is added to the home screen (iOS 16.4 and later).
 
+### A browser shared by several accounts
+
+A browser subscription outlives the session that created it. When several accounts can sign in on one browser, handle both ends:
+
+- Pass `syncExisting: true`, so on mount the hook hands a subscription the browser already holds to `onSubscribe` again. An `onSubscribe` that upserts on `endpoint` then moves it to whoever is signed in now. `isSubscribed` turns `true` only once that resolves.
+- Call `unsubscribePushNotifications` before signing out, so the browser stops receiving the previous account's pushes. It works outside React and resolves `false` when there was nothing to remove.
+
+```ts
+import { unsubscribePushNotifications } from '@ttoss/react-pwa';
+
+const signOutEverywhere = async () => {
+  await unsubscribePushNotifications({
+    onUnsubscribe: ({ endpoint }) => {
+      return api.delete('/push-subscriptions', { endpoint });
+    },
+  });
+  await signOut();
+};
+```
+
 The server sends a JSON payload, and every field is optional:
 
 ```ts

@@ -35,6 +35,14 @@ export type UsePushNotificationsOptions = {
    * the hook reports `unsupported`. Defaults to `true`.
    */
   enabled?: boolean;
+  /**
+   * When `true`, a subscription the browser already holds is handed to
+   * `onSubscribe` again on mount, so the app stores it under whoever is
+   * signed in now: a browser outlives sessions, and another account may have
+   * subscribed it. `isSubscribed` turns `true` only once that resolves.
+   * Defaults to `false`.
+   */
+  syncExisting?: boolean;
 };
 
 /**
@@ -129,21 +137,31 @@ const subscribeBrowser = async ({
 };
 
 /**
- * Removes the subscription from the app first, then from the browser, so a
- * failure leaves both still subscribed.
+ * Removes this browser's subscription, from the app first and then from the
+ * browser, so a failure leaves both still subscribed. Works outside React:
+ * call it before signing out, so a shared browser stops receiving the
+ * previous account's pushes. Resolves whether there was one to remove.
  */
-const unsubscribeBrowser = async ({
+export const unsubscribePushNotifications = async ({
   onUnsubscribe,
 }: {
   onUnsubscribe: UsePushNotificationsOptions['onUnsubscribe'];
-}) => {
-  const registration = await navigator.serviceWorker.ready;
-  const subscription = await registration.pushManager.getSubscription();
-
-  if (subscription) {
-    await onUnsubscribe({ endpoint: subscription.endpoint });
-    await subscription.unsubscribe();
+}): Promise<boolean> => {
+  if (!isPushSupported()) {
+    return false;
   }
+
+  const registration = await navigator.serviceWorker.getRegistration();
+  const subscription = await registration?.pushManager.getSubscription();
+
+  if (!subscription) {
+    return false;
+  }
+
+  await onUnsubscribe({ endpoint: subscription.endpoint });
+  await subscription.unsubscribe();
+
+  return true;
 };
 
 /**
@@ -206,6 +224,7 @@ export const usePushNotifications = ({
   onUnsubscribe,
   onError,
   enabled = true,
+  syncExisting = false,
 }: UsePushNotificationsOptions) => {
   const isSupported = enabled && isPushSupported();
 
@@ -238,7 +257,10 @@ export const usePushNotifications = ({
       .then((registration) => {
         return registration?.pushManager.getSubscription() ?? null;
       })
-      .then((subscription) => {
+      .then(async (subscription) => {
+        if (subscription && syncExisting) {
+          await callbacks.current.onSubscribe(toSubscriptionData(subscription));
+        }
         if (!cancelled) {
           setIsSubscribed(!!subscription);
         }
@@ -248,7 +270,7 @@ export const usePushNotifications = ({
     return () => {
       cancelled = true;
     };
-  }, [isSupported, fail]);
+  }, [isSupported, syncExisting, fail]);
 
   const subscribe = React.useCallback(() => {
     return run(async () => {
@@ -265,7 +287,7 @@ export const usePushNotifications = ({
 
   const unsubscribe = React.useCallback(() => {
     return run(async () => {
-      await unsubscribeBrowser({
+      await unsubscribePushNotifications({
         onUnsubscribe: (subscription) => {
           return callbacks.current.onUnsubscribe(subscription);
         },

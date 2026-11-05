@@ -1,5 +1,9 @@
 import { act, renderHook, waitFor } from '@ttoss/test-utils/react';
-import { urlBase64ToUint8Array, usePushNotifications } from 'src/index';
+import {
+  unsubscribePushNotifications,
+  urlBase64ToUint8Array,
+  usePushNotifications,
+} from 'src/index';
 
 // A real P-256 public key, base64url encoded without padding.
 const VAPID_PUBLIC_KEY =
@@ -287,4 +291,98 @@ test('a failed subscription lookup is reported', async () => {
     expect(onError).toHaveBeenCalled();
   });
   expect(result.current.error?.message).toBe('SecurityError');
+});
+
+test('syncExisting hands an existing subscription to the app again on mount', async () => {
+  const subscription = createSubscription();
+  mockPushBrowser({ permission: 'granted', existing: subscription });
+
+  const { result, onSubscribe } = renderPushHook({ syncExisting: true });
+
+  await waitFor(() => {
+    expect(result.current.isSubscribed).toBe(true);
+  });
+  expect(onSubscribe).toHaveBeenCalledWith({
+    endpoint: subscription.endpoint,
+    keys: { p256dh: 'p256dh-key', auth: 'auth-key' },
+    userAgent: navigator.userAgent,
+  });
+});
+
+test('syncExisting reports not subscribed when the app fails to store it', async () => {
+  const subscription = createSubscription();
+  mockPushBrowser({ permission: 'granted', existing: subscription });
+  const onSubscribe = jest.fn().mockRejectedValue(new Error('offline'));
+
+  const { result, onError } = renderPushHook({
+    syncExisting: true,
+    onSubscribe,
+  });
+
+  await waitFor(() => {
+    expect(onError).toHaveBeenCalled();
+  });
+  expect(result.current.isSubscribed).toBe(false);
+  expect(result.current.error?.message).toBe('offline');
+  // Kept: subscribing again reuses it, and the failure may be transient.
+  expect(subscription.unsubscribe).not.toHaveBeenCalled();
+});
+
+test('syncExisting stores nothing when the browser holds no subscription', async () => {
+  const { pushManager } = mockPushBrowser({ permission: 'granted' });
+
+  const { onSubscribe } = renderPushHook({ syncExisting: true });
+
+  await waitFor(() => {
+    expect(pushManager.getSubscription).toHaveBeenCalled();
+  });
+  expect(onSubscribe).not.toHaveBeenCalled();
+});
+
+test('without syncExisting an existing subscription is only read', async () => {
+  mockPushBrowser({ permission: 'granted', existing: createSubscription() });
+
+  const { result, onSubscribe } = renderPushHook();
+
+  await waitFor(() => {
+    expect(result.current.isSubscribed).toBe(true);
+  });
+  expect(onSubscribe).not.toHaveBeenCalled();
+});
+
+describe('unsubscribePushNotifications', () => {
+  test('removes the subscription from the app, then from the browser', async () => {
+    const subscription = createSubscription();
+    mockPushBrowser({ permission: 'granted', existing: subscription });
+    const onUnsubscribe = jest.fn().mockResolvedValue(undefined);
+
+    await expect(unsubscribePushNotifications({ onUnsubscribe })).resolves.toBe(
+      true
+    );
+
+    expect(onUnsubscribe).toHaveBeenCalledWith({
+      endpoint: subscription.endpoint,
+    });
+    expect(subscription.unsubscribe).toHaveBeenCalled();
+  });
+
+  test('resolves false where the browser has no Push API', async () => {
+    const onUnsubscribe = jest.fn();
+
+    await expect(unsubscribePushNotifications({ onUnsubscribe })).resolves.toBe(
+      false
+    );
+    expect(onUnsubscribe).not.toHaveBeenCalled();
+  });
+
+  test('resolves false when no service worker is registered', async () => {
+    const { serviceWorker } = mockPushBrowser();
+    serviceWorker.getRegistration.mockResolvedValue(undefined);
+    const onUnsubscribe = jest.fn();
+
+    await expect(unsubscribePushNotifications({ onUnsubscribe })).resolves.toBe(
+      false
+    );
+    expect(onUnsubscribe).not.toHaveBeenCalled();
+  });
 });
