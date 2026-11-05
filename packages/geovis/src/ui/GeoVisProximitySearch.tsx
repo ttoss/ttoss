@@ -3,13 +3,14 @@ import type { Map as MapLibreMap } from 'maplibre-gl';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import { type ProximityState, useProximitySearch } from '../react/proximity';
-import { circleRing, metresPerPixel } from '../react/proximity.geo';
+import {
+  type ProximityHit,
+  type ProximityState,
+  useProximitySearch,
+} from '../react/proximity';
+import { circleRing } from '../react/proximity.geo';
 import { usePublishProximitySearch } from '../react/proximityContext';
-import type {
-  ProximityCategory,
-  ProximitySearch,
-} from '../spec/types.proximity';
+import type { ProximitySearch } from '../spec/types.proximity';
 import { useLoadingSweep, useRadiusArea } from './GeoVisProximitySearch.area';
 import {
   type AnyPointMode,
@@ -18,7 +19,7 @@ import {
 } from './GeoVisProximitySearch.controls';
 import { FocusPin } from './GeoVisProximitySearch.focusPin';
 import { COMPACT_WIDTH, useCircleFrame } from './GeoVisProximitySearch.frame';
-import { HitPin } from './GeoVisProximitySearch.hitPin';
+import { HitCard, HitPin } from './GeoVisProximitySearch.hitPin';
 import {
   useFocusedPinLook,
   useFocusOnSearchedPin,
@@ -32,6 +33,7 @@ import {
   RadiusLabels,
   YouMarker,
 } from './GeoVisProximitySearch.parts';
+import { useSearchPins } from './GeoVisProximitySearch.pins';
 import { StatusBar } from './GeoVisProximitySearch.statusBar';
 import { KEYFRAMES_CSS } from './GeoVisProximitySearch.styles';
 
@@ -45,15 +47,6 @@ const useNouns = (config: ProximitySearch) => {
     one: config.labels?.one ?? intl.formatMessage(messages.resultOne),
     other: config.labels?.other ?? intl.formatMessage(messages.resultOther),
   };
-};
-
-/** The spec's categories, by id. */
-const categoriesById = (config: ProximitySearch) => {
-  return new Map<string, ProximityCategory>(
-    (config.categories ?? []).map((category) => {
-      return [category.id, category];
-    })
-  );
 };
 
 /**
@@ -112,16 +105,37 @@ const usePublishSearch = ({
 };
 
 /**
- * The places the map draws: those within the radius shown and, while a
- * category is picked, of that category only.
+ * What an HTML pin, or the open place's card, is drawn from: the place, its
+ * category, where it is on screen from the searched point, the pins' scale,
+ * and the card's texts.
  */
-const shownHits = (state: ProximityState) => {
-  return state.hits.filter((hit) => {
-    return (
-      hit.distance <= state.radius &&
-      (state.categoryId === null || hit.categoryId === state.categoryId)
-    );
-  });
+const hitPropsFor = ({
+  hit,
+  map,
+  originPx,
+  pins,
+  intl,
+  format,
+}: {
+  hit: ProximityHit;
+  map: MapLibreMap;
+  originPx: { x: number; y: number };
+  pins: ReturnType<typeof useSearchPins>;
+  intl: ReturnType<typeof useI18n>['intl'];
+  format: (metres: number) => string;
+}) => {
+  const point = map.project(hit.lngLat);
+  return {
+    hit,
+    category: pins.categories.get(hit.categoryId ?? ''),
+    x: point.x - originPx.x,
+    y: point.y - originPx.y,
+    scale: pins.scale,
+    distance: intl.formatMessage(messages.fromPoint, {
+      distance: format(hit.distance),
+    }),
+    closeLabel: intl.formatMessage(messages.closeCard),
+  };
 };
 
 /**
@@ -235,6 +249,7 @@ export const GeoVisProximitySearch = ({
     radius: state.radius,
     loading: state.status === 'loading',
   });
+  const pins = useSearchPins({ map, config, state, select });
 
   const controls = (
     <ColumnControls
@@ -251,15 +266,13 @@ export const GeoVisProximitySearch = ({
   if (!map || width === 0 || !origin) return controls;
 
   const originPx = map.project(origin);
-  const pixelsPerMetre = 1 / metresPerPixel(origin[1], map.getZoom());
-  const R = state.radius * pixelsPerMetre;
-  const scale = R < 120 ? 0.8 : 1;
-  const categories = categoriesById(config);
   const visible = state.hits.filter((hit) => {
     return hit.distance <= state.radius;
   });
-  const shown = shownHits(state);
   const fresh = new Set(state.fresh);
+  const hitProps = (hit: ProximityHit) => {
+    return hitPropsFor({ hit, map, originPx, pins, intl, format });
+  };
 
   const search = ReactDOM.createPortal(
     <>
@@ -285,28 +298,29 @@ export const GeoVisProximitySearch = ({
           }}
           formatRadius={format}
         />
-        {shown.map((hit) => {
-          const point = map.project(hit.lngLat);
+        {/* The nearest places fall in as HTML pins, then join the map's
+            layer of pins; the open place's card is HTML. */}
+        {pins.falling.map((hit) => {
           return (
             <HitPin
               key={`s${state.request}-${hit.id}`}
-              hit={hit}
-              category={categories.get(hit.categoryId ?? '')}
-              x={point.x - originPx.x}
-              y={point.y - originPx.y}
-              scale={scale}
+              {...hitProps(hit)}
               selected={state.selectedId === hit.id}
               late={fresh.has(hit.id)}
-              distance={intl.formatMessage(messages.fromPoint, {
-                distance: format(hit.distance),
-              })}
-              closeLabel={intl.formatMessage(messages.closeCard)}
               onSelect={() => {
                 select(hit.id);
               }}
             />
           );
         })}
+        {pins.selectedOnLayer && (
+          <HitCard
+            {...hitProps(pins.selectedOnLayer)}
+            onClose={() => {
+              select(pins.selectedOnLayer!.id);
+            }}
+          />
+        )}
         <OriginMarker state={state} clear={clear} />
       </div>
       <div

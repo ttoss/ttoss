@@ -44,6 +44,8 @@ const placeLayer = ({
 /** The sources and layers added to the map, as the searched area adds its own. */
 const buildStyle = () => {
   const sources = new Map<string, { spec: unknown; setData: jest.Mock }>();
+  /** The pin images registered on the map, as the search's pins add theirs. */
+  const images = new Set<string>();
   const layers = new Map<string, MockLayer>([
     // The basemap's labels, which the area goes beneath.
     ['labels', { id: 'labels', type: 'symbol' }],
@@ -77,6 +79,18 @@ const buildStyle = () => {
     getStyle: () => {
       return { layers: [...layers.values()] };
     },
+    images,
+    hasImage: (id: string) => {
+      return images.has(id);
+    },
+    addImage: jest.fn((id: string) => {
+      images.add(id);
+    }),
+    removeImage: jest.fn((id: string) => {
+      images.delete(id);
+    }),
+    setLayoutProperty: jest.fn(),
+    setPaintProperty: jest.fn(),
   };
 };
 
@@ -99,6 +113,18 @@ const buildEvents = () => {
           return known !== handler;
         })
       );
+    }),
+    once: jest.fn((event: string, handler: Handler) => {
+      const wrapped: Handler = (payload) => {
+        handlers.set(
+          event,
+          (handlers.get(event) ?? []).filter((known) => {
+            return known !== wrapped;
+          })
+        );
+        handler(payload);
+      };
+      handlers.set(event, [...(handlers.get(event) ?? []), wrapped]);
     }),
     fire: (event: string, payload?: unknown) => {
       for (const handler of handlers.get(event) ?? []) handler(payload);
@@ -172,6 +198,10 @@ export const buildMap = ({ width }: { width: number }) => {
       return 14;
     },
     easeTo: jest.fn(),
+    /** Whether the camera is flying: the circle waits for it to land. */
+    isMoving: jest.fn(() => {
+      return false;
+    }),
     getFeatureState: () => {
       return {};
     },

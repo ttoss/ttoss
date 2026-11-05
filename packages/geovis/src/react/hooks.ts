@@ -7,6 +7,7 @@ import * as React from 'react';
 
 import type { GeoVisRuntime } from '../runtime/createRuntime';
 import type { VisualizationSpec } from '../spec/types';
+import { AREA_IDS } from '../ui/GeoVisProximitySearch.area';
 import { createPinElement } from '../ui/pinElement';
 import type { MapClickInfo, MapHoverInfo } from './contexts';
 import { useGeoVis } from './contexts';
@@ -54,7 +55,10 @@ const EMPTY_HOVER_TRACKING: DecodedHoverTracking = {
 const usePointerLayerIds = (spec: VisualizationSpec): Set<string> => {
   // Joined, so an inline array in the spec does not re-run the memo on every
   // render.
-  const proximityLayerKey = spec.proximitySearch?.layers?.join(',') ?? '';
+  // The search's own pins too, once a search drew them.
+  const proximityLayerKey = spec.proximitySearch
+    ? [...(spec.proximitySearch.layers ?? []), AREA_IDS.hits].join(',')
+    : '';
   return React.useMemo(() => {
     return buildPointerLayerIds(
       spec.layers,

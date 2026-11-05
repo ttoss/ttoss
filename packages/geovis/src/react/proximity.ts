@@ -12,8 +12,24 @@ import { distanceInMetres, zoomForRadius } from './proximity.geo';
 /** The radii a search offers when the spec declares none, in metres. */
 export const DEFAULT_PROXIMITY_RADII = [1000, 2000, 3000];
 
-/** How long the camera takes to frame a new radius, in milliseconds. */
-const FRAME_DURATION_MS = 450;
+/**
+ * How long the camera takes to frame a search, in milliseconds: a base, and
+ * more for each zoom level it travels, within bounds — a nearby radius
+ * frames quickly, while a jump from the whole city to a block takes long
+ * enough for the eye to follow and the map to load its tiles on the way.
+ */
+const FRAME_MS = { base: 300, perZoomLevel: 200, min: 500, max: 1500 };
+
+/** The time a framing of `zoomLevels` levels takes, in milliseconds. */
+export const frameDuration = (zoomLevels: number) => {
+  const { base, perZoomLevel, min, max } = FRAME_MS;
+  return Math.min(max, Math.max(min, base + perZoomLevel * zoomLevels));
+};
+
+/** Slow in, slow out: the camera neither lurches off nor slams to a stop. */
+const easeInOutCubic = (t: number) => {
+  return t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2;
+};
 
 /**
  * A place the search found, with what drawing it needs: its distance from the
@@ -116,17 +132,23 @@ type StateHandle = {
  */
 export type CircleFrame = { pixels: number; offset: [number, number] };
 
-/** Eases the camera to frame a radius around a point as `frame` says. */
+/**
+ * Eases the camera to frame a radius around a point as `frame` says, taking
+ * longer the more zoom levels it travels (see {@link frameDuration}).
+ */
 const useFrameRadius = (map: MapLibreMap | null, frame: CircleFrame) => {
   const { pixels } = frame;
   const [dx, dy] = frame.offset;
   return React.useCallback(
     (origin: [number, number], radius: number) => {
-      map?.easeTo({
+      if (!map) return;
+      const zoom = zoomForRadius({ lat: origin[1], metres: radius, pixels });
+      map.easeTo({
         center: origin,
-        zoom: zoomForRadius({ lat: origin[1], metres: radius, pixels }),
+        zoom,
         offset: [dx, dy],
-        duration: FRAME_DURATION_MS,
+        duration: frameDuration(Math.abs(zoom - map.getZoom())),
+        easing: easeInOutCubic,
       });
     },
     [map, pixels, dx, dy]

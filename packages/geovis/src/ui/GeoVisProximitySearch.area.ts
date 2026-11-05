@@ -13,7 +13,10 @@ import {
 } from '../react/proximity.geo';
 import { ACCENT, ACCENT_RGB } from './palette';
 
-/** The ids of the sources and layers the searched area is drawn with. */
+/**
+ * The ids of the sources and layers the search is drawn with: the searched
+ * area, its sweep, and the pins of the places found.
+ */
 export const AREA_IDS = {
   source: 'geovis-proximity-area',
   fill: 'geovis-proximity-area-fill',
@@ -21,6 +24,8 @@ export const AREA_IDS = {
   dashes: 'geovis-proximity-area-dashes',
   sweepSource: 'geovis-proximity-sweep',
   sweep: 'geovis-proximity-sweep',
+  hitsSource: 'geovis-proximity-hits',
+  hits: 'geovis-proximity-hits',
 } as const;
 
 /** How long the circle takes to grow in, in milliseconds. */
@@ -93,12 +98,13 @@ const areaData = ({
   return { type: 'FeatureCollection' as const, features };
 };
 
-/** The search's own layers, bottom to top. */
+/** The search's own layers, bottom to top: the pins over the circle. */
 const OWN_LAYER_IDS: string[] = [
   AREA_IDS.fill,
   AREA_IDS.outline,
   AREA_IDS.dashes,
   AREA_IDS.sweep,
+  AREA_IDS.hits,
 ];
 
 /** The style's layers but the search's own. */
@@ -118,7 +124,7 @@ const foreignLayers = (map: MapLibreMap) => {
  * Not simply the style's first `symbol` layer: an app's choropleth is drawn
  * above the basemap's labels, and an area beneath those would be hidden by it.
  */
-const areaBeforeId = (map: MapLibreMap) => {
+export const areaBeforeId = (map: MapLibreMap) => {
   const layers = foreignLayers(map);
   const lastShape = layers.findLastIndex((layer) => {
     return layer.type !== 'symbol';
@@ -127,10 +133,27 @@ const areaBeforeId = (map: MapLibreMap) => {
 };
 
 /**
+ * Where one of the search's own layers goes: beneath the next of them already
+ * on the map, in {@link OWN_LAYER_IDS}' order, else where the area goes (see
+ * {@link areaBeforeId}). The search's layers are added at different moments —
+ * the circle only once the camera has framed it, the pins as soon as a search
+ * starts — so each slots in by this order rather than by when it comes: a
+ * circle added last must still go under the pins.
+ */
+export const ownLayerBeforeId = (map: MapLibreMap, id: string) => {
+  const later = OWN_LAYER_IDS.slice(OWN_LAYER_IDS.indexOf(id) + 1).find(
+    (candidate) => {
+      return map.getLayer(candidate) != null;
+    }
+  );
+  return later ?? areaBeforeId(map);
+};
+
+/**
  * Moves the search's layers back above the app's areas when a layer the app
  * added later — a choropleth, a heatmap — landed over them.
  */
-const keepOwnLayersOnTop = (map: MapLibreMap) => {
+export const keepOwnLayersOnTop = (map: MapLibreMap) => {
   const ids = (map.getStyle()?.layers ?? []).map((layer) => {
     return layer.id;
   });
@@ -189,9 +212,10 @@ const ensureAreaLayers = (map: MapLibreMap) => {
       data: { type: 'FeatureCollection', features: [] },
     });
   }
-  const beforeId = areaBeforeId(map);
   for (const layer of AREA_LAYERS) {
-    if (!map.getLayer(layer.id)) map.addLayer(layer, beforeId);
+    if (!map.getLayer(layer.id)) {
+      map.addLayer(layer, ownLayerBeforeId(map, layer.id));
+    }
   }
   keepOwnLayersOnTop(map);
 };
@@ -201,7 +225,7 @@ const ensureAreaLayers = (map: MapLibreMap) => {
  * replaced it — when MapLibre refuses new sources: the next `styledata` event
  * tries again. Not `isStyleLoaded()`, which stays false while tiles load.
  */
-const addWhenStyleReady = (add: () => void) => {
+export const addWhenStyleReady = (add: () => void) => {
   try {
     add();
     return true;
@@ -211,7 +235,7 @@ const addWhenStyleReady = (add: () => void) => {
 };
 
 /** Removes whatever of the area's layers and sources the map holds. */
-const removeLayers = (
+export const removeLayers = (
   map: MapLibreMap,
   layerIds: string[],
   sourceId: string
@@ -234,7 +258,8 @@ const removeAreaLayers = (map: MapLibreMap) => {
  * Draws the searched area on the map itself — a polygon of the radius in
  * metres, with the rings of the smaller radii and the radius line — so it
  * tilts and turns with the map. A new search grows the circle in from the
- * point; another radius redraws it at once. The layers go when the search
+ * point, once the camera has settled on it; another radius redraws it at
+ * once. The layers go when the search
  * clears, and come back after a new basemap replaces the style.
  *
  * @param params.origin - The searched point, `[lng, lat]`; `null` while idle.
@@ -264,7 +289,7 @@ export const useRadiusArea = ({
     const rings = radiiKey.split(',').map(Number);
     let frame = 0;
     let grown = grownRef.current === request ? 1 : 0;
-    const startedAt = performance.now();
+    let startedAt = performance.now();
     const draw = () => {
       if (
         !addWhenStyleReady(() => {
@@ -281,11 +306,20 @@ export const useRadiusArea = ({
       if (grown < 1) frame = requestAnimationFrame(grow);
       else grownRef.current = request;
     };
-    if (grown < 1) grow();
-    else draw();
+    // A new search grows its circle once the camera has framed it: growing it
+    // while the camera flies would redraw the source every frame of the
+    // flight, on top of the tiles the map loads on the way.
+    const growOnceSettled = () => {
+      startedAt = performance.now();
+      grow();
+    };
+    if (grown >= 1) draw();
+    else if (map.isMoving()) map.once('moveend', growOnceSettled);
+    else growOnceSettled();
     map.on('styledata', draw);
     return () => {
       cancelAnimationFrame(frame);
+      map.off('moveend', growOnceSettled);
       map.off('styledata', draw);
     };
   }, [map, lng, lat, radius, radiiKey, request]);
@@ -417,7 +451,7 @@ export const useLoadingSweep = ({
             source: AREA_IDS.sweepSource,
             paint: { 'raster-fade-duration': 0 },
           },
-          areaBeforeId(map)
+          ownLayerBeforeId(map, AREA_IDS.sweep)
         );
       });
     };

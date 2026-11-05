@@ -753,10 +753,12 @@ describe('the searched area on the map', () => {
 
     const order = [...mockMap.layers.keys()];
     expect(order.indexOf(AREA_IDS.fill)).toBeGreaterThan(order.indexOf('heat'));
-    expect(order.slice(-3)).toEqual([
+    // The circle back on top, and the places' pins over it.
+    expect(order.slice(-4)).toEqual([
       AREA_IDS.fill,
       AREA_IDS.outline,
       AREA_IDS.dashes,
+      AREA_IDS.hits,
     ]);
   });
 

@@ -8,6 +8,7 @@ import type { ProximityState } from '../react/proximity';
 import type { PinFocus } from '../runtime/adapter';
 import type { ProximitySearch } from '../spec/types.proximity';
 import { AnyPointButton } from './GeoVisProximitySearch.anyPoint';
+import { AREA_IDS } from './GeoVisProximitySearch.area';
 import { useSearchOnClick } from './GeoVisProximitySearch.hooks';
 import {
   canLocate,
@@ -181,13 +182,17 @@ export const ColumnControls = ({
 const useOwnClickLayerIds = () => {
   const { spec } = useGeoVis();
   return React.useMemo(() => {
-    return spec.layers
-      .filter((layer) => {
-        return layer.click != null || layer.clickAnchor != null;
-      })
-      .map((layer) => {
-        return layer.id;
-      });
+    return [
+      ...spec.layers
+        .filter((layer) => {
+          return layer.click != null || layer.clickAnchor != null;
+        })
+        .map((layer) => {
+          return layer.id;
+        }),
+      // The places' pins: a click on one opens its card.
+      AREA_IDS.hits,
+    ];
   }, [spec.layers]);
 };
 
