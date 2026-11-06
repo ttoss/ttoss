@@ -12,7 +12,7 @@ How work in a software project goes from a signal to a closed task, once, for ev
 The rules of any work are GTF's, cited below by id. Three are the delivery process's own:
 
 1. **One owner per transition.** Only a stage's owner changes the task's state in that stage. Two owners drift apart silently, each acting on a state the other already changed.
-2. **Rounds have a limit.** Each reason a change goes back (red checks, findings) gets the automatic rounds the `Merge rule` allows; the next goes to a person ([The author never verifies its own work](./principles.md#the-author-never-verifies-its-own-work)).
+2. **Rounds have a limit.** Each reason a change goes back (red checks, findings) gets the automatic rounds the `Merge rule` allows; the next goes to a person, and so do findings the `Merge rule` gives to a person, with no round, since a round there spends a child and its checks to reach the same person ([The author never verifies its own work](./principles.md#the-author-never-verifies-its-own-work)).
 3. **What ages fastest goes first.** Work is ordered by its cost of delay, read through a fixed proxy and never estimated per task: the stage the work is in, and the one word a person may say about it ([Cost of delay orders the work](./principles.md#cost-of-delay-orders-the-work-read-from-a-proxy-nobody-estimates)). So: a task at `very_high` priority, bug or not and in whatever stage it is; then a bug (a task tagged `bug`) at `high`; then integrating, with the conflicts that hold it; then releasing what integrated and verifying it; then the fix rounds; then the reviews the agents run; then the scheduled tasks whose date came with no integrated change behind them; then new work. Every other priority a person set orders the work inside a stage, never across stages.
 
 ## Words
@@ -94,6 +94,7 @@ The tick applies these on every tick, under the standing decision:
 | The change's checks pass with no verdict for its head, and `Review` names a reviewer outside the tick | waits: a missing verdict is never a passed gate |
 | The gates pass (a verdict for the head, or `Review` none) and the `Merge rule` lets the agents integrate | integrates the change, when the code host requires that review; otherwise moves the task to `waiting` on a person, naming what is ready |
 | Checks red, or findings, within the round limit | moves the task to `active` with the log or the findings in the body, for a fresh child on the same change |
+| Findings the `Merge rule` gives to a person (a finding only a person can act on, or a change it reserves to a person) | moves the task to `waiting` on that person, naming the findings, with no round |
 | The round limit reached (rounds are the task's fix runs; a red caused outside the change, such as a broken default branch or infrastructure, does not count) | moves the task to `waiting` on a person |
 | A review request lost: no verdict and no claim `Review grace` after the checks passed, or a claim that outlived it with no run holding the task | applies the `Review` fallback |
 | The change needs what the `Merge rule` reserves to a person | moves the task to `waiting` on that person, naming what is ready |
