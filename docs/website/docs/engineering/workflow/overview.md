@@ -53,7 +53,7 @@ flowchart TB
 
 ## Built on GTF and Flow
 
-GTF holds what is true of any work, this workflow what is true of software delivery, the [ttoss skills](https://github.com/ttoss/skills) how an agent carries it out, and a project's [parameters](./parameters.md) what is true of one product; [precedence](https://github.com/ttoss/skills/blob/main/skills/flow-setup/SKILL.md#precedence) says what wins when two disagree. The skills read these pages from this repository's default branch, so a change here reaches every agent at its next run. [Principles](./principles.md) holds the workflow's own principles, each with the pillars it rests on and the rules that rest on it.
+GTF holds what is true of any work and this workflow what is true of software delivery; the [ttoss skills](https://github.com/ttoss/skills) carry it out, and [precedence](https://github.com/ttoss/skills/blob/main/skills/flow-setup/SKILL.md#precedence) says what wins when two levels disagree. The skills read these pages from this repository's default branch, so a change here reaches every agent at its next run. [Principles](./principles.md) holds the workflow's own principles, each with the pillars it rests on and the rules that rest on it.
 
 ## Adopting It
 
