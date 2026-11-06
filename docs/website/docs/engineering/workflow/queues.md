@@ -37,11 +37,11 @@ A decision holds only the work it blocks, so it never counts against the release
 
 ## Reading both
 
-| | Decision queue | Release queue |
-| --- | --- | --- |
-| Holds | choices work waits on before it starts | implemented work not yet in effect for the customer |
-| Stages | Decide | Gates, Integrate, Release, Verify |
-| Kept small by | decision rules that answer before a person is asked | the limit that holds new work upstream |
-| The Chase lists | only while the release queue is within its limit | always, what only a person can move |
+|                 | Decision queue                                      | Release queue                                       |
+| --------------- | --------------------------------------------------- | --------------------------------------------------- |
+| Holds           | choices work waits on before it starts              | implemented work not yet in effect for the customer |
+| Stages          | Decide                                              | Gates, Integrate, Release, Verify                   |
+| Kept small by   | decision rules that answer before a person is asked | the limit that holds new work upstream              |
+| The Chase lists | only while the release queue is within its limit    | always, what only a person can move                 |
 
 Each day's Chase is the short list of both. Every week the [Audit](./routines.md#standard-routines) shows the flow's health, each person's arrivals against departures in the states only their answer frees, and a person's queue that grew two weeks running opens its report.
