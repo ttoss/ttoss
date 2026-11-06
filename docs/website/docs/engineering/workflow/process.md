@@ -41,6 +41,37 @@ The process names acts, not tools, so it reads the same on any code host and for
 
 A stage a project, or a [delivery kind](#delivery-kinds), answers with "none" is skipped: with no review, the gates are the checks; with no release, integrated is in effect once its pipeline passes. A gate may also run after integrating, as in trunk-based work: its failure is the "pipeline red after integrating" transition below.
 
+## Where work waits
+
+Agents implement faster than people answer, so the work that waits in this process waits on a person, in one of two queues on either side of Implement. Everything else the agents drain on their own. Why each is named, counted and held by its own rule is in [Principles](./principles.md#a-persons-attention-is-the-critical-queue).
+
+```mermaid
+flowchart LR
+    S([Signal]) --> D
+    subgraph DQ["Decision queue: a person answers"]
+      D["choices the work<br/>waits on"]
+    end
+    D --> R["Ready"]
+    R --> I["Implement<br/>(agents)"]
+    I --> Q
+    subgraph RQ["Release queue: a person moves"]
+      Q["review · integrate · validate<br/>· remove the flag"]
+    end
+    Q --> C([In effect for the customer])
+    Q -. "full: new work waits" .-> R
+```
+
+The **release queue** is every change between its implementation and its release to the customer in production, the stages from Gates to Verify: a change open past draft, at its gates or with a person to integrate it, and an integrated change whose task waits on a person to see it in effect, such as a validation or a feature flag's removal. Its limit is the [`Release queue`](./parameters.md#runtime) parameter. Once the queue reaches it, the tick starts no new work and spends its runs on what drains the queue, by [rule 3](#three-rules); the Chase lists the items in it that only a person can move, in the same order and as many as the limit ([The release queue holds new work upstream](./principles.md#the-release-queue-holds-new-work-upstream)).
+
+The **decision queue** is every open choice that holds work before it can start, the Decide stage: a `decision` that `blocks` the tasks it holds, or a task waiting on a person for an answer its brief needs. Most choices never enter it, because the [`Decisions` default](./parameters.md#the-decisions-default) and the project's standing decision answer them by rule. A decision holds only the work it blocks, so it never counts against the release queue, and the Chase lists the decisions the team owes only while the release queue is within its limit, as many as that limit ([A choice is answered by a rule where one exists](./principles.md#a-choice-is-answered-by-a-rule-where-one-exists-and-by-a-person-when-the-work-needs-it)).
+
+| | Decision queue | Release queue |
+| --- | --- | --- |
+| Holds | choices work waits on before it starts | implemented work not yet in effect for the customer |
+| Stages | Decide | Gates, Integrate, Release, Verify |
+| Kept small by | decision rules that answer before a person is asked | the limit that holds new work upstream |
+| The Chase lists | only while the release queue is within its limit | always, what only a person can move |
+
 ## Who writes the task
 
 - An owner that writes to Flow writes its own stage's end: Intake, Implement, a release step run by a child, Verify.
