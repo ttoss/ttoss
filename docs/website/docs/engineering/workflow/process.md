@@ -43,7 +43,7 @@ A stage a project, or a [delivery kind](#delivery-kinds), answers with "none" is
 
 ## Where work waits
 
-Agents implement faster than people answer, so the work that waits in this process waits on a person, in one of two queues on either side of Implement. Everything else the agents drain on their own. Why each is named, counted and held by its own rule is in [Principles](./principles.md#a-persons-attention-is-the-critical-queue).
+Agents implement faster than people answer, so the work that waits in this process waits on a person, in one of two queues on either side of Implement. Everything else the agents drain on their own. Why each is named, counted and held by its own rule is in [Principles](./principles.md#the-release-queue-holds-new-work-upstream).
 
 ```mermaid
 flowchart LR
@@ -68,7 +68,6 @@ The **decision queue** is every open choice that holds work before it can start,
 ## Who writes the task
 
 - **After the verdict, the tick is the only writer of the task's status and wait** (GTF-S3). It writes every transition whose owner does not write to Flow, such as CI, the code host, or a person who merged or reviewed, and every one an owner left unwritten. A run that only contributed to a stage, such as a reviewer, leaves its verdict on the change and writes at most references for what it produced.
-- Every run is recorded before it works (GTF-S7, GTF-S8).
 - With no tick, because nothing schedules one, the next run that reads the graph writes what the tick would.
 
 ## States
@@ -90,13 +89,13 @@ The tick applies these on every tick, under the standing decision:
 
 | When | The tick |
 | --- | --- |
-| The change's checks pass with no verdict for its head, and `Review` gives the review to an agent | starts a review child, which leaves its verdict on the change, unless a reviewer claimed the head within `Review grace` |
+| The change's checks pass with no verdict for its head, and `Review` gives the review to an agent | starts a review child, which leaves its verdict on the change, unless a reviewer claimed the head within `Stale after` |
 | The change's checks pass with no verdict for its head, and `Review` names a reviewer outside the tick | waits: a missing verdict is never a passed gate |
 | The gates pass (a verdict for the head, or `Review` none) and the `Merge rule` lets the agents integrate | integrates the change, when the code host requires that review; otherwise moves the task to `waiting` on a person, naming what is ready |
 | Checks red, or findings, within the round limit | moves the task to `active` with the log or the findings in the body, for a fresh child on the same change |
 | Findings the `Merge rule` gives to a person (a finding only a person can act on, or a change it reserves to a person) | moves the task to `waiting` on that person, naming the findings, with no round |
 | The round limit reached (rounds are the task's fix runs; a red caused outside the change, such as a broken default branch or infrastructure, does not count) | moves the task to `waiting` on a person |
-| A review request lost: no verdict and no claim `Review grace` after the checks passed, or a claim that outlived it with no run holding the task | applies the `Review` fallback |
+| A review request lost: no verdict and no claim `Stale after` after the checks passed, or a claim that outlived it with no run holding the task | applies the `Review` fallback |
 | The change needs what the `Merge rule` reserves to a person | moves the task to `waiting` on that person, naming what is ready |
 | A conflict with the default branch | moves the task to `active` for a fresh child that resolves it |
 | A step only a person can do before integrating (a migration, a manual check) | writes that step as a task, theirs, that `blocks` the task (GTF-N4) |
@@ -116,11 +115,9 @@ A person reviewing a change has three outcomes: integrate it, ask for changes (t
 
 A pull request through the code host is the default kind. A project that also delivers in other ways (content, a CMS entry, a feature flag, manual infrastructure, a data fix) names each kind in `Delivery kinds`: its gates (a person's approval when the act reaches outside the product), who integrates it (executes it), and what proves it. Each kind runs the same stages; most just answer "none" to more of them.
 
-An investigation delivers knowledge: its output is evidence or a proposal for a decision, and it closes with that evidence as its outcome.
-
 ## Prerequisites
 
-- **The code host enforces the `Merge rule`.** Required checks, branch protection and required reviews make the rule true for everyone, not only for the agents. With a reviewer in `Review`, its verdict is the `flow/review` commit status on the head and a required check, so a verdict is bound to its commit and only an identity with write access can give it; without that, the tick integrates nothing and waits on a person. A change to the CI configuration needs a person's review there too (code owners or the host's equivalent), so no agent integrates a change to the checks that judge it on its own reading of the diff.
+- **The code host enforces the `Merge rule`.** Required checks, branch protection and required reviews make the rule true for everyone, not only for the agents. With a reviewer in `Review`, its verdict is the `flow/review` commit status on the head and a required check, so a verdict is bound to its commit and only an identity with write access can give it; without that, the tick integrates nothing and waits on a person. 
+- **What judges or instructs the agents changes only through a merge a person approved**: the CI configuration and required checks through code owners or the host's equivalent, and the agent instructions the same way, so no agent integrates a change to the checks that judge it on its own reading of the diff, and the standing decision can point at the instructions (GTF-A6).
 - **The runtime allows every act the standing decision delegates.** An act the runtime refuses, such as a merge or a release step its permission rules block, moves the task to `waiting` on a person, naming the refusal (GTF-U3).
-- **Agent instructions change only through a merge a person approved**, so the standing decision can point at them (GTF-A6).
 - **Something fires the runs.** Flow keeps the state but wakes nobody (GTF-S5): the project's [routines](routines.md) start each run fresh from the graph.
