@@ -30,7 +30,7 @@ Rules that rest on it:
 - A script never writes; every write stays with a run, under the standing decision.
 - A parameter is a pointer to the file that holds it, never a copy.
 - The implementer records its assumptions at the handoff.
-- What integrating leaves is a field of the handoff, never prose the next run infers.
+- What integrating leaves is a field of the handoff, never prose the next run infers; a person who supplies it later writes the field, and the next tick applies it.
 - Intake writes a task, never a fix, and looks for the task the signal's URL already names before it writes one.
 
 ## One engine, extended for any project
