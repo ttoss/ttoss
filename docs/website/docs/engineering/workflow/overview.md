@@ -35,6 +35,10 @@ stateDiagram-v2
 
 The [Delivery Process](./process.md) defines every state, the seven stages that move a task between them with one owner each, and the [transitions](./process.md#transitions) a tick applies, what ages fastest first.
 
+## Two Queues
+
+The work that waits in this machine waits on a person, in one of two queues: the decision queue, the choices work waits on before it can start, and the release queue, the work agents implemented that waits to reach the customer. The tick starts no new work while the release queue is full, and the Chase asks people only for what drains them. [Two Queues](./queues.md) says what each holds and why.
+
 ## One Engine, Extended per Project
 
 The Delivery Process is the same for every project. A project answers its [extension points](./parameters.md#extension-points), its parameters, and never changes the engine; a point left empty takes its default. Why is [One engine, extended for any project](./principles.md#one-engine-extended-for-any-project).

@@ -1,6 +1,6 @@
 ---
 title: Delivery Process
-sidebar_position: 2
+sidebar_position: 3
 ---
 
 # Delivery Process
@@ -38,6 +38,8 @@ The process names acts, not tools, so it reads the same on any code host and for
 | 5 | Integrate | whoever the `Merge rule` lets integrate: the reviewer, the tick or a person | the gates pass | nothing on the task: the tick writes what integrating leaves | `Merge rule` |
 | 6 | Release | the `Release procedure`: automation, a child run or a person | integration | a release step that is somebody's act is its own task that `blocks` the integrated task (GTF-N4); a pipeline every integration runs is a wait, not a task | `Release procedure` |
 | 7 | Verify | the reader the `Closing evidence` names, else a check child of the tick | the check comes due | `completed` with what was observed, or `active` again with it (GTF-E8), the change reverted first when what was observed is harm | `Closing evidence` |
+
+Work waits on a person in two places among these stages: Decide is the [decision queue](./queues.md#decision-queue), and Gates through Verify are the [release queue](./queues.md#release-queue).
 
 A stage a project, or a [delivery kind](#delivery-kinds), answers with "none" is skipped: with no review, the gates are the checks; with no release, integrated is in effect once its pipeline passes. A gate may also run after integrating, as in trunk-based work: its failure is the "pipeline red after integrating" transition below.
 

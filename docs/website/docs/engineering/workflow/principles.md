@@ -1,6 +1,6 @@
 ---
 title: Principles
-sidebar_position: 1
+sidebar_position: 2
 ---
 
 # Principles
@@ -14,6 +14,8 @@ The agentic workflow rests on three pillars. [Get Things Flowing](https://flow.t
 - [A rule holds where no agent can outvote it](#a-rule-holds-where-no-agent-can-outvote-it)
 - [Cost of delay orders the work, read from a proxy nobody estimates](#cost-of-delay-orders-the-work-read-from-a-proxy-nobody-estimates)
 - [A person's attention is the critical queue](#a-persons-attention-is-the-critical-queue)
+- [The release queue holds new work upstream](#the-release-queue-holds-new-work-upstream)
+- [A choice is answered by a rule where one exists, and by a person when the work needs it](#a-choice-is-answered-by-a-rule-where-one-exists-and-by-a-person-when-the-work-needs-it)
 - [No wait is open-ended](#no-wait-is-open-ended)
 - [A number is Flow's answer, never an agent's estimate](#a-number-is-flows-answer-never-an-agents-estimate)
 - [Every run is paid for](#every-run-is-paid-for)
@@ -68,7 +70,7 @@ Rules that rest on it:
 - A check that needs a target the project did not name waits on a person.
 - The change goes up green, with its reversal path.
 - An integration that proves harmful is reverted by that path before the fix.
-- Another agent's run holding a task past `Stale after` is left, and reported.
+- Another agent's run holding a task past `Stale after` is left to its owner.
 - The Audit proposes a standing rule from an answer a person gave more than once.
 
 ## A rule holds where no agent can outvote it
@@ -94,15 +96,33 @@ Rules that rest on it:
 
 ## A person's attention is the critical queue
 
-Agents add work faster than people answer it, so the queue that costs most is the one only a person can drain: a decision, a review, a merge reserved to them ([W21](/docs/product/product-development/principles/applying-wip-constraints#w21-the-principle-of-the-critical-queue-constrain-wip-in-the-section-of-the-system-where-the-queue-is-most-expensive), [FF24](/docs/product/product-development/principles/using-fast-feedback#ff24-the-attention-principle-time-counts-more-than-money)). Reviewing and validating what agents built is where that queue grows with every implementation, so the tick holds new work upstream, where waiting is cheap ([V16](/docs/product/product-development/principles/exploiting-variability#v16-the-principle-of-variability-displacement-move-variability-to-the-process-stage-where-its-cost-is-lowest)), once the [release queue](./parameters.md#runtime) is full: everything between an implementation and its release to the customer in production, the changes waiting to be reviewed, integrated, validated or rid of their feature flag. A child ends at its handoff, so the run cap alone leaves that queue unbounded ([W1](/docs/product/product-development/principles/applying-wip-constraints#w1-the-principle-of-wip-constraints-constrain-wip-to-control-cycle-time-and-flow), [W21](/docs/product/product-development/principles/applying-wip-constraints#w21-the-principle-of-the-critical-queue-constrain-wip-in-the-section-of-the-system-where-the-queue-is-most-expensive)). Decisions stay out of it: a decision holds only the work it blocks, so a thousand open choices never stop the work nobody has to choose about. Only new work waits: integrating, releases, checks, rounds and what a person marked urgent go on, so the queue keeps draining. The limit reads the queue's size, which reacts at once, never its cycle time, which reacts only once the work leaves ([Q13](/docs/product/product-development/principles/managing-queues#q13-the-first-queue-size-control-principle-dont-control-capacity-utilization-control-queue-size), [Q14](/docs/product/product-development/principles/managing-queues#q14-the-second-queue-size-control-principle-dont-control-cycle-time-control-queue-size)), and the Chase sends each day only what a person can move in that queue, and the decisions the team owes only while the queue is within its limit, since over it they free no work the tick would start; the Audit shows each person's arrivals against their departures every week, and a wait that names nobody is addressed to the project's admins, since nothing else reaches anyone for it, because a queue left alone does not correct itself ([Q16](/docs/product/product-development/principles/managing-queues#q16-the-intervention-principle-we-cannot-rely-on-randomness-to-correct-a-random-queue)) and more agents or tasks will not help.
+Agents add work faster than people answer it, so the queues that cost most are the ones only a person can drain ([W21](/docs/product/product-development/principles/applying-wip-constraints#w21-the-principle-of-the-critical-queue-constrain-wip-in-the-section-of-the-system-where-the-queue-is-most-expensive), [FF24](/docs/product/product-development/principles/using-fast-feedback#ff24-the-attention-principle-time-counts-more-than-money)). There are two, on either side of the implementation, and they are named and counted because product development inventory shows nowhere unless something counts it ([Q1](/docs/product/product-development/principles/managing-queues#q1-the-principle-of-invisible-inventory-product-development-inventory-is-physically-and-financially-invisible)). The **decision queue** holds the choices that work waits on before it can start; the **release queue** holds the work an agent implemented that waits to reach the customer. They differ in what waiting costs and in what drains them, so each has a rule of its own below; what they share is that a queue left alone does not correct itself, and more agents or tasks will not help ([Q16](/docs/product/product-development/principles/managing-queues#q16-the-intervention-principle-we-cannot-rely-on-randomness-to-correct-a-random-queue)). The [Two Queues](./queues.md) page says what each holds and how the routines treat it.
 
 Rules that rest on it:
 
+- The workflow names two queues only a person drains: the decision queue and the release queue.
 - Child runs are capped.
-- New work waits upstream once the release queue is full; decisions do not count, and only new work waits.
-- The Chase sends only what a person can move in the release queue, and the decisions the team owes only while it is within its limit.
-- A person queue growing two weeks running opens the Audit's report.
 - A wait that names nobody is addressed to the project's admins.
+- A person queue growing two weeks running opens the Audit's report.
+
+## The release queue holds new work upstream
+
+The release queue is everything between an implementation and its release to the customer in production: the changes waiting to be reviewed, integrated, validated or rid of their feature flag. It ends at the release, not at the review, because the value of the work and the feedback that tells whether it was right arrive only when the customer has it ([E3](/docs/product/product-development/principles/economic-view#e3-the-principle-of-quantified-cost-of-delay-if-you-only-quantify-one-thing-quantify-the-cost-of-delay), [B3](/docs/product/product-development/principles/reducing-batch-size#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback)): a change merged behind a flag carries the risk of an open one and none of its feedback, and the faster that feedback comes, the smaller the queue it lets us run ([FF7](/docs/product/product-development/principles/using-fast-feedback#ff7-the-queue-reduction-principle-of-feedback-fast-feedback-enables-smaller-queues)). Reviewing and validating what agents built is where the queue grows with every implementation, so the tick constrains it ([W1](/docs/product/product-development/principles/applying-wip-constraints#w1-the-principle-of-wip-constraints-constrain-wip-to-control-cycle-time-and-flow)) by blocking new work once it is full ([W6](/docs/product/product-development/principles/applying-wip-constraints#w6-the-principle-of-demand-blocking-block-all-demand-when-wip-reaches-its-upper-limit)), holding that work upstream where waiting is cheap ([V16](/docs/product/product-development/principles/exploiting-variability#v16-the-principle-of-variability-displacement-move-variability-to-the-process-stage-where-its-cost-is-lowest)). A child ends at its handoff, so the run cap alone leaves the queue unbounded. The limit reads the queue's size, which reacts at once, never its utilization or cycle time, which react only once the work leaves ([Q13](/docs/product/product-development/principles/managing-queues#q13-the-first-queue-size-control-principle-dont-control-capacity-utilization-control-queue-size), [Q14](/docs/product/product-development/principles/managing-queues#q14-the-second-queue-size-control-principle-dont-control-cycle-time-control-queue-size)); and the size is the wait, since a change waits about as long as the queue ahead of it takes to drain ([Q12](/docs/product/product-development/principles/managing-queues#q12-littles-formula-wait-time--queue-sizeprocessing-rate)), and a long queue makes no single item feel urgent ([FF21](/docs/product/product-development/principles/using-fast-feedback#ff21-the-hurry-up-and-wait-principle-large-queues-make-it-hard-to-create-urgency)). Only new work waits: integrating, releases, checks, rounds and what a person marked urgent go on, so the queue keeps draining. The same limit sizes what the Chase asks of people, so the digest never asks more than the queue allows.
+
+Rules that rest on it:
+
+- The release queue counts every change between its implementation and its release: open past draft, or integrated with its task waiting on a person.
+- New work waits upstream once the release queue is full; decisions do not count, and only new work waits.
+- The Chase lists what only a person can move in the release queue, as many as its limit.
+
+## A choice is answered by a rule where one exists, and by a person when the work needs it
+
+The decision queue is every open choice that holds work before it can start: a `decision` that `blocks` tasks, or a task waiting on a person for an answer its brief needs. Choices age, and many are worth more made quickly ([E10](/docs/product/product-development/principles/economic-view#e10-the-first-perishability-principle-many-economic-choices-are-more-valuable-when-made-quickly), [D1](/docs/product/product-development/principles/achieving-decentralized-control#d1-the-second-perishability-principle-decentralize-control-for-problems-and-opportunities-that-age-poorly)), so the workflow answers most of them without a person: decision rules carry the economic logic of a choice to whoever meets it ([E13](/docs/product/product-development/principles/economic-view#e13-the-first-decision-rule-principle-use-decision-rules-to-decentralize-economic-control), [FF13](/docs/product/product-development/principles/using-fast-feedback#ff13-the-second-decision-rule-principle-control-the-economic-logic-behind-a-decision-not-the-entire-decision)), which is what the `Decisions` default's dominance and long-term tests and a project's standing decision are. What a rule cannot settle reaches a person, and so does what is infrequent, large or irreversible enough to be centralized: product intent, security, billing, data loss, the project's own instructions ([D2](/docs/product/product-development/principles/achieving-decentralized-control#d2-the-scale-principle-centralize-control-for-problems-that-are-infrequent-large-or-have-significant-economies-of-scale)). A decision holds only the work it blocks, so it never counts against the release queue, and a thousand open choices never stop the work nobody has to choose about. Its best moment is when the work it frees could start ([E15](/docs/product/product-development/principles/economic-view#e15-the-principle-of-optimum-decision-timing-every-decision-has-its-optimum-economic-timing), [F26](/docs/product/product-development/principles/controlling-flow-under-uncertainty#f26-the-principle-of-late-binding-the-later-we-bind-demand-to-resources-the-smoother-the-flow)): while the release queue is over its limit the tick would not start that work anyway, so asking for the choice then spends attention the release queue needs ([FF24](/docs/product/product-development/principles/using-fast-feedback#ff24-the-attention-principle-time-counts-more-than-money)).
+
+Rules that rest on it:
+
+- A choice waits on whoever decides: its task waiting on them, or a `decision` that `blocks` the tasks it holds.
+- The Chase lists the decisions the team owes only while the release queue is within its limit, as many as that limit.
 
 ## No wait is open-ended
 
