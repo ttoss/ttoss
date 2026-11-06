@@ -110,6 +110,7 @@ The decision queue is every open choice that holds work before it can start: a `
 Rules that rest on it:
 
 - A choice waits on whoever decides: its task waiting on them, or a `decision` that `blocks` the tasks it holds.
+- What integrating leaves is the agent's to choose when the `Closing evidence` gives it the choice, and a wait on a person for it is read again once the parameter does.
 - The Chase lists the decisions the team owes only while the release queue is within its limit, as many as that limit.
 
 ## No wait is open-ended
