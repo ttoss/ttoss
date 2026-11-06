@@ -37,7 +37,7 @@ The [Delivery Process](./process.md) defines every state, the seven stages that 
 
 ## Two Queues
 
-The work that waits in this machine waits on a person, in one of two queues: the decision queue, the choices work waits on before it can start, and the release queue, the work agents implemented that waits to reach the customer. The tick starts no new work while the release queue is full, and the Chase asks people only for what drains them. [Two Queues](./queues.md) says what each holds and why.
+The work that waits in this machine waits on a person, in one of two queues: the decision queue, the choices work waits on before it can start, and the release queue, the work agents implemented that waits to reach the customer. The tick starts no new work while the release queue is full, and the Chase asks people only for what drains them. [Where work waits](./process.md#where-work-waits) says what each holds, and [Principles](./principles.md#a-persons-attention-is-the-critical-queue) why.
 
 ## One Engine, Extended per Project
 

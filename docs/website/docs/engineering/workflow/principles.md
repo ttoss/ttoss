@@ -1,6 +1,6 @@
 ---
 title: Principles
-sidebar_position: 2
+sidebar_position: 1
 ---
 
 # Principles
@@ -96,7 +96,7 @@ Rules that rest on it:
 
 ## A person's attention is the critical queue
 
-Agents add work faster than people answer it, so the queues that cost most are the ones only a person can drain ([W21](/docs/product/product-development/principles/applying-wip-constraints#w21-the-principle-of-the-critical-queue-constrain-wip-in-the-section-of-the-system-where-the-queue-is-most-expensive), [FF24](/docs/product/product-development/principles/using-fast-feedback#ff24-the-attention-principle-time-counts-more-than-money)). There are two, on either side of the implementation, and they are named and counted because product development inventory shows nowhere unless something counts it ([Q1](/docs/product/product-development/principles/managing-queues#q1-the-principle-of-invisible-inventory-product-development-inventory-is-physically-and-financially-invisible)). The **decision queue** holds the choices that work waits on before it can start; the **release queue** holds the work an agent implemented that waits to reach the customer. They differ in what waiting costs and in what drains them, so each has a rule of its own below; what they share is that a queue left alone does not correct itself, and more agents or tasks will not help ([Q16](/docs/product/product-development/principles/managing-queues#q16-the-intervention-principle-we-cannot-rely-on-randomness-to-correct-a-random-queue)). The [Two Queues](./queues.md) page says what each holds and how the routines treat it.
+Agents add work faster than people answer it, so the queues that cost most are the ones only a person can drain ([W21](/docs/product/product-development/principles/applying-wip-constraints#w21-the-principle-of-the-critical-queue-constrain-wip-in-the-section-of-the-system-where-the-queue-is-most-expensive), [FF24](/docs/product/product-development/principles/using-fast-feedback#ff24-the-attention-principle-time-counts-more-than-money)). There are two, on either side of the implementation, and they are named and counted because product development inventory shows nowhere unless something counts it ([Q1](/docs/product/product-development/principles/managing-queues#q1-the-principle-of-invisible-inventory-product-development-inventory-is-physically-and-financially-invisible)). The **decision queue** holds the choices that work waits on before it can start; the **release queue** holds the work an agent implemented that waits to reach the customer. They differ in what waiting costs and in what drains them, so each has a rule of its own below; what they share is that a queue left alone does not correct itself, and more agents or tasks will not help ([Q16](/docs/product/product-development/principles/managing-queues#q16-the-intervention-principle-we-cannot-rely-on-randomness-to-correct-a-random-queue)). [Where work waits](./process.md#where-work-waits) says what each holds and how the routines treat it.
 
 Rules that rest on it:
 
