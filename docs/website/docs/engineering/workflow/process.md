@@ -16,8 +16,8 @@ The rules of any work are GTF's, cited below by id. Three are the delivery proce
 3. **What ages fastest goes first.** Work is ordered by its cost of delay, read through a fixed proxy and never estimated per task: the stage the work is in, and the one word a person may say about it ([Cost of delay orders the work](./principles.md#cost-of-delay-orders-the-work-read-from-a-proxy-nobody-estimates)). The tick works, in order:
 
    1. a repo whose default branch is red: its repair, since it holds every change in the repo;
-   2. a task at `very_high` priority, bug or not, in any stage;
-   3. a bug (a task tagged `bug`) at `high`;
+   2. a task at `very_high` priority, bug or not, in any stage, asserted or inherited from an open commitment it blocks (Flow's `inherited_priority`), since the blocker of a `very_high` holds what waiting costs most;
+   3. a bug (a task tagged `bug`) at `high`, asserted or inherited;
    4. what integrated and nobody has seen in effect;
    5. the waits that came due;
    6. what is open at its gates (a conflict, a fix round or a review the agents run), among which only Flow's ranking orders;
