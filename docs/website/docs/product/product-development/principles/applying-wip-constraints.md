@@ -23,9 +23,21 @@ The cycle time reduction typically provides **10x more economic value** than the
 
 ## W6: The Principle of Demand Blocking: Block all demand when WIP reaches its upper limit.
 
+Reaching a WIP limit is not the hard part; what matters is what happens next. The responses fall into three families: cut demand (block new work, purge projects already admitted, shed requirements), add supply (pull in resources, part-timers, experts, cross-trained people), or change the mix of work entering the system. The demand-side responses are the fastest, since they act the moment they are chosen, while adding capacity takes time to arrive.
+
+The simplest response is to block all new demand once WIP hits its limit, as kanban does and as a telephone network does with a busy signal. The arriving job can be ejected, which enforces a true ceiling on WIP and cycle time, worth it because a high-queue state takes long to correct and does damage the whole time. Or it can be held in an upstream queue: demand is not reduced, only moved, which pays when the upstream queue is cheaper to hold work in ([W21: The Principle of the Critical Queue](/docs/product/product-development/principles/applying-wip-constraints#w21-the-principle-of-the-critical-queue-constrain-wip-in-the-section-of-the-system-where-the-queue-is-most-expensive)), provided that queue has a limit of its own.
+
 ## W7: The Principle of WIP Purging: When WIP is high, purge low-value projects.
 
+When WIP is high, queues are high, and every job inside is accruing delay cost at the higher rate a long queue imposes ([Q15: The Diffusion Principle](/docs/product/product-development/principles/managing-queues#q15-the-diffusion-principle-over-time-queues-will-randomly-spin-seriously-out-of-control-and-will-remain-in-this-state-for-long-periods)). A job that was worth holding when holding was cheap may not be worth keeping now, so while high-value work keeps arriving, low-value work is purged to free its slot, the way an emergency room moves stable patients out of its few beds so critical ones can be treated.
+
+Purging is still an economic decision: what counts is the remaining investment to finish a job against its return, never what has already been spent on it ([E17: The Sunk Cost Principle](/docs/product/product-development/principles/economic-view#e17-the-sunk-cost-principle-do-not-consider-money-already-spent)). The common failure is the opposite of killing: starving a job of resources while keeping it alive. Such zombie projects are not good enough to finish and not bad enough to stop, and they destroy flow. Kill the zombies.
+
 ## W8: The Principle of Flexible Requirements: Control WIP by shedding requirements.
+
+The smaller-batch form of purging is to drop requirements instead of whole projects. During congestion a requirement's delay cost rises, because it now holds up a larger queue behind it, so a feature of marginal value is worth less than the time it costs to build. The payoff is large because a congested system sits on the steep part of the queueing curve, where a small cut in load buys a large cut in cycle time.
+
+Decide in advance which requirements could be dropped or relaxed: the decision is better made before the pressure of a crisis, and knowing the candidates early lets the architecture keep them loosely coupled, so they can be cut loose quickly. Relaxing a target is a choice somebody pays for, and it works best when whoever relaxes it also feels its cost ([E14: The First Market Principle](/docs/product/product-development/principles/economic-view#e14-the-first-market-principle-ensure-decision-makers-feel-both-cost-and-benefit)).
 
 ## W9: The Principle of Resource Pulling: Quickly apply extra resources to an emerging queue.
 
@@ -41,11 +53,25 @@ The cycle time reduction typically provides **10x more economic value** than the
 
 ## W15: The Aging Principle: Watch the outliers.
 
+By Little's Formula, average queue size sets average waiting time ([Q12: Little's Formula](/docs/product/product-development/principles/managing-queues#q12-littles-formula-wait-time--queue-sizeprocessing-rate)), but averages hide the tail. An aging analysis looks at the distribution of time in queue, and especially at the jobs that have waited far longer than the rest. Finance does this with receivables more than 90 or 120 days past due, because a very late account is disproportionately likely to never pay; a job stuck in a WIP pool for a long time is likewise likely to be hitting a problem nobody has seen yet. The analysis makes those jobs visible.
+
 ## W16: The Escalation Principle: Create a preplanned escalation process for outliers.
+
+Seeing an outlier is not enough; a preplanned process must bring it back under control, for instance by shedding its requirements ([W8](#w8-the-principle-of-flexible-requirements-control-wip-by-shedding-requirements)) or pulling in experts ([W11](#w11-the-big-gun-principle-pull-high-powered-experts-to-emerging-bottlenecks)). The simplest escalation raises a job to someone with more authority once it passes a time limit in the queue: a drawing that waited more than seven days is reported to the department's manager. Alternatively, a rule raises a job's priority class with its age, as operating systems do for a process that has waited too long at a low priority; that rule can run decentralized and automated, and it assumes that even low-priority work is perishable ([D3: The Principle of Layered Control](/docs/product/product-development/principles/achieving-decentralized-control#d3-the-principle-of-layered-control-adapt-control-based-on-emerging-information)).
+
+Age is still not an economic criterion. The job that comes first is the one with the most cost-of-delay savings per unit of the bottleneck resource, however long another has waited ([F17: The WSJF Scheduling Principle](/docs/product/product-development/principles/controlling-flow-under-uncertainty#f17-the-wsjf-scheduling-principle-when-job-durations-and-delay-costs-are-not-homogeneous-use-wsjf)). If outliers really carry a disproportionate cost of delay, that belongs in their economic priority rather than in a separate rule that overrides it.
 
 ## W17: The Principle of Progressive Throttling: Increase throttling as you approach the queue limit.
 
+Blocking all demand at the limit ([W6](#w6-the-principle-of-demand-blocking-block-all-demand-when-wip-reaches-its-upper-limit)) is a tail-dropping queue, and the Internet found two flaws in it. A system that throttles only once the buffer is full gravitates to nearly full buffers, leaving no margin for a burst. And an on-off signal makes arrivals either unrestricted or fully blocked, a jaggedness in flow that is itself undesirable variability.
+
+Random Early Deletion and Random Early Marking throttle before the buffer fills, so flow changes smoothly and the system spends more of its time with the reserve margin a burst needs. Product development can do the same by raising the bar for new work as congestion grows, such as demanding a higher return to start a project as the portfolio nears its capacity, or by pricing a shared resource higher while it is congested ([F4: The Principle of Congestion Pricing](/docs/product/product-development/principles/controlling-flow-under-uncertainty#f4-the-principle-of-congestion-pricing-use-pricing-to-reduce-demand-during-congested-periods)).
+
 ## W18: The Principle of Differential Service: Differentiate quality of service by workstream.
+
+A workstream's jobs carry widely different costs of delay, so a single queue serves none of them well. Split the work into a few classes, such as high, medium and low cost of delay, give each a target flow-through time, and derive each class's WIP limit from it with Little's Formula ([Q12](/docs/product/product-development/principles/managing-queues#q12-littles-formula-wait-time--queue-sizeprocessing-rate)). A WIP limit together with a capacity allocation per class controls each class's flow-through time, even on a shared resource.
+
+One software company allows a single hot job in its maintenance workstream. It has head-of-the-line privilege in every queue, without preempting work already underway at a resource, so it waits for nothing and flows through quickly.
 
 ## W19: The Principle of Adaptive WIP Constraints: Adjust WIP constraints as capacity changes.
 
