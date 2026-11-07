@@ -51,11 +51,9 @@ In product development, small gains across many features don't impress, but a si
 
 ## D8: The Principle of Mission: Specify the end state, its purpose, and the minimal possible constraints.
 
-In maneuver warfare, missions align teams through mission orders, which focus on the operation's intent—its end state—rather than prescribing specific actions. They communicate the "why," not the "what" or "how."
+A mission order does not tell a unit what to do, by when, with what resources and by which plan. It states the intent: the end state the operation is meant to create, always a goal larger than the operation itself. It conveys the "why," not the "what" or the "how." The Marines write it as the Commander's Intent and consider an order incomplete without it, because when the intent is clear, whoever executes can choose the right course of action, above all when an obstacle or an opportunity appears that the plan did not foresee.
 
-When the intent is clear, those executing the mission can adapt to obstacles or opportunities, choosing the best course of action. A well-crafted mission statement is a powerful tool for maintaining coordination, with the "why" being its most crucial element.
-
-For example, in product development, rather than prescribing detailed features, a mission might be "create a seamless user experience that reduces churn by 20%." The team is free to explore the best solutions to achieve this goal, whether through UX improvements, better onboarding, or new product features. The key is the clear end state (reduce churn) and its purpose (improve retention), with minimal constraints on how to achieve it.
+Intent is a robust and compact way to give direction. A project's mission works the same way: the most important part is the "why," and the fewer constraints it adds on how, the more room it leaves to adapt.
 
 ## D9. The Principle of Boundaries: Establish clear roles and boundaries.
 
@@ -87,11 +85,25 @@ This ties directly into [Principle FF10: The First Agility Principle](/docs/prod
 
 ## D14: The Principle of Flexible Plans: Use simple modular plans.
 
+Some things are planned in detail before the action starts, such as how units will communicate and the order supplies are loaded so they come off in the order needed. But plans are expected to change, so they are kept simple, modular and flexible. Simplicity makes adaptation fast; modules can be recombined in many ways; and flexibility comes from preplanning branches, points where a different path can be taken depending on conditions, and sequels, follow-on actions prepared in advance. Such plans keep the effort aligned when conditions change.
+
 ## D15: The Principle of Tactical Reserves: Decentralize a portion of reserves.
+
+If response time did not matter, reserves would be consolidated, since a single central pool covers a large area with less total capacity. In maneuver warfare, reserves are held at every level instead, so each level can deal at once with a certain range of contingency: one of three companies held back can double another's strength at a critical moment, and reserves at each higher level bring ever larger forces, with longer delays. Force arrives at the right time and place instead of being committed on guesses before the battle; one-third to one-half of a force may be held this way.
+
+In product development, the equivalent is capacity margin pre-positioned at several levels of the organization, as people or budget, rather than a single program-level reserve under the project manager, and safety margin in key processes. It lets each group absorb variation locally instead of escalating it ([D5: The Principle of Virtual Centralization](/docs/product/product-development/principles/achieving-decentralized-control#d5-the-principle-of-virtual-centralization-quickly-reorganize-decentralized-resources-to-create-centralized-power)). A computer's memory hierarchy is layered for the same reason: a small, fast, expensive cache, larger and cheaper DRAM, and the cheapest and slowest disk together perform close to the fastest layer at close to the cost of the cheapest.
 
 ## D16: The Principle of Early Contact: Make early and meaningful contact with the problem.
 
+The Marines make early contact with opposing forces to reduce uncertainty about them, and that contact is substantial action, not light observation: it resolves uncertainty and keeps more from arising.
+
+In product development, the opposing forces are the market and technical risks a project must overcome. Assessing them is not enough; a project must spend meaningful effort to learn how severe they are and whether they can be overcome, and there is no substitute for a quick proof of concept or early market feedback. Aim that early effort at the zones of highest technical or market risk. A systematic top-down design of the whole system looks logical but rarely resolves risk fast enough.
+
 ## D17: The Principle of Decentralized Information: For decentralized decisions, disseminate key information widely.
+
+Decentralizing control means decentralizing both the authority to decide and the information needed to decide well. The Marine Corps' minimum standard is to understand the intent of commanders two levels up. Companies that hold important information closely undermine the people they expect to act for the mission: where the decision is made, its information must be available.
+
+That does not mean every piece of information should live in isolated local pools. The Boeing 777's cost-versus-weight decision rule was calculated at the level of the whole system and then handed to each engineer, which let thousands of small decisions be made quickly and correctly ([E13: The First Decision Rule Principle](/docs/product/product-development/principles/economic-view#e13-the-first-decision-rule-principle-use-decision-rules-to-decentralize-economic-control)).
 
 ## D18: The Frequency Response Principle: We can’t respond faster than our frequency response.
 
