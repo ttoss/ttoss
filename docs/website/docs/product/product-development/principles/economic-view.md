@@ -97,11 +97,15 @@ Use marginal analysis for incremental decisions instead of comparing total costs
 
 ## E17: The Sunk Cost Principle. Do not consider money already spent.
 
-Base decisions on [marginal economics](#e16-the-principle-of-marginal-economics-always-compare-marginal-cost-and-marginal-value), not sunk costs.
+Once decisions follow [marginal economics](#e16-the-principle-of-marginal-economics-always-compare-marginal-cost-and-marginal-value), sunk cost is simple: money already spent is gone whatever is chosen next, so it has no place in the choice.
+
+Take a project of average return that is 90 percent complete, and a high-return project that becomes available. The question is whether to preempt the first for the second, and the right comparison is the return on the _remaining_ investment. The nearly finished project delivers its whole return for the last 10 percent of its cost, so the newcomer would need about ten times the average return to be worth switching to. Ignoring sunk cost does not mean finishing whatever was started; it means judging every job, half-done or not, by what is left to spend against what it will return.
 
 ## E18: The Principle of Buying Information: The value of information is its expected economic value.
 
-Information reduces uncertainty and creates economic value. Don't pay more than the economic value it creates. Product development investments create value even when products fail if they generate valuable information.
+Information reduces uncertainty, and reducing the uncertainty of an economic outcome creates value, so information is worth exactly the value it creates and no more. A lottery ticket with a one-in-a-million chance of paying $1 million is worth $1; knowing its first digit makes winning ten times likelier and the ticket worth $10, so that knowledge is worth at most $9.
+
+Product development work creates value even when the product fails, because it can produce information worth having: Windows 1.0 was a market failure, and what it taught shaped the versions that followed.
 
 ## E19: The Insurance Principle: Don't pay more for insurance than the expected loss.
 

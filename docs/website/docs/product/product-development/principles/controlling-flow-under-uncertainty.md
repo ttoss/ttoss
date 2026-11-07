@@ -87,7 +87,15 @@ The key decision is setting the quantum size. If too large, the system behaves l
 
 ## F20: The Preemption Principle: Only preempt when switching costs are low.
 
+Sending a job to the head of the ready queue is not the same as letting it interrupt a job already being served. Preemption gives the fastest cycle time, but it is usually a bad practice: switching wastes work and lowers the effective capacity of a bottleneck. Head-of-the-line privilege is usually enough, since it removes queue time, typically the largest part of cycle time ([W18: The Principle of Differential Service](/docs/product/product-development/principles/applying-wip-constraints#w18-the-principle-of-differential-service-differentiate-quality-of-service-by-workstream)). The job still waits for the one in service to clear, the residual time, which small batches keep short and [round-robin scheduling](#f19-the-round-robin-principle-when-task-duration-is-unknown-share-time-among-tasks) keeps predictable.
+
+The gain from preempting is the cost-of-delay savings the new sequence buys minus the cost of switching, and those savings are large only when jobs differ greatly in cost of delay and in duration. So preempt only when switching is cheap and the savings are substantial, as an emergency room interrupts a doctor treating a cold to attend a cardiac arrest.
+
 ## F21: The Principle of Work Matching: Use sequence to match jobs to appropriate resources.
+
+Specialized resources are ideal for particular jobs, but jobs do not arrive in the order those specialists become free, so work gets dispatched to whoever is available, even when that resource handles it badly. A small pool of ready work avoids this: each resource pulls from it the job that fits.
+
+Suppose designs await mechanical analysis, some routine stress analyses and some vibration analyses only one expert can do. With no vibration work waiting, the expert takes routine work; with some waiting, the expert takes that first; and with vibration work about to arrive, it is better to hold the expert briefly idle than to tie up the scarce resource with a routine job. Nonhomogeneous work and resources almost always offer such a matching opportunity, which is why first-in, first-out is virtually never the best sequence, and matching well needs visibility into adjacent resources: the work coming in and when each resource will be free.
 
 ## F22: The Principle of Tailored Routing: Select and tailor the sequence of subprocesses to the task at hand.
 
