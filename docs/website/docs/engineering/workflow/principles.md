@@ -121,7 +121,7 @@ Rules that rest on it:
 
 - A run past `Stale after` is closed, and its task is ready again.
 - A review request lost past `Stale after` falls to the `Review` fallback.
-- A check's wait carries when the effect can be seen, and moves only to a date someone can point to.
+- A check's wait carries when the effect can be seen, and moves only to a date someone can point to; the handoff's date moves with it, and a wait is never written with a date already past.
 - A wait on a person carries the date to chase on; Flow reports one that does not.
 - A run's hold on its tasks lasts its `Stale after`.
 
