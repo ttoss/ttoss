@@ -16,7 +16,7 @@ The file is a list of `- **Name**: value` items, because the routines' scripts r
 | Parameter | Required | What it is |
 | --- | --- | --- |
 | Flow project id | yes | `proj_...` |
-| Standing-decision task id | yes | the `decision` that authorises the agents (GTF-T1); every agent run names it as its `authority` |
+| Standing-decision task id | yes | the `decision` that authorises the agents (GTF-T1); the tick's run names it as its `authority`, and every child acts under it through `parent` |
 | Repos | no | every repo the tasks touch, so children start with them |
 
 ## Runtime
