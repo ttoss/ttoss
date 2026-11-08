@@ -12,11 +12,11 @@ How work in a software project goes from a signal to a closed task, once, for ev
 The rules of any work are GTF's, cited below by id. Three are the delivery process's own:
 
 1. **One owner per transition.** Only a stage's owner changes the task's state in that stage. Two owners drift apart silently, each acting on a state the other already changed.
-2. **Rounds have a limit.** Each reason a change goes back (red checks, findings) gets the automatic rounds the `Merge rule` allows; the next goes to a person, and so do findings the `Merge rule` gives to a person, with no round, since a round there spends a child and its checks to reach the same person ([The author never verifies its own work](./principles.md#the-author-never-verifies-its-own-work)).
-3. **What ages fastest goes first.** Work is ordered by its cost of delay, read through a fixed proxy and never estimated per task: the stage the work is in, and the one word a person may say about it ([Cost of delay orders the work](./principles.md#cost-of-delay-orders-the-work-read-from-a-proxy-nobody-estimates)). The tick works, in order:
+2. **Rounds have a limit.** Each reason a change goes back (red checks, findings) gets the automatic rounds the `Merge rule` allows; the next goes to a person, and so do findings the `Merge rule` gives to a person, with no round ([The author never verifies its own work](./principles.md#the-author-never-verifies-its-own-work)).
+3. **What ages fastest goes first.** Work is ordered by its cost of delay, read from the stage the work is in and the one word a person may say about it, never estimated per task ([Cost of delay orders the work](./principles.md#cost-of-delay-orders-the-work-read-from-a-proxy-nobody-estimates)). The tick works, in order:
 
    1. a repo whose default branch is red: its repair, since it holds every change in the repo;
-   2. a task at `very_high` priority, bug or not, in any stage, asserted or inherited from an open commitment it blocks (Flow's `inherited_priority`), since the blocker of a `very_high` holds what waiting costs most;
+   2. a task at `very_high` priority, bug or not, in any stage, asserted or inherited from an open commitment it blocks (Flow's `inherited_priority`);
    3. a bug (a task tagged `bug`) at `high`, asserted or inherited;
    4. what integrated and nobody has seen in effect;
    5. the waits that came due;
@@ -53,7 +53,7 @@ A stage a project, or a [delivery kind](#delivery-kinds), answers with "none" is
 
 ## Where work waits
 
-Agents implement faster than people answer, so the work that waits in this process waits on a person, in one of two queues on either side of Implement. Everything else the agents drain on their own. Why each is named, counted and held by its own rule is in [Principles](./principles.md#the-release-queue-holds-new-work-upstream).
+The work that waits in this process waits on a person, in one of two queues on either side of Implement. Everything else the agents drain on their own. Why each is named, counted and held by its own rule is in [Principles](./principles.md#the-release-queue-holds-new-work-upstream).
 
 ```mermaid
 flowchart LR
@@ -71,9 +71,9 @@ flowchart LR
     Q -. "full: new work waits" .-> R
 ```
 
-The **release queue** is every change between its implementation and its release to the customer in production, the stages from Gates to Verify: a change open past draft, at its gates or with a person to integrate it, and an integrated change whose task waits on a person to see it in effect, such as a validation or a feature flag's removal. Its limit is the [`Release queue`](./parameters.md#runtime) parameter. Once the queue reaches it, the tick starts no new work and spends its runs on what drains the queue, by [rule 3](#three-rules); the Chase lists the items in it that only a person can move, in the same order and as many as the limit ([The release queue holds new work upstream](./principles.md#the-release-queue-holds-new-work-upstream)). A queue that stays at its limit is drained, not only held: the weekly Health proposes the changes at the bottom of that order, as many as bring it below its limit, for a person to close, cut down or return to `incubated`, and names the oldest item in each queue ([A full queue is drained](./principles.md#a-full-queue-is-drained-never-only-held)).
+The **release queue** is every change between its implementation and its release to the customer in production, the stages from Gates to Verify: a change open past draft, at its gates or with a person to integrate it, and an integrated change whose task waits on a person to see it in effect, such as a validation or a feature flag's removal. Its limit is the [`Release queue`](./parameters.md#runtime) parameter. Once the queue reaches it, the tick starts no new work and spends its runs on what drains the queue, by [rule 3](#three-rules). What the Chase and the Health do with a full queue is in [Routines](routines.md#standard-routines).
 
-The **decision queue** is every open choice that holds work before it can start, the Decide stage: a `decision` that `blocks` the tasks it holds, or a task waiting on a person for an answer its brief needs. Most choices never enter it, because the [`Decisions` default](./parameters.md#the-decisions-default) and the project's standing decision answer them by rule. A decision holds only the work it blocks, so it never counts against the release queue, and the Chase lists the decisions the team owes only while the release queue is within its limit, as many as that limit ([A choice is answered by a rule where one exists](./principles.md#a-choice-is-answered-by-a-rule-where-one-exists-and-by-a-person-when-the-work-needs-it)).
+The **decision queue** is every open choice that holds work before it can start, the Decide stage: a `decision` that `blocks` the tasks it holds, or a task waiting on a person for an answer its brief needs. Most choices never enter it, because the [`Decisions` default](./parameters.md#the-decisions-default) and the project's standing decision answer them by rule. A decision holds only the work it blocks, so it never counts against the release queue ([A choice is answered by a rule where one exists](./principles.md#a-choice-is-answered-by-a-rule-where-one-exists-and-by-a-person-when-the-work-needs-it)).
 
 ## Who writes the task
 
@@ -110,13 +110,20 @@ The tick applies these on every tick, under the standing decision:
 | A conflict with the default branch | moves the task to `active` for a fresh child that resolves it |
 | A step only a person can do before integrating (a migration, a manual check) | writes that step as a task, theirs, that `blocks` the task (GTF-N4) |
 | The change closed without integrating | retracts its `implements` reference and moves the task to `waiting` on a person: implement it again, or cancel it |
-| The change integrated, nothing written since | applies the task's `after_integration`: closes it on immediate evidence, citing the change; or the release step; or the check's wait, dated by the check's `visible_at`, or now when that date has passed (GTF-E8). A task with several changes waits for the last one. A task waiting on a person because nothing said what integrating leaves is applied the same way once its `after_integration` is written: that write is the person's answer, never a sign the tick already acted. Any other wait on a person, such as a check child's for an act only they can do, is not answered by an `after_integration` the task already carried. When the `Closing evidence` gives the agent that choice, the tick chooses the level itself from the change and the task, with its reason, instead of the wait; and a wait it wrote before the parameter said so is read again on the next tick |
-| The integration's pipeline red | reverts the change by the reversal path its description records (`Before proposing`), then moves the task to `active` with the log and the revert, a round: a defect in effect costs by the hour, a round costs a child and its checks. A change that records no path waits on a person, naming the red; a repo whose default branch is red is the repair task's instead, which `blocks` each task the red branch holds, so its leverage is what puts it first |
+| The change integrated, nothing written since | applies the task's `after_integration`: closes it on immediate evidence, citing the change; or the release step; or the check's wait. A task with several changes waits for the last one |
+| The check's wait is applied | dates it by the check's `visible_at`, or now when that date has passed (GTF-E8) |
+| The task waits on a person because nothing said what integrating leaves, and its `after_integration` is now written | applies it as above: that write is the person's answer, never a sign the tick already acted |
+| The task carries an `after_integration` and a different wait on a person, such as a check child's for an act only they can do | leaves the wait: it is not answered by an `after_integration` the task already carried |
+| The `Closing evidence` gives the agent the choice of what integrating leaves | chooses the level itself from the change and the task, with its reason, instead of the wait; a wait it wrote before the parameter said so is read again on the next tick |
+| The integration's pipeline red | reverts the change by the reversal path its description records (`Before proposing`), then moves the task to `active` with the log and the revert, a round: a defect in effect costs by the hour, a round costs a child and its checks |
+| The integration's pipeline red, and the change records no reversal path | moves the task to `waiting` on a person, naming the red |
+| A repo's default branch red | opens the repair task, which `blocks` each task the red branch holds, so its leverage is what puts it first; the red is the repair task's, never a round on the changes it holds |
 | The change's description names other tasks it settles | closes them on integration, citing the change, as far as the standing decision delegates tidying (GTF-S6) |
 | A change in the project's repos names no task | applies the `Intake` answer: writes a task for it, or leaves it |
 | A release step's task closes | moves each task it blocked to its check's wait, or closes it citing the release task, whose outcome is the evidence |
 | A check comes due | starts a check child (unless the `Closing evidence` names another reader), which closes the task with what it observed or sends it back; harm the change caused is reverted first, as in the "pipeline red" row |
-| A child's run failed, is gone, or stays `running` past the `Runtime`'s `Stale after` with its task open | closes the run `failed`; the task is ready again. Every run records `Stale after` as its hold, so Flow keeps its tasks from other runs exactly that long |
+| A child's run failed, is gone, or stays `running` past the `Runtime`'s `Stale after` with its task open | closes the run `failed`; the task is ready again |
+| A run starts | records `Stale after` as its hold, so Flow keeps its tasks from other runs exactly that long |
 | Another agent's run, such as a person's session, holds an open task past `Stale after` | leaves it to the run's owner |
 
 A person reviewing a change has three outcomes: integrate it, ask for changes (the task goes back a round), or close it, which is the "closed without integrating" row.
@@ -127,7 +134,7 @@ A pull request through the code host is the default kind. A project that also de
 
 ## Prerequisites
 
-- **The code host enforces the `Merge rule`.** Required checks, branch protection and required reviews make the rule true for everyone, not only for the agents. With a reviewer in `Review`, its verdict is the `flow/review` commit status on the head and a required check, so a verdict is bound to its commit and only an identity with write access can give it; without that, the tick integrates nothing and waits on a person. 
-- **What judges or instructs the agents changes only through a merge a person approved**: the CI configuration and required checks through code owners or the host's equivalent, and the agent instructions the same way, so no agent integrates a change to the checks that judge it on its own reading of the diff, and the standing decision can point at the instructions (GTF-A6).
+- **The code host enforces the `Merge rule`.** Required checks, branch protection and required reviews make the rule true for everyone, not only for the agents. With a reviewer in `Review`, its verdict is the `flow/review` commit status on the head and a required check, so a verdict is bound to its commit and only an identity with write access can give it; without that, the tick integrates nothing and waits on a person.
+- **What judges or instructs the agents changes only through a merge a person approved**: the CI configuration and required checks through code owners or the host's equivalent, and the agent instructions the same way, so the standing decision can point at the instructions (GTF-A6).
 - **The runtime allows every act the standing decision delegates.** An act the runtime refuses, such as a merge or a release step its permission rules block, moves the task to `waiting` on a person, naming the refusal (GTF-U3).
 - **Something fires the runs.** Flow keeps the state but wakes nobody (GTF-S5): the project's [routines](routines.md) start each run fresh from the graph.
