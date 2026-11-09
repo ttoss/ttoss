@@ -178,10 +178,13 @@ A decision holds only the work it blocks, so it never counts against the release
 
 Most choices are never raised at all, because the implementer meets them mid-task and answers them there, and it can only answer them against an intent it was given. So a ready brief states its purpose, the end state the task serves and why, not only what to build and how it is checked ([D8](/docs/product/product-development/principles/achieving-decentralized-control#d8-the-principle-of-mission-specify-the-end-state-its-purpose-and-the-minimal-possible-constraints)). An acceptance alone is a proxy an agent satisfies literally. The purpose is the decision rule it carries into every choice the brief did not foresee, and without it the agent fills the gap with a guess that reads like an answer ([D17](/docs/product/product-development/principles/achieving-decentralized-control#d17-the-principle-of-decentralized-information-for-decentralized-decisions-disseminate-key-information-widely), [Silent Interpretation](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-principle-of-silent-interpretation)).
 
+Where a task closes is one of those choices, and it is made before the task starts, because the edges drawn on a task assume it. The project's list of closing validations is the rule, and the brief names the one that fits what the task promises. One rule for every task makes a change whose promise is code alone wait on a release it did not promise, which lengthens the [release queue](#the-release-queue-holds-new-work-upstream) and holds every task built on that code ([Q1](/docs/product/product-development/principles/managing-queues#q1-the-principle-of-invisible-inventory-product-development-inventory-is-physically-and-financially-invisible), [E13](/docs/product/product-development/principles/economic-view#e13-the-first-decision-rule-principle-use-decision-rules-to-decentralize-economic-control)).
+
 Rules that rest on it:
 
 - A choice waits on whoever decides: its task waiting on them, or a `decision` that `blocks` the tasks it holds.
 - A ready brief states its purpose: the end state the task serves, so a choice met on the way is answered against it.
+- The `Closing evidence` lists the project's closing validations, always including integration with the pipeline green, and a ready brief names the one its task closes on, by what the task promises; the handoff's `after_integration` follows it.
 - What integrating leaves is the agent's to choose when the `Closing evidence` gives it the choice, and a wait on a person for it is read again once the parameter does.
 - The Chase lists the decisions the team owes only while the release queue is within its limit, as many as that limit.
 
