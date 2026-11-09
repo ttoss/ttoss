@@ -58,6 +58,8 @@ Each answers a question the process asks but cannot answer for every project. Le
 
 Reserved to a person: product intent, security, auth, billing, data loss, migrations, public contracts, and changes to the project's agent instructions. Every other open choice passes two tests before it is raised. **Dominance**: an option that improves something and worsens nothing, checked in the run and naming what was checked, is taken. **Long term**: else the option that wins on durability (enforced by the system > context scoped to a path > procedure > prose), on debt that stays modular, visible and cheap to repay, on not replicating an antipattern already in the repo, and on not eroding an ownership boundary is taken. What survives both is raised. A choice answered by a test is recorded in the change's description (`Q`, `A`, the test, what was checked); one answered silently counts as unanswered ([Autonomy is bounded by reversibility](./principles.md#autonomy-is-bounded-by-reversibility)).
 
+A choice that fails both tests and recurs is what a project's standing decision may answer as a rule instead. For example, retracting a `blocks` edge whose source's change integrated while the source waits for its release or check is a person's by default, since building on unvalidated work makes reverting the source cost more; a standing decision such as "a code-only dependency is released on integration" lets the tick retract it.
+
 ## Release procedure shapes
 
 None is the workflow's own; [`/flow-setup`](https://github.com/ttoss/skills/blob/main/skills/flow-setup/SKILL.md) offers the one that matches what the repo shows:
