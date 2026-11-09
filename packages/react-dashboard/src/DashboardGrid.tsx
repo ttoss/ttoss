@@ -18,6 +18,7 @@ import type { DashboardTemplate } from './Dashboard';
 import { type DashboardCard as DashboardCardProps } from './DashboardCard';
 import { buildGridItems } from './DashboardGridItems';
 import { useDashboard } from './DashboardProvider';
+import { buildBreakpointLayouts } from './utils/buildPhoneLayout';
 
 const ALLOWED_X_COLUMNS = [0, 3, 6, 9];
 
@@ -90,7 +91,7 @@ const buildLayout = (template: DashboardTemplate, isEditMode: boolean) => {
     const snapped = { ...layout, x, w };
     return isEditMode ? { ...snapped, isDraggable: true } : snapped;
   });
-  return { xs: base, sm: base, md: base, lg: base, xl: base, '2xl': base };
+  return buildBreakpointLayouts({ base, isEditMode });
 };
 
 const SLOT_KEY = '__detail_slot__';
@@ -99,26 +100,26 @@ const DEFAULT_SLOT_H = 12;
 const buildSlotLayout = (
   base: ReturnType<typeof buildLayout>,
   selectedKey: string,
-  template: DashboardTemplate,
   slotH: number,
   slotIndex: number
 ): ReturnType<typeof buildLayout> => {
-  const selectedItem = template.grid.find((i) => {
-    return i.i === selectedKey;
-  });
-  if (!selectedItem) return base;
-  const slotY = selectedItem.y + selectedItem.h;
-  const slotItem: LayoutItem = {
-    i: `${SLOT_KEY}:${slotIndex}`,
-    x: 0,
-    y: slotY,
-    w: COLS_NUM,
-    h: slotH,
-    isDraggable: false,
-    isResizable: false,
-    static: true,
-  };
+  // Under the card's position in each breakpoint's own (phone: reflowed) layout.
   const insertAndShift = (items: Layout) => {
+    const selectedItem = items.find((i) => {
+      return i.i === selectedKey;
+    });
+    if (!selectedItem) return items;
+    const slotY = selectedItem.y + selectedItem.h;
+    const slotItem: LayoutItem = {
+      i: `${SLOT_KEY}:${slotIndex}`,
+      x: 0,
+      y: slotY,
+      w: COLS_NUM,
+      h: slotH,
+      isDraggable: false,
+      isResizable: false,
+      static: true,
+    };
     const shifted = items.map((item) => {
       if (item.y >= slotY) return { ...item, y: item.y + slotH };
       return item;
@@ -214,7 +215,7 @@ const resolveLayouts = (
       : [];
   if (keys.length === 0) return base;
   return keys.reduce((layouts, key, index) => {
-    return buildSlotLayout(layouts, key, selectedTemplate, slotH, index);
+    return buildSlotLayout(layouts, key, slotH, index);
   }, base);
 };
 
