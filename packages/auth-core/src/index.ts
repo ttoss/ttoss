@@ -48,6 +48,7 @@ export {
   createMemoryAuthCodeStore,
   createMemoryClientStore,
   createMemoryOneTimeTokenStore,
+  createMemoryPendingAuthorizationStore,
   createMemoryRefreshTokenStore,
   createMemoryRequestRateLimitStore,
   createMemoryUserStore,
@@ -103,6 +104,17 @@ export {
   type OneTimeTokenFormat,
   verifyOneTimeToken,
 } from './oneTimeToken';
+export {
+  approveConsentRequest,
+  CONSENT_REQUEST_PARAM,
+  type ConsentRequestView,
+  createPendingConsentOnAuthorize,
+  type CreatePendingConsentOnAuthorizeOptions,
+  denyConsentRequest,
+  getConsentRequest,
+  type PendingAuthorization,
+  type PendingAuthorizationStore,
+} from './pendingConsent';
 export {
   type ConsentStoreQuery,
   createPostgresConsentStore,

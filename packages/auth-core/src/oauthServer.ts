@@ -29,16 +29,8 @@ export * from './oauthServerTypes';
 // Internal helpers
 // ---------------------------------------------------------------------------
 
-const base64Url = (buffer: Buffer): string => {
-  return buffer
-    .toString('base64')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '');
-};
-
 const generateToken = (bytes = 32): string => {
-  return base64Url(randomBytes(bytes));
+  return randomBytes(bytes).toString('base64url');
 };
 
 const joinUrl = (issuer: string, path: string): string => {
@@ -245,6 +237,7 @@ const handleAuthorize = async (
   const result = await onAuthorize({
     client,
     headers: request.headers,
+    query,
     request: {
       clientId,
       redirectUri,

@@ -170,11 +170,15 @@ Writing a store by hand? Two details are not obvious from the interfaces. `AuthC
 
 ## Deferred consent screens
 
-`createRedirectConsentOnAuthorize` sends the user to an external consent page with the OAuth parameters — including `redirect_uri` — on the query string, and consumes the approval it records (see `ConsentGrantStore`). Two rules keep that page safe.
+Use `createPendingConsentOnAuthorize` when the consent page lives outside the authorization server. `/authorize` validates the client and `redirect_uri`, stores the request server-side, and sends the user to the consent page with only an opaque `consent_request` id. The page loads what it shows with `getConsentRequest` and records the approval with `approveConsentRequest`, which returns the `/authorize` URL to resume. The resumed request is approved only when it is identical to the one the user approved, and the approval is single-use. Four rules keep that page safe.
 
-**Never navigate to `redirect_uri`.** The consent page cannot distinguish a genuine redirect from `/authorize` from a URL an attacker built and sent to a victim, so using that parameter to navigate turns an authenticated page into an open redirector. On approval, navigate to the authorization server's own `/authorize` with the parameters it was handed — the server re-validates `redirect_uri` against the registered client, so a forged one fails there. On cancel, render a terminal "nothing was connected" state; losing the OAuth-conformant `error=access_denied` redirect is the correct trade.
+**Render only the server-held request.** A consent page that reads `client_id`, `redirect_uri` or a display name from its own URL shows whatever an attacker put in the link they sent, and an approval keyed by the PKCE challenge alone can then be redeemed by the attacker's own client. `createRedirectConsentOnAuthorize` works that way and is deprecated.
 
-**Render sign-in in place.** If the consent route redirects an unauthenticated visitor to `/login`, the OAuth parameters have to be carried there and back — threading a single-use PKCE challenge through a redirect chain where it can land in logs or a `Referer` header. Render the sign-in form on the consent route instead, so the query string stays in exactly one place.
+**Show the redirect as the fact, the name as a claim.** Dynamic client registration lets anyone choose `client_name` and `logo_uri`; the registered `redirect_uri` is where the code goes. Show its host, and warn when it is not one you recognise.
+
+**Never navigate to `redirect_uri` from the page.** Navigate to the `/authorize` URL `approveConsentRequest` returns; the server re-validates everything there. On cancel, call `denyConsentRequest` and render a terminal "nothing was connected" state; losing the OAuth-conformant `error=access_denied` redirect is the correct trade.
+
+**Render sign-in in place.** If the consent route redirects an unauthenticated visitor to `/login`, the consent id has to be carried there and back through a redirect chain where it can land in logs or a `Referer` header. Render the sign-in form on the consent route instead.
 
 ## Scopes
 
