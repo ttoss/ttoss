@@ -3,10 +3,10 @@ import { jestUnitConfig } from '@ttoss/config';
 export default jestUnitConfig({
   coverageThreshold: {
     global: {
-      statements: 99.15,
-      branches: 98.1,
+      statements: 99.2,
+      branches: 98.2,
       functions: 100,
-      lines: 99.15,
+      lines: 99.2,
     },
   },
 });

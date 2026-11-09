@@ -71,7 +71,7 @@ export type CreateRedirectConsentOnAuthorizeOptions = {
   }) => ClientDisplay | undefined;
 } & ConsentGrantStore;
 
-const resolveClientDisplay = async (
+export const resolveClientDisplay = async (
   clientId: string,
   clientStore: ClientStore | undefined,
   getClientDisplayFallback:
@@ -101,6 +101,12 @@ const resolveClientDisplay = async (
  * 2. Otherwise the user is redirected to `consentUrl` with the full OAuth
  *    request parameters so the consent screen can record its approval and
  *    restart the authorization flow.
+ *
+ * @deprecated Use {@link createPendingConsentOnAuthorize}. Here the consent
+ * screen renders from its own URL and a grant is keyed by `codeChallenge`
+ * alone, so a link built by an attacker can show a trusted client and
+ * `redirect_uri` while the grant is redeemed by the attacker's own client,
+ * which picked the same challenge.
  */
 export const createRedirectConsentOnAuthorize = ({
   consentUrl,
