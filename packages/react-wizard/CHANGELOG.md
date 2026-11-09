@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.11.3 (2026-11-09)
+
+### Bug Fixes
+
+- **react-wizard:** fit the horizontal step list on narrow screens ([#1428](https://github.com/ttoss/ttoss/issues/1428)) ([db71a55](https://github.com/ttoss/ttoss/commit/db71a55c80780db0f2ff4fb4461ad1418baeed7f))
+
 ## 0.11.2 (2026-11-03)
 
 **Note:** Version bump only for package @ttoss/react-wizard
