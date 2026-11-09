@@ -6,6 +6,9 @@ on:
       - main
     types:
       - completed
+concurrency:
+  group: cleanup-tags
+  cancel-in-progress: false
 jobs:
   cleanup-tags:
     runs-on: ubuntu-latest
