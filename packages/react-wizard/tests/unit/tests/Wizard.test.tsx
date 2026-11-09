@@ -41,7 +41,8 @@ describe('Wizard', () => {
   test('renders step list with all step titles', () => {
     render(<Wizard steps={createSteps()} />);
 
-    expect(screen.getByText('Step 1')).toBeInTheDocument();
+    // The active step's text also renders in the narrow-screen summary.
+    expect(screen.getAllByText('Step 1')).toHaveLength(2);
     expect(screen.getByText('Step 2')).toBeInTheDocument();
     expect(screen.getByText('Step 3')).toBeInTheDocument();
   });
@@ -49,7 +50,7 @@ describe('Wizard', () => {
   test('renders step descriptions when provided', () => {
     render(<Wizard steps={createSteps()} />);
 
-    expect(screen.getByText('First step description')).toBeInTheDocument();
+    expect(screen.getAllByText('First step description')).toHaveLength(2);
     expect(screen.getByText('Final step')).toBeInTheDocument();
   });
 
@@ -302,7 +303,7 @@ describe('Wizard layouts', () => {
   test('centers the step descriptions', () => {
     render(<Wizard steps={createSteps()} />);
 
-    expect(screen.getByText('First step description')).toHaveStyleRule(
+    expect(screen.getAllByText('First step description')[0]).toHaveStyleRule(
       'text-align',
       'center'
     );

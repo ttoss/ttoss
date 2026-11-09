@@ -101,4 +101,70 @@ describe('WizardStepList', () => {
 
     expect(onStepClick).not.toHaveBeenCalled();
   });
+  test('repeats the active step text under a horizontal list for narrow screens', () => {
+    const steps: WizardStep[] = [
+      { title: 'First', description: 'First description', content: null },
+      { title: 'Second', description: 'Second description', content: null },
+    ];
+
+    render(
+      <WizardStepList
+        steps={steps}
+        currentStep={1}
+        layout="top"
+        variant="accent"
+        allowStepClick={false}
+        getStepStatus={({ stepIndex }) => {
+          return stepIndex === 0 ? 'completed' : 'active';
+        }}
+        onStepClick={jest.fn()}
+      />
+    );
+
+    const summary = screen.getByTestId('wizard-active-step-summary');
+
+    expect(summary).toHaveTextContent('Second');
+    expect(summary).toHaveTextContent('Second description');
+    expect(summary).not.toHaveTextContent('First');
+  });
+
+  test('renders no active step summary for a step without text', () => {
+    render(
+      <WizardStepList
+        steps={[{ title: '', content: null }]}
+        currentStep={0}
+        layout="top"
+        variant="accent"
+        allowStepClick={false}
+        getStepStatus={() => {
+          return 'active';
+        }}
+        onStepClick={jest.fn()}
+      />
+    );
+
+    expect(
+      screen.queryByTestId('wizard-active-step-summary')
+    ).not.toBeInTheDocument();
+  });
+
+  test('renders no active step summary in a vertical list', () => {
+    render(
+      <WizardStepList
+        steps={[{ title: 'Only', content: null }]}
+        currentStep={0}
+        layout="left"
+        variant="accent"
+        allowStepClick={false}
+        getStepStatus={() => {
+          return 'active';
+        }}
+        onStepClick={jest.fn()}
+      />
+    );
+
+    expect(
+      screen.queryByTestId('wizard-active-step-summary')
+    ).not.toBeInTheDocument();
+  });
 });
