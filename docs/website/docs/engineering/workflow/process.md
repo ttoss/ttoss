@@ -122,6 +122,7 @@ The tick applies these on every tick, under the standing decision:
 | The change's description names other tasks it settles | closes them on integration, citing the change, as far as the standing decision delegates tidying (GTF-S6) |
 | A change in the project's repos names no task | applies the `Intake` answer: writes a task for it, or leaves it |
 | A release step's task closes | moves each task it blocked to its check's wait, or closes it citing the release task, whose outcome is the evidence |
+| A task is held only by `blocks` sources whose change integrated and that stay open (a release or a check later) | reports it, and the Chase lists it for a person, who retracts the edge to start it now or keeps it until the sources close; the edge keeps gating until then. It retracts the edge itself, recording a `mentions` with the change, only when the standing decision delegates that ([Autonomy is bounded by reversibility](./principles.md#autonomy-is-bounded-by-reversibility)) |
 | A check comes due | starts a check child (unless the `Closing evidence` names another reader), which closes the task with what it observed or sends it back; harm the change caused is reverted first, as in the "pipeline red" row |
 | A child's run failed, is gone, or stays `running` past the `Runtime`'s `Stale after` with its task open | closes the run `failed`; the task is ready again |
 | A run starts | records `Stale after` as its hold, so Flow keeps its tasks from other runs exactly that long |
