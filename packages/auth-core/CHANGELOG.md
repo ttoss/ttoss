@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.23.0 (2026-11-09)
+
+### Features
+
+- **auth-core:** server-held consent requests bound to what the user saw ([#1434](https://github.com/ttoss/ttoss/issues/1434)) ([ec33e11](https://github.com/ttoss/ttoss/commit/ec33e1130c622e25827fcdf762e03cd51b0417f7))
+
 # 0.22.0 (2026-10-27)
 
 ### Bug Fixes

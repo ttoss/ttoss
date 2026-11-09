@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [13.2.0](https://github.com/ttoss/ttoss/compare/%40docs%2Fwebsite%4013.1.4...%40docs%2Fwebsite%4013.2.0) (2026-11-09)
+
+### Features
+
+- **auth-core:** server-held consent requests bound to what the user saw ([#1434](https://github.com/ttoss/ttoss/issues/1434)) ([ec33e11](https://github.com/ttoss/ttoss/commit/ec33e1130c622e25827fcdf762e03cd51b0417f7))
+
 ## [13.1.4](https://github.com/ttoss/ttoss/compare/%40docs%2Fwebsite%4013.1.3...%40docs%2Fwebsite%4013.1.4) (2026-11-09)
 
 **Note:** Version bump only for package @docs/website
