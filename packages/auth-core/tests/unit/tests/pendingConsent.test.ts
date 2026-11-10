@@ -1,6 +1,7 @@
 import {
   approveConsentRequest,
   CONSENT_REQUEST_PARAM,
+  CONSENT_RESUME_PARAM,
   createMemoryAuthCodeStore,
   createMemoryClientStore,
   createMemoryPendingAuthorizationStore,
@@ -160,6 +161,7 @@ describe('createPendingConsentOnAuthorize', () => {
     expect(queryOf(approved!.redirect)).toEqual({
       ...trustedQuery,
       [CONSENT_REQUEST_PARAM]: id,
+      [CONSENT_RESUME_PARAM]: expect.stringMatching(/^[\w-]{43}$/),
     });
 
     const res = await authorize(queryOf(approved!.redirect));
@@ -267,6 +269,44 @@ describe('createPendingConsentOnAuthorize', () => {
       return { ...ctx, id, resume: queryOf(approved!.redirect) };
     };
 
+    test('the holder of the request id cannot redeem it without the resume secret', async () => {
+      const { authorize, store, id, resume } = await approveTrusted();
+      const withoutSecret = { ...resume };
+      delete withoutSecret[CONSENT_RESUME_PARAM];
+
+      const polled = await authorize(withoutSecret);
+
+      expect(polled.redirect).not.toContain('code=');
+      expect(consentIdFrom(polled.redirect)).not.toBe(id);
+      expect((await store.get(id))!.approval).toBeDefined();
+
+      const res = await authorize(resume);
+      expect(new URL(res.redirect!).searchParams.get('code')).toBeTruthy();
+    });
+
+    test('a wrong resume secret neither redeems nor burns the approval', async () => {
+      const { authorize, store, id, resume } = await approveTrusted();
+
+      const forged = await authorize({
+        ...resume,
+        [CONSENT_RESUME_PARAM]: 'x'.repeat(43),
+      });
+
+      expect(forged.redirect).not.toContain('code=');
+      expect((await store.get(id))!.approval).toBeDefined();
+    });
+
+    test('two concurrent resumes issue one code', async () => {
+      const { authorize, resume } = await approveTrusted();
+
+      const results = await Promise.all([authorize(resume), authorize(resume)]);
+
+      const codes = results.filter((res) => {
+        return new URL(res.redirect!).searchParams.get('code');
+      });
+      expect(codes).toHaveLength(1);
+    });
+
     test('another client with the same challenge cannot redeem it', async () => {
       const { authorize, store, id, resume } = await approveTrusted();
 
@@ -278,7 +318,7 @@ describe('createPendingConsentOnAuthorize', () => {
 
       expect(new URL(res.redirect!).origin).toBe('https://app.example.com');
       expect(res.redirect).not.toContain('code=');
-      expect((await store.get(id))!.approval).toEqual({
+      expect((await store.get(id))!.approval).toMatchObject({
         subject: 'victim',
         scopes: ['read', 'write'],
       });
@@ -363,7 +403,11 @@ describe('getConsentRequest', () => {
 
   test('returns undefined once approved', async () => {
     const store = createMemoryPendingAuthorizationStore();
-    await store.save(pending({ approval: { subject: 'u', scopes: [] } }));
+    await store.save(
+      pending({
+        approval: { subject: 'u', scopes: [], resumeSecretHash: 'h' },
+      })
+    );
 
     expect(await getConsentRequest({ store, id: 'p1' })).toBeUndefined();
   });
@@ -435,6 +479,21 @@ describe('approveConsentRequest', () => {
     expect(await approve(store)).toBeUndefined();
   });
 
+  test('of two concurrent approvals, only one is recorded', async () => {
+    const store = await seed();
+
+    const results = await Promise.all([
+      approve(store, { subject: 'first' }),
+      approve(store, { subject: 'second' }),
+    ]);
+
+    expect(
+      results.filter((result) => {
+        return result !== undefined;
+      })
+    ).toHaveLength(1);
+  });
+
   test('refuses a second approval, keeping the first subject', async () => {
     const store = await seed();
     await approve(store, { subject: 'first' });
@@ -455,7 +514,7 @@ describe('approveConsentRequest', () => {
 });
 
 describe('denyConsentRequest', () => {
-  test('discards the pending request', async () => {
+  const seed = async () => {
     const store = createMemoryPendingAuthorizationStore();
     await store.save({
       id: 'p1',
@@ -466,9 +525,36 @@ describe('denyConsentRequest', () => {
       codeChallengeMethod: 'S256',
       expiresAt: Date.now() + 60_000,
     });
+    return store;
+  };
+
+  test('discards the pending request', async () => {
+    const store = await seed();
 
     await denyConsentRequest({ store, id: 'p1' });
 
     expect(await store.get('p1')).toBeUndefined();
+  });
+
+  test('leaves an approved request alone', async () => {
+    const store = await seed();
+    await approveConsentRequest({
+      store,
+      id: 'p1',
+      subject: 'u',
+      authorizeUrl: AUTHORIZE_URL,
+    });
+
+    await denyConsentRequest({ store, id: 'p1' });
+
+    expect((await store.get('p1'))!.approval).toBeDefined();
+  });
+
+  test('is a no-op for an unknown id', async () => {
+    const store = createMemoryPendingAuthorizationStore();
+
+    await expect(
+      denyConsentRequest({ store, id: 'nope' })
+    ).resolves.toBeUndefined();
   });
 });

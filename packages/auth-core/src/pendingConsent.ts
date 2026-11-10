@@ -1,4 +1,4 @@
-import { randomBytes } from 'node:crypto';
+import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 
 import { asString } from './authenticateClient';
 import type {
@@ -17,6 +17,14 @@ import {
  * consent URL, and on the `/authorize` request the consent page resumes.
  */
 export const CONSENT_REQUEST_PARAM = 'consent_request';
+
+/**
+ * Query-string parameter that carries the one-time secret
+ * {@link approveConsentRequest} hands to the approver, on the `/authorize`
+ * request that resumes the approval. Only a request carrying it redeems the
+ * approval.
+ */
+export const CONSENT_RESUME_PARAM = 'consent_resume';
 
 /**
  * An authorization request `/authorize` already validated (known client,
@@ -44,24 +52,52 @@ export type PendingAuthorization = {
   /** Unix timestamp (milliseconds) after which the request is invalid. */
   expiresAt: number;
   /** Set once by {@link approveConsentRequest}; absent until the user approves. */
-  approval?: {
-    /** The authenticated end-user subject who approved. */
-    subject: string;
-    /** The scopes the user granted, a subset of `scopes`. */
-    scopes: string[];
-  };
+  approval?: PendingApproval;
+};
+
+/** The user's approval of a {@link PendingAuthorization}. */
+export type PendingApproval = {
+  /** The authenticated end-user subject who approved. */
+  subject: string;
+  /** The scopes the user granted, a subset of the requested ones. */
+  scopes: string[];
+  /**
+   * SHA-256 (hex) of the one-time secret handed to the approver. The resumed
+   * `/authorize` must present the secret, so an approval is redeemable only by
+   * the browser that approved, never by whoever else holds the request id.
+   */
+  resumeSecretHash: string;
 };
 
 /**
  * App-provided persistence for {@link PendingAuthorization} records, keyed by
- * `id`. Records are short-lived and single-use; the core deletes each one as
- * its approval is consumed.
+ * `id`. Records are short-lived and single-use. `approve` and `consume` must be
+ * atomic (a conditional `UPDATE … RETURNING`, a `DELETE … RETURNING`), so two
+ * concurrent calls can never both succeed.
  */
 export type PendingAuthorizationStore = {
-  /** Insert or replace a record by `id`. */
+  /** Insert a new, unapproved record. */
   save: (pending: PendingAuthorization) => Promise<void> | void;
   /** Look up a record by `id`. Return `undefined` if unknown. */
   get: (
+    id: string
+  ) =>
+    | Promise<PendingAuthorization | undefined>
+    | PendingAuthorization
+    | undefined;
+  /**
+   * Record `approval` on the record `id` only if it exists and has no approval
+   * yet. Return whether it was recorded.
+   */
+  approve: (params: {
+    id: string;
+    approval: PendingApproval;
+  }) => Promise<boolean> | boolean;
+  /**
+   * Remove the record `id` and return it, or `undefined` if it was already
+   * gone. Only one of any concurrent calls gets the record.
+   */
+  consume: (
     id: string
   ) =>
     | Promise<PendingAuthorization | undefined>
@@ -76,6 +112,24 @@ const DEFAULT_TTL_SECONDS = 600;
 
 const generateId = (): string => {
   return randomBytes(32).toString('base64url');
+};
+
+const hashSecret = (secret: string): string => {
+  return createHash('sha256').update(secret).digest('hex');
+};
+
+const secretMatches = ({
+  secret,
+  hash,
+}: {
+  secret: string;
+  hash: string;
+}): boolean => {
+  const presented = Buffer.from(hashSecret(secret), 'hex');
+  const expected = Buffer.from(hash, 'hex');
+  return (
+    presented.length === expected.length && timingSafeEqual(presented, expected)
+  );
 };
 
 const sameScopes = (a: string[], b: string[]): boolean => {
@@ -117,6 +171,41 @@ const matchesRequest = ({
 };
 
 /**
+ * The approval a resumed `/authorize` redeems, or `undefined`. The secret is
+ * checked before the record is consumed, so a caller without it cannot burn
+ * the approver's approval; the consume is atomic, so it is redeemed once.
+ */
+const redeemApproval = async ({
+  store,
+  consentId,
+  resumeSecret,
+  request,
+  resource,
+}: {
+  store: PendingAuthorizationStore;
+  consentId: string;
+  resumeSecret: string;
+  request: OnAuthorizeArgs['request'];
+  resource: string | undefined;
+}): Promise<PendingApproval | undefined> => {
+  const pending = await store.get(consentId);
+  if (
+    !isLive(pending) ||
+    !pending.approval ||
+    !secretMatches({
+      secret: resumeSecret,
+      hash: pending.approval.resumeSecretHash,
+    }) ||
+    !matchesRequest({ pending, request, resource })
+  ) {
+    return undefined;
+  }
+
+  const consumed = await store.consume(consentId);
+  return consumed?.approval;
+};
+
+/**
  * Options for {@link createPendingConsentOnAuthorize}.
  */
 export type CreatePendingConsentOnAuthorizeOptions = {
@@ -145,13 +234,16 @@ export type CreatePendingConsentOnAuthorizeOptions = {
  * 2. The consent screen loads the request with {@link getConsentRequest} and,
  *    on approval, calls {@link approveConsentRequest}, which records the
  *    subject and returns the `/authorize` URL to resume.
- * 3. The resumed `/authorize` carries the id. When the stored request is
- *    approved, unexpired and identical to the incoming one, it is consumed
- *    (single use) and approved; otherwise a fresh consent round starts.
+ * 3. The resumed `/authorize` carries the id and the one-time resume secret
+ *    the approver received. When the stored request is approved, unexpired,
+ *    identical to the incoming one and the secret matches, it is consumed
+ *    (atomically, single use) and approved; otherwise a fresh consent round
+ *    starts.
  *
  * Unlike {@link createRedirectConsentOnAuthorize}, nothing the consent screen
  * shows comes from its URL, and an approval is bound to the client,
- * `redirect_uri`, scopes and PKCE challenge the user saw.
+ * `redirect_uri`, scopes and PKCE challenge the user saw, and redeemable only
+ * by the browser that approved.
  */
 export const createPendingConsentOnAuthorize = ({
   consentUrl,
@@ -164,19 +256,21 @@ export const createPendingConsentOnAuthorize = ({
   }: OnAuthorizeArgs): Promise<OnAuthorizeResult> => {
     const resource = asString(query?.resource);
     const consentId = asString(query?.[CONSENT_REQUEST_PARAM]);
+    const resumeSecret = asString(query?.[CONSENT_RESUME_PARAM]);
 
-    if (consentId) {
-      const pending = await store.get(consentId);
-      if (
-        isLive(pending) &&
-        pending.approval &&
-        matchesRequest({ pending, request, resource })
-      ) {
-        await store.delete(consentId);
+    if (consentId && resumeSecret) {
+      const approval = await redeemApproval({
+        store,
+        consentId,
+        resumeSecret,
+        request,
+        resource,
+      });
+      if (approval) {
         return {
           approved: true,
-          subject: pending.approval.subject,
-          scopes: pending.approval.scopes,
+          subject: approval.subject,
+          scopes: approval.scopes,
         };
       }
     }
@@ -273,8 +367,10 @@ export const getConsentRequest = async ({
 /**
  * Records the signed-in user's approval of a pending authorization and returns
  * the `/authorize` URL the consent screen navigates to, rebuilt from the
- * stored request. Returns `undefined` when the id is unknown, expired or
- * already approved, or when `scopes` asks for more than was requested.
+ * stored request and carrying a one-time resume secret. Hand the URL only to
+ * the approver: whoever holds it redeems the approval. Returns `undefined`
+ * when the id is unknown, expired or already approved, or when `scopes` asks
+ * for more than was requested.
  */
 export const approveConsentRequest = async ({
   store,
@@ -311,7 +407,18 @@ export const approveConsentRequest = async ({
     return undefined;
   }
 
-  await store.save({ ...pending, approval: { subject, scopes: granted } });
+  const resumeSecret = generateId();
+  const recorded = await store.approve({
+    id,
+    approval: {
+      subject,
+      scopes: granted,
+      resumeSecretHash: hashSecret(resumeSecret),
+    },
+  });
+  if (!recorded) {
+    return undefined;
+  }
 
   const url = new URL(authorizeUrl);
   url.searchParams.set('response_type', 'code');
@@ -327,14 +434,16 @@ export const approveConsentRequest = async ({
     url.searchParams.set('resource', pending.resource);
   }
   url.searchParams.set(CONSENT_REQUEST_PARAM, pending.id);
+  url.searchParams.set(CONSENT_RESUME_PARAM, resumeSecret);
 
   return { redirect: url.toString() };
 };
 
 /**
- * Discards a pending authorization the user declined. The consent screen then
- * renders its own "nothing was connected" state; it never navigates to the
- * client's `redirect_uri`.
+ * Discards a pending authorization the user declined. An approved request is
+ * left alone, so a stale deny from another tab cannot cancel an approval about
+ * to be redeemed. The consent screen then renders its own "nothing was
+ * connected" state; it never navigates to the client's `redirect_uri`.
  */
 export const denyConsentRequest = async ({
   store,
@@ -345,5 +454,8 @@ export const denyConsentRequest = async ({
   /** The pending authorization's id. */
   id: string;
 }): Promise<void> => {
-  await store.delete(id);
+  const pending = await store.get(id);
+  if (pending && !pending.approval) {
+    await store.delete(id);
+  }
 };

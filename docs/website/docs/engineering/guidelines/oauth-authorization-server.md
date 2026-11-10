@@ -170,7 +170,7 @@ Writing a store by hand? Two details are not obvious from the interfaces. `AuthC
 
 ## Deferred consent screens
 
-Use `createPendingConsentOnAuthorize` when the consent page lives outside the authorization server. `/authorize` validates the client and `redirect_uri`, stores the request server-side, and sends the user to the consent page with only an opaque `consent_request` id. The page loads what it shows with `getConsentRequest` and records the approval with `approveConsentRequest`, which returns the `/authorize` URL to resume. The resumed request is approved only when it is identical to the one the user approved, and the approval is single-use. Four rules keep that page safe.
+Use `createPendingConsentOnAuthorize` when the consent page lives outside the authorization server. `/authorize` validates the client and `redirect_uri`, stores the request server-side, and sends the user to the consent page with only an opaque `consent_request` id. The page loads what it shows with `getConsentRequest` and records the approval with `approveConsentRequest`, which returns the `/authorize` URL to resume, carrying a one-time secret. The resumed request is approved only when it presents that secret and is identical to the one the user approved, and the approval is single-use: the client that started the request holds its id too, so the id alone must never redeem it. Four rules keep that page safe.
 
 **Render only the server-held request.** A consent page that reads `client_id`, `redirect_uri` or a display name from its own URL shows whatever an attacker put in the link they sent, and an approval keyed by the PKCE challenge alone can then be redeemed by the attacker's own client. `createRedirectConsentOnAuthorize` works that way and is deprecated.
 

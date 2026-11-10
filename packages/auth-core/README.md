@@ -407,10 +407,12 @@ const tokens = await store.listBySubject!('user_123');
 `createPendingConsentOnAuthorize` is the `onAuthorize` hook for a consent screen that lives outside the authorization server. `/authorize` validates the client and `redirect_uri`, stores the request as a `PendingAuthorization` in your `PendingAuthorizationStore`, and redirects to the consent screen with only an opaque `consent_request` id. The screen never reads OAuth parameters from its own URL:
 
 - `getConsentRequest({ store, id, clientStore })` returns what to show: the registered client's name and logo, the `redirectUri` the code will be sent to, and the scopes. It returns `undefined` for an unknown, expired or already-approved id.
-- `approveConsentRequest({ store, id, subject, authorizeUrl })` records the signed-in user's approval and returns the `/authorize` URL to navigate to, rebuilt from the stored request.
-- `denyConsentRequest({ store, id })` discards it.
+- `approveConsentRequest({ store, id, subject, authorizeUrl })` records the signed-in user's approval and returns the `/authorize` URL to navigate to, rebuilt from the stored request and carrying a one-time `consent_resume` secret. Hand it only to the approver.
+- `denyConsentRequest({ store, id })` discards a request that is not yet approved.
 
-The resumed `/authorize` is approved only when the stored request is approved, unexpired and identical to the incoming one (client, `redirect_uri`, scopes, PKCE challenge, `state`, `resource`), and the approval is consumed. So an approval can never be redeemed by a different client or redirect. Name and logo are self-reported at dynamic client registration; show `redirectUri` as the fact.
+The resumed `/authorize` is approved only when it presents the resume secret and the stored request is approved, unexpired and identical to the incoming one (client, `redirect_uri`, scopes, PKCE challenge, `state`, `resource`). The approval is then consumed. So an approval can be redeemed neither by a different client or redirect nor by whoever else holds the request id, such as the client that started the request.
+
+`PendingAuthorizationStore.approve` and `consume` must be atomic (a conditional `UPDATE … RETURNING`, a `DELETE … RETURNING`), so two concurrent calls never both succeed. Name and logo are self-reported at dynamic client registration; show `redirectUri` as the fact.
 
 ```ts
 import {

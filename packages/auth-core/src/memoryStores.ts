@@ -77,6 +77,19 @@ export const createMemoryPendingAuthorizationStore =
       get: (id) => {
         return pending.get(id);
       },
+      approve: ({ id, approval }) => {
+        const current = pending.get(id);
+        if (!current || current.approval) {
+          return false;
+        }
+        pending.set(id, { ...current, approval });
+        return true;
+      },
+      consume: (id) => {
+        const current = pending.get(id);
+        pending.delete(id);
+        return current;
+      },
       delete: (id) => {
         pending.delete(id);
       },
