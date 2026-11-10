@@ -132,3 +132,35 @@ test('open desktop sidebar keeps the muted border color on its right border', ()
     rule?.lastIndexOf('border-color: display.border.muted.default')
   ).toBeGreaterThan(rule?.lastIndexOf('border-right:') ?? Infinity);
 });
+
+const cssRulesFor = (element: HTMLElement) => {
+  const classNames = element.className.split(' ');
+  return Array.from(document.styleSheets)
+    .flatMap((sheet) => {
+      return Array.from(sheet.cssRules).map((cssRule) => {
+        return cssRule.cssText;
+      });
+    })
+    .filter((cssText) => {
+      return classNames.some((className) => {
+        return cssText.includes(`.${className}`);
+      });
+    })
+    .join('\n');
+};
+
+test('on a phone, both sidebar toggles grow their tap area to 44px without changing their size', async () => {
+  const user = userEvent.setup();
+
+  jest.mocked(useIsDesktop).mockReturnValue({ isDesktop: false });
+
+  renderLayout({ sidebarProps: { showSidebarButtonInDrawer: true } });
+
+  await user.click(screen.getAllByTestId('sidebar-button')[0]);
+
+  for (const button of screen.getAllByTestId('sidebar-button')) {
+    const css = cssRulesFor(button);
+    expect(css).toMatch(/::after/);
+    expect(css).toContain('min(0px, calc((100% - 44px) / 2))');
+  }
+});
