@@ -150,7 +150,7 @@ The layout **automatically composes** itself by finding components with matching
 ### Responsive Behavior
 
 - **Desktop**: Sidebar remains visible, toggleable via button
-- **Mobile**: Sidebar becomes slide-out drawer, auto-closes on navigation
+- **Mobile**: Sidebar becomes slide-out drawer, auto-closes on navigation; the sidebar toggle's tap area is at least 44 × 44 px, through an invisible pseudo-element, so the header keeps its height
 - **Accessible**: Full keyboard navigation and screen reader support
 
 ### Styling Integration

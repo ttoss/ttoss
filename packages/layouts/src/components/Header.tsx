@@ -7,7 +7,7 @@ import * as React from 'react';
 import { useIsDesktop } from '../useIsDesktop';
 import { useLayout } from './LayoutProvider';
 import { sidebarMessages } from './messages';
-import { SIDEBAR_WIDTH } from './Sidebar';
+import { SIDEBAR_WIDTH, sidebarButtonSx } from './Sidebar';
 
 const paddingSx = {
   paddingX: '4',
@@ -41,10 +41,7 @@ export const Header = ({
         )}
         aria-expanded={isSidebarOpen}
         aria-controls="sidebar"
-        sx={{
-          cursor: 'pointer',
-          fontSize: ['xl', '2xl'],
-        }}
+        sx={sidebarButtonSx}
         data-testid="sidebar-button"
         onClick={toggleSidebar}
       >
