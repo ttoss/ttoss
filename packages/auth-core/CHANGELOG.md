@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.26.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fauth-core%400.25.0...%40ttoss%2Fauth-core%400.26.0) (2026-11-10)
+
+### Features
+
+- **auth-core:** approveConsentRequest's authorizeUrl is optional ([#1439](https://github.com/ttoss/ttoss/issues/1439)) ([0fca8ec](https://github.com/ttoss/ttoss/commit/0fca8ec0b7c0acb76976ba9c4502cdff5f44d86b))
+
 # [0.25.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fauth-core%400.24.0...%40ttoss%2Fauth-core%400.25.0) (2026-11-10)
 
 ### Features
