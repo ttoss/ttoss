@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fauth-postgresdb%400.6.2...%40ttoss%2Fauth-postgresdb%400.7.0) (2026-11-10)
+
+### Features
+
+- **auth-postgresdb:** pending authorization store; auth-core returns resume params ([#1437](https://github.com/ttoss/ttoss/issues/1437)) ([ad12dd7](https://github.com/ttoss/ttoss/commit/ad12dd7a81665d3dced3741ef0026e5ef5f1ef7d))
+
 ## [0.6.2](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fauth-postgresdb%400.6.1...%40ttoss%2Fauth-postgresdb%400.6.2) (2026-11-10)
 
 **Note:** Version bump only for package @ttoss/auth-postgresdb
