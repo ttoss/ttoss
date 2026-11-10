@@ -107,11 +107,13 @@ export {
 export {
   approveConsentRequest,
   CONSENT_REQUEST_PARAM,
+  CONSENT_RESUME_PARAM,
   type ConsentRequestView,
   createPendingConsentOnAuthorize,
   type CreatePendingConsentOnAuthorizeOptions,
   denyConsentRequest,
   getConsentRequest,
+  type PendingApproval,
   type PendingAuthorization,
   type PendingAuthorizationStore,
 } from './pendingConsent';
