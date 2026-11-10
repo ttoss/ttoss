@@ -1,6 +1,7 @@
 import type {
   AuthCodeStore,
   ClientStore,
+  PendingAuthorizationStore,
   RefreshTokenStore,
 } from '@ttoss/auth-core';
 
@@ -11,6 +12,7 @@ import {
   createConsentStore,
   type PostgresdbConsentStore,
 } from './stores/createConsentStore';
+import { createPendingAuthorizationStore } from './stores/createPendingAuthorizationStore';
 import { createRefreshTokenStore } from './stores/createRefreshTokenStore';
 
 /** The durable OAuth stores returned by {@link createPostgresdbOAuthStores}. */
@@ -21,6 +23,8 @@ export interface PostgresdbOAuthStores {
   authCodeStore: AuthCodeStore;
   /** Consent handoff records for `createRedirectConsentOnAuthorize`. */
   consentStore: PostgresdbConsentStore;
+  /** Server-held requests for `createPendingConsentOnAuthorize`. */
+  pendingAuthorizationStore: PendingAuthorizationStore;
   /** Tracked refresh tokens, for `createRefreshRotation`. */
   refreshTokenStore: RefreshTokenStore;
 }
@@ -57,6 +61,9 @@ export const createPostgresdbOAuthStores = ({
     clientStore: createClientStore({ model: db.OAuthClient }),
     authCodeStore: createAuthCodeStore({ model: db.OAuthAuthCode }),
     consentStore: createConsentStore({ model: db.OAuthConsent }),
+    pendingAuthorizationStore: createPendingAuthorizationStore({
+      model: db.OAuthPendingAuthorization,
+    }),
     refreshTokenStore: createRefreshTokenStore({
       model: db.OAuthRefreshToken,
     }),

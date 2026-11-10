@@ -392,7 +392,18 @@ export const approveConsentRequest = async ({
   scopes?: string[];
   /** The authorization server's `/authorize` endpoint URL. */
   authorizeUrl: string;
-}): Promise<{ redirect: string } | undefined> => {
+}): Promise<
+  | {
+      /** The `/authorize` URL to navigate to. */
+      redirect: string;
+      /**
+       * The same request as query parameters, for a caller that builds the
+       * `/authorize` URL itself (an API that does not know the server's URL).
+       */
+      resumeParams: Record<string, string>;
+    }
+  | undefined
+> => {
   const pending = await store.get(id);
   if (!isLive(pending) || pending.approval) {
     return undefined;
@@ -436,7 +447,10 @@ export const approveConsentRequest = async ({
   url.searchParams.set(CONSENT_REQUEST_PARAM, pending.id);
   url.searchParams.set(CONSENT_RESUME_PARAM, resumeSecret);
 
-  return { redirect: url.toString() };
+  return {
+    redirect: url.toString(),
+    resumeParams: Object.fromEntries(url.searchParams),
+  };
 };
 
 /**

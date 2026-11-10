@@ -25,8 +25,13 @@ import { User } from './models/User';
 
 export const db = await initialize({ models: { ...oauthModels, User } });
 
-export const { clientStore, authCodeStore, consentStore, refreshTokenStore } =
-  createPostgresdbOAuthStores({ db });
+export const {
+  clientStore,
+  authCodeStore,
+  consentStore,
+  pendingAuthorizationStore,
+  refreshTokenStore,
+} = createPostgresdbOAuthStores({ db });
 ```
 
 The stores drop straight into the OAuth server:
@@ -46,16 +51,17 @@ const authServer = oauthServer({
 });
 ```
 
-Each store is also exported on its own (`createClientStore`, `createAuthCodeStore`, `createConsentStore`, `createRefreshTokenStore`) for apps that register only some of the models.
+Each store is also exported on its own (`createClientStore`, `createAuthCodeStore`, `createConsentStore`, `createPendingAuthorizationStore`, `createRefreshTokenStore`) for apps that register only some of the models.
 
 ## Schema
 
-| Model               | Table                  | Primary key      |
-| ------------------- | ---------------------- | ---------------- |
-| `OAuthClient`       | `oauth_clients`        | `client_id`      |
-| `OAuthAuthCode`     | `oauth_auth_codes`     | `code_hash`      |
-| `OAuthConsent`      | `oauth_consents`       | `code_challenge` |
-| `OAuthRefreshToken` | `oauth_refresh_tokens` | `token_hash`     |
+| Model                       | Table                          | Primary key      |
+| --------------------------- | ------------------------------ | ---------------- |
+| `OAuthClient`               | `oauth_clients`                | `client_id`      |
+| `OAuthAuthCode`             | `oauth_auth_codes`             | `code_hash`      |
+| `OAuthConsent`              | `oauth_consents`               | `code_challenge` |
+| `OAuthPendingAuthorization` | `oauth_pending_authorizations` | `id`             |
+| `OAuthRefreshToken`         | `oauth_refresh_tokens`         | `token_hash`     |
 
 Every credential — authorization codes (`code_hash`), refresh tokens (`token_hash`), and client secrets (`client_secret_hash`) — is stored by SHA-256 hash, never in plaintext, so a database dump yields nothing replayable. `OAuthClient` keeps the registered RFC 7591 fields in their own columns and any additional submitted metadata in a `metadata` JSONB column, so a registration document round-trips unchanged.
 
@@ -72,6 +78,8 @@ Implementing `verifyClientSecret` is what makes hashing possible at all. A store
 ## Consent
 
 `consentStore` satisfies the `ConsentGrantStore` that `createRedirectConsentOnAuthorize` consumes, and adds `saveConsentGrant` for the write your consent page performs on approval. It is the single-use handoff keyed by the PKCE `code_challenge` — not a durable "user X trusts client Y" record, which is an app-level authorization decision and belongs in your own schema.
+
+`pendingAuthorizationStore` backs `createPendingConsentOnAuthorize`, the server-held consent flow. Prefer it: the screen reads the request by an opaque id, never from its own URL, and an approval is redeemable only by the approver's resume secret. Its `approve` is one conditional `UPDATE`, `consume` hands the row only to the caller whose `DELETE` removed it, and `delete` (deny) leaves an approved row alone.
 
 ## Related
 

@@ -17,7 +17,7 @@ stateDiagram-v2
     state "Ready (active)" as Ready
     state "A choice for a person (waiting)" as Person
     state "At the gates (waiting)" as Gates
-    state "Waiting for a release (blocked)" as Release
+    state "Waiting for a release (active, held by its edge)" as Release
     state "Waiting for the check (calendar)" as Check
     state "Done (completed)" as Done
     [*] --> Ready: intake

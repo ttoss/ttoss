@@ -1,6 +1,7 @@
 import { OAuthAuthCode } from './OAuthAuthCode';
 import { OAuthClient } from './OAuthClient';
 import { OAuthConsent } from './OAuthConsent';
+import { OAuthPendingAuthorization } from './OAuthPendingAuthorization';
 import { OAuthRefreshToken } from './OAuthRefreshToken';
 
 /**
@@ -20,10 +21,17 @@ export const oauthModels = {
   OAuthAuthCode,
   OAuthClient,
   OAuthConsent,
+  OAuthPendingAuthorization,
   OAuthRefreshToken,
 };
 
 /** The shape a `db` handle must have to back the OAuth stores. */
 export type OAuthModels = typeof oauthModels;
 
-export { OAuthAuthCode, OAuthClient, OAuthConsent, OAuthRefreshToken };
+export {
+  OAuthAuthCode,
+  OAuthClient,
+  OAuthConsent,
+  OAuthPendingAuthorization,
+  OAuthRefreshToken,
+};
