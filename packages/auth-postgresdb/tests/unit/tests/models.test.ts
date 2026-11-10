@@ -21,6 +21,7 @@ test('registers every OAuth model on the app connection', () => {
     'OAuthAuthCode',
     'OAuthClient',
     'OAuthConsent',
+    'OAuthPendingAuthorization',
     'OAuthRefreshToken',
   ]);
 });
@@ -29,6 +30,7 @@ test.each([
   [oauthModels.OAuthAuthCode, 'oauth_auth_codes', 'codeHash'],
   [oauthModels.OAuthClient, 'oauth_clients', 'clientId'],
   [oauthModels.OAuthConsent, 'oauth_consents', 'codeChallenge'],
+  [oauthModels.OAuthPendingAuthorization, 'oauth_pending_authorizations', 'id'],
   [oauthModels.OAuthRefreshToken, 'oauth_refresh_tokens', 'tokenHash'],
 ])('%# maps to table %s keyed by %s', (model, tableName, primaryKey) => {
   expect(model.getTableName()).toBe(tableName);
@@ -58,6 +60,10 @@ test('underscores column names so the schema is snake_case', () => {
   expect(oauthModels.OAuthClient.getAttributes().redirectUris?.field).toBe(
     'redirect_uris'
   );
+  expect(
+    oauthModels.OAuthPendingAuthorization.getAttributes().resumeSecretHash
+      ?.field
+  ).toBe('resume_secret_hash');
 });
 
 test('exposes attributes through Sequelize, unshadowed by class fields', () => {
