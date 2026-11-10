@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [14.0.0](https://github.com/ttoss/ttoss/compare/%40docs%2Fwebsite%4013.2.0...%40docs%2Fwebsite%4014.0.0) (2026-11-10)
+
+- fix(auth-core)!: redeem a consent approval only with the approver's resume secret (#1435) ([bdd77ba](https://github.com/ttoss/ttoss/commit/bdd77bad4cc6f70847b56d2658ad06abdd57bc5c)), closes [#1435](https://github.com/ttoss/ttoss/issues/1435)
+
+### BREAKING CHANGES
+
+- PendingAuthorizationStore gains approve (record an
+  approval only on an unapproved record) and consume (remove and return),
+  both atomic, so concurrent approvals or resumes never both succeed.
+  PendingAuthorization.approval carries resumeSecretHash. denyConsentRequest
+  leaves an approved request alone.
+
+# [13.2.0](https://github.com/ttoss/ttoss/compare/%40docs%2Fwebsite%4013.1.4...%40docs%2Fwebsite%4013.2.0) (2026-11-09)
+
+### Features
+
+- **auth-core:** server-held consent requests bound to what the user saw ([#1434](https://github.com/ttoss/ttoss/issues/1434)) ([ec33e11](https://github.com/ttoss/ttoss/commit/ec33e1130c622e25827fcdf762e03cd51b0417f7))
+
 ## [13.1.4](https://github.com/ttoss/ttoss/compare/%40docs%2Fwebsite%4013.1.3...%40docs%2Fwebsite%4013.1.4) (2026-11-09)
 
 **Note:** Version bump only for package @docs/website

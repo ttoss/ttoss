@@ -234,6 +234,6 @@ The routines run on cadences, hourly, daily and weekly, because a regular rhythm
 Rules that rest on it:
 
 - Routines run on nested cadences, on the cheapest model that does the work.
-- Child runs are capped.
+- Child runs are capped, and no child starts in a repo whose push branch another child already holds this tick.
 - A routine loads only the tools it calls, and hands a wide read to a subagent.
 - The Audit measures what runs spend.
