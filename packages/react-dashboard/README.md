@@ -133,7 +133,7 @@ import { Dashboard, type DashboardCardProps } from '@ttoss/react-dashboard';
 - Clicking a different card moves the slot
 - Dragging a card does not trigger the slot
 - `isEditMode` disables click handling entirely
-- On mobile breakpoints (`xs`/`sm`), the slot renders below the full grid
+- On phone breakpoints (`xs`/`sm`), the slot opens below the card's row in the phone layout
 - Consumers not passing `renderCardDetail` see no behavior change
 
 ### Editable Dashboard Usage
@@ -306,6 +306,8 @@ const MyComponent = () => {
 
 Component for rendering individual dashboard cards. Currently supports `bigNumber` type.
 
+A big number stays on one line: when the formatted value is wider than the card (a currency value in a half-width phone card), its font shrinks to fit, down to 14px, and the full value stays in its `title`.
+
 ```tsx
 import { DashboardCard } from '@ttoss/react-dashboard';
 
@@ -382,6 +384,8 @@ import { DashboardHeader } from '@ttoss/react-dashboard';
 ### DashboardGrid
 
 Responsive grid layout component that displays dashboard cards using `react-grid-layout` v2. It measures its container width itself, and in edit mode a layout constraint snaps dragged cards to columns 0, 3, 6 and 9.
+
+On phone breakpoints (`xs`/`sm`, 2 columns) the grid reflows the template in reading order: a card at most a quarter of the desktop width (`w <= 3`) takes one column, so KPI tiles sit two per row; wider cards and section dividers take the full row. In edit mode the phone keeps the desktop layout, so saving never writes phone positions into the template.
 
 ```tsx
 import { DashboardGrid } from '@ttoss/react-dashboard';

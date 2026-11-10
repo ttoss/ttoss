@@ -9,6 +9,7 @@ import type {
   TrendIndicator,
 } from '../DashboardCard';
 import { formatNumber, formatPercent, getTrendColors } from './cardUtils';
+import { FitValueText } from './FitValueText';
 import { CardWrapper } from './Wrapper';
 
 const messages = defineMessages({
@@ -163,16 +164,7 @@ export const BigNumber = (props: BigNumberCard) => {
       variant={variant}
     >
       <Flex sx={{ flexDirection: 'column', gap: '2' }}>
-        <Text
-          sx={{
-            color: valueColor,
-            fontSize: '2xl',
-            fontWeight: 'semibold',
-            lineHeight: 'shorter',
-          }}
-        >
-          {formattedValue}
-        </Text>
+        <FitValueText color={valueColor}>{formattedValue}</FitValueText>
 
         {hasTrendValue && (
           <TrendDisplay
