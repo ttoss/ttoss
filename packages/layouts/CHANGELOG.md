@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.17.3 (2026-11-10)
+
+### Bug Fixes
+
+- **layouts:** 44px tap area for the sidebar toggle on a phone ([#1436](https://github.com/ttoss/ttoss/issues/1436)) ([af1dff3](https://github.com/ttoss/ttoss/commit/af1dff325212aac78a0421877e65c39324af88d1))
+
 ## 0.17.2 (2026-11-03)
 
 **Note:** Version bump only for package @ttoss/layouts
