@@ -158,6 +158,7 @@ describe('createPendingConsentOnAuthorize', () => {
       authorizeUrl: AUTHORIZE_URL,
     });
     expect(approved!.redirect.startsWith(`${AUTHORIZE_URL}?`)).toBe(true);
+    expect(approved!.resumeParams).toEqual(queryOf(approved!.redirect));
     expect(queryOf(approved!.redirect)).toEqual({
       ...trustedQuery,
       [CONSENT_REQUEST_PARAM]: id,
