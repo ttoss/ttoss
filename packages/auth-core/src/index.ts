@@ -106,6 +106,8 @@ export {
 } from './oneTimeToken';
 export {
   approveConsentRequest,
+  type ApproveConsentRequestArgs,
+  type ApprovedConsentRequest,
   CONSENT_REQUEST_PARAM,
   CONSENT_RESUME_PARAM,
   type ConsentRequestView,

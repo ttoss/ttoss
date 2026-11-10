@@ -364,21 +364,8 @@ export const getConsentRequest = async ({
   };
 };
 
-/**
- * Records the signed-in user's approval of a pending authorization and returns
- * the `/authorize` URL the consent screen navigates to, rebuilt from the
- * stored request and carrying a one-time resume secret. Hand the URL only to
- * the approver: whoever holds it redeems the approval. Returns `undefined`
- * when the id is unknown, expired or already approved, or when `scopes` asks
- * for more than was requested.
- */
-export const approveConsentRequest = async ({
-  store,
-  id,
-  subject,
-  scopes,
-  authorizeUrl,
-}: {
+/** Arguments of {@link approveConsentRequest}. */
+export type ApproveConsentRequestArgs = {
   /** Persistence for pending authorizations. */
   store: PendingAuthorizationStore;
   /** The pending authorization's id. */
@@ -390,20 +377,48 @@ export const approveConsentRequest = async ({
    * @default the requested scopes
    */
   scopes?: string[];
-  /** The authorization server's `/authorize` endpoint URL. */
-  authorizeUrl: string;
-}): Promise<
-  | {
-      /** The `/authorize` URL to navigate to. */
-      redirect: string;
-      /**
-       * The same request as query parameters, for a caller that builds the
-       * `/authorize` URL itself (an API that does not know the server's URL).
-       */
-      resumeParams: Record<string, string>;
-    }
-  | undefined
-> => {
+  /**
+   * The authorization server's `/authorize` endpoint URL. When given, the
+   * result also carries `redirect`, the full URL to navigate to; omit it when
+   * the caller (an API that does not know the server's URL) builds the URL
+   * from `resumeParams` itself.
+   */
+  authorizeUrl?: string;
+};
+
+/** What {@link approveConsentRequest} returns for a recorded approval. */
+export type ApprovedConsentRequest = {
+  /**
+   * The resumed `/authorize` request as query parameters, carrying the
+   * one-time resume secret.
+   */
+  resumeParams: Record<string, string>;
+};
+
+/**
+ * Records the signed-in user's approval of a pending authorization and returns
+ * the `/authorize` request that resumes it, rebuilt from the stored request
+ * and carrying a one-time resume secret: as `resumeParams`, plus the full
+ * `redirect` URL when `authorizeUrl` is given. Hand it only to the approver:
+ * whoever holds it redeems the approval. Returns `undefined` when the id is
+ * unknown, expired or already approved, or when `scopes` asks for more than
+ * was requested.
+ */
+export function approveConsentRequest(
+  args: ApproveConsentRequestArgs & { authorizeUrl: string }
+): Promise<(ApprovedConsentRequest & { redirect: string }) | undefined>;
+export function approveConsentRequest(
+  args: ApproveConsentRequestArgs & { authorizeUrl?: undefined }
+): Promise<ApprovedConsentRequest | undefined>;
+export async function approveConsentRequest({
+  store,
+  id,
+  subject,
+  scopes,
+  authorizeUrl,
+}: ApproveConsentRequestArgs): Promise<
+  (ApprovedConsentRequest & { redirect?: string }) | undefined
+> {
   const pending = await store.get(id);
   if (!isLive(pending) || pending.approval) {
     return undefined;
@@ -431,27 +446,34 @@ export const approveConsentRequest = async ({
     return undefined;
   }
 
-  const url = new URL(authorizeUrl);
-  url.searchParams.set('response_type', 'code');
-  url.searchParams.set('client_id', pending.clientId);
-  url.searchParams.set('redirect_uri', pending.redirectUri);
-  url.searchParams.set('code_challenge', pending.codeChallenge);
-  url.searchParams.set('code_challenge_method', pending.codeChallengeMethod);
-  url.searchParams.set('scope', pending.scopes.join(' '));
+  const params = new URLSearchParams();
+  params.set('response_type', 'code');
+  params.set('client_id', pending.clientId);
+  params.set('redirect_uri', pending.redirectUri);
+  params.set('code_challenge', pending.codeChallenge);
+  params.set('code_challenge_method', pending.codeChallengeMethod);
+  params.set('scope', pending.scopes.join(' '));
   if (pending.state !== undefined) {
-    url.searchParams.set('state', pending.state);
+    params.set('state', pending.state);
   }
   if (pending.resource !== undefined) {
-    url.searchParams.set('resource', pending.resource);
+    params.set('resource', pending.resource);
   }
-  url.searchParams.set(CONSENT_REQUEST_PARAM, pending.id);
-  url.searchParams.set(CONSENT_RESUME_PARAM, resumeSecret);
+  params.set(CONSENT_REQUEST_PARAM, pending.id);
+  params.set(CONSENT_RESUME_PARAM, resumeSecret);
 
-  return {
-    redirect: url.toString(),
-    resumeParams: Object.fromEntries(url.searchParams),
-  };
-};
+  const resumeParams = Object.fromEntries(params);
+
+  if (authorizeUrl === undefined) {
+    return { resumeParams };
+  }
+
+  const url = new URL(authorizeUrl);
+  for (const [key, value] of params) {
+    url.searchParams.set(key, value);
+  }
+  return { redirect: url.toString(), resumeParams };
+}
 
 /**
  * Discards a pending authorization the user declined. An approved request is

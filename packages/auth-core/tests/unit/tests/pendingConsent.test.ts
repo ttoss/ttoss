@@ -503,6 +503,24 @@ describe('approveConsentRequest', () => {
     expect((await store.get('p1'))!.approval!.subject).toBe('first');
   });
 
+  test('without authorizeUrl, returns only the resume params', async () => {
+    const store = await seed();
+
+    const res = await approveConsentRequest({
+      store,
+      id: 'p1',
+      subject: 'user-1',
+    });
+
+    expect(res).toEqual({ resumeParams: expect.any(Object) });
+    expect(res!.resumeParams).toMatchObject({
+      response_type: 'code',
+      client_id: 'trusted',
+      consent_request: 'p1',
+      consent_resume: expect.stringMatching(/^[\w-]{43}$/),
+    });
+  });
+
   test('omits state and resource when the request had none', async () => {
     const store = await seed();
 
