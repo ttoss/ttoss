@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.44.2](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fhttp-server-mcp%400.44.1...%40ttoss%2Fhttp-server-mcp%400.44.2) (2026-11-10)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp
+
 ## 0.44.1 (2026-11-09)
 
 **Note:** Version bump only for package @ttoss/http-server-mcp

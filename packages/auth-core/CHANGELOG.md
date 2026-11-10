@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.24.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fauth-core%400.23.0...%40ttoss%2Fauth-core%400.24.0) (2026-11-10)
+
+- fix(auth-core)!: redeem a consent approval only with the approver's resume secret (#1435) ([bdd77ba](https://github.com/ttoss/ttoss/commit/bdd77bad4cc6f70847b56d2658ad06abdd57bc5c)), closes [#1435](https://github.com/ttoss/ttoss/issues/1435)
+
+### BREAKING CHANGES
+
+- PendingAuthorizationStore gains approve (record an
+  approval only on an unapproved record) and consume (remove and return),
+  both atomic, so concurrent approvals or resumes never both succeed.
+  PendingAuthorization.approval carries resumeSecretHash. denyConsentRequest
+  leaves an approved request alone.
+
 # 0.23.0 (2026-11-09)
 
 ### Features
