@@ -89,7 +89,7 @@ The **decision queue** is every open choice that holds work before it can start,
 | At the gates | `waiting` | `external`: the gates the change waits on | the gates; the tick reads the verdict |
 | A round back | `active` | nothing; the body carries the log or the findings | the tick delegates a fresh child |
 | Reserved for a person | `waiting` | `external` `on` the person, naming what is ready for them | the person |
-| Waiting for a release | `blocked` | the release task's `blocks` edge | the release's owner |
+| Waiting for a release | `active` | the release task's `blocks` edge (readiness `blocked:dependency`) | the release's owner |
 | Waiting for the check | `calendar` | `scheduled`: the check and its date | the check's reader |
 | Done | `completed` | nothing | nobody |
 
@@ -121,7 +121,7 @@ The tick applies these on every tick, under the standing decision:
 | A repo's default branch red | opens the repair task, which `blocks` each task the red branch holds, so its leverage is what puts it first; the red is the repair task's, never a round on the changes it holds |
 | The change's description names other tasks it settles | closes them on integration, citing the change, as far as the standing decision delegates tidying (GTF-S6) |
 | A change in the project's repos names no task | applies the `Intake` answer: writes a task for it, or leaves it |
-| A release step's task closes | moves each task it blocked to its check's wait, or closes it citing the release task, whose outcome is the evidence |
+| A release step's task closes | moves each integrated task it held to its check's wait, or closes it citing the release task, whose outcome is the evidence: once the edge stops holding it, the task is `active` and ready, and only this transition keeps it from reading as new work |
 | A task is held only by `blocks` sources whose change integrated and that stay open (a release or a check later) | reports it, and the Chase lists it for a person, who retracts the edge to start it now or keeps it until the sources close; the edge keeps gating until then. It retracts the edge itself, recording a `mentions` with the change, only when the standing decision delegates that ([Autonomy is bounded by reversibility](./principles.md#autonomy-is-bounded-by-reversibility)) |
 | A check comes due | starts a check child (unless the `Closing evidence` names another reader), which closes the task with what it observed or sends it back; harm the change caused is reverted first, as in the "pipeline red" row |
 | A child's run failed, is gone, or stays `running` past the `Runtime`'s `Stale after` with its task open | closes the run `failed`; the task is ready again |
