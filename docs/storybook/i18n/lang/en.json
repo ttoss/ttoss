@@ -1116,6 +1116,271 @@
     "defaultMessage": "Template title",
     "description": "Save-as-new drawer: label for the template name field."
   },
+  "/8bHJh": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Must be a JSON {expected, select, array {array} other {object}}.",
+    "description": "OpenApiForm: validation error for JSON of the wrong shape."
+  },
+  "0IzO2e": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Must be at least {limit}.",
+    "description": "OpenApiForm: validation error for a number below the minimum."
+  },
+  "1tEQh0": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Invalid format.",
+    "description": "OpenApiForm: validation error for text not matching the pattern."
+  },
+  "2Gm8K3": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "All",
+    "description": "OpenApiTable: status filter chip that clears the filter."
+  },
+  "2S/sQK": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Try again",
+    "description": "OpenApiDetail: button that retries a failed request."
+  },
+  "7ARXQ9": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Try a different search or filter.",
+    "description": "OpenApiTable: empty state hint when search or filters hide every record."
+  },
+  "9Q3mor": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Loading",
+    "description": "OpenApiTable: accessible label while the data loads."
+  },
+  "BcyU8q": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Refresh",
+    "description": "OpenApiTable: button that reloads the data from the API."
+  },
+  "BnasZ0": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Invalid JSON.",
+    "description": "OpenApiForm: validation error for a JSON field that does not parse."
+  },
+  "C2XvPR": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Cancel",
+    "description": "OpenApiForm: cancel button label."
+  },
+  "CCk3aM": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Deleting…",
+    "description": "OpenApiDeleteButton: confirm button label while the request is in flight."
+  },
+  "DJycVe": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Show",
+    "description": "OpenApiDetail: button revealing a masked sensitive value."
+  },
+  "EQVBZo": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Try again",
+    "description": "OpenApiTable: button that retries a failed request."
+  },
+  "EuSkY9": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Delete this record?",
+    "description": "OpenApiDeleteButton: confirmation dialog title when the record has no name."
+  },
+  "FM5Ml6": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Hide",
+    "description": "OpenApiDetail: button masking a revealed sensitive value."
+  },
+  "Fj/jzC": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Cancel",
+    "description": "OpenApiDeleteButton: dismisses the confirmation dialog."
+  },
+  "G4vXOc": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "{from}–{to} of {total}",
+    "description": "OpenApiTable: pagination summary when the total is known."
+  },
+  "I/VHiZ": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Could not load the record",
+    "description": "OpenApiDetail: title of the error shown when the request fails."
+  },
+  "JUo3WE": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Search…",
+    "description": "OpenApiTable: placeholder of the free-text search input."
+  },
+  "JveFhO": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Showing {from}–{to}",
+    "description": "OpenApiTable: pagination summary when the API reports no total."
+  },
+  "JzQCeL": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Record not found.",
+    "description": "OpenApiDetail: shown when the response holds no record."
+  },
+  "KngJAz": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Page {page} of {pages}",
+    "description": "OpenApiTable: current page indicator."
+  },
+  "KtaOSW": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "This operation takes no input.",
+    "description": "OpenApiForm: shown when the operation has no request body fields."
+  },
+  "Ktb8UG": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "This action cannot be undone.",
+    "description": "OpenApiDeleteButton: confirmation dialog description."
+  },
+  "L6orNT": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Saving…",
+    "description": "OpenApiForm: submit button label while the request is in flight."
+  },
+  "LV5uTL": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Must be at most {limit}.",
+    "description": "OpenApiForm: validation error for a number above the maximum."
+  },
+  "LmFXoU": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Sort by {column}",
+    "description": "OpenApiTable: accessible name of a sortable column header."
+  },
+  "NSVRue": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "No records yet",
+    "description": "OpenApiTable: empty state title when the API returned no records."
+  },
+  "OSL9qI": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Previous page",
+    "description": "OpenApiTable: accessible name of the previous page button."
+  },
+  "S+CqiW": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Could not load the data",
+    "description": "OpenApiTable: title of the error shown when the request fails."
+  },
+  "UkjFC2": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Could not save",
+    "description": "OpenApiForm: title of the error shown when the request fails."
+  },
+  "W5jr2o": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Must have at least {limit, plural, one {# character} other {# characters}}.",
+    "description": "OpenApiForm: validation error for text shorter than minLength."
+  },
+  "WKY0bs": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Save",
+    "description": "OpenApiForm: default submit button label."
+  },
+  "WpHA4R": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Enter a whole number.",
+    "description": "OpenApiForm: validation error for a decimal in an integer field."
+  },
+  "ZLpmpA": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Fix the highlighted fields and try again.",
+    "description": "OpenApiForm: summary shown when client-side validation fails."
+  },
+  "cZkR0J": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Select…",
+    "description": "OpenApiForm: empty option of a select field."
+  },
+  "csLLSQ": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "required",
+    "description": "OpenApiForm: accessible text of the required-field marker."
+  },
+  "eLIhqI": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Enter a valid number.",
+    "description": "OpenApiForm: validation error for a non-numeric value."
+  },
+  "eRCaLA": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Could not delete",
+    "description": "OpenApiDeleteButton: title of the error shown when the request fails."
+  },
+  "gl0864": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Show {field}",
+    "description": "OpenApiDetail: accessible name of the reveal button. {field} is the field label."
+  },
+  "isaRdR": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Next page",
+    "description": "OpenApiTable: accessible name of the next page button."
+  },
+  "j11xFb": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Filter by {field}",
+    "description": "OpenApiTable: accessible name of the status filter chip group. {field} is the column name."
+  },
+  "l/aMoa": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Hidden",
+    "description": "OpenApiTable: cell text replacing a sensitive value (secret, token)."
+  },
+  "m6vjZQ": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "No results found",
+    "description": "OpenApiTable: empty state title when search or filters hide every record."
+  },
+  "oaczz5": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "This field is required.",
+    "description": "OpenApiForm: validation error for an empty required field."
+  },
+  "pCrj6E": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Yes",
+    "description": "OpenApiTable: cell text for a true boolean value."
+  },
+  "r4S+k8": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Search records",
+    "description": "OpenApiTable: accessible name of the search input."
+  },
+  "rLjHT9": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Could not load the record",
+    "description": "OpenApiForm: title of the error shown when loading the record to edit fails."
+  },
+  "ryfzWa": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "No",
+    "description": "OpenApiTable: cell text for a false boolean value."
+  },
+  "sb+0Fx": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Must have at most {limit, plural, one {# character} other {# characters}}.",
+    "description": "OpenApiForm: validation error for text longer than maxLength."
+  },
+  "uLFSOT": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Delete {name}?",
+    "description": "OpenApiDeleteButton: confirmation dialog title. {name} names the record."
+  },
+  "yooBpN": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Saved successfully.",
+    "description": "OpenApiForm: confirmation shown after a successful submit."
+  },
+  "zeXndU": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Delete",
+    "description": "OpenApiDeleteButton: default button label."
+  },
   "5lZ8VT": {
     "module": "@ttoss/react-wizard",
     "defaultMessage": "Finish",

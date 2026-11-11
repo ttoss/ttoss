@@ -31,6 +31,7 @@
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
+    "@ttoss/react-openapi": "workspace:^",
     "@ttoss/react-wizard": "workspace:^",
     "@ttoss/theme": "workspace:^",
     "@ttoss/ui": "workspace:^"
@@ -43,12 +44,16 @@
     "@storybook/addon-links": "^10.6.2",
     "@storybook/addon-webpack5-compiler-babel": "^4.0.1",
     "@storybook/react-webpack5": "^10.6.2",
+    "@tailwindcss/postcss": "^4.3.3",
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "babel-loader": "^10.1.1",
     "eslint-plugin-storybook": "10.6.2",
+    "postcss": "^8.5.30",
+    "postcss-loader": "^8.2.1",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
-    "storybook": "^10.6.2"
+    "storybook": "^10.6.2",
+    "tailwindcss": "^4.3.3"
   }
 }
