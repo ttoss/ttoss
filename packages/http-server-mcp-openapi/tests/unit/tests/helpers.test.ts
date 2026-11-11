@@ -160,6 +160,25 @@ describe('resolveSchema', () => {
     expect(merged.required).toEqual(['a']);
   });
 
+  test('keeps the properties and required declared beside a oneOf', () => {
+    const resolved = resolveSchema(
+      {
+        type: 'object',
+        required: ['label'],
+        properties: { label: {}, a: {}, b: {} },
+        oneOf: [{ required: ['a'] }, { required: ['b'] }],
+      },
+      {}
+    );
+    expect(Object.keys(resolved.properties ?? {}).sort()).toEqual([
+      'a',
+      'b',
+      'label',
+    ]);
+    expect(resolved.required).toEqual(['label']);
+    expect(resolved.type).toBe('object');
+  });
+
   test('collapses empty alternatives to undefined props/required', () => {
     const merged = resolveSchema(
       { oneOf: [{ type: 'object' }, { type: 'object' }] },

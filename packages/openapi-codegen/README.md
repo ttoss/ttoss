@@ -180,7 +180,9 @@ class names (`AI Providers` → `AIProviders`). Pass `operationIdToCommand` and
 
 - Spec files are read in sorted filename order, so which file wins a
   `components` naming collision is deterministic.
-- A request body's `oneOf` variants are merged into one flag set; a field is
-  only marked required when every variant requires it.
+- A request body's `oneOf` variants are merged with the properties declared
+  beside the `oneOf` into one flag set; a field is marked required when the
+  body itself requires it or every variant does. A required-only `oneOf`
+  (`oneOf: [{required: [a]}, {required: [b]}]`) keeps the body's flags.
 - This package does not generate the SDK client itself — it produces the
   merged spec that a client generator like `@hey-api/openapi-ts` consumes.

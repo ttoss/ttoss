@@ -29,4 +29,30 @@ paths:
       responses:
         '200':
           description: ok
+  /gadgets/links:
+    post:
+      operationId: linkGadget
+      tags: [Gadgets]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [label]
+              properties:
+                label:
+                  type: string
+                  description: Link label
+                gadget_id:
+                  type: string
+                  description: Gadget to link
+                gadget_name:
+                  type: string
+                  description: Gadget to link, by name
+              oneOf:
+                - required: [gadget_id]
+                - required: [gadget_name]
+      responses:
+        '200':
+          description: ok
 components: {}

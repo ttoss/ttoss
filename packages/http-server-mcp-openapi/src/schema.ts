@@ -61,6 +61,29 @@ const mergeResolvedSchemas = (
   };
 };
 
+/**
+ * Properties and `required` declared beside a union hold in every branch,
+ * e.g. `oneOf: [{required: [a]}, {required: [b]}]`.
+ */
+const mergeUnionBase = (args: {
+  schema: ResolvedSchema;
+  merged: ResolvedSchema;
+}): ResolvedSchema => {
+  const base: ResolvedSchema = { ...args.schema };
+  delete base.oneOf;
+  delete base.anyOf;
+  const properties = { ...args.merged.properties, ...base.properties };
+  const required = [
+    ...new Set([...(base.required ?? []), ...(args.merged.required ?? [])]),
+  ];
+  return {
+    ...base,
+    type: base.type ?? args.merged.type,
+    properties: Object.keys(properties).length > 0 ? properties : undefined,
+    required: required.length > 0 ? required : undefined,
+  };
+};
+
 /** Where a `$ref` is resolved: the document it appears in, plus its siblings. */
 type RefScope = {
   spec: OpenApiSpec;
@@ -227,11 +250,14 @@ export const resolveSchema = (
   const alternatives = getAlternativeSchemas(schema);
 
   if (alternatives) {
-    return mergeResolvedSchemas(
-      alternatives.map((candidate) => {
-        return resolveSchema(candidate, spec, documents);
-      })
-    );
+    return mergeUnionBase({
+      schema,
+      merged: mergeResolvedSchemas(
+        alternatives.map((candidate) => {
+          return resolveSchema(candidate, spec, documents);
+        })
+      ),
+    });
   }
 
   return schema;
