@@ -1,0 +1,70 @@
+{
+  "name": "@ttoss/react-openapi",
+  "version": "0.0.0",
+  "description": "Render React UI (tables) straight from an OpenAPI spec.",
+  "keywords": [
+    "React",
+    "OpenAPI",
+    "table",
+    "admin"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/react-openapi"
+  },
+  "license": "MIT",
+  "author": "ttoss",
+  "sideEffects": [
+    "*.css"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./core": "./src/core/index.ts",
+    "./styles.css": "./src/styles.css"
+  },
+  "files": [
+    "dist",
+    "i18n"
+  ],
+  "scripts": {
+    "build": "tsdown && tailwindcss -i ./src/styles.css -o ./dist/styles.css --minify",
+    "i18n": "ttoss-i18n",
+    "test": "jest --projects tests/unit"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "@ttoss/config": "workspace:^",
+    "@ttoss/i18n-cli": "workspace:^",
+    "@ttoss/react-i18n": "workspace:^",
+    "@ttoss/test-utils": "workspace:^",
+    "@types/react": "^19.3.0",
+    "jest": "^30.5.2",
+    "react": "^19.3.0",
+    "tailwindcss": "^4.3.3",
+    "tsdown": "^0.23.1"
+  },
+  "peerDependencies": {
+    "@ttoss/react-i18n": "workspace:^",
+    "react": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.mts",
+        "module": "./dist/index.mjs",
+        "browser": "./dist/index.mjs",
+        "import": "./dist/index.mjs",
+        "default": "./dist/index.mjs"
+      },
+      "./core": {
+        "types": "./dist/core/index.d.mts",
+        "default": "./dist/core/index.mjs"
+      },
+      "./styles.css": "./dist/styles.css"
+    },
+    "provenance": true
+  }
+}

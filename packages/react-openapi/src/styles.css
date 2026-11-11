@@ -1,0 +1,28 @@
+/*
+ * Styles for @ttoss/react-openapi.
+ *
+ * Utilities are prefixed (`oa:`) and preflight is left out, so importing this
+ * file never restyles the host app nor collides with its own Tailwind/shadcn
+ * classes. Utilities are emitted outside any cascade layer on purpose: an
+ * unlayered host reset (`* { border: 0 }`, `input { padding: 0 }`) would
+ * otherwise beat every layered utility regardless of specificity. Colours read `--openapi-*` custom properties, with neutral
+ * defaults; set them on :root (or any ancestor) to theme the components.
+ */
+@import 'tailwindcss/theme.css' layer(theme) prefix(oa);
+@import 'tailwindcss/utilities.css' source(none);
+
+@source './**/*.{ts,tsx}';
+
+@theme inline {
+  --color-background: var(--openapi-background, #ffffff);
+  --color-foreground: var(--openapi-foreground, #0a0a0a);
+  --color-muted: var(--openapi-muted, #f5f5f5);
+  --color-muted-foreground: var(--openapi-muted-foreground, #737373);
+  --color-accent: var(--openapi-accent, #f5f5f5);
+  --color-border: var(--openapi-border, #e5e5e5);
+  --color-input: var(--openapi-input, #e5e5e5);
+  --color-ring: var(--openapi-ring, #a3a3a3);
+  --color-primary: var(--openapi-primary, #171717);
+  --color-primary-foreground: var(--openapi-primary-foreground, #fafafa);
+  --color-destructive: var(--openapi-destructive, #dc2626);
+}
