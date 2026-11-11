@@ -69,6 +69,11 @@ Each OpenAPI operation with an `operationId` and a supported HTTP method
 | operation `description`   | tool description, newlines flattened          |
 | operation `tags`          | tool `tags`, for the deferred `search` filter |
 
+A body's top-level `oneOf`/`anyOf` merges its branches with the properties and
+`required` declared beside it, so a required-only union
+(`oneOf: [{required: [a]}, {required: [b]}]`) keeps every field as a tool
+argument.
+
 Every `inputSchema` is closed (`additionalProperties: false`): the request is
 built from declared arguments only, so with `validateArguments` an undeclared
 one is refused, named, rather than dropped unseen.

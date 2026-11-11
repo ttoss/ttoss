@@ -214,28 +214,25 @@ const paramNamesIn = (args: {
     });
 };
 
-/** Collects a variant's own properties into `mergedProperties`/`requiredInAll` (first-schema-wins per property). */
+/** Collects a variant's own properties into `mergedProperties` (first-schema-wins per property). */
 const collectSchemaProperties = (args: {
   variant: ResolvedSchema;
   mergedProperties: Record<string, ResolvedSchema>;
-  requiredInAll: Set<string>;
 }) => {
-  const { variant, mergedProperties, requiredInAll } = args;
+  const { variant, mergedProperties } = args;
   const { resolveSchema, value: schema } = variant;
   if (!schema.properties) return;
 
-  const required = new Set(schema.required ?? []);
   for (const [propName, propSchema] of Object.entries(schema.properties)) {
     if (mergedProperties[propName]) continue;
     mergedProperties[propName] = resolveSchema({ schema: propSchema });
-    if (required.has(propName)) requiredInAll.add(propName);
   }
 };
 
 /**
  * Builds body flags from a requestBody schema. `oneOf` variants are merged
- * into one flag set; a field is only required when every variant requires
- * it (or, with no `oneOf`, when the single schema requires it).
+ * into one flag set with the schema's own properties; a field is required
+ * when the schema itself requires it or every variant does.
  */
 const DEFAULT_ROOT_BODY_FLAG = 'body';
 
@@ -263,22 +260,26 @@ const buildBodyFlags = (args: {
 }): Flag[] => {
   const { resolveSchema, value: schema } = args.bodySchema;
   // Variants are resolved up front so a `oneOf` of `$ref`s contributes its
-  // targets' properties instead of nothing at all.
-  const variants = (schema.oneOf ?? [schema]).map((variant) => {
+  // targets' properties instead of nothing at all. Properties declared beside
+  // the `oneOf` hold in every variant and come first.
+  const branches = (schema.oneOf ?? []).map((variant) => {
     return resolveSchema({ schema: variant });
   });
 
   const mergedProperties: Record<string, ResolvedSchema> = {};
-  const requiredInAll = new Set<string>();
-  for (const variant of variants) {
-    collectSchemaProperties({ mergedProperties, requiredInAll, variant });
+  for (const variant of [args.bodySchema, ...branches]) {
+    collectSchemaProperties({ mergedProperties, variant });
   }
 
+  const baseRequired = new Set(schema.required ?? []);
   const isRequired = (propName: string): boolean => {
-    if (!schema.oneOf) return requiredInAll.has(propName);
-    return variants.every((variant) => {
-      return variant.value.required?.includes(propName);
-    });
+    if (baseRequired.has(propName)) return true;
+    return (
+      branches.length > 0 &&
+      branches.every((variant) => {
+        return variant.value.required?.includes(propName);
+      })
+    );
   };
 
   if (Object.keys(mergedProperties).length === 0) {
