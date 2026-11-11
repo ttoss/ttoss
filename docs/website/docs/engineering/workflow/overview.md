@@ -17,7 +17,7 @@ stateDiagram-v2
     state "Ready (active)" as Ready
     state "A choice for a person (waiting)" as Person
     state "At the gates (waiting)" as Gates
-    state "Waiting for a release (blocked)" as Release
+    state "Waiting for a release (active, held by its edge)" as Release
     state "Waiting for the check (calendar)" as Check
     state "Done (completed)" as Done
     [*] --> Ready: intake
@@ -37,7 +37,7 @@ The [Delivery Process](./process.md) defines every state, the seven stages that 
 
 ## Two Queues
 
-The work that waits in this machine waits on a person, in one of two queues: the decision queue, the choices work waits on before it can start, and the release queue, the work agents implemented that waits to reach the customer. The tick starts no new work while the release queue is full, and the Chase asks people only for what drains them. [Where work waits](./process.md#where-work-waits) says what each holds, and [Principles](./principles.md#the-release-queue-holds-new-work-upstream) why.
+The work that waits in this machine waits on a person, in one of two queues: the decision queue, the choices work waits on before it can start, and the release queue, the work agents implemented that waits to reach the customer. While the release queue is full the tick starts no new work a person would have to move, and the Chase asks people only for what drains them. [Where work waits](./process.md#where-work-waits) says what each holds, and [Principles](./principles.md#the-release-queue-holds-new-work-upstream) why.
 
 ## One Engine, Extended per Project
 

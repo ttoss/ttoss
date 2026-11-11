@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.20.3 (2026-11-10)
+
+### Bug Fixes
+
+- **react-dashboard:** two quarter-width cards per row on a phone, values fit the card ([#1432](https://github.com/ttoss/ttoss/issues/1432)) ([25d9191](https://github.com/ttoss/ttoss/commit/25d9191d5bf9615a578360a260421982f1550cdf))
+
 ## 0.20.2 (2026-11-03)
 
 **Note:** Version bump only for package @ttoss/react-dashboard

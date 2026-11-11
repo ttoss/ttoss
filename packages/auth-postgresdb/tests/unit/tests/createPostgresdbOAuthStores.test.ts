@@ -14,6 +14,7 @@ const db = {
   OAuthAuthCode: model('OAuthAuthCode'),
   OAuthClient: model('OAuthClient'),
   OAuthConsent: model('OAuthConsent'),
+  OAuthPendingAuthorization: model('OAuthPendingAuthorization'),
   OAuthRefreshToken: model('OAuthRefreshToken'),
 };
 
@@ -26,6 +27,7 @@ test('returns every store createOAuthHandlers and rotation need', () => {
     'authCodeStore',
     'clientStore',
     'consentStore',
+    'pendingAuthorizationStore',
     'refreshTokenStore',
   ]);
 });
@@ -35,9 +37,13 @@ test('wires each store to its own model', async () => {
   await stores.consentStore.getConsentGrant({ codeChallenge: 'challenge' });
   await stores.refreshTokenStore.get('hash-1');
   await stores.authCodeStore.get('code-1');
+  await stores.pendingAuthorizationStore.get('pending-1');
 
   expect(db.OAuthClient.findByPk).toHaveBeenCalledWith('client-1');
   expect(db.OAuthConsent.findByPk).toHaveBeenCalledWith('challenge');
   expect(db.OAuthRefreshToken.findByPk).toHaveBeenCalledWith('hash-1');
   expect(db.OAuthAuthCode.findByPk).toHaveBeenCalledTimes(1);
+  expect(db.OAuthPendingAuthorization.findByPk).toHaveBeenCalledWith(
+    'pending-1'
+  );
 });

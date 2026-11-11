@@ -3,6 +3,7 @@ import { Box, Flex, Text } from '@ttoss/ui';
 
 import type { BigNumberSparklineCard, TrendIndicator } from '../DashboardCard';
 import { formatNumber, formatPercent, getTrendColors } from './cardUtils';
+import { FitValueText } from './FitValueText';
 import { CardWrapper } from './Wrapper';
 
 const messages = defineMessages({
@@ -183,19 +184,15 @@ export const BigNumberSparkline = (props: BigNumberSparklineCard) => {
       variant={variant}
     >
       <Flex sx={{ flexDirection: 'column', gap: '2' }}>
-        <Text
-          sx={{
-            color:
-              variant === 'dark'
-                ? 'action.text.primary.default'
-                : 'feedback.text.positive.default',
-            fontSize: '2xl',
-            fontWeight: 'semibold',
-            lineHeight: 'shorter',
-          }}
+        <FitValueText
+          color={
+            variant === 'dark'
+              ? 'action.text.primary.default'
+              : 'feedback.text.positive.default'
+          }
         >
           {formattedValue}
-        </Text>
+        </FitValueText>
 
         {typeof props.trend?.value === 'number' && (
           <TrendBadge

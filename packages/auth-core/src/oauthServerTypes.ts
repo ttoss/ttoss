@@ -340,6 +340,11 @@ export interface OnAuthorizeArgs {
    * framework context here.
    */
   headers: Record<string, string | undefined>;
+  /**
+   * The raw `/authorize` query string, so a hook can read parameters the
+   * engine does not model (RFC 8707 `resource`, a consent-resume id).
+   */
+  query?: Record<string, string | undefined>;
 }
 
 /**

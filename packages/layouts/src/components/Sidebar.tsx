@@ -1,7 +1,7 @@
 import { Drawer } from '@ttoss/components';
 import { useI18n } from '@ttoss/react-i18n';
 import { Icon } from '@ttoss/react-icons';
-import type { BoxProps } from '@ttoss/ui';
+import type { BoxProps, ThemeUIStyleObject } from '@ttoss/ui';
 import { Box, Flex, IconButton } from '@ttoss/ui';
 import * as React from 'react';
 
@@ -10,6 +10,31 @@ import { useLayout } from './LayoutProvider';
 import { sidebarMessages } from './messages';
 
 export const SIDEBAR_WIDTH = '2xs';
+
+/**
+ * Offset of each side of the toggle's tap area: on a phone it grows to 44 px
+ * (WCAG 2.5.5 and Apple's minimum) when the button is smaller, `100%` being
+ * the button's own width or height; from tablet up it is the button itself.
+ */
+const PHONE_HIT_SLOP = ['min(0px, calc((100% - 44px) / 2))', 0];
+
+/**
+ * Sidebar toggle styles. The tap area grows through an invisible
+ * pseudo-element, so the header keeps its height.
+ */
+export const sidebarButtonSx: ThemeUIStyleObject = {
+  cursor: 'pointer',
+  fontSize: ['xl', '2xl'],
+  position: 'relative',
+  '::after': {
+    content: '""',
+    position: 'absolute',
+    top: PHONE_HIT_SLOP,
+    bottom: PHONE_HIT_SLOP,
+    left: PHONE_HIT_SLOP,
+    right: PHONE_HIT_SLOP,
+  },
+};
 
 /**
  * Desktop sidebar styles that depend on whether it is open: closed collapses
@@ -66,10 +91,7 @@ export const Sidebar = ({
         )}
         aria-expanded={isSidebarOpen}
         aria-controls="sidebar"
-        sx={{
-          cursor: 'pointer',
-          fontSize: ['xl', '2xl'],
-        }}
+        sx={sidebarButtonSx}
         data-testid="sidebar-button"
       >
         <Icon icon={isSidebarOpen ? 'sidebar-close' : 'sidebar-open'} />

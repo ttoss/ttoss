@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.10.1 (2026-11-11)
+
+### Bug Fixes
+
+- keep body properties declared beside a required-only oneOf ([#1443](https://github.com/ttoss/ttoss/issues/1443)) ([1a3dbc8](https://github.com/ttoss/ttoss/commit/1a3dbc83b9a62e833cc03026e5bad98bc39ffc85))
+- **react-wizard:** fit the horizontal step list on narrow screens ([#1428](https://github.com/ttoss/ttoss/issues/1428)) ([db71a55](https://github.com/ttoss/ttoss/commit/db71a55c80780db0f2ff4fb4461ad1418baeed7f))
+
 # [0.10.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fopenapi-codegen%400.9.0...%40ttoss%2Fopenapi-codegen%400.10.0) (2026-10-23)
 
 ### Features

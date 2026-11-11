@@ -15,6 +15,10 @@ import type {
   StoredAuthorizationCode,
   StoredRefreshToken,
 } from './oauthServerTypes';
+import type {
+  PendingAuthorization,
+  PendingAuthorizationStore,
+} from './pendingConsent';
 
 /**
  * In-memory reference {@link ClientStore}. Backed by a `Map`, so state is lost
@@ -58,6 +62,39 @@ export const createMemoryAuthCodeStore = (): AuthCodeStore => {
     },
   };
 };
+
+/**
+ * In-memory reference {@link PendingAuthorizationStore}. Backed by a `Map` keyed
+ * by the pending authorization's id. For tests and local development only.
+ */
+export const createMemoryPendingAuthorizationStore =
+  (): PendingAuthorizationStore => {
+    const pending = new Map<string, PendingAuthorization>();
+    return {
+      save: (request) => {
+        pending.set(request.id, request);
+      },
+      get: (id) => {
+        return pending.get(id);
+      },
+      approve: ({ id, approval }) => {
+        const current = pending.get(id);
+        if (!current || current.approval) {
+          return false;
+        }
+        pending.set(id, { ...current, approval });
+        return true;
+      },
+      consume: (id) => {
+        const current = pending.get(id);
+        pending.delete(id);
+        return current;
+      },
+      delete: (id) => {
+        pending.delete(id);
+      },
+    };
+  };
 
 /**
  * In-memory reference {@link RefreshTokenStore}. Backed by a `Map` keyed by the

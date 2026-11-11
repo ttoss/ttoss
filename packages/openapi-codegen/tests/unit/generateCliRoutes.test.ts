@@ -141,6 +141,30 @@ describe('generateCliRouteManifest', () => {
     expect(flagsByName.name).toMatchObject({ required: true, in: 'body' });
   });
 
+  test('keeps the properties declared beside a required-only oneOf', () => {
+    const routes = generateCliRouteManifest({ specsDir, moduleDocsUrl });
+
+    const flagsByName = Object.fromEntries(
+      routes['link-gadget'].flags.map((flag) => {
+        return [flag.name, flag];
+      })
+    );
+
+    expect(Object.keys(flagsByName).sort()).toEqual([
+      'gadget_id',
+      'gadget_name',
+      'label',
+    ]);
+    expect(flagsByName.label).toMatchObject({ required: true, in: 'body' });
+    expect(flagsByName.gadget_id).toMatchObject({
+      required: false,
+      in: 'body',
+      type: 'string',
+      description: 'Gadget to link',
+    });
+    expect(flagsByName.gadget_name).toMatchObject({ required: false });
+  });
+
   test('a body naming no property is one flag carrying the whole body', () => {
     const routes = generateCliRouteManifest({ specsDir, moduleDocsUrl });
 
