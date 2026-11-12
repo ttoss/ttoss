@@ -23,7 +23,7 @@ The rules of any work are GTF's, cited below by id. Three are the delivery proce
    6. what is open at its gates (a conflict, a fix round or a review the agents run), among which only Flow's ranking orders;
    7. new work.
 
-   Every other priority a person set orders the work inside a stage, never across stages.
+   Every other priority a person set orders the work inside a stage, never across stages. The order fills two limits apart: children that push a change from `Max runs`, checks and reviews from `Max short runs`.
 
 ## Words
 
