@@ -135,13 +135,14 @@ The proxy is the economics, coarsened: the order of the stages is their cost of 
 
 A brief asking for several deliveries is split before it is started, because a large batch delays everything it carries ([B1](/docs/product/product-development/principles/reducing-batch-size#b1-the-batch-size-queueing-principle-reducing-batch-size-reduces-cycle-time)) and an agent delivers what it can hold whole ([Problem Decomposition](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-corollary-of-problem-decomposition)). The Chase lists what only a person can move in the same order, so a person reads first what their delay costs most.
 
-The order needs a free slot to act on. A child may hold its slot for hours, so with every slot on new work the repair of a red default branch would wait for one to free. New work therefore never takes the last free slot while `Max runs` is two or more ([D15](/docs/product/product-development/principles/achieving-decentralized-control#d15-the-principle-of-tactical-reserves-decentralize-a-portion-of-reserves)). What ages faster takes it the moment it appears, ahead of the line without interrupting a run already underway, since a run stopped midway wastes what it did and head-of-the-line privilege already removes the wait ([F20](/docs/product/product-development/principles/controlling-flow-under-uncertainty#f20-the-preemption-principle-only-preempt-when-switching-costs-are-low)).
+The order needs a free slot to act on, and fills two kinds apart. A long child, one that pushes a change (implement, round, conflict, repair), may hold its slot for hours, so with every slot on new work the repair of a red default branch would wait for one to free. New work therefore never takes the last free long slot while `Max runs` is two or more ([D15](/docs/product/product-development/principles/achieving-decentralized-control#d15-the-principle-of-tactical-reserves-decentralize-a-portion-of-reserves)). What ages faster takes it the moment it appears, ahead of the line without interrupting a run already underway, since a run stopped midway wastes what it did and head-of-the-line privilege already removes the wait ([F20](/docs/product/product-development/principles/controlling-flow-under-uncertainty#f20-the-preemption-principle-only-preempt-when-switching-costs-are-low)). A short child, a check or a review, only reads and ends, so it needs no reserve and takes its slot from `Max short runs`: under one pool, due checks ranked above new work would fill every slot the reserve left, and new work would never start while the release queue had room.
 
 Rules that rest on it:
 
 - What ages fastest goes first, read from the stage, a `very_high` priority and a `high` bug, asserted or inherited through `blocks`.
 - A brief asking for several deliveries is split.
-- New work never takes the last free slot; what ages faster takes it, without interrupting a run.
+- New work never takes the last free long slot; what ages faster takes it, without interrupting a run.
+- Checks and reviews take their slots from their own limit, never from one new work could use.
 - The Chase lists what only a person can move in the order the tick works.
 
 ## The release queue holds new work upstream
@@ -238,13 +239,13 @@ Rules that rest on it:
 
 A run looks free to the agent that starts it and is not: every prompt costs money, latency and a share of what the people downstream will read ([Prompt Economics](/docs/ai/agentic-development-principles/economics-of-interaction#the-principle-of-prompt-economics)). So the Audit measures what runs spend, from the instruction files every session loads and the runs Flow records, and a routine is as cheap as its question allows.
 
-It runs on the cheapest model that does the work, because intelligence spent on a low-entropy task is bought and wasted ([Allocative Efficiency](/docs/ai/agentic-development-principles/economics-of-interaction#the-principle-of-allocative-efficiency)). It loads only the tools it calls, and hands a wide read to a subagent that returns the conclusion. The children a tick runs at once are capped (`Max runs`), because each is paid for whether or not what is downstream can take its output.
+It runs on the cheapest model that does the work, because intelligence spent on a low-entropy task is bought and wasted ([Allocative Efficiency](/docs/ai/agentic-development-principles/economics-of-interaction#the-principle-of-allocative-efficiency)). It loads only the tools it calls, and hands a wide read to a subagent that returns the conclusion. The children a tick runs at once are capped, long and short apart (`Max runs`, `Max short runs`), because each is paid for whether or not what is downstream can take its output. Both are caps on spend, never a signal to start or hold work: the release queue alone holds new work.
 
 The routines run on cadences, hourly, daily and weekly, because a regular rhythm turns unpredictable events into predictable ones ([F5](/docs/product/product-development/principles/controlling-flow-under-uncertainty#f5-the-principle-of-periodic-resynchronization-use-a-regular-cadence-to-limit-the-accumulation-of-variance)). The cadences nest as multiples of one another, so the week's Health and Audit read the days the Chase reported and the hours the tick ran ([F14](/docs/product/product-development/principles/controlling-flow-under-uncertainty#f14-the-harmonic-principle-make-nested-cadences-harmonic-multiples)).
 
 Rules that rest on it:
 
 - Routines run on nested cadences, on the cheapest model that does the work.
-- Child runs are capped, and no child starts in a repo whose push branch another child already holds this tick.
+- Child runs are capped, long and short children each by their own limit, and no child starts in a repo whose push branch another child already holds this tick.
 - A routine loads only the tools it calls, and hands a wide read to a subagent.
 - The Audit measures what runs spend.
