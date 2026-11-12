@@ -43,7 +43,7 @@ The process names acts, not tools, so it reads the same on any code host and for
 | --- | --- | --- | --- | --- | --- |
 | 1 | Intake | whoever finds the signal: an intake [routine](routines.md#project-routines), a person, an agent mid-task | an alert, feedback, an idea, a finding | a task with its `source` and what was investigated, `active`, or, when found mid-task, `active` when it leaves the product unchanged, else `incubated`, or what the standing decision names (GTF-C1); never a fix | `Intake` |
 | 2 | Decide | a person | a choice the work needs, or a brief short of the `Ready brief` | the answer, on the task that waits on them (the move that frees it cites their words), or as the `outcome` of a `decision` that holds several tasks | `Decisions`, `Ready brief` |
-| 3 | Implement | a child run, or a person | the task is ready, or a round sends it back | the change, which improves the code it touches and widens no further, proposed ready (not draft); an `implements` reference; `after_integration`, what integrating leaves (close, a release step, or a check with what to observe, where and when it can be seen), following the [closing validation](./parameters.md#closing-validations) the brief names; in the change's description, the task's URL, the tasks it settles, and the assumptions made and the choices answered on the way, each with what was checked (`Decisions`); the task `waiting` on the gates | `Before proposing` |
+| 3 | Implement | a child run, or a person | the task is ready and its brief is recorded ready, or a round sends it back | the change, which improves the code it touches and widens no further, proposed ready (not draft); an `implements` reference; `after_integration`, what integrating leaves (close, a release step, or a check with what to observe, where and when it can be seen), following the [closing validation](./parameters.md#closing-validations) the brief names; in the change's description, the task's URL, the tasks it settles, and the assumptions made and the choices answered on the way, each with what was checked (`Decisions`); the task `waiting` on the gates | `Before proposing` |
 | 4 | Gates | automation, the reviewer `Review` names (a review child of the tick, a project routine or a person), the person the `Merge rule` reserves | the change is proposed | nothing on the task: verdicts stay on the change, each bound to the commit it judged (the `flow/review` status), and the tick writes after them | `Review`, `Merge rule` |
 | 5 | Integrate | whoever the `Merge rule` lets integrate: the reviewer, the tick or a person | the gates pass | nothing on the task: the tick writes what integrating leaves | `Merge rule` |
 | 6 | Release | the `Release procedure`: automation, a child run or a person | integration | a release step that is somebody's act is its own task that `blocks` the integrated task (GTF-N4); a pipeline every integration runs is a wait, not a task | `Release procedure` |
@@ -79,6 +79,7 @@ The **decision queue** is every open choice that holds work before it can start,
 
 - **After the verdict, the tick is the only writer of the task's status and wait** (GTF-S3). It writes every transition whose owner does not write to Flow, such as CI, the code host, or a person who merged or reviewed, and every one an owner left unwritten. A run that only contributed to a stage, such as a reviewer, leaves its verdict on the change and writes at most references for what it produced.
 - With no tick, because nothing schedules one, the next run that reads the graph writes what the tick would.
+- **Whoever writes or refines a brief may record that it is ready**, as the same tag the tick writes, so the tick's reading is only the fallback for a task that arrives without it. An agent that rewrites a brief recorded ready removes the tag, and the next tick reads it again.
 
 ## States
 
@@ -99,6 +100,7 @@ The tick applies these on every tick, under the standing decision:
 
 | When | The tick |
 | --- | --- |
+| A new task, nothing holding it, and nothing records whether its brief meets the `Ready brief` | reads the brief once and writes the answer before it plans again: ready, a tag on the task; short, a wait on the person naming what is missing; more than one delivery, the split. A brief recorded ready is never read again by a tick |
 | The change's checks pass with no verdict for its head, and `Review` gives the review to an agent | starts a review child, which leaves its verdict on the change, unless a reviewer claimed the head within `Stale after` |
 | The change's checks pass with no verdict for its head, and `Review` names a reviewer outside the tick | waits: a missing verdict is never a passed gate |
 | The gates pass (a verdict for the head, or `Review` none) and the `Merge rule` lets the agents integrate | integrates the change, when the code host requires that review; otherwise moves the task to `waiting` on a person, naming what is ready |
