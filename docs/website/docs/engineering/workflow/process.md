@@ -80,6 +80,7 @@ The **decision queue** is every open choice that holds work before it can start,
 - **After the verdict, the tick is the only writer of the task's status and wait** (GTF-S3). It writes every transition whose owner does not write to Flow, such as CI, the code host, or a person who merged or reviewed, and every one an owner left unwritten. A run that only contributed to a stage, such as a reviewer, leaves its verdict on the change and writes at most references for what it produced.
 - With no tick, because nothing schedules one, the next run that reads the graph writes what the tick would.
 - **Whoever writes or refines a brief may record that it is ready**, as the same tag the tick writes, so the tick's reading is only the fallback for a task that arrives without it. An agent that rewrites a brief recorded ready removes the tag, and the next tick reads it again.
+- **A brief with a change out is not rewritten.** While a task carries an open `implements` change, its title and brief stay as that change implements them: new or wider scope is a successor task, `derived_from` it, and a round adds its log or findings to the body without changing the acceptance. A run that wrote a task earlier reads it again before writing to it again, and its write names the version it read (`if_unmodified_since`), so a concurrent write is flagged instead of lost.
 
 ## States
 
