@@ -1,7 +1,13 @@
 import { randomBytes } from 'node:crypto';
 
 import { asString, authenticateClient } from './authenticateClient';
+import { resolveIssueTokens } from './issueAccessToken';
 import { verifyPkceChallenge } from './oauth';
+import {
+  authorizationServerMetadataDocument,
+  resolveOAuthPaths,
+  supportedGrantTypes,
+} from './oauthServerMetadata';
 import type {
   IssuedTokens,
   OAuthClient,
@@ -25,16 +31,17 @@ import {
 
 export * from './oauthServerTypes';
 
+/** Options with the minting hook resolved (the app's, or the signed default). */
+type ResolvedOptions = OAuthServerOptions & {
+  issueTokens: NonNullable<OAuthServerOptions['issueTokens']>;
+};
+
 // ---------------------------------------------------------------------------
 // Internal helpers
 // ---------------------------------------------------------------------------
 
 const generateToken = (bytes = 32): string => {
   return randomBytes(bytes).toString('base64url');
-};
-
-const joinUrl = (issuer: string, path: string): string => {
-  return `${issuer.replace(/\/$/, '')}${path}`;
 };
 
 const parseScopes = (scope: unknown): string[] => {
@@ -71,7 +78,7 @@ const buildTokenResponse = (
 
 const handleAuthorizationCodeGrant = async (
   request: OAuthRequest,
-  options: OAuthServerOptions
+  options: ResolvedOptions
 ): Promise<OAuthResponse> => {
   const { clientStore, authCodeStore, issueTokens } = options;
   const { body } = request;
@@ -140,7 +147,7 @@ const handleAuthorizationCodeGrant = async (
 
 const handleRefreshTokenGrant = async (
   request: OAuthRequest,
-  options: OAuthServerOptions
+  options: ResolvedOptions
 ): Promise<OAuthResponse> => {
   const { clientStore, issueTokens, onRefreshToken } = options;
   const { body } = request;
@@ -275,12 +282,6 @@ const handleAuthorize = async (
  * `unsupported_grant_type`. Advertising it anyway makes clients expect a
  * refresh token they can never use.
  */
-const supportedGrantTypes = (options: OAuthServerOptions): string[] => {
-  return options.onRefreshToken
-    ? ['authorization_code', 'refresh_token']
-    : ['authorization_code'];
-};
-
 /**
  * The `grant_types` a registering client gets. RFC 7591 §3.2.1 lets the server
  * replace requested metadata values, so a requested `refresh_token` grant the
@@ -408,11 +409,11 @@ const handleRegister = async (
 export const createOAuthHandlers = (
   options: OAuthServerOptions
 ): OAuthHandlers => {
-  const { issuer, scopesSupported, resource } = options;
-  const paths = {
-    authorize: options.endpoints?.authorize ?? '/authorize',
-    token: options.endpoints?.token ?? '/token',
-    register: options.endpoints?.register ?? '/register',
+  const { issuer, scopesSupported, resource, signing } = options;
+  const paths = resolveOAuthPaths(options);
+  const resolved: ResolvedOptions = {
+    ...options,
+    issueTokens: resolveIssueTokens(options),
   };
 
   return {
@@ -421,22 +422,15 @@ export const createOAuthHandlers = (
     authorizationServerMetadata: (): OAuthResponse => {
       return {
         status: 200,
-        body: {
-          issuer,
-          authorization_endpoint: joinUrl(issuer, paths.authorize),
-          token_endpoint: joinUrl(issuer, paths.token),
-          registration_endpoint: joinUrl(issuer, paths.register),
-          response_types_supported: ['code'],
-          grant_types_supported: supportedGrantTypes(options),
-          code_challenge_methods_supported: ['S256'],
-          token_endpoint_auth_methods_supported: [
-            'client_secret_basic',
-            'client_secret_post',
-            'none',
-          ],
-          ...(scopesSupported ? { scopes_supported: scopesSupported } : {}),
-        },
+        body: authorizationServerMetadataDocument({ options, paths }),
       };
+    },
+
+    jwks: (): OAuthResponse | undefined => {
+      if (!signing) {
+        return undefined;
+      }
+      return { status: 200, body: signing.keySet.jwks() };
     },
 
     protectedResourceMetadata: (): OAuthResponse | undefined => {
@@ -469,10 +463,10 @@ export const createOAuthHandlers = (
         return oauthError(400, 'invalid_target', INVALID_TARGET_DESCRIPTION);
       }
       if (grantType === 'authorization_code') {
-        return handleAuthorizationCodeGrant(request, options);
+        return handleAuthorizationCodeGrant(request, resolved);
       }
       if (grantType === 'refresh_token') {
-        return handleRefreshTokenGrant(request, options);
+        return handleRefreshTokenGrant(request, resolved);
       }
       return oauthError(
         400,

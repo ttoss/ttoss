@@ -42,7 +42,13 @@ export {
   generateEncryptionKey,
 } from './encryption';
 export { comparePassword, hashPassword, needsRehash } from './hash';
-export { type JwtPayload, signJwt, verifyJwt } from './jwt';
+export {
+  type JwtPayload,
+  type JwtSigningKeyArgs,
+  type JwtVerificationKeyArgs,
+  signJwt,
+  verifyJwt,
+} from './jwt';
 export {
   createMemoryAccessTokenStore,
   createMemoryAuthCodeStore,
@@ -70,6 +76,7 @@ export {
   verifyPkceChallenge,
 } from './oauth';
 export {
+  type AccessTokenSigningOptions,
   type AccessTokenStore,
   type AuthCodeStore,
   type AuthHttpRequest,
@@ -143,6 +150,18 @@ export {
   type RefreshRotation,
   type RefreshRotationOptions,
 } from './refreshTokenRotation';
+export {
+  type AsymmetricAlgorithm,
+  generateSigningKey,
+  type JsonWebKeySet,
+  type PublicJwk,
+  type SigningKey,
+} from './signingKeys';
+export {
+  createSigningKeySet,
+  type SigningKeySet,
+  type SigningKeySetOptions,
+} from './signingKeySet';
 export {
   generateWebhookSecret,
   signWebhookPayload,

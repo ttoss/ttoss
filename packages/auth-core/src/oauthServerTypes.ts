@@ -1,3 +1,5 @@
+import type { SigningKeySet } from './signingKeySet';
+
 // ---------------------------------------------------------------------------
 // Runner-agnostic HTTP shapes
 //
@@ -388,6 +390,38 @@ export interface OnRefreshTokenArgs {
 export type OnRefreshTokenResult =
   { subject: string; scopes: string[] } | undefined;
 
+/**
+ * Built-in access-token minting with an asymmetric key, so an app needs no
+ * signing code of its own and a third party verifies tokens through the
+ * advertised `jwks_uri` alone.
+ */
+export interface AccessTokenSigningOptions {
+  /** The keys to sign with and publish — see `createSigningKeySet`. */
+  keySet: SigningKeySet;
+  /**
+   * Access-token lifetime in seconds, surfaced as `expires_in`. Keep the key
+   * set's `retiredKeyTtl` at least this long, so rotating a key never
+   * invalidates a live token.
+   * @default 3600
+   */
+  accessTokenTtl?: number;
+  /**
+   * Extra claims for the access token (tenant, roles, …). The registered
+   * claims — `iss`, `sub`, `aud`, `exp`, `iat`, `jti`, `scope`, `client_id` —
+   * are set by the engine and cannot be overridden from here.
+   */
+  claims?: (
+    args: IssueTokensArgs
+  ) => Promise<Record<string, unknown>> | Record<string, unknown>;
+  /**
+   * Mints the refresh token returned beside the access token — typically
+   * `createRefreshRotation(...).issue`. Omit it to issue access tokens only.
+   */
+  issueRefreshToken?: (
+    args: IssueTokensArgs
+  ) => Promise<string | undefined> | string | undefined;
+}
+
 /** Configuration for {@link createOAuthHandlers}. */
 export interface OAuthServerOptions {
   /** The authorization server's issuer identifier (its base URL). */
@@ -397,10 +431,20 @@ export interface OAuthServerOptions {
   /** App-provided store for short-lived authorization codes. */
   authCodeStore: AuthCodeStore;
   /**
-   * App-owned token minting. The core never sees the user model or signing keys
-   * — it hands you the subject/scopes/client and you return the tokens.
+   * App-owned token minting: the engine hands you the subject/scopes/client
+   * and you return the tokens. Optional when `signing` is set, which mints an
+   * asymmetric JWT itself; when both are set, this one mints and `signing`
+   * only publishes the JWKS. One of the two is required.
    */
-  issueTokens: (args: IssueTokensArgs) => Promise<IssuedTokens> | IssuedTokens;
+  issueTokens?: (args: IssueTokensArgs) => Promise<IssuedTokens> | IssuedTokens;
+  /**
+   * Asymmetric signing keys. When set, the server publishes them at the JWKS
+   * endpoint, advertises it as `jwks_uri` in its RFC 8414 metadata, and — when
+   * `issueTokens` is omitted — mints RFC 9068 access tokens (`typ: at+jwt`)
+   * carrying `iss`, `sub`, `aud` (the `resource`, or the issuer when unset),
+   * `exp`, `iat`, `jti`, `scope`, `client_id` and the app's extra `claims`.
+   */
+  signing?: AccessTokenSigningOptions;
   /**
    * App-owned login/consent. Called on every authorize request; return the
    * authenticated subject to approve, or `{ approved: false, redirect }` to send
@@ -444,17 +488,21 @@ export interface OAuthServerOptions {
     token?: string;
     /** @default '/register' */
     register?: string;
+    /** @default '/.well-known/jwks.json' */
+    jwks?: string;
   };
 }
 
 /** The runner-agnostic OAuth server handlers returned by {@link createOAuthHandlers}. */
 export interface OAuthHandlers {
   /** Resolved endpoint paths, for an adapter to mount routes on. */
-  paths: { authorize: string; token: string; register: string };
+  paths: { authorize: string; token: string; register: string; jwks: string };
   /** RFC 8414 Authorization Server Metadata response. */
   authorizationServerMetadata: () => OAuthResponse;
   /** RFC 9728 Protected Resource Metadata response, or `undefined` if `resource` is unset. */
   protectedResourceMetadata: () => OAuthResponse | undefined;
+  /** The JWKS document (RFC 7517), or `undefined` when `signing` is unset. */
+  jwks: () => OAuthResponse | undefined;
   /** Handle a `GET /authorize` request. */
   authorize: (request: OAuthRequest) => Promise<OAuthResponse>;
   /** Handle a `POST /token` request (authorization_code + refresh_token grants). */
