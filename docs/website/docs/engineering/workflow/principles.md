@@ -45,6 +45,7 @@ Rules that rest on it:
 - A brief with a change out is not rewritten: new or wider scope is a successor task. A run that wrote a task reads it again before writing to it again, naming the version it read.
 - The implementer records its assumptions at the handoff.
 - What integrating leaves is a field of the handoff, never prose the next run infers; a person who supplies it later writes the field, and the next tick applies it.
+- A task still holding only its handoff's wait on its gates after the change integrated has not been advanced, whatever was written since: the tick reads what holds the task, not when it was last written.
 - Intake writes a task, never a fix, and looks for the task the signal's URL already names before it writes one.
 
 ## One engine, extended for any project
@@ -79,6 +80,7 @@ Rules that rest on it:
 - The reviewer did not write the change and never fixes it.
 - The agents integrate; a change to its own gates waits on a person.
 - A task closes on an effect observed where it matters.
+- A check whose signal can already fail before its date is read early in a spare short slot, so a regression is caught when it shows, not on the date.
 
 ## Autonomy is bounded by reversibility
 
