@@ -165,10 +165,18 @@ export const createEmailCodeHandlers = (
       return chargeFailedAttempt({ runtime, stored });
     }
 
-    await tokenStore.delete({
+    /**
+     * Single use rests on the store's answer: a concurrent submission of the
+     * same code found the same record.
+     */
+    const consumed = await tokenStore.delete({
       tokenHash: stored.tokenHash,
       purpose: 'emailCode',
     });
+
+    if (!consumed) {
+      return error(401, 'invalid_token', INVALID_CODE);
+    }
 
     const user = await resolveUser({ runtime, email });
 

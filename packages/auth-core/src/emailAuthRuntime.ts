@@ -374,7 +374,15 @@ const createRedeemLinkToken = (
       return { response: error(401, 'invalid_token', INVALID_LINK) };
     }
 
-    await tokenStore.delete({ tokenHash, purpose });
+    /**
+     * Single use rests on the store's answer, not on the `find` above: a
+     * concurrent redemption of the same link found it too.
+     */
+    const consumed = await tokenStore.delete({ tokenHash, purpose });
+
+    if (!consumed) {
+      return { response: error(401, 'invalid_token', INVALID_LINK) };
+    }
 
     if (
       !verifyOneTimeToken({

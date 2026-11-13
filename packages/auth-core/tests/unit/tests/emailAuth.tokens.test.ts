@@ -123,6 +123,48 @@ test('it should let a magic link be redeemed only once', async () => {
   expect(replay?.body).toMatchObject({ error: { code: 'invalid_token' } });
 });
 
+test('it should sign in only one of two concurrent redemptions of a magic link', async () => {
+  const { handlers, sent } = setup({
+    modes: ['magicLink'],
+    users: [{ email: 'user@example.com' }],
+  });
+
+  await handlers.sendMagicLink?.(request({ email: 'user@example.com' }));
+
+  const { token } = lastDelivery(sent);
+
+  const responses = await Promise.all([
+    handlers.verifyMagicLink?.(request({ token })),
+    handlers.verifyMagicLink?.(request({ token })),
+  ]);
+
+  expect(
+    responses
+      .map((response) => {
+        return response?.status;
+      })
+      .sort()
+  ).toEqual([200, 401]);
+});
+
+test('it should refuse a magic link whose consume another redemption won', async () => {
+  const { handlers, sent, oneTimeTokenStore } = setup({
+    modes: ['magicLink'],
+    users: [{ email: 'user@example.com' }],
+  });
+
+  await handlers.sendMagicLink?.(request({ email: 'user@example.com' }));
+
+  const { token } = lastDelivery(sent);
+
+  jest.spyOn(oneTimeTokenStore, 'delete').mockReturnValueOnce(false);
+
+  const response = await handlers.verifyMagicLink?.(request({ token }));
+
+  expect(response?.status).toBe(401);
+  expect(response?.body).toMatchObject({ error: { code: 'invalid_token' } });
+});
+
 test('it should invalidate the previous magic link when a new one is issued', async () => {
   const { handlers, sent } = setup({
     modes: ['magicLink'],
@@ -305,6 +347,30 @@ test('it should sign an existing user in with a code', async () => {
   );
 
   expect(response?.body).toMatchObject({ accessToken: 'token-for-user_1' });
+});
+
+test('it should sign in only one of two concurrent submissions of a code', async () => {
+  const { handlers, sent } = setup({
+    modes: ['emailCode'],
+    users: [{ email: 'user@example.com', emailVerified: true }],
+  });
+
+  await handlers.sendEmailCode?.(request({ email: 'user@example.com' }));
+
+  const code = lastDelivery(sent).token;
+
+  const responses = await Promise.all([
+    handlers.verifyEmailCode?.(request({ email: 'user@example.com', code })),
+    handlers.verifyEmailCode?.(request({ email: 'user@example.com', code })),
+  ]);
+
+  expect(
+    responses
+      .map((response) => {
+        return response?.status;
+      })
+      .sort()
+  ).toEqual([200, 401]);
 });
 
 test('it should not send a code to an unknown address when createUserOnVerify is off', async () => {

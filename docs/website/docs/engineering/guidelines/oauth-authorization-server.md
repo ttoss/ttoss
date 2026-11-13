@@ -166,7 +166,7 @@ const { clientStore, authCodeStore, consentStore, refreshTokenStore } =
   createPostgresdbOAuthStores({ db });
 ```
 
-Writing a store by hand? Two details are not obvious from the interfaces. `AuthCodeStore.get` is handed the plaintext code, but the engine reads only the bound metadata off the result — so hash the code to look the row up and echo the presented value back, because a code that travels through a browser redirect must not sit in the database in plaintext. And a live refresh token's `consumedAt` must be **absent**, never `null`: rotation treats `consumedAt !== undefined` as reuse, so a nullable timestamp column makes the first refresh look like a replay and revokes the owner's whole token set.
+Writing a store by hand? Two details are not obvious from the interfaces. `AuthCodeStore.get` is handed the plaintext code, but the engine reads only the bound metadata off the result — so hash the code to look the row up and echo the presented value back, because a code that travels through a browser redirect must not sit in the database in plaintext. And a live refresh token's `consumedAt` must be **absent**, never `null`: rotation treats `consumedAt !== undefined` as reuse, so a nullable timestamp column makes the first refresh look like a replay and revokes the owner's whole token set. And `RefreshTokenStore.consume` must be **atomic** — one conditional write (`UPDATE … WHERE consumed_at IS NULL`) that returns `true` only to the caller that flipped it — or two concurrent refreshes with the same token both succeed.
 
 ## Deferred consent screens
 

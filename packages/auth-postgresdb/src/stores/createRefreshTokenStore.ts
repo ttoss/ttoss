@@ -5,7 +5,8 @@ import type { OAuthRefreshToken } from '../models/OAuthRefreshToken';
 /**
  * Creates a {@link RefreshTokenStore} backed by the `oauth_refresh_tokens`
  * table, keyed by token hash and by the `(clientId, subject)` owner that
- * `deleteByOwner` revokes on reuse detection.
+ * `deleteByOwner` revokes on reuse detection. `consume` is atomic, so a token
+ * is single-use under concurrency, not just in sequence.
  */
 export const createRefreshTokenStore = ({
   model,
@@ -50,6 +51,19 @@ export const createRefreshTokenStore = ({
           consumedAt: row.consumedAt.getTime(),
         }),
       };
+    },
+
+    /**
+     * One conditional `UPDATE … WHERE consumed_at IS NULL`: Postgres takes the
+     * row lock, so of two concurrent refreshes only one sees a changed row and
+     * gets `true`; rotation treats the other as reuse.
+     */
+    consume: async ({ tokenHash, at }) => {
+      const [updated] = await model.update(
+        { consumedAt: new Date(at) },
+        { where: { tokenHash, consumedAt: null } }
+      );
+      return updated > 0;
     },
 
     delete: async (tokenHash) => {

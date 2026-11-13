@@ -86,7 +86,9 @@ export interface RefreshRotation {
  * are easy to get wrong by hand:
  *
  * - **Single use** — a refresh token is consumed (marked rotated) the first
- *   time it is exchanged; a new one is minted by your `issueTokens` hook.
+ *   time it is exchanged, through the store's atomic `consume`, so two
+ *   concurrent refreshes with one token cannot both succeed; a new one is
+ *   minted by your `issueTokens` hook.
  * - **Reuse detection** — presenting an already-consumed token signals theft or
  *   replay, so the owner's *entire* token set is revoked, forcing re-auth.
  * - **Expiry** — tokens past their TTL are rejected and swept on access.
@@ -144,12 +146,16 @@ export const createRefreshRotation = (
     }
 
     // Reuse of a rotated token: revoke the whole chain for this owner.
-    if (stored.consumedAt !== undefined) {
+    const revokeChain = async (): Promise<undefined> => {
       await store.deleteByOwner({
         clientId: stored.clientId,
         subject: stored.subject,
       });
       return undefined;
+    };
+
+    if (stored.consumedAt !== undefined) {
+      return revokeChain();
     }
 
     if (stored.expiresAt < Date.now()) {
@@ -171,8 +177,16 @@ export const createRefreshRotation = (
       scopes = args.scopes;
     }
 
-    // Consume the token: rotation issues a fresh one via `issueTokens`.
-    await store.save({ ...stored, consumedAt: Date.now() });
+    /**
+     * Consume the token: rotation issues a fresh one via `issueTokens`. Only the
+     * store's atomic answer counts — a concurrent refresh with the same token
+     * read it as live too, and whichever call loses the consume is a replay.
+     */
+    const consumed = await store.consume({ tokenHash, at: Date.now() });
+
+    if (!consumed) {
+      return revokeChain();
+    }
 
     return { subject: stored.subject, scopes };
   };

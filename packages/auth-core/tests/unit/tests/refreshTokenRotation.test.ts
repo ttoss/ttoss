@@ -124,6 +124,67 @@ describe('createRefreshRotation — onRefreshToken', () => {
     ).toBeUndefined();
   });
 
+  test('lets exactly one of two concurrent refreshes through and revokes the chain', async () => {
+    const { rotation } = setup();
+    const token = await rotation.issue({
+      client,
+      subject: 'user-1',
+      scopes: ['read'],
+    });
+    const sibling = await rotation.issue({
+      client,
+      subject: 'user-1',
+      scopes: ['read'],
+    });
+
+    const results = await Promise.all([
+      rotation.onRefreshToken({ refreshToken: token, client, scopes: [] }),
+      rotation.onRefreshToken({ refreshToken: token, client, scopes: [] }),
+    ]);
+
+    expect(
+      results.filter((result) => {
+        return result !== undefined;
+      })
+    ).toHaveLength(1);
+
+    // The losing refresh is a replay: the owner's whole chain is revoked.
+    expect(
+      await rotation.onRefreshToken({
+        refreshToken: sibling,
+        client,
+        scopes: [],
+      })
+    ).toBeUndefined();
+  });
+
+  test('treats a lost consume as reuse even when the read saw a live token', async () => {
+    const store = createMemoryRefreshTokenStore();
+    const deleteByOwner = jest.fn(store.deleteByOwner);
+    const rotation = createRefreshRotation({
+      store: {
+        ...store,
+        deleteByOwner,
+        consume: () => {
+          return false;
+        },
+      },
+    });
+    const token = await rotation.issue({
+      client,
+      subject: 'user-1',
+      scopes: ['read'],
+    });
+
+    expect(
+      await rotation.onRefreshToken({ refreshToken: token, client, scopes: [] })
+    ).toBeUndefined();
+    expect(deleteByOwner).toHaveBeenCalledWith({
+      clientId: client.client_id,
+      subject: 'user-1',
+    });
+  });
+
   test('reuse revocation is scoped to the owner, leaving other owners intact', async () => {
     const { rotation } = setup();
     const reused = await rotation.issue({
