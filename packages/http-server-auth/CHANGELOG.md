@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.13.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fhttp-server-auth%400.12.5...%40ttoss%2Fhttp-server-auth%400.13.0) (2026-11-13)
+
+### Features
+
+- **auth-core:** asymmetric access tokens (EdDSA/ES256) with a published JWKS and key rotation ([#1453](https://github.com/ttoss/ttoss/issues/1453)) ([5b8235a](https://github.com/ttoss/ttoss/commit/5b8235a2123c633cdb43d7a079f9f1590b188417))
+
 ## [0.12.5](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fhttp-server-auth%400.12.4...%40ttoss%2Fhttp-server-auth%400.12.5) (2026-11-13)
 
 **Note:** Version bump only for package @ttoss/http-server-auth

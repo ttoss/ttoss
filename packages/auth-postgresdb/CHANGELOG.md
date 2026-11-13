@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.1](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fauth-postgresdb%400.8.0...%40ttoss%2Fauth-postgresdb%400.8.1) (2026-11-13)
+
+**Note:** Version bump only for package @ttoss/auth-postgresdb
+
 # [0.8.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fauth-postgresdb%400.7.1...%40ttoss%2Fauth-postgresdb%400.8.0) (2026-11-13)
 
 - fix(auth-core)!: atomic consume for refresh tokens and one-time tokens (#1452) ([8c8021b](https://github.com/ttoss/ttoss/commit/8c8021b803112c58d9b2159d5436f6fbb063c747)), closes [#1452](https://github.com/ttoss/ttoss/issues/1452)
