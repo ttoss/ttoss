@@ -30,11 +30,11 @@ if (isMatch && needsRehash(stored)) {
 }
 ```
 
-## JWT (HS256)
+## JWT
 
 Sign and verify JWTs for self-hosted authentication, where the application
-owns the signing secret. `verifyJwt` returns `null` for malformed, badly
-signed, or expired tokens.
+owns the signing key. `verifyJwt` returns `null` for malformed, badly
+signed, or expired tokens. With a `secret`, tokens are HS256:
 
 ```ts
 import { signJwt, verifyJwt } from '@ttoss/auth-core';
@@ -47,6 +47,32 @@ const token = signJwt({
 
 const payload = verifyJwt({ token, secret: process.env.JWT_SECRET });
 ```
+
+A shared secret cannot be published, so anyone who verifies HS256 tokens can also mint them. When a third party verifies your tokens, sign with an asymmetric `key` (`EdDSA` / Ed25519 by default, or `ES256`) and hand out its public half as a JWKS. The header carries the key's `kid`, and `verifyJwt({ token, jwks })` picks the key by `kid` and takes the algorithm from the key, never from the token, so a token signed for one mode never passes the other.
+
+```ts
+import {
+  createSigningKeySet,
+  generateSigningKey,
+  verifyJwt,
+} from '@ttoss/auth-core';
+
+// Once, from a script: store JSON.stringify([key]) as a secret.
+const key = generateSigningKey({ alg: 'EdDSA' });
+
+const keySet = createSigningKeySet({
+  keys: JSON.parse(process.env.SIGNING_KEYS),
+  retiredKeyTtl: 3600, // the longest lifetime of any token a key signs
+});
+
+const token = keySet.sign({
+  payload: { sub: 'user_123' },
+  expiresInSeconds: 3600,
+});
+const payload = verifyJwt({ token, jwks: keySet.jwks() });
+```
+
+`createSigningKeySet` handles rotation. Exactly one key has no `retiredAt`, and that one signs. To rotate, add a new key and set `retiredAt: Date.now()` on the old one. The retired key stays in `jwks()` (and keeps verifying) for `retiredKeyTtl` seconds, so live tokens survive the rotation, and then drops out on its own.
 
 For Amazon Cognito tokens, use `@ttoss/auth-core/amazon-cognito`, which
 re-exports [`aws-jwt-verify`](https://github.com/awslabs/aws-jwt-verify).
@@ -311,6 +337,29 @@ const res = await oauth.token({ query: {}, body, headers }); // { status, body }
 Setting `resource` also enables resource indicators ([RFC 8707](https://www.rfc-editor.org/rfc/rfc8707)): a `resource` parameter on `/authorize` or `/token` that names anything else fails with `invalid_target`, and `issueTokens` receives `resource` so the app can put it in the token's `aud` — the claim `@ttoss/http-server-mcp`'s `resourceIndicator` checks. Without `resource`, the parameter is ignored.
 
 The `refresh_token` grant exists only when you pass `onRefreshToken`. The discovery metadata (`grant_types_supported`) and Dynamic Client Registration follow suit: without it they advertise only `authorization_code`, so a client never expects a refresh token it cannot use. A registration that asks for `refresh_token` on such a server has that grant dropped (RFC 7591 lets the server replace requested metadata) and gets back the grants it can use; one that asks for nothing but `refresh_token` is refused with `invalid_client_metadata`. With `onRefreshToken`, both advertise `['authorization_code', 'refresh_token']`, and a client registered without `grant_types` gets both.
+
+### Signed access tokens and JWKS
+
+Pass `signing: { keySet }` and the server mints access tokens itself, so `issueTokens` becomes optional. Each token is an RFC 9068 JWT (`typ: at+jwt`) signed by the key set's current key, carrying `iss`, `sub`, `aud` (the `resource`, or the issuer when unset), `exp`, `iat`, `jti`, `scope`, `client_id`, and whatever `claims` returns. App claims cannot override those registered names. The server also serves the key set at `/.well-known/jwks.json` (`endpoints.jwks`) and advertises it as `jwks_uri` in its metadata, so a resource server run by someone else verifies tokens through discovery alone, for example with `createOidcVerifier` or `jose`.
+
+```ts
+const oauth = createOAuthHandlers({
+  issuer,
+  resource: 'https://mcp.example.com/mcp',
+  clientStore,
+  authCodeStore,
+  onAuthorize,
+  onRefreshToken: refresh.onRefreshToken,
+  signing: {
+    keySet,
+    accessTokenTtl: 3600, // keep keySet's retiredKeyTtl at least this long
+    claims: ({ subject }) => ({ tenant: tenantOf(subject) }),
+    issueRefreshToken: refresh.issue,
+  },
+});
+```
+
+When you pass both `issueTokens` and `signing`, your `issueTokens` mints the tokens and `signing` only publishes the JWKS.
 
 Your app keeps its user model, signing keys, and login/consent UI behind the hooks. See the [OAuth Authorization Server](https://ttoss.dev/docs/engineering/guidelines/oauth-authorization-server) guideline for the full flow.
 

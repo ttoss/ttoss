@@ -25,14 +25,18 @@ export {
   type StoredOneTimeToken,
 } from './emailAuth';
 export {
+  type AccessTokenSigningOptions,
   type AuthCodeStore,
   type AuthorizeRequest,
   type ClientStore,
   createOAuthHandlers,
   createProtectedResourceMetadataMiddleware,
+  createSigningKeySet,
+  generateSigningKey,
   getWwwAuthenticateHeader,
   type IssuedTokens,
   type IssueTokensArgs,
+  type JsonWebKeySet,
   type OAuthClient,
   type OAuthClientMetadata,
   type OAuthHandlers,
@@ -46,6 +50,8 @@ export {
   protectedResourceMetadataDocument,
   protectedResourceMetadataPaths,
   protectedResourceMetadataUrl,
+  type SigningKey,
+  type SigningKeySet,
   type StoredAuthorizationCode,
 } from './oauthServer';
 export { isOriginAllowed } from './origin';

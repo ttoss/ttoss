@@ -14,13 +14,17 @@ import { applyResponse, toAuthRequest } from './koaAdapter';
  * `@ttoss/http-server` app. Re-exported so a consumer needs a single import.
  */
 export {
+  type AccessTokenSigningOptions,
   type AuthCodeStore,
   type AuthorizeRequest,
   type ClientStore,
   createOAuthHandlers,
+  createSigningKeySet,
+  generateSigningKey,
   getWwwAuthenticateHeader,
   type IssuedTokens,
   type IssueTokensArgs,
+  type JsonWebKeySet,
   type OAuthClient,
   type OAuthClientMetadata,
   type OAuthHandlers,
@@ -33,6 +37,8 @@ export {
   protectedResourceMetadataDocument,
   protectedResourceMetadataPaths,
   protectedResourceMetadataUrl,
+  type SigningKey,
+  type SigningKeySet,
   type StoredAuthorizationCode,
 } from '@ttoss/auth-core';
 
@@ -42,7 +48,9 @@ export {
  * authorization endpoint (PKCE S256), token endpoint (`authorization_code`,
  * plus `refresh_token` when `onRefreshToken` is set), Dynamic Client
  * Registration, and discovery metadata. Discovery and registration advertise
- * `refresh_token` only when `onRefreshToken` is set.
+ * `refresh_token` only when `onRefreshToken` is set. With `signing`, it also
+ * serves the JWKS (`/.well-known/jwks.json`, advertised as `jwks_uri`) and —
+ * without `issueTokens` — mints asymmetric access tokens itself.
  *
  * This is the issuing side of OAuth; pair it with `authMiddleware`'s `oauth`
  * strategy (the verifying side) when one deployment both issues and verifies.
@@ -64,6 +72,17 @@ export const oauthServer = (options: OAuthServerOptions): Router => {
   router.get('/.well-known/oauth-authorization-server', (ctx: Context) => {
     applyResponse(ctx, engine.authorizationServerMetadata());
   });
+
+  // Served only with `signing`, and advertised as `jwks_uri` in the metadata
+  // above, so a third-party resource server verifies tokens with no secret.
+  // The document is rebuilt per request, so a retired key drops out once its
+  // grace window closes without a restart.
+  const { signing } = options;
+  if (signing) {
+    router.get(engine.paths.jwks, (ctx: Context) => {
+      ctx.body = signing.keySet.jwks();
+    });
+  }
 
   const prm = engine.protectedResourceMetadata();
   if (prm && options.resource) {

@@ -139,3 +139,19 @@ Re-litigation answers:
 - "The engine still reads `consumedAt` first — is that check redundant?" → it short-circuits a plain sequential replay without a write; only `consume` is trusted under concurrency.
 - "Why revoke the chain when the loser was maybe just a client retry?" → the server cannot tell a retry from a stolen token racing the owner, and OAuth 2.1 reuse detection errs toward re-authentication.
 - "Why not return the record from `delete`, like `PendingAuthorizationStore.consume`?" → the engine already holds the record from `find`; it only needs to know whether it won.
+
+### ADR-006: Asymmetric access tokens are signed with `node:crypto`, EdDSA by default, and a rotation window rather than manual JWKS edits
+
+Status: accepted (2026-11-13)
+Tags: jwt, jwks, oauth, key-rotation
+
+Decision: `signJwt` / `verifyJwt` sign `EdDSA` (Ed25519, the default) and `ES256` through `node:crypto`, `createSigningKeySet` publishes the active key plus each retired key until `retiredAt + retiredKeyTtl`, and `OAuthServerOptions.signing` mints RFC 9068 tokens when the app has no `issueTokens`.
+Rejected: `jose`'s `SignJWT` for signing, because it is async and would turn `signJwt` and every caller async (jose stays the independent verifier in tests); RS256, because its keys and signatures are larger with no verifier we target needing it, while naturali and the MCP hosts accept EdDSA and ES256; publishing every configured key until the app deletes it, because a forgotten retired key would stay trusted forever.
+Cost: signing is Node-only (no edge or browser runtime), and with no `resource` configured the default `aud` is the issuer, which a resource server checking its own URL will reject.
+Anchors: `src/signingKeys.ts`, `src/signingKeySet.ts`, `src/jwt.ts`, `src/issueAccessToken.ts`, `src/oauthServer.ts` (`jwks`, `jwks_uri`).
+
+Re-litigation answers:
+
+- "Why take the algorithm from the key, not the header?" → a header-chosen `alg` is the classic confusion attack; a JWK verifies only with the algorithm its material implies, and the header must agree.
+- "Why can't app claims override `sub` or `aud`?" → `claims` often carries user-derived data, and a token whose audience or subject the app rewrote by accident is a cross-tenant token.
+- "Why a fixed one-active-key rule?" → two signing keys make which `kid` a token carries depend on the replica, and a set with none cannot mint. Both fail at startup instead of in production.
