@@ -22,6 +22,49 @@ const maplibreDir = dirname(
   })
 );
 
+/**
+ * `@ttoss/react-openapi` styles its components with Tailwind, compiled from
+ * `src/styles.css`. Only that stylesheet goes through PostCSS + Tailwind: the
+ * default `.css` rule is cloned for it with `postcss-loader` appended, and
+ * excluded from the original, so no other story's CSS is touched.
+ */
+const REACT_OPENAPI_CSS = /react-openapi[\\/]src[\\/]styles\.css$/;
+
+type WebpackConfig = Parameters<
+  NonNullable<StorybookConfig['webpackFinal']>
+>[0];
+
+const addTailwindForReactOpenApi = (webpackConfig: WebpackConfig) => {
+  const rules = webpackConfig.module?.rules ?? [];
+  const cssRule = rules.find((rule) => {
+    return (
+      typeof rule === 'object' &&
+      rule !== null &&
+      rule.test instanceof RegExp &&
+      rule.test.source === '\\.css$'
+    );
+  });
+  if (!cssRule || typeof cssRule !== 'object' || !Array.isArray(cssRule.use)) {
+    throw new Error('Storybook default CSS rule not found.');
+  }
+  rules.push({
+    ...cssRule,
+    test: REACT_OPENAPI_CSS,
+    use: [
+      ...cssRule.use,
+      {
+        loader: require.resolve('postcss-loader'),
+        options: {
+          postcssOptions: {
+            plugins: [require.resolve('@tailwindcss/postcss')],
+          },
+        },
+      },
+    ],
+  });
+  cssRule.exclude = REACT_OPENAPI_CSS;
+};
+
 const config: StorybookConfig = {
   /**
    * TODO: automatic title generation
@@ -58,6 +101,7 @@ const config: StorybookConfig = {
       test: /maplibre-gl-worker\.mjs$/,
       type: 'asset/resource',
     });
+    addTailwindForReactOpenApi(webpackConfig);
     return webpackConfig;
   },
   refs: {
