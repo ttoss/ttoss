@@ -189,6 +189,21 @@ export interface RefreshTokenStore {
   get: (
     tokenHash: string
   ) => Promise<StoredRefreshToken | undefined> | StoredRefreshToken | undefined;
+  /**
+   * Atomically mark a live token consumed, returning `true` only to the call
+   * that flipped it. A token already consumed (or unknown) returns `false`.
+   *
+   * This is the single-use guarantee: two concurrent refreshes with the same
+   * token can both `get` it before either writes, so the check-then-write has
+   * to happen in one step — in Postgres, `UPDATE … SET consumed_at = $at WHERE
+   * token_hash = $1 AND consumed_at IS NULL` and report whether a row changed.
+   * Rotation treats `false` as reuse and revokes the owner's chain.
+   */
+  consume: (args: {
+    tokenHash: string;
+    /** Unix timestamp (milliseconds) to record as `consumedAt`. */
+    at: number;
+  }) => Promise<boolean> | boolean;
   /** Remove a single refresh token by its hash. */
   delete: (tokenHash: string) => Promise<void> | void;
   /**

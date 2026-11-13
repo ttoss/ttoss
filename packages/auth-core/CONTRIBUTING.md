@@ -123,3 +123,19 @@ Re-litigation answers:
 - "Why not reuse the `emailCode` attempt ceiling?" → that bounds guesses against one issued code; this bounds how many codes get mailed at all. Different resource, different attacker.
 - "Why gate before the lookup rather than after?" → after the lookup the verdict depends on whether the account exists, which is exactly the leak.
 - "Why a `429` rather than a silent 200?" → the response is uniform across known and unknown addresses, so it leaks nothing, and the caller learns to wait instead of retrying immediately.
+
+### ADR-005: Single use is the store's atomic answer, not a read followed by a write
+
+Status: accepted (2026-11-13)
+Tags: refresh-token, one-time-token, concurrency, single-use
+
+Decision: `RefreshTokenStore.consume` and `OneTimeTokenStore.delete` return whether this call consumed the record, and the engine grants a refresh or a sign-in only on `true`; a refresh that loses the consume is treated as reuse and revokes the owner's chain.
+Rejected: keeping `get` → check `consumedAt` → `save` (or `find` → `delete`) — two concurrent requests both read a live record before either writes, so both succeed and reuse detection never fires; asking stores to wrap the engine's calls in a transaction — the engine is backend-agnostic and has no transaction handle, and a read-committed transaction still lets both reads through; a separate `OneTimeTokenStore.consume` beside `delete` — every engine `delete` call on a redeemed token is already the consumption, so a second method would only add a way to call the non-atomic one.
+Cost: breaking contract change — every hand-written `RefreshTokenStore` must add `consume`, and every `OneTimeTokenStore.delete` must report its affected row count instead of returning nothing.
+Anchors: `src/oauthServerTypes.ts` (`RefreshTokenStore.consume`), `src/refreshTokenRotation.ts` (`onRefreshToken`), `src/emailAuthTypes.ts` (`OneTimeTokenStore.delete`), `src/emailAuthRuntime.ts` (`createRedeemLinkToken`), `src/emailAuthCode.ts` (`verifyEmailCode`).
+
+Re-litigation answers:
+
+- "The engine still reads `consumedAt` first — is that check redundant?" → it short-circuits a plain sequential replay without a write; only `consume` is trusted under concurrency.
+- "Why revoke the chain when the loser was maybe just a client retry?" → the server cannot tell a retry from a stolen token racing the owner, and OAuth 2.1 reuse detection errs toward re-authentication.
+- "Why not return the record from `delete`, like `PendingAuthorizationStore.consume`?" → the engine already holds the record from `find`; it only needs to know whether it won.

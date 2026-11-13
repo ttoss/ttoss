@@ -153,7 +153,8 @@ const handlers = createEmailAuthHandlers({
   },
 
   oneTimeTokenStore: {
-    /* save, find, findByEmail, delete, deleteFor, incrementAttempts */
+    /* save, find, findByEmail, delete (returns whether it removed the row),
+       deleteFor, incrementAttempts */
   },
 
   issueSession: (user) => issueSession(user),
@@ -345,6 +346,8 @@ Implement the optional `ClientStore.verifyClientSecret` to use them, and the raw
 ### Refresh token rotation
 
 `createRefreshRotation` implements opaque, server-stored refresh tokens with OAuth 2.1 rotation against any `RefreshTokenStore`: single use, expiry, scope narrowing, and reuse detection (replaying a rotated token revokes the owner's whole token set). Only token hashes are persisted. Wire `issue` into `issueTokens` and pass the ready `onRefreshToken` straight through.
+
+Single use holds under concurrency because it rests on `RefreshTokenStore.consume({ tokenHash, at })`, which must atomically mark a live token consumed and return `true` only to the call that did it — in SQL, `UPDATE … SET consumed_at = $at WHERE token_hash = $1 AND consumed_at IS NULL` and report whether a row changed. Of two concurrent refreshes with one token, exactly one succeeds; the other is treated as reuse and revokes the owner's chain. The one-time token flows (magic links, password reset, email verification, codes) follow the same rule: `OneTimeTokenStore.delete` returns `true` only to the call that removed the row, and only that call signs in.
 
 ```ts
 import { createRefreshRotation } from '@ttoss/auth-core';
