@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.27.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fauth-core%400.26.0...%40ttoss%2Fauth-core%400.27.0) (2026-11-13)
+
+- fix(auth-core)!: atomic consume for refresh tokens and one-time tokens (#1452) ([8c8021b](https://github.com/ttoss/ttoss/commit/8c8021b803112c58d9b2159d5436f6fbb063c747)), closes [#1452](https://github.com/ttoss/ttoss/issues/1452)
+
+### BREAKING CHANGES
+
+- custom RefreshTokenStore implementations must add consume,
+  and OneTimeTokenStore.delete must report whether it removed the row.
+
 # [0.26.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fauth-core%400.25.0...%40ttoss%2Fauth-core%400.26.0) (2026-11-10)
 
 ### Features
