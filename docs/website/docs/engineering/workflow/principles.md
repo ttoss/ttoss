@@ -45,7 +45,6 @@ Rules that rest on it:
 - A brief with a change out is not rewritten: new or wider scope is a successor task. A run that wrote a task reads it again before writing to it again, naming the version it read.
 - The implementer records its assumptions at the handoff.
 - What integrating leaves is a field of the handoff, never prose the next run infers; a person who supplies it later writes the field, and the next tick applies it.
-- A task still holding only its handoff's wait on its gates after the change integrated has not been advanced, whatever was written since: the tick reads what holds the task, not when it was last written.
 - Intake writes a task, never a fix, and looks for the task the signal's URL already names before it writes one.
 
 ## One engine, extended for any project
@@ -80,7 +79,6 @@ Rules that rest on it:
 - The reviewer did not write the change and never fixes it.
 - The agents integrate; a change to its own gates waits on a person.
 - A task closes on an effect observed where it matters.
-- A check whose signal can already fail before its date is read early in a spare short slot, so a regression is caught when it shows, not on the date.
 
 ## Autonomy is bounded by reversibility
 
@@ -245,7 +243,7 @@ Rules that rest on it:
 
 ## Every run is paid for
 
-A run looks free to the agent that starts it and is not: every prompt costs money, latency and a share of what the people downstream will read ([Prompt Economics](/docs/ai/agentic-development-principles/economics-of-interaction#the-principle-of-prompt-economics)). So the Audit measures what runs spend, from the instruction files every session loads and the runs Flow records, and a routine is as cheap as its question allows.
+A run looks free to the agent that starts it and is not: every prompt costs money, latency and a share of what the people downstream will read ([Prompt Economics](/docs/ai/agentic-development-principles/economics-of-interaction#the-principle-of-prompt-economics)). So the Audit measures what runs spend, from the instruction files every session loads and the runs Flow records, and a routine is as cheap as its question allows. Every rule is read by every run that loads it, and an agent's bias is to add one, so a fix first tries removing a rule, then changing one, and adds only when neither fixes it ([Deletion Supremacy](/docs/ai/agentic-development-principles/architecture-of-flow#the-corollary-of-deletion-supremacy)).
 
 It runs on the cheapest model that does the work, because intelligence spent on a low-entropy task is bought and wasted ([Allocative Efficiency](/docs/ai/agentic-development-principles/economics-of-interaction#the-principle-of-allocative-efficiency)). It loads only the tools it calls, and hands a wide read to a subagent that returns the conclusion. The children a tick runs at once are capped, long and short apart (`Max runs`, `Max short runs`), because each is paid for whether or not what is downstream can take its output. Both are caps on spend, never a signal to start or hold work: the release queue alone holds new work.
 
@@ -257,3 +255,4 @@ Rules that rest on it:
 - Child runs are capped, long and short children each by their own limit, and no child starts in a repo whose push branch another child already holds this tick.
 - A routine loads only the tools it calls, and hands a wide read to a subagent.
 - The Audit measures what runs spend.
+- A fix or an improvement to the workflow first tries removing a rule, process, principle, routine or script, then changing one, and adds only when neither fixes it; the change says which step fixed it.
