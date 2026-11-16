@@ -213,7 +213,7 @@ setInterval(async () => {
 }, 60_000);
 ```
 
-In AWS, a scheduled Lambda with [`@ttoss/cloud-cron`](../cloud-cron):
+In AWS, a scheduled Lambda with [`@ttoss/cloud-cron`](https://ttoss.dev/docs/modules/packages/cloud-cron/):
 
 ```ts
 // runCampaigns.ts
