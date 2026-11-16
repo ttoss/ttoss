@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/email-marketing",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Runner-agnostic email marketing engine: suppression list, one-click unsubscribe, sender domains and delivery events, with pluggable providers (Amazon SES)",
   "keywords": [
     "email",
