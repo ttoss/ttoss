@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.20.4 (2026-11-16)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
 ## 0.20.3 (2026-11-10)
 
 ### Bug Fixes

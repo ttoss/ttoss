@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.8.2 (2026-11-16)
+
+**Note:** Version bump only for package @ttoss/fsl-bench
+
 ## [0.8.1](https://github.com/ttoss/ttoss/compare/%40ttoss%2Ffsl-bench%400.8.0...%40ttoss%2Ffsl-bench%400.8.1) (2026-10-21)
 
 **Note:** Version bump only for package @ttoss/fsl-bench

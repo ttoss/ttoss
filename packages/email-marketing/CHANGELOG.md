@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.1](https://github.com/ttoss/ttoss/compare/%40ttoss%2Femail-marketing%400.2.0...%40ttoss%2Femail-marketing%400.2.1) (2026-11-16)
+
+### Bug Fixes
+
+- **email-marketing:** link cloud-cron by its docs url ([#1460](https://github.com/ttoss/ttoss/issues/1460)) ([b0cca5f](https://github.com/ttoss/ttoss/commit/b0cca5f55fbfe64dc357df80d720cbac7eed6d73))
+
 # [0.2.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Femail-marketing%400.1.0...%40ttoss%2Femail-marketing%400.2.0) (2026-11-16)
 
 ### Features

@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/monorepo",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Monorepo setup for ttoss",
   "repository": {
     "type": "git",
