@@ -110,6 +110,14 @@ export const createMemoryRefreshTokenStore = (): RefreshTokenStore => {
     get: (tokenHash) => {
       return tokens.get(tokenHash);
     },
+    consume: ({ tokenHash, at }) => {
+      const token = tokens.get(tokenHash);
+      if (!token || token.consumedAt !== undefined) {
+        return false;
+      }
+      tokens.set(tokenHash, { ...token, consumedAt: at });
+      return true;
+    },
     delete: (tokenHash) => {
       tokens.delete(tokenHash);
     },
@@ -249,7 +257,7 @@ export const createMemoryOneTimeTokenStore = (): OneTimeTokenStore => {
       return null;
     },
     delete: ({ tokenHash, purpose }) => {
-      tokens.delete(key({ tokenHash, purpose }));
+      return tokens.delete(key({ tokenHash, purpose }));
     },
     deleteFor: ({ email, purpose }) => {
       for (const [entry, token] of tokens) {

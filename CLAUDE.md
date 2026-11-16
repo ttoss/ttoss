@@ -55,6 +55,14 @@ pnpm syncpack:lint
 
 Packages use **tsdown** (ESBuild-based) as the builder. Outputs go to `dist/`. Package `exports` fields point to `src/` for local dev (no build needed for local imports); `publishConfig` points to `dist/` for npm publishing.
 
+## Fixing and improving
+
+Before adding anything to fix a problem or make an improvement, stop at the first step that fixes it, and say in the change which one did:
+
+1. Remove a rule, process, principle, routine, script or code path.
+2. Change one.
+3. Add what is missing.
+
 ## Package Development Workflow
 
 After modifying any package, in this order:

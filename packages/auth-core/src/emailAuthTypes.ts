@@ -121,11 +121,17 @@ export type OneTimeTokenStore = {
     email: string;
     purpose: OneTimeTokenPurpose;
   }) => Promise<StoredOneTimeToken | null> | StoredOneTimeToken | null;
-  /** Delete a token, enforcing single use. */
+  /**
+   * Delete a token, returning `true` only to the call that removed it — the
+   * single-use guarantee. Two concurrent redemptions of one link or code can
+   * both `find` it; the engine signs in only the caller this returns `true`
+   * to. Report the deleted row count (`DELETE … WHERE token_hash = $1 AND
+   * purpose = $2` affecting one row), never a prior read.
+   */
   delete: (args: {
     tokenHash: string;
     purpose: OneTimeTokenPurpose;
-  }) => Promise<void> | void;
+  }) => Promise<boolean> | boolean;
   /**
    * Delete every outstanding token of this purpose for this address, so
    * issuing a new one invalidates whatever preceded it.

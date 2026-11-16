@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [15.1.2](https://github.com/ttoss/ttoss/compare/%40docs%2Fwebsite%4015.1.1...%40docs%2Fwebsite%4015.1.2) (2026-11-16)
+
+**Note:** Version bump only for package @docs/website
+
+## [15.1.1](https://github.com/ttoss/ttoss/compare/%40docs%2Fwebsite%4015.1.0...%40docs%2Fwebsite%4015.1.1) (2026-11-16)
+
+**Note:** Version bump only for package @docs/website
+
+# [15.1.0](https://github.com/ttoss/ttoss/compare/%40docs%2Fwebsite%4015.0.0...%40docs%2Fwebsite%4015.1.0) (2026-11-13)
+
+### Features
+
+- **auth-core:** asymmetric access tokens (EdDSA/ES256) with a published JWKS and key rotation ([#1453](https://github.com/ttoss/ttoss/issues/1453)) ([5b8235a](https://github.com/ttoss/ttoss/commit/5b8235a2123c633cdb43d7a079f9f1590b188417))
+
+# [15.0.0](https://github.com/ttoss/ttoss/compare/%40docs%2Fwebsite%4014.0.2...%40docs%2Fwebsite%4015.0.0) (2026-11-13)
+
+- fix(auth-core)!: atomic consume for refresh tokens and one-time tokens (#1452) ([8c8021b](https://github.com/ttoss/ttoss/commit/8c8021b803112c58d9b2159d5436f6fbb063c747)), closes [#1452](https://github.com/ttoss/ttoss/issues/1452)
+
+### BREAKING CHANGES
+
+- custom RefreshTokenStore implementations must add consume,
+  and OneTimeTokenStore.delete must report whether it removed the row.
+
 ## [14.0.2](https://github.com/ttoss/ttoss/compare/%40docs%2Fwebsite%4014.0.1...%40docs%2Fwebsite%4014.0.2) (2026-11-11)
 
 **Note:** Version bump only for package @docs/website

@@ -4,6 +4,7 @@ import {
   createMemoryAccessTokenStore,
   createMemoryAuthCodeStore,
   createMemoryClientStore,
+  createMemoryOneTimeTokenStore,
   createMemoryRefreshTokenStore,
   createOAuthHandlers,
   createRefreshRotation,
@@ -89,6 +90,44 @@ describe('createMemoryRefreshTokenStore', () => {
     expect(await store.get('h2')).toBeUndefined();
     // A different owner is untouched.
     expect(await store.get('h3')).toBeTruthy();
+  });
+});
+
+describe('createMemoryRefreshTokenStore — consume', () => {
+  test('consumes a live token once and refuses every later or unknown consume', async () => {
+    const store = createMemoryRefreshTokenStore();
+    await store.save({
+      tokenHash: 'h1',
+      clientId: 'public-client',
+      subject: 'user-1',
+      scopes: ['read'],
+      expiresAt: Date.now() + 1000,
+    });
+
+    expect(await store.consume({ tokenHash: 'h1', at: 42 })).toBe(true);
+    expect(await store.consume({ tokenHash: 'h1', at: 43 })).toBe(false);
+    expect(await store.consume({ tokenHash: 'missing', at: 44 })).toBe(false);
+    expect((await store.get('h1'))?.consumedAt).toBe(42);
+  });
+});
+
+describe('createMemoryOneTimeTokenStore — delete', () => {
+  test('reports true only to the call that removed the token', async () => {
+    const store = createMemoryOneTimeTokenStore();
+    await store.save({
+      tokenHash: 'h1',
+      email: 'user@example.com',
+      userId: null,
+      purpose: 'magicLink',
+      expires: new Date(Date.now() + 1000),
+    });
+
+    expect(await store.delete({ tokenHash: 'h1', purpose: 'magicLink' })).toBe(
+      true
+    );
+    expect(await store.delete({ tokenHash: 'h1', purpose: 'magicLink' })).toBe(
+      false
+    );
   });
 });
 

@@ -4,6 +4,8 @@ import type { ClientStore } from '@ttoss/auth-core';
 import { App, bodyParser, type Context } from '@ttoss/http-server';
 import {
   createProtectedResourceMetadataMiddleware,
+  createSigningKeySet,
+  generateSigningKey,
   oauthServer,
 } from 'src/index';
 import request from 'supertest';
@@ -89,6 +91,30 @@ describe('oauthServer (Koa adapter)', () => {
     );
     expect(res.status).toBe(200);
     expect(res.body.token_endpoint).toBe('https://api.example.com/token');
+  });
+
+  test('serves the JWKS at the advertised jwks_uri only with signing', async () => {
+    const keySet = createSigningKeySet({
+      keys: [generateSigningKey()],
+      retiredKeyTtl: 3600,
+    });
+    const app = buildApp({ signing: { keySet } }).callback();
+
+    const metadata = await request(app).get(
+      '/.well-known/oauth-authorization-server'
+    );
+    expect(metadata.body.jwks_uri).toBe(
+      'https://api.example.com/.well-known/jwks.json'
+    );
+
+    const jwks = await request(app).get('/.well-known/jwks.json');
+    expect(jwks.status).toBe(200);
+    expect(jwks.body).toEqual(keySet.jwks());
+
+    const without = await request(buildApp().callback()).get(
+      '/.well-known/jwks.json'
+    );
+    expect(without.status).toBe(404);
   });
 
   test('advertises refresh_token in discovery and registration only with onRefreshToken', async () => {

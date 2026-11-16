@@ -18,7 +18,7 @@ ttoss owns only the protocol: discovery metadata, PKCE verification, code exchan
 | --------------------------------------------- | ------------------------------------------------------------ |
 | `/authorize`, `/token`, `/register` wiring    | `clientStore`, `authCodeStore` — persistence                 |
 | PKCE S256 verification, single-use codes      | `onAuthorize` — login + consent UI, bound to your user model |
-| Discovery metadata (RFC 8414 / 9728)          | `issueTokens` — mint tokens with your signing keys           |
+| Discovery metadata (RFC 8414 / 9728), JWKS    | `issueTokens` or `signing` — mint tokens with your keys      |
 | `authorization_code` + `refresh_token` flow   | `onRefreshToken` — validate refresh tokens                   |
 
 ```mermaid
@@ -99,6 +99,10 @@ app.use(authServer.routes());
 
 Clients bootstrap by fetching metadata, so they need no manual configuration. The router serves `/.well-known/oauth-authorization-server` ([RFC 8414](https://www.rfc-editor.org/rfc/rfc8414)) advertising the `authorization_endpoint`, `token_endpoint`, `registration_endpoint`, supported grants (`authorization_code`, plus `refresh_token` only when `onRefreshToken` is set), and `code_challenge_methods_supported: ['S256']`. Set `resource` to also serve `/.well-known/oauth-protected-resource` ([RFC 9728](https://www.rfc-editor.org/rfc/rfc9728)), which pairs a resource URL with this issuer as its authorization server and advertises `scopesSupported` as its `scopes_supported`.
 
+## Signed access tokens
+
+The setup above signs with an HS256 secret, so only a party holding that secret can verify, and every holder can mint. When a resource server you do not run must accept your tokens (a remote MCP host verifying tenant tokens by `jwks_uri`, for example), drop `issueTokens` and pass `signing: { keySet }` with a key set from `createSigningKeySet`. The server then mints RFC 9068 JWTs with an Ed25519 or P-256 key, serves the public keys at `/.well-known/jwks.json`, and advertises them as `jwks_uri`. The verifier needs nothing but discovery. Rotating a key keeps the retired one published until the tokens it signed have expired. See [signed access tokens](/docs/modules/packages/auth-core#signed-access-tokens-and-jwks) for the claims and the rotation steps.
+
 ## Resource indicators
 
 MCP clients send a `resource` parameter ([RFC 8707](https://www.rfc-editor.org/rfc/rfc8707)) naming the server they want a token for. With `resource` set, the server rejects any other value with `invalid_target` and passes `resource` to `issueTokens`; put it in the token's `aud` so the resource server's audience check (`resourceIndicator` on `createMcpRouter`) accepts it and rejects tokens minted for anything else. Without `resource`, the parameter is ignored.
@@ -166,7 +170,7 @@ const { clientStore, authCodeStore, consentStore, refreshTokenStore } =
   createPostgresdbOAuthStores({ db });
 ```
 
-Writing a store by hand? Two details are not obvious from the interfaces. `AuthCodeStore.get` is handed the plaintext code, but the engine reads only the bound metadata off the result — so hash the code to look the row up and echo the presented value back, because a code that travels through a browser redirect must not sit in the database in plaintext. And a live refresh token's `consumedAt` must be **absent**, never `null`: rotation treats `consumedAt !== undefined` as reuse, so a nullable timestamp column makes the first refresh look like a replay and revokes the owner's whole token set.
+Writing a store by hand? Two details are not obvious from the interfaces. `AuthCodeStore.get` is handed the plaintext code, but the engine reads only the bound metadata off the result — so hash the code to look the row up and echo the presented value back, because a code that travels through a browser redirect must not sit in the database in plaintext. And a live refresh token's `consumedAt` must be **absent**, never `null`: rotation treats `consumedAt !== undefined` as reuse, so a nullable timestamp column makes the first refresh look like a replay and revokes the owner's whole token set. And `RefreshTokenStore.consume` must be **atomic** — one conditional write (`UPDATE … WHERE consumed_at IS NULL`) that returns `true` only to the caller that flipped it — or two concurrent refreshes with the same token both succeed.
 
 ## Deferred consent screens
 

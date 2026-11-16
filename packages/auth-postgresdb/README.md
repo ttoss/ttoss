@@ -65,7 +65,7 @@ Each store is also exported on its own (`createClientStore`, `createAuthCodeStor
 
 Every credential — authorization codes (`code_hash`), refresh tokens (`token_hash`), and client secrets (`client_secret_hash`) — is stored by SHA-256 hash, never in plaintext, so a database dump yields nothing replayable. `OAuthClient` keeps the registered RFC 7591 fields in their own columns and any additional submitted metadata in a `metadata` JSONB column, so a registration document round-trips unchanged.
 
-## Three traps these adapters absorb
+## Four traps these adapters absorb
 
 **Authorization codes are hashed at rest.** `AuthCodeStore.get` is handed the plaintext code, but a code travels through a browser redirect and a client's URL bar. The engine never compares the returned `code` against anything — it reads only `clientId`, `redirectUri`, `codeChallenge`, `scopes`, `subject`, and `expiresAt` — so the adapter hashes to find the row and echoes the presented value back.
 
@@ -74,6 +74,8 @@ Every credential — authorization codes (`code_hash`), refresh tokens (`token_h
 Implementing `verifyClientSecret` is what makes hashing possible at all. A store that omits it falls back to the engine comparing the `client_secret` returned by `get`, which forces the store to keep the secret recoverable — plaintext, or encrypted with a key the app has to manage.
 
 **A live refresh token reports no `consumedAt` at all.** `createRefreshRotation` treats `stored.consumedAt !== undefined` as reuse. A nullable timestamp column reads back as `null`, which is `!== undefined`, so a naive adapter makes every live token look consumed: the first refresh is treated as a replay and revokes the owner's entire token set — "refresh works once, then the client must re-authorize forever". The adapter omits the key instead of setting it to `null`.
+
+**Refresh-token single use is one conditional `UPDATE`.** `consume` runs `UPDATE oauth_refresh_tokens SET consumed_at = $at WHERE token_hash = $1 AND consumed_at IS NULL` and returns whether a row changed, so of two concurrent refreshes with the same token only one wins; rotation treats the other as reuse and revokes the owner's chain.
 
 ## Consent
 

@@ -123,3 +123,35 @@ Re-litigation answers:
 - "Why not reuse the `emailCode` attempt ceiling?" → that bounds guesses against one issued code; this bounds how many codes get mailed at all. Different resource, different attacker.
 - "Why gate before the lookup rather than after?" → after the lookup the verdict depends on whether the account exists, which is exactly the leak.
 - "Why a `429` rather than a silent 200?" → the response is uniform across known and unknown addresses, so it leaks nothing, and the caller learns to wait instead of retrying immediately.
+
+### ADR-005: Single use is the store's atomic answer, not a read followed by a write
+
+Status: accepted (2026-11-13)
+Tags: refresh-token, one-time-token, concurrency, single-use
+
+Decision: `RefreshTokenStore.consume` and `OneTimeTokenStore.delete` return whether this call consumed the record, and the engine grants a refresh or a sign-in only on `true`; a refresh that loses the consume is treated as reuse and revokes the owner's chain.
+Rejected: keeping `get` → check `consumedAt` → `save` (or `find` → `delete`) — two concurrent requests both read a live record before either writes, so both succeed and reuse detection never fires; asking stores to wrap the engine's calls in a transaction — the engine is backend-agnostic and has no transaction handle, and a read-committed transaction still lets both reads through; a separate `OneTimeTokenStore.consume` beside `delete` — every engine `delete` call on a redeemed token is already the consumption, so a second method would only add a way to call the non-atomic one.
+Cost: breaking contract change — every hand-written `RefreshTokenStore` must add `consume`, and every `OneTimeTokenStore.delete` must report its affected row count instead of returning nothing.
+Anchors: `src/oauthServerTypes.ts` (`RefreshTokenStore.consume`), `src/refreshTokenRotation.ts` (`onRefreshToken`), `src/emailAuthTypes.ts` (`OneTimeTokenStore.delete`), `src/emailAuthRuntime.ts` (`createRedeemLinkToken`), `src/emailAuthCode.ts` (`verifyEmailCode`).
+
+Re-litigation answers:
+
+- "The engine still reads `consumedAt` first — is that check redundant?" → it short-circuits a plain sequential replay without a write; only `consume` is trusted under concurrency.
+- "Why revoke the chain when the loser was maybe just a client retry?" → the server cannot tell a retry from a stolen token racing the owner, and OAuth 2.1 reuse detection errs toward re-authentication.
+- "Why not return the record from `delete`, like `PendingAuthorizationStore.consume`?" → the engine already holds the record from `find`; it only needs to know whether it won.
+
+### ADR-006: Asymmetric access tokens are signed with `node:crypto`, EdDSA by default, and a rotation window rather than manual JWKS edits
+
+Status: accepted (2026-11-13)
+Tags: jwt, jwks, oauth, key-rotation
+
+Decision: `signJwt` / `verifyJwt` sign `EdDSA` (Ed25519, the default) and `ES256` through `node:crypto`, `createSigningKeySet` publishes the active key plus each retired key until `retiredAt + retiredKeyTtl`, and `OAuthServerOptions.signing` mints RFC 9068 tokens when the app has no `issueTokens`.
+Rejected: `jose`'s `SignJWT` for signing, because it is async and would turn `signJwt` and every caller async (jose stays the independent verifier in tests); RS256, because its keys and signatures are larger with no verifier we target needing it, while naturali and the MCP hosts accept EdDSA and ES256; publishing every configured key until the app deletes it, because a forgotten retired key would stay trusted forever.
+Cost: signing is Node-only (no edge or browser runtime), and with no `resource` configured the default `aud` is the issuer, which a resource server checking its own URL will reject.
+Anchors: `src/signingKeys.ts`, `src/signingKeySet.ts`, `src/jwt.ts`, `src/issueAccessToken.ts`, `src/oauthServer.ts` (`jwks`, `jwks_uri`).
+
+Re-litigation answers:
+
+- "Why take the algorithm from the key, not the header?" → a header-chosen `alg` is the classic confusion attack; a JWK verifies only with the algorithm its material implies, and the header must agree.
+- "Why can't app claims override `sub` or `aud`?" → `claims` often carries user-derived data, and a token whose audience or subject the app rewrote by accident is a cross-tenant token.
+- "Why a fixed one-active-key rule?" → two signing keys make which `kid` a token carries depend on the replica, and a set with none cannot mint. Both fail at startup instead of in production.

@@ -152,6 +152,7 @@ describe('createOAuthHandlers — discovery metadata', () => {
       authorize: '/oauth/authorize',
       token: '/oauth/token',
       register: '/oauth/register',
+      jwks: '/.well-known/jwks.json',
     });
     const body = server.authorizationServerMetadata().body as {
       authorization_endpoint: string;

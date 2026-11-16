@@ -27,6 +27,26 @@ const createFakeModel = () => {
     upsert: jest.fn(async (values: Row) => {
       rows.set(values.tokenHash, { ...values });
     }),
+    /**
+     * Mirrors a conditional `UPDATE … WHERE consumed_at IS NULL`: the check
+     * and the write happen in one step, as the row lock makes them in Postgres.
+     */
+    update: jest.fn(
+      async (
+        values: { consumedAt: Date },
+        { where }: { where: { tokenHash: string; consumedAt: null } }
+      ) => {
+        const row = rows.get(where.tokenHash);
+
+        if (!row || row.consumedAt !== where.consumedAt) {
+          return [0];
+        }
+
+        rows.set(where.tokenHash, { ...row, ...values });
+
+        return [1];
+      }
+    ),
     destroy: jest.fn(
       async ({
         where,
@@ -169,6 +189,33 @@ test('revokes every token of one owner, leaving other owners alone', async () =>
   expect([...model.rows.keys()]).toEqual(['hash-3']);
 });
 
+test('consumes a live token in one conditional UPDATE, once', async () => {
+  const { model, store } = setup();
+  await store.save({
+    tokenHash: 'hash-1',
+    clientId: 'client-1',
+    subject: 'user-1',
+    scopes: [],
+    expiresAt: EXPIRES_AT,
+  });
+
+  await expect(store.consume({ tokenHash: 'hash-1', at: 1000 })).resolves.toBe(
+    true
+  );
+  await expect(store.consume({ tokenHash: 'hash-1', at: 2000 })).resolves.toBe(
+    false
+  );
+  await expect(store.consume({ tokenHash: 'nope', at: 3000 })).resolves.toBe(
+    false
+  );
+
+  expect(model.update).toHaveBeenCalledWith(
+    { consumedAt: new Date(1000) },
+    { where: { tokenHash: 'hash-1', consumedAt: null } }
+  );
+  expect(model.rows.get('hash-1')?.consumedAt).toEqual(new Date(1000));
+});
+
 describe('with createRefreshRotation', () => {
   const client: OAuthClientRecord = {
     client_id: 'client-1',
@@ -188,6 +235,29 @@ describe('with createRefreshRotation', () => {
     await expect(
       refresh.onRefreshToken({ refreshToken: token, client, scopes: [] })
     ).resolves.toEqual({ subject: 'user-1', scopes: ['mcp:access'] });
+  });
+
+  test('lets one of two concurrent refreshes through and revokes the chain', async () => {
+    const { model, store } = setup();
+    const refresh = createRefreshRotation({ store });
+
+    const token = await refresh.issue({
+      client,
+      subject: 'user-1',
+      scopes: ['mcp:access'],
+    });
+
+    const results = await Promise.all([
+      refresh.onRefreshToken({ refreshToken: token, client, scopes: [] }),
+      refresh.onRefreshToken({ refreshToken: token, client, scopes: [] }),
+    ]);
+
+    expect(
+      results.filter((result) => {
+        return result !== undefined;
+      })
+    ).toHaveLength(1);
+    expect(model.rows.size).toBe(0);
   });
 
   test('detects reuse of an already-rotated token', async () => {
