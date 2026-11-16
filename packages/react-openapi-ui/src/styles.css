@@ -1,5 +1,5 @@
 /*
- * Styles for @ttoss/react-openapi.
+ * Styles for @ttoss/react-openapi-ui.
  *
  * Utilities are prefixed (`oa:`) and preflight is left out, so importing this
  * file never restyles the host app nor collides with its own Tailwind/shadcn

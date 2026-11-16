@@ -1,4 +1,4 @@
-import type { JsonObject } from '@ttoss/react-openapi';
+import type { JsonObject } from '@ttoss/react-openapi-ui';
 
 /**
  * Sample records for the SOAT fake API, referencing each other the way real

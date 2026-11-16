@@ -1,17 +1,17 @@
-import '@ttoss/react-openapi/styles.css';
+import '@ttoss/react-openapi-ui/styles.css';
 
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import {
   OpenApiDeleteButton,
   OpenApiDetail,
   OpenApiProvider,
-} from '@ttoss/react-openapi';
+} from '@ttoss/react-openapi-ui';
 
 import { spec } from './fixtures';
 import { Frame, RequestLog, useLoggedFakeApi } from './storyUtils';
 
 const meta: Meta<typeof OpenApiDetail> = {
-  title: 'React OpenAPI/OpenApiDetail',
+  title: 'React OpenAPI UI/OpenApiDetail',
   component: OpenApiDetail,
   tags: ['autodocs'],
   parameters: {

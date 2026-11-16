@@ -1,13 +1,13 @@
-import '@ttoss/react-openapi/styles.css';
+import '@ttoss/react-openapi-ui/styles.css';
 
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
-import { OpenApiForm, OpenApiProvider } from '@ttoss/react-openapi';
+import { OpenApiForm, OpenApiProvider } from '@ttoss/react-openapi-ui';
 
 import { spec } from './fixtures';
 import { Frame, RequestLog, useLoggedFakeApi } from './storyUtils';
 
 const meta: Meta<typeof OpenApiForm> = {
-  title: 'React OpenAPI/OpenApiForm',
+  title: 'React OpenAPI UI/OpenApiForm',
   component: OpenApiForm,
   tags: ['autodocs'],
   parameters: {

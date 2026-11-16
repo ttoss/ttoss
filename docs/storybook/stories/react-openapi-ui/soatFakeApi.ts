@@ -6,7 +6,7 @@ import {
   OpenApiRequestError,
   type OpenApiSpec,
   parseResources,
-} from '@ttoss/react-openapi';
+} from '@ttoss/react-openapi-ui';
 
 import { ID_PREFIX, SEEDS } from './soatSeeds';
 import rawSoatSpec from './soatSpec.json';

@@ -1,7 +1,7 @@
-import type { OpenApiSpec } from '@ttoss/react-openapi';
+import type { OpenApiSpec } from '@ttoss/react-openapi-ui';
 
 /**
- * The "Clients API" spec shared by the `@ttoss/react-openapi` stories. Its
+ * The "Clients API" spec shared by the `@ttoss/react-openapi-ui` stories. Its
  * in-memory implementation is in `fakeApi.ts`.
  */
 

@@ -1,4 +1,4 @@
-import '@ttoss/react-openapi/styles.css';
+import '@ttoss/react-openapi-ui/styles.css';
 
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import {
@@ -7,7 +7,7 @@ import {
   type OpenApiLocation,
   OpenApiProvider,
   OpenApiView,
-} from '@ttoss/react-openapi';
+} from '@ttoss/react-openapi-ui';
 import * as React from 'react';
 
 import { spec } from './fixtures';
@@ -82,7 +82,7 @@ const SingleView = () => {
 };
 
 const meta: Meta = {
-  title: 'React OpenAPI/OpenApiApp',
+  title: 'React OpenAPI UI/OpenApiApp',
   tags: ['autodocs'],
   parameters: {
     docs: {

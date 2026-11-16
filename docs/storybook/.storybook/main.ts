@@ -23,12 +23,12 @@ const maplibreDir = dirname(
 );
 
 /**
- * `@ttoss/react-openapi` styles its components with Tailwind, compiled from
+ * `@ttoss/react-openapi-ui` styles its components with Tailwind, compiled from
  * `src/styles.css`. Only that stylesheet goes through PostCSS + Tailwind: the
  * default `.css` rule is cloned for it with `postcss-loader` appended, and
  * excluded from the original, so no other story's CSS is touched.
  */
-const REACT_OPENAPI_CSS = /react-openapi[\\/]src[\\/]styles\.css$/;
+const REACT_OPENAPI_CSS = /react-openapi-ui[\\/]src[\\/]styles\.css$/;
 
 type WebpackConfig = Parameters<
   NonNullable<StorybookConfig['webpackFinal']>

@@ -31,7 +31,7 @@
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
-    "@ttoss/react-openapi": "workspace:^",
+    "@ttoss/react-openapi-ui": "workspace:^",
     "@ttoss/react-wizard": "workspace:^",
     "@ttoss/theme": "workspace:^",
     "@ttoss/ui": "workspace:^"

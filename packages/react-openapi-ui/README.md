@@ -1,4 +1,4 @@
-# @ttoss/react-openapi
+# @ttoss/react-openapi-ui
 
 Render React UI straight from an OpenAPI spec. The spec carries no UI instructions: what each screen shows comes from the operations' schemas, and which screen an operation backs comes from its HTTP method and path shape.
 
@@ -14,19 +14,19 @@ Composed by hand, they make a full admin for a resource; the app only wires navi
 ## Installation
 
 ```bash
-pnpm add @ttoss/react-openapi @ttoss/react-i18n
+pnpm add @ttoss/react-openapi-ui @ttoss/react-i18n
 ```
 
 ## Usage
 
 ```tsx
-import '@ttoss/react-openapi/styles.css';
+import '@ttoss/react-openapi-ui/styles.css';
 
 import {
   createFetcher,
   OpenApiProvider,
   OpenApiTable,
-} from '@ttoss/react-openapi';
+} from '@ttoss/react-openapi-ui';
 
 const fetcher = createFetcher({
   baseUrl: 'https://api.example.com',
@@ -162,6 +162,6 @@ Components are styled with Tailwind; `styles.css` ships the compiled utilities. 
 
 ## Without React
 
-`@ttoss/react-openapi/core` exports the spec logic (`parseResources`, `findOperation`, `buildOperationUrl`, `resolveSchema`, `getListItemSchema`, `deriveColumns`, `formatLocation`, …) for use outside React.
+`@ttoss/react-openapi-ui/core` exports the spec logic (`parseResources`, `findOperation`, `buildOperationUrl`, `resolveSchema`, `getListItemSchema`, `deriveColumns`, `formatLocation`, …) for use outside React.
 
 See the [Storybook](https://storybook.ttoss.dev/) stories under _React OpenAPI_.

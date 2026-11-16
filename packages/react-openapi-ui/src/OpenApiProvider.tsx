@@ -31,7 +31,7 @@ export type OpenApiProviderProps = {
 
 /**
  * Makes an OpenAPI spec and the means to call its API available to every
- * `@ttoss/react-openapi` component below it. Configure it once at the app root.
+ * `@ttoss/react-openapi-ui` component below it. Configure it once at the app root.
  */
 export const OpenApiProvider = ({
   spec: inlineSpec,

@@ -1,4 +1,4 @@
-import '@ttoss/react-openapi/styles.css';
+import '@ttoss/react-openapi-ui/styles.css';
 
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import {
@@ -6,7 +6,7 @@ import {
   OpenApiApp,
   type OpenApiLocation,
   OpenApiProvider,
-} from '@ttoss/react-openapi';
+} from '@ttoss/react-openapi-ui';
 import * as React from 'react';
 
 import { createSoatFakeApi, soatSpec } from './soatFakeApi';
@@ -104,7 +104,7 @@ const SoatAdmin = ({ initial }: { initial: OpenApiLocation }) => {
 };
 
 const meta: Meta = {
-  title: 'React OpenAPI/SOAT spec',
+  title: 'React OpenAPI UI/SOAT spec',
   tags: ['autodocs'],
   parameters: {
     docs: {

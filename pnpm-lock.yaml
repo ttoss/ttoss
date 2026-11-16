@@ -238,9 +238,9 @@ importers:
       '@ttoss/react-notifications':
         specifier: workspace:^
         version: link:../../packages/react-notifications
-      '@ttoss/react-openapi':
+      '@ttoss/react-openapi-ui':
         specifier: workspace:^
-        version: link:../../packages/react-openapi
+        version: link:../../packages/react-openapi-ui
       '@ttoss/react-wizard':
         specifier: workspace:^
         version: link:../../packages/react-wizard
@@ -2354,7 +2354,7 @@ importers:
         specifier: ^0.23.1
         version: 0.23.1(oxc-resolver@11.21.2)(tsx@4.23.15)(typescript@6.0.3)
 
-  packages/react-openapi:
+  packages/react-openapi-ui:
     devDependencies:
       '@tailwindcss/cli':
         specifier: ^4.3.3

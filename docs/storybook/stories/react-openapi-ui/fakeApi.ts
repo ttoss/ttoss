@@ -4,7 +4,7 @@ import {
   type HttpMethod,
   type JsonObject,
   OpenApiRequestError,
-} from '@ttoss/react-openapi';
+} from '@ttoss/react-openapi-ui';
 
 import { ORDER_STATUSES, spec, STATUSES, TAGS } from './fixtures';
 

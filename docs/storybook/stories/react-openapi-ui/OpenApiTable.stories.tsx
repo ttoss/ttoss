@@ -1,11 +1,11 @@
-import '@ttoss/react-openapi/styles.css';
+import '@ttoss/react-openapi-ui/styles.css';
 
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import {
   type JsonObject,
   OpenApiProvider,
   OpenApiTable,
-} from '@ttoss/react-openapi';
+} from '@ttoss/react-openapi-ui';
 import * as React from 'react';
 
 import { createFakeApi } from './fakeApi';
@@ -28,7 +28,7 @@ const Frame = ({ children }: { children: React.ReactNode }) => {
 };
 
 const meta: Meta<typeof OpenApiTable> = {
-  title: 'React OpenAPI/OpenApiTable',
+  title: 'React OpenAPI UI/OpenApiTable',
   component: OpenApiTable,
   tags: ['autodocs'],
   parameters: {
