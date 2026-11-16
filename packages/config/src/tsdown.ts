@@ -1,4 +1,5 @@
 import { transformAsync } from '@babel/core';
+import MagicString from 'magic-string';
 import type { Rolldown } from 'tsdown';
 
 import { configCreator } from './configCreator';
@@ -21,6 +22,13 @@ import * as typescriptConfig from './typescriptConfig';
  */
 const RENAMED_DESCRIPTOR_CALL = /\b(defineMessages?)\$\d+\s*\(/;
 
+/**
+ * The callees `babel-plugin-formatjs` rewrites by default. A chunk naming none
+ * is left untouched, since a Babel re-print is not byte-identical.
+ */
+const DESCRIPTOR_CALL =
+  /\b(defineMessages?|formatMessage|\$formatMessage|\$t)\s*\(/;
+
 export const formatjsPlugin: Rolldown.Plugin = {
   name: 'formatjs',
   renderChunk: async (code, chunk) => {
@@ -39,6 +47,10 @@ export const formatjsPlugin: Rolldown.Plugin = {
       );
     }
 
+    if (!DESCRIPTOR_CALL.test(code)) {
+      return null;
+    }
+
     const transformedFile = await transformAsync(code, {
       caller: {
         name: 'formatjs-transformer',
@@ -48,10 +60,11 @@ export const formatjsPlugin: Rolldown.Plugin = {
       configFile: false,
       babelrc: false,
       plugins: [formatjsBabelPlugin()],
+      sourceMaps: true,
     });
 
-    if (transformedFile?.code) {
-      return { code: transformedFile.code };
+    if (transformedFile?.code && transformedFile.map) {
+      return { code: transformedFile.code, map: transformedFile.map };
     }
 
     return null;
@@ -110,11 +123,14 @@ export const injectReactImport = (): Rolldown.Plugin => {
         return `import * as React from 'react';\n`;
       })();
 
+      const output = new MagicString(code).appendLeft(
+        insertPosition,
+        importStatement
+      );
+
       return {
-        code:
-          code.slice(0, insertPosition) +
-          importStatement +
-          code.slice(insertPosition),
+        code: output.toString(),
+        map: output.generateMap({ hires: true, source: chunk.fileName }),
       };
     },
   };

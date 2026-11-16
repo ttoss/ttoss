@@ -1,4 +1,4 @@
-import { formatjsPlugin } from 'src/tsdown';
+import { defaultConfig, formatjsPlugin } from 'src/tsdown';
 
 type RenderChunk = (
   code: string,
@@ -22,5 +22,38 @@ export const b = defineMessages$1({ b: { defaultMessage: 'B', description: 'd' }
 test('leaves non-JavaScript chunks alone', async () => {
   await expect(
     renderChunk('defineMessages$1({})', { fileName: 'index.d.mts' })
+  ).resolves.toBeNull();
+});
+
+const CHUNK = `/** banner */
+import { defineMessages } from '@ttoss/react-i18n';
+export const messages = defineMessages({
+  title: { defaultMessage: 'Title', description: 'Page title' },
+});
+export const Title = () => React.createElement('h1', null, 'x');
+`;
+
+type PluginRenderChunk = (
+  code: string,
+  chunk: { fileName: string }
+) => Promise<{ code: string; map?: unknown } | string | null>;
+
+test.each(
+  defaultConfig.plugins.map((plugin) => {
+    return [plugin.name, plugin] as const;
+  })
+)('%s returns a source map with the code it changes', async (_name, plugin) => {
+  const hook = plugin.renderChunk as unknown as PluginRenderChunk;
+  const result = await hook(CHUNK, { fileName: 'index.js' });
+
+  expect(result).toEqual({
+    code: expect.not.stringMatching(/^$/),
+    map: expect.objectContaining({ mappings: expect.any(String) }),
+  });
+});
+
+test('formatjs leaves a chunk with no descriptor call alone', async () => {
+  await expect(
+    renderChunk('export const a = 1;\n', { fileName: 'index.mjs' })
   ).resolves.toBeNull();
 });
