@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Femail-marketing%400.1.0...%40ttoss%2Femail-marketing%400.2.0) (2026-11-16)
+
+### Features
+
+- **email-marketing:** campaigns sent to a list from a cron ([#1458](https://github.com/ttoss/ttoss/issues/1458)) ([afcaef7](https://github.com/ttoss/ttoss/commit/afcaef758cf48388e01275a146325d42be8ad385))
+
 # 0.1.0 (2026-11-16)
 
 ### Features
