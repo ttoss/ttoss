@@ -5,6 +5,28 @@ export {
   normalizeEmail,
 } from './address';
 export {
+  type Audience,
+  type AudienceMember,
+  CAMPAIGN_TAG,
+  type Campaigns,
+  type CampaignsOptions,
+  CampaignStateError,
+  type CreateCampaignInput,
+  createCampaigns,
+  renderCampaign,
+  type TickResult,
+} from './campaigns';
+export type {
+  Campaign,
+  CampaignContent,
+  CampaignRecipient,
+  CampaignStatus,
+  CampaignStore,
+  RecipientCounts,
+  RecipientStatus,
+  RecipientStore,
+} from './campaignTypes';
+export {
   type DnsRecord,
   type DomainVerification,
   nextDomainStatus,
@@ -25,6 +47,7 @@ export {
   type SendResult,
   type SendSkipReason,
 } from './engine';
+export { createMemoryStores } from './memoryStores';
 export type {
   DeliveryEvent,
   DomainIdentity,
@@ -42,6 +65,11 @@ export {
   type SuppressionReason,
   type SuppressionStore,
 } from './suppression';
+export {
+  renderTemplate,
+  type TemplateVariables,
+  templateVariables,
+} from './template';
 export {
   createUnsubscribeToken,
   defaultFooter,

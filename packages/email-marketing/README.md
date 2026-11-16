@@ -139,6 +139,133 @@ const store: SuppressionStore = {
 `onSuppress` and `onResubscribe` run after each change, for example to keep a
 "does not want e-mails" checkbox on the contact in step.
 
+## Campaigns: sending to a list from a cron
+
+`send` delivers one e-mail. To reach a list, create a campaign, freeze its
+audience, and call `tick()` from any scheduler until it is done:
+
+```ts
+import { createCampaigns } from '@ttoss/email-marketing';
+
+const campaigns = createCampaigns({
+  marketing, // from createEmailMarketing
+  campaigns: myCampaignStore,
+  recipients: myRecipientStore,
+  ratePerSecond: 10, // keep it under your provider's limit
+});
+
+const { id } = await campaigns.create({
+  scope: 'company-1',
+  name: 'Black Friday',
+  subject: 'Uma oferta para {{nome}}',
+  html: '<p>Olá, {{nome}}!</p>',
+  text: 'Olá, {{nome}}!',
+});
+await campaigns.sendTest({
+  id,
+  to: 'me@acme.com',
+  variables: { nome: 'Teste' },
+});
+await campaigns.schedule({
+  id,
+  audience: leads.map((lead) => ({
+    email: lead.email,
+    variables: { nome: lead.name },
+  })),
+  at: new Date('2026-11-27T12:00:00Z'), // default: now
+});
+```
+
+### What a tick does
+
+1. Starts the `scheduled` campaigns whose time has come (`sending`).
+2. For each `sending` campaign, claims a batch of `pending` recipients, sends
+   each through `marketing.send` at `ratePerSecond`, and records `sent`,
+   `skipped` (with the reason: suppressed, not allowed…) or `failed`.
+3. Stops when `budgetMs` (default 50 s) runs out, handing back the
+   recipients it claimed but did not reach. The next tick continues there.
+4. Marks the campaign `sent` once no recipient is left.
+
+A recipient is claimed before it is sent and completed after, so nobody
+receives a campaign twice: if a tick dies mid-send, the recipients it left
+`sending` for longer than `staleAfterMs` (default 15 min) become `failed` with
+reason `interrupted` and are not retried. Run one tick at a time; two at once
+add up their rates.
+
+Because every e-mail goes through `send`, an address that unsubscribes while a
+campaign is going out is skipped from then on, and `canSend` (a plan, a quota)
+is checked for each recipient.
+
+### Running it
+
+In a long-running server (Strapi, Koa, Express), a timer:
+
+```ts
+let running = false;
+setInterval(async () => {
+  if (running) return; // one tick at a time
+  running = true;
+  try {
+    await campaigns.tick({ budgetMs: 50_000 });
+  } finally {
+    running = false;
+  }
+}, 60_000);
+```
+
+In AWS, a scheduled Lambda with [`@ttoss/cloud-cron`](../cloud-cron):
+
+```ts
+// runCampaigns.ts
+export const handler = async () => {
+  return campaigns.tick({ budgetMs: 4 * 60 * 1000 }); // under the Lambda timeout
+};
+
+// cron template: jobs: { CampaignsCron: { handler: 'runCampaigns.handler', schedule: 'rate(5 minutes)' } }
+```
+
+### Lifecycle
+
+| Status      | Content editable | `tick` sends | Moves to                                      |
+| ----------- | ---------------- | ------------ | --------------------------------------------- |
+| `draft`     | yes              | no           | `scheduled` (`schedule`)                      |
+| `scheduled` | yes              | from `at`    | `sending`, `paused`, `cancelled`              |
+| `sending`   | no               | yes          | `sent`, `paused`, `cancelled`                 |
+| `paused`    | no               | no           | `sending`/`scheduled` (`resume`), `cancelled` |
+| `sent`      | no               | no           | —                                             |
+| `cancelled` | no               | no           | —                                             |
+
+An action that does not fit the status throws `CampaignStateError`.
+`preview({ id, variables })` renders what a recipient gets; `stats(id)` counts
+recipients by status.
+
+### Templates
+
+`{{name}}` placeholders are filled per recipient from `variables`. In the HTML
+values are escaped, so a name cannot inject markup; a missing value is empty.
+`renderTemplate` and `templateVariables` are exported.
+
+### Stores
+
+`CampaignStore` (`get`, `save`, `listDue`) and `RecipientStore` (`add`,
+`claim`, `release`, `complete`, `failStale`, `count`) are yours to implement;
+`createMemoryStores()` is a working in-memory version of every store (for tests
+and as a reference). `claim` must be atomic so two ticks never take the same
+recipient. In Postgres:
+
+```sql
+UPDATE campaign_recipients SET status = 'sending', claimed_at = now()
+WHERE id IN (
+  SELECT id FROM campaign_recipients
+  WHERE campaign_id = $1 AND status = 'pending'
+  LIMIT $2 FOR UPDATE SKIP LOCKED
+)
+RETURNING *;
+```
+
+Delivery events carry the campaign id in the `campaign` tag (`CAMPAIGN_TAG`),
+for per-campaign bounce and complaint counts.
+
 ## Unsubscribe
 
 Each e-mail links to `unsubscribe.url(token)`. The token is
