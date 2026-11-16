@@ -34,9 +34,13 @@ const CITIES = [
   ['Belém', 'PA'],
 ];
 
+const clientName = (index: number): string => {
+  return `${FIRST[index % FIRST.length]} ${LAST[(index * 5) % LAST.length]}`;
+};
+
 const seedClients = (): JsonObject[] => {
   return Array.from({ length: 37 }, (_, i) => {
-    const name = `${FIRST[i % FIRST.length]} ${LAST[(i * 5) % LAST.length]}`;
+    const name = clientName(i);
     const [city, state] = CITIES[i % CITIES.length];
     return {
       id: `cli_${String(1000 + i)}`,
@@ -64,18 +68,23 @@ const seedClients = (): JsonObject[] => {
   });
 };
 
-const orders: JsonObject[] = Array.from({ length: 124 }, (_, i) => {
-  return {
-    id: `ord_${String(5000 + i)}`,
-    customer: `${FIRST[(i * 3) % FIRST.length]} ${LAST[i % LAST.length]}`,
-    status: ORDER_STATUSES[(i * 3 + (i % 5)) % ORDER_STATUSES.length],
-    items: 1 + ((i * 13) % 9),
-    total: Math.round(((i * 104729) % 90000) + 1500) / 100,
-    due_date: new Date(Date.UTC(2026, 10, 1 + (i % 28)))
-      .toISOString()
-      .slice(0, 10),
-  };
-});
+// Each order belongs to a seeded client (`client_id` is an `x-ref`).
+const seedOrders = (): JsonObject[] => {
+  return Array.from({ length: 124 }, (_, i) => {
+    const client = (i * 7) % 37;
+    return {
+      id: `ord_${String(5000 + i)}`,
+      customer: clientName(client),
+      client_id: `cli_${String(1000 + client)}`,
+      status: ORDER_STATUSES[(i * 3 + (i % 5)) % ORDER_STATUSES.length],
+      items: 1 + ((i * 13) % 9),
+      total: Math.round(((i * 104729) % 90000) + 1500) / 100,
+      due_date: new Date(Date.UTC(2026, 10, 1 + (i % 28)))
+        .toISOString()
+        .slice(0, 10),
+    };
+  });
+};
 
 // ─── Fake API ────────────────────────────────────────────────────────────────
 
@@ -99,7 +108,7 @@ const notFound = () => {
 
 export type FakeApiLog = (entry: string) => void;
 
-type Db = { clients: JsonObject[]; nextId: number };
+type Db = { clients: JsonObject[]; orders: JsonObject[]; nextId: number };
 
 type Handler = (args: {
   db: Db;
@@ -195,18 +204,48 @@ const matchesOrder = ({
   );
 };
 
-const listOrders: Handler = ({ query }) => {
+const listOrders: Handler = ({ db, query }) => {
   const q = (query.get('q') ?? '').toLowerCase();
   const status = query.get('status');
   const limit = Number(query.get('limit') ?? 20);
   const offset = Number(query.get('offset') ?? 0);
-  const matching = orders.filter((order) => {
+  const matching = db.orders.filter((order) => {
     return matchesOrder({ order, q, status });
   });
   return {
     data: matching.slice(offset, offset + limit),
     total: matching.length,
   };
+};
+
+const createOrder: Handler = ({ db, body }) => {
+  const input = body as JsonObject;
+  const client = db.clients.find((c) => {
+    return c.id === input.client_id;
+  });
+  db.nextId += 1;
+  const created = {
+    id: `ord_${db.nextId}`,
+    customer: client?.name ?? null,
+    status: 'processing',
+    ...input,
+  };
+  db.orders = [created, ...db.orders];
+  return created;
+};
+
+const getOrder: Handler = ({ db, id }) => {
+  const order = db.orders.find((o) => {
+    return o.id === id;
+  });
+  if (!order) {
+    throw new OpenApiRequestError({
+      status: 404,
+      body: { message: 'Order not found.' },
+      message: 'Order not found.',
+    });
+  }
+  return order;
 };
 
 const ROUTES: Record<string, Handler> = {
@@ -218,9 +257,11 @@ const ROUTES: Record<string, Handler> = {
   },
   'post /api/v1/clients': createClient,
   'get /api/v1/orders': listOrders,
+  'post /api/v1/orders': createOrder,
 };
 
 const CLIENT_PATH = /^\/api\/v1\/clients\/([^/]+)(\/.*)?$/;
+const ORDER_PATH = /^\/api\/v1\/orders\/([^/]+)$/;
 
 const describeRequest = ({ method, url, body }: FetcherRequest): string => {
   if (body instanceof FormData) {
@@ -252,7 +293,11 @@ export const createFakeApi = ({
   emptyClients?: boolean;
   onRequest?: FakeApiLog;
 } = {}): Fetcher => {
-  const db: Db = { clients: emptyClients ? [] : seedClients(), nextId: 2000 };
+  const db: Db = {
+    clients: emptyClients ? [] : seedClients(),
+    orders: seedOrders(),
+    nextId: 2000,
+  };
 
   return async (request) => {
     onRequest?.(describeRequest(request));
@@ -270,6 +315,10 @@ export const createFakeApi = ({
     const route = ROUTES[`${request.method} ${pathname}`];
     if (route) {
       return route(args);
+    }
+    const orderMatch = pathname.match(ORDER_PATH);
+    if (orderMatch && request.method === 'get') {
+      return getOrder({ ...args, id: orderMatch[1] });
     }
     const clientMatch = pathname.match(CLIENT_PATH);
     if (clientMatch) {

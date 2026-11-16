@@ -148,6 +148,42 @@ export const spec: OpenApiSpec = {
           }),
         },
       },
+      post: {
+        operationId: 'createOrder',
+        summary: 'Create an order',
+        tags: ['Orders'],
+        requestBody: json({
+          type: 'object',
+          required: ['client_id', 'items', 'total'],
+          properties: {
+            client_id: {
+              type: 'string',
+              title: 'Client',
+              'x-ref': 'clients',
+            },
+            items: { type: 'integer', minimum: 1 },
+            total: { type: 'number', minimum: 0, title: 'Total (USD)' },
+            due_date: { type: 'string', format: 'date' },
+          },
+        }),
+        responses: { '201': json({ $ref: '#/components/schemas/Order' }) },
+      },
+    },
+    '/api/v1/orders/{order_id}': {
+      parameters: [
+        {
+          name: 'order_id',
+          in: 'path',
+          required: true,
+          schema: { type: 'string' },
+        },
+      ],
+      get: {
+        operationId: 'getOrder',
+        summary: 'Get an order',
+        tags: ['Orders'],
+        responses: { '200': json({ $ref: '#/components/schemas/Order' }) },
+      },
     },
     '/api/v1/failing': {
       get: { operationId: 'listFailing', responses: { '200': {} } },
@@ -226,6 +262,12 @@ export const spec: OpenApiSpec = {
         properties: {
           id: { type: 'string', title: 'Order' },
           customer: { type: 'string' },
+          client_id: {
+            type: 'string',
+            title: 'Client',
+            description: 'References a client: a link in tables and details.',
+            'x-ref': 'clients',
+          },
           status: { $ref: '#/components/schemas/OrderStatus' },
           items: { type: 'integer' },
           total: { type: 'number', title: 'Total (USD)' },

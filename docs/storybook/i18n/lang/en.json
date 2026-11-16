@@ -1116,6 +1116,11 @@
     "defaultMessage": "Template title",
     "description": "Save-as-new drawer: label for the template name field."
   },
+  "+6k6Jv": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Edit",
+    "description": "OpenApiView: button on a record that opens the edit form."
+  },
   "/8bHJh": {
     "module": "@ttoss/react-openapi",
     "defaultMessage": "Must be a JSON {expected, select, array {array} other {object}}.",
@@ -1151,6 +1156,16 @@
     "defaultMessage": "Loading",
     "description": "OpenApiTable: accessible label while the data loads."
   },
+  "A0H3oX": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "This API has no resource \"{resource}\".",
+    "description": "OpenApiView: shown when the location names a resource the spec lacks. {resource} is its key."
+  },
+  "B5touk": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "This API has no operation for this screen.",
+    "description": "OpenApiView: shown when the spec lacks the operation a screen needs (e.g. no edit operation)."
+  },
   "BcyU8q": {
     "module": "@ttoss/react-openapi",
     "defaultMessage": "Refresh",
@@ -1176,6 +1191,11 @@
     "defaultMessage": "Show",
     "description": "OpenApiDetail: button revealing a masked sensitive value."
   },
+  "DpRd+X": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Resources",
+    "description": "OpenApiApp: accessible name of the resource navigation."
+  },
   "EQVBZo": {
     "module": "@ttoss/react-openapi",
     "defaultMessage": "Try again",
@@ -1200,6 +1220,11 @@
     "module": "@ttoss/react-openapi",
     "defaultMessage": "{from}–{to} of {total}",
     "description": "OpenApiTable: pagination summary when the total is known."
+  },
+  "H733e1": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Back",
+    "description": "OpenApiView: link from a form or record back to where it came from."
   },
   "I/VHiZ": {
     "module": "@ttoss/react-openapi",
@@ -1266,6 +1291,11 @@
     "defaultMessage": "Could not load the data",
     "description": "OpenApiTable: title of the error shown when the request fails."
   },
+  "TTTewU": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "No records to choose from.",
+    "description": "OpenApiForm: shown in place of the checkboxes of a multi-reference field when the referenced resource has no records."
+  },
   "UkjFC2": {
     "module": "@ttoss/react-openapi",
     "defaultMessage": "Could not save",
@@ -1286,10 +1316,25 @@
     "defaultMessage": "Enter a whole number.",
     "description": "OpenApiForm: validation error for a decimal in an integer field."
   },
+  "Yy/46X": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "New",
+    "description": "OpenApiView: button on a resource list that opens the create form."
+  },
+  "ZL7K+P": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Try again",
+    "description": "OpenApiView: button that loads the spec again."
+  },
   "ZLpmpA": {
     "module": "@ttoss/react-openapi",
     "defaultMessage": "Fix the highlighted fields and try again.",
     "description": "OpenApiForm: summary shown when client-side validation fails."
+  },
+  "cI1zlk": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "The API describes no resource to show.",
+    "description": "OpenApiApp: shown when the spec has no list operation to navigate to."
   },
   "cZkR0J": {
     "module": "@ttoss/react-openapi",
@@ -1326,6 +1371,11 @@
     "defaultMessage": "Filter by {field}",
     "description": "OpenApiTable: accessible name of the status filter chip group. {field} is the column name."
   },
+  "kaE2GD": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Edit record",
+    "description": "OpenApiView: heading of the edit form."
+  },
   "l/aMoa": {
     "module": "@ttoss/react-openapi",
     "defaultMessage": "Hidden",
@@ -1345,6 +1395,11 @@
     "module": "@ttoss/react-openapi",
     "defaultMessage": "Yes",
     "description": "OpenApiTable: cell text for a true boolean value."
+  },
+  "r0cPGc": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "New record",
+    "description": "OpenApiView: heading of the create form."
   },
   "r4S+k8": {
     "module": "@ttoss/react-openapi",
@@ -1370,6 +1425,16 @@
     "module": "@ttoss/react-openapi",
     "defaultMessage": "Delete {name}?",
     "description": "OpenApiDeleteButton: confirmation dialog title. {name} names the record."
+  },
+  "x0RWtj": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Could not load the API description",
+    "description": "OpenApiView: title of the error shown when the spec fails."
+  },
+  "yn310Y": {
+    "module": "@ttoss/react-openapi",
+    "defaultMessage": "Loading…",
+    "description": "OpenApiForm: empty option of a reference select while its records load."
   },
   "yooBpN": {
     "module": "@ttoss/react-openapi",

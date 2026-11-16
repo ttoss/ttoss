@@ -34,6 +34,9 @@ const INPUT_CONVERTERS: Partial<
   multiEnum: (value) => {
     return Array.isArray(value) ? value.map(String) : [];
   },
+  refList: (value) => {
+    return Array.isArray(value) ? value.map(String) : [];
+  },
   file: () => {
     return null;
   },
@@ -102,6 +105,15 @@ type Parsed =
   | { ok: true; empty: true }
   | { ok: true; empty: false; value: JsonValue | File }
   | { ok: false; error: FieldError };
+
+/** Blank entries of a list (e.g. empty lines of an id list) are not values. */
+const withoutBlanks = (value: FormValue): FormValue => {
+  return Array.isArray(value)
+    ? value.filter((item) => {
+        return item !== '';
+      })
+    : value;
+};
 
 const isEmptyValue = (value: FormValue): boolean => {
   return (
@@ -176,17 +188,36 @@ const parseString = (field: FormField, raw: string): Parsed => {
   return { ok: true, empty: false, value: raw };
 };
 
+/** Parses the text an input holds, by the field's kind. */
+const parseText = (field: FormField, raw: string): Parsed => {
+  switch (field.kind) {
+    case 'integer':
+    case 'number':
+      return parseNumber(field, raw.trim());
+    case 'json':
+      return parseJson(field, raw);
+    case 'ref':
+      // A numeric id travels as a number; any other id as the string it is.
+      return field.schema.type === 'integer' || field.schema.type === 'number'
+        ? parseNumber(field, raw)
+        : parseString(field, raw);
+    default:
+      return parseString(field, raw);
+  }
+};
+
 /**
  * Converts one input value to its JSON value, validating it against the
  * field's schema.
  */
 export const parseFieldValue = ({
   field,
-  value,
+  value: input,
 }: {
   field: FormField;
   value: FormValue;
 }): Parsed => {
+  const value = withoutBlanks(input);
   if (field.kind === 'boolean') {
     return { ok: true, empty: false, value: value === true };
   }
@@ -201,16 +232,7 @@ export const parseFieldValue = ({
   if (Array.isArray(value)) {
     return { ok: true, empty: false, value };
   }
-  const raw = String(value);
-  switch (field.kind) {
-    case 'integer':
-    case 'number':
-      return parseNumber(field, raw.trim());
-    case 'json':
-      return parseJson(field, raw);
-    default:
-      return parseString(field, raw);
-  }
+  return parseText(field, String(value));
 };
 
 export type BuildBodyResult =

@@ -1,4 +1,8 @@
 {
+  "+6k6Jv": {
+    "defaultMessage": "Edit",
+    "description": "OpenApiView: button on a record that opens the edit form."
+  },
   "/8bHJh": {
     "defaultMessage": "Must be a JSON {expected, select, array {array} other {object}}.",
     "description": "OpenApiForm: validation error for JSON of the wrong shape."
@@ -27,6 +31,14 @@
     "defaultMessage": "Loading",
     "description": "OpenApiTable: accessible label while the data loads."
   },
+  "A0H3oX": {
+    "defaultMessage": "This API has no resource \"{resource}\".",
+    "description": "OpenApiView: shown when the location names a resource the spec lacks. {resource} is its key."
+  },
+  "B5touk": {
+    "defaultMessage": "This API has no operation for this screen.",
+    "description": "OpenApiView: shown when the spec lacks the operation a screen needs (e.g. no edit operation)."
+  },
   "BcyU8q": {
     "defaultMessage": "Refresh",
     "description": "OpenApiTable: button that reloads the data from the API."
@@ -47,6 +59,10 @@
     "defaultMessage": "Show",
     "description": "OpenApiDetail: button revealing a masked sensitive value."
   },
+  "DpRd+X": {
+    "defaultMessage": "Resources",
+    "description": "OpenApiApp: accessible name of the resource navigation."
+  },
   "EQVBZo": {
     "defaultMessage": "Try again",
     "description": "OpenApiTable: button that retries a failed request."
@@ -66,6 +82,10 @@
   "G4vXOc": {
     "defaultMessage": "{from}–{to} of {total}",
     "description": "OpenApiTable: pagination summary when the total is known."
+  },
+  "H733e1": {
+    "defaultMessage": "Back",
+    "description": "OpenApiView: link from a form or record back to where it came from."
   },
   "I/VHiZ": {
     "defaultMessage": "Could not load the record",
@@ -119,6 +139,10 @@
     "defaultMessage": "Could not load the data",
     "description": "OpenApiTable: title of the error shown when the request fails."
   },
+  "TTTewU": {
+    "defaultMessage": "No records to choose from.",
+    "description": "OpenApiForm: shown in place of the checkboxes of a multi-reference field when the referenced resource has no records."
+  },
   "UkjFC2": {
     "defaultMessage": "Could not save",
     "description": "OpenApiForm: title of the error shown when the request fails."
@@ -135,9 +159,21 @@
     "defaultMessage": "Enter a whole number.",
     "description": "OpenApiForm: validation error for a decimal in an integer field."
   },
+  "Yy/46X": {
+    "defaultMessage": "New",
+    "description": "OpenApiView: button on a resource list that opens the create form."
+  },
+  "ZL7K+P": {
+    "defaultMessage": "Try again",
+    "description": "OpenApiView: button that loads the spec again."
+  },
   "ZLpmpA": {
     "defaultMessage": "Fix the highlighted fields and try again.",
     "description": "OpenApiForm: summary shown when client-side validation fails."
+  },
+  "cI1zlk": {
+    "defaultMessage": "The API describes no resource to show.",
+    "description": "OpenApiApp: shown when the spec has no list operation to navigate to."
   },
   "cZkR0J": {
     "defaultMessage": "Select…",
@@ -167,6 +203,10 @@
     "defaultMessage": "Filter by {field}",
     "description": "OpenApiTable: accessible name of the status filter chip group. {field} is the column name."
   },
+  "kaE2GD": {
+    "defaultMessage": "Edit record",
+    "description": "OpenApiView: heading of the edit form."
+  },
   "l/aMoa": {
     "defaultMessage": "Hidden",
     "description": "OpenApiTable: cell text replacing a sensitive value (secret, token)."
@@ -182,6 +222,10 @@
   "pCrj6E": {
     "defaultMessage": "Yes",
     "description": "OpenApiTable: cell text for a true boolean value."
+  },
+  "r0cPGc": {
+    "defaultMessage": "New record",
+    "description": "OpenApiView: heading of the create form."
   },
   "r4S+k8": {
     "defaultMessage": "Search records",
@@ -202,6 +246,14 @@
   "uLFSOT": {
     "defaultMessage": "Delete {name}?",
     "description": "OpenApiDeleteButton: confirmation dialog title. {name} names the record."
+  },
+  "x0RWtj": {
+    "defaultMessage": "Could not load the API description",
+    "description": "OpenApiView: title of the error shown when the spec fails."
+  },
+  "yn310Y": {
+    "defaultMessage": "Loading…",
+    "description": "OpenApiForm: empty option of a reference select while its records load."
   },
   "yooBpN": {
     "defaultMessage": "Saved successfully.",

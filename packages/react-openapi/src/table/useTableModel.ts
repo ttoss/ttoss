@@ -5,7 +5,6 @@ import {
   deriveColumns,
   detectServerPagination,
   extractItems,
-  extractTotal,
   getListItemSchema,
   humanizeKey,
   matchesSearch,
@@ -20,6 +19,7 @@ import type {
 } from '../core/types';
 import { useOpenApi } from '../OpenApiProvider';
 import { useOperationQuery } from '../useOperationQuery';
+import { paginationState } from './paginationState';
 
 /**
  * A column of `OpenApiTable`. Give only `key` to keep the default header and
@@ -198,21 +198,41 @@ const useTableSource = ({
 
 type TableSource = ReturnType<typeof useTableSource>;
 
-/** Page, search, status filter and sort, as the user set them. */
+/**
+ * Page, search, status filter and sort, as the user set them. `cursors` holds,
+ * for cursor-paginated lists, the cursor that requests each page already
+ * reached (page 0 needs none), so going back re-requests the same page.
+ */
 const useTableControls = () => {
   const [pageIndex, setPageIndex] = React.useState(0);
+  const [cursors, setCursors] = React.useState<Record<number, string>>({});
   const [search, setSearchState] = React.useState('');
   const [status, setStatusState] = React.useState<string | null>(null);
   const [sort, setSort] = React.useState<SortState>(null);
 
+  const restart = () => {
+    setPageIndex(0);
+    setCursors({});
+  };
+
   const setSearch = (value: string) => {
     setSearchState(value);
-    setPageIndex(0);
+    restart();
   };
 
   const setStatus = (value: string | null) => {
     setStatusState(value);
-    setPageIndex(0);
+    restart();
+  };
+
+  /** Moves to a page; moving forward records the cursor that requests it. */
+  const goToPage = ({ index, cursor }: { index: number; cursor?: string }) => {
+    if (cursor) {
+      setCursors((current) => {
+        return { ...current, [index]: cursor };
+      });
+    }
+    setPageIndex(index);
   };
 
   const toggleSort = (key: string) => {
@@ -226,7 +246,8 @@ const useTableControls = () => {
 
   return {
     pageIndex,
-    setPageIndex,
+    cursors,
+    goToPage,
     search,
     setSearch,
     status,
@@ -260,6 +281,7 @@ const buildRequestParams = ({
         pagination: source.server,
         pageIndex: controls.pageIndex,
         pageSize,
+        cursor: controls.cursors[controls.pageIndex],
       })
     );
   }
@@ -304,24 +326,6 @@ const filterRows = ({
     });
   }
   return rows;
-};
-
-const pageInfo = ({
-  total,
-  pageIndex,
-  pageSize,
-  loadedCount,
-}: {
-  total?: number;
-  pageIndex: number;
-  pageSize: number;
-  loadedCount: number;
-}) => {
-  if (total === undefined) {
-    return { pageCount: undefined, hasNextPage: loadedCount === pageSize };
-  }
-  const pageCount = Math.max(1, Math.ceil(total / pageSize));
-  return { pageCount, hasNextPage: pageIndex + 1 < pageCount };
 };
 
 /** Search, status filter and sort controls the table shows. */
@@ -402,7 +406,6 @@ export const useTableModel = ({
     source.server || pagination === 'none'
       ? filtered
       : filtered.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
-  const total = source.server ? extractTotal(query.data) : filtered.length;
 
   const resolvedColumns = React.useMemo(() => {
     return resolveColumns({
@@ -422,18 +425,16 @@ export const useTableModel = ({
     pagination:
       pagination === 'none'
         ? undefined
-        : {
+        : paginationState({
+            server: source.server,
+            data: query.data,
+            fetching: query.fetching,
             pageIndex,
             pageSize,
-            total,
+            filteredCount: filtered.length,
+            loadedCount: items.length,
             rowCount: rows.length,
-            onPageChange: controls.setPageIndex,
-            ...pageInfo({
-              total,
-              pageIndex,
-              pageSize,
-              loadedCount: items.length,
-            }),
-          },
+            goToPage: controls.goToPage,
+          }),
   };
 };

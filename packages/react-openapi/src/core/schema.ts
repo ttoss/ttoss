@@ -14,10 +14,11 @@ const lookupRefKey = (obj: Record<string, unknown>, part: string): string => {
   return snake in obj ? snake : part;
 };
 
-const resolveRef = (
+/** The object a local `$ref` (`#/components/…`) points to, or undefined. */
+export const resolveRef = <T = OpenApiSchema>(
   ref: string,
   spec: OpenApiSpec
-): OpenApiSchema | undefined => {
+): T | undefined => {
   // A merged spec names the same place with `./file.yaml#/…` and `#/…`.
   const parts = ref.replace(/^[^#]*#\//, '').split('/');
   let current: unknown = spec;
@@ -28,7 +29,7 @@ const resolveRef = (
     const obj = current as Record<string, unknown>;
     current = obj[lookupRefKey(obj, part)];
   }
-  return (current as OpenApiSchema | undefined) ?? undefined;
+  return (current as T | undefined) ?? undefined;
 };
 
 const MAX_DEPTH = 16;

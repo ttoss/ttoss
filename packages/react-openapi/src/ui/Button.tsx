@@ -24,6 +24,20 @@ export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   size?: keyof typeof SIZES;
 };
 
+/** The classes of a `Button`, for links that look like one. */
+export const buttonClassName = ({
+  variant = 'default',
+  size = 'default',
+  className,
+}: Pick<ButtonProps, 'variant' | 'size' | 'className'> = {}): string => {
+  return cn(
+    'oa:inline-flex oa:items-center oa:justify-center oa:gap-2 oa:whitespace-nowrap oa:rounded-md oa:border oa:border-solid oa:text-sm oa:font-medium oa:[font-family:inherit] oa:no-underline oa:cursor-pointer oa:transition-colors oa:outline-none oa:focus-visible:ring-2 oa:focus-visible:ring-ring oa:disabled:pointer-events-none oa:disabled:opacity-50',
+    VARIANTS[variant],
+    SIZES[size],
+    className
+  );
+};
+
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
     { className, variant = 'default', size = 'default', type, ...props },
@@ -33,12 +47,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         type={type ?? 'button'}
-        className={cn(
-          'oa:inline-flex oa:items-center oa:justify-center oa:gap-2 oa:whitespace-nowrap oa:rounded-md oa:border oa:border-solid oa:text-sm oa:font-medium oa:[font-family:inherit] oa:cursor-pointer oa:transition-colors oa:outline-none oa:focus-visible:ring-2 oa:focus-visible:ring-ring oa:disabled:pointer-events-none oa:disabled:opacity-50',
-          VARIANTS[variant],
-          SIZES[size],
-          className
-        )}
+        className={buttonClassName({ variant, size, className })}
         {...props}
       />
     );

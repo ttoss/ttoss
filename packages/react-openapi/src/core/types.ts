@@ -32,10 +32,23 @@ export type OpenApiSchema = {
    * Complements the name-based heuristic in `isSensitiveKey`.
    */
   'x-sensitive'?: boolean;
+  /**
+   * Marks a field holding the id of a record of another resource, named by
+   * its path segment, key or tag (e.g. `'x-ref': 'clients'`). Forms pick the
+   * value from that resource's list; tables and detail views link to it.
+   */
+  'x-ref'?: string;
+  /** Same as `x-ref`, under the name the SOAT API uses. */
+  'x-soat-ref'?: string;
   [extension: `x-${string}`]: unknown;
 };
 
 export type OpenApiParameter = {
+  /**
+   * A reference to `#/components/parameters/…`. `listOperations` resolves it,
+   * so the operations it returns never carry one.
+   */
+  $ref?: string;
   name: string;
   in: 'path' | 'query' | 'header' | 'cookie' | string;
   required?: boolean;
@@ -73,6 +86,7 @@ export type OpenApiSpec = {
   paths?: Record<string, OpenApiPathItem>;
   components?: {
     schemas?: Record<string, OpenApiSchema>;
+    parameters?: Record<string, OpenApiParameter>;
   };
 };
 

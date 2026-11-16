@@ -1,6 +1,7 @@
 import { useI18n } from '@ttoss/react-i18n';
 import type * as React from 'react';
 
+import { findResourceByRef, getRefName } from '../core/resources';
 import {
   type CellKind,
   getCellKind,
@@ -8,6 +9,11 @@ import {
   statusTone,
 } from '../core/table';
 import type { JsonValue, OpenApiSchema } from '../core/types';
+import {
+  inlineLinkClassName,
+  ResourceLink,
+  useResourcesContext,
+} from '../resources/ResourcesContext';
 import { Badge } from '../ui/Badge';
 import { messages } from './messages';
 
@@ -185,11 +191,60 @@ const VIEWS: Record<CellKind, (props: KindProps) => React.ReactElement> = {
 };
 
 /**
+ * The resource an `x-ref`/`x-soat-ref` field points to, when an
+ * `OpenApiApp`/`OpenApiView` can open its records.
+ */
+const useRefTarget = (schema?: OpenApiSchema) => {
+  const context = useResourcesContext();
+  const ref = getRefName(schema);
+  if (!context || !ref) {
+    return undefined;
+  }
+  const target = findResourceByRef({ resources: context.resources, ref });
+  return target?.get && target.idParam ? target : undefined;
+};
+
+const isId = (value: JsonValue | undefined): value is string | number => {
+  return (
+    (typeof value === 'string' && value !== '') || typeof value === 'number'
+  );
+};
+
+const RefLinks = ({
+  resource,
+  ids,
+}: {
+  resource: string;
+  ids: (string | number)[];
+}) => {
+  if (ids.length === 0) {
+    return <EmptyValue />;
+  }
+  return (
+    <span className="oa:inline-flex oa:flex-wrap oa:gap-x-3 oa:gap-y-1">
+      {ids.map((id, index) => {
+        return (
+          <ResourceLink
+            key={`${String(id)}-${index}`}
+            location={{ resource, view: 'detail', id: String(id) }}
+            className={inlineLinkClassName}
+          >
+            {String(id)}
+          </ResourceLink>
+        );
+      })}
+    </span>
+  );
+};
+
+/**
  * Renders one value, formatted by what the field's schema says it is: dates
  * and numbers in the user's locale, booleans as Yes/No, enums and status
- * fields as tonal badges, objects as JSON, and sensitive fields masked. In a
- * table cell long text is truncated; with `full` (detail views) it is shown
- * whole and objects are pretty-printed.
+ * fields as tonal badges, objects as JSON, and sensitive fields masked. An
+ * `x-ref`/`x-soat-ref` id, or array of ids, links to the records it
+ * references when rendered inside `OpenApiApp`/`OpenApiView`. In a table
+ * cell long text is truncated; with
+ * `full` (detail views) it is shown whole and objects are pretty-printed.
  */
 export const CellValue = ({
   columnKey,
@@ -202,6 +257,18 @@ export const CellValue = ({
   schema?: OpenApiSchema;
   full?: boolean;
 }): React.ReactElement => {
-  const View = VIEWS[getCellKind({ key: columnKey, value, schema })];
+  const refTarget = useRefTarget(schema);
+  const kind = getCellKind({ key: columnKey, value, schema });
+  if (refTarget && kind !== 'sensitive') {
+    if (isId(value)) {
+      return <RefLinks resource={refTarget.key} ids={[value]} />;
+    }
+    if (Array.isArray(value) && value.every(isId)) {
+      return (
+        <RefLinks resource={refTarget.key} ids={value as (string | number)[]} />
+      );
+    }
+  }
+  const View = VIEWS[kind];
   return <View value={value} schema={schema} full={full} />;
 };

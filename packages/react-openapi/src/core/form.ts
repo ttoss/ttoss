@@ -1,3 +1,4 @@
+import { getRefName } from './resources';
 import { resolveSchema, withResolvedProperties } from './schema';
 import { humanizeKey, isSensitiveKey } from './table';
 import type { OpenApiSchema, OpenApiSpec, ResolvedOperation } from './types';
@@ -81,6 +82,8 @@ export type FieldKind =
   | 'date'
   | 'datetime'
   | 'file'
+  | 'ref'
+  | 'refList'
   | 'json';
 
 const LONG_TEXT_KEYS =
@@ -134,7 +137,9 @@ const nameKind = ({
 
 /**
  * The input widget a field needs, decided from its schema: an `x-widget`
- * hint, then enum, type and format, then the field name.
+ * hint, an `x-ref`/`x-soat-ref` (a picker of another resource's records, or
+ * checkboxes of them for an array of ids), then enum, type
+ * and format, then the field name.
  */
 export const getFieldKind = ({
   name,
@@ -145,6 +150,9 @@ export const getFieldKind = ({
 }): FieldKind => {
   if (schema['x-widget'] === 'textarea') {
     return 'textarea';
+  }
+  if (getRefName(schema)) {
+    return schema.type === 'array' ? 'refList' : 'ref';
   }
   const choice = enumKind(schema);
   if (choice) {

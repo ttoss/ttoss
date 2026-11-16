@@ -26,7 +26,25 @@ export {
   getParameters,
   getResponseSchema,
   hasQueryParameter,
+  listOperations,
 } from './operations';
+export type {
+  ApiResource,
+  OpenApiLocation,
+  ParseResourcesOptions,
+  ResourceAction,
+} from './resources';
+export {
+  findResource,
+  findResourceByRef,
+  formatLocation,
+  getRecordId,
+  getRefName,
+  isListable,
+  parseLocation,
+  parseResources,
+  toRefOption,
+} from './resources';
 export { resolveSchema, withResolvedProperties } from './schema';
 export type { CellKind, ServerPagination, StatusTone } from './table';
 export {
@@ -34,6 +52,7 @@ export {
   deriveColumns,
   detectServerPagination,
   extractItems,
+  extractNextCursor,
   extractTotal,
   getCellKind,
   getListItemSchema,

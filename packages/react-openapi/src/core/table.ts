@@ -1,4 +1,4 @@
-import { getResponseSchema, hasQueryParameter } from './operations';
+import { getResponseSchema } from './operations';
 import { resolveSchema, withResolvedProperties } from './schema';
 import type {
   JsonObject,
@@ -72,103 +72,13 @@ export const extractItems = (data: unknown): JsonObject[] => {
   return [];
 };
 
-const TOTAL_KEYS = ['total', 'total_count', 'totalCount', 'count'];
-
-/**
- * The total number of records reported by a paginated wrapper, if any.
- */
-export const extractTotal = (data: unknown): number | undefined => {
-  if (!isJsonObject(data)) {
-    return undefined;
-  }
-  for (const key of TOTAL_KEYS) {
-    const value = data[key];
-    if (typeof value === 'number') {
-      return value;
-    }
-  }
-  const meta = data.meta ?? data.pagination;
-  return isJsonObject(meta) ? extractTotal(meta) : undefined;
-};
-
-// ─── Pagination ──────────────────────────────────────────────────────────────
-
-export type ServerPagination =
-  | { type: 'offset'; limitParam: string; offsetParam: string }
-  | {
-      type: 'page';
-      pageParam: string;
-      sizeParam: string;
-      /** Index of the first page (0 or 1). */
-      firstPage: number;
-    };
-
-const firstMatch = ({
-  operation,
-  names,
-}: {
-  operation: ResolvedOperation;
-  names: string[];
-}): string | undefined => {
-  return names.find((name) => {
-    return hasQueryParameter({ operation, name });
-  });
-};
-
-/**
- * Detects server-side pagination from the operation's declared query
- * parameters: `limit` + `offset`, or `page` + a size param. Returns undefined
- * when the operation has none, in which case the table paginates client-side.
- */
-export const detectServerPagination = (
-  operation: ResolvedOperation
-): ServerPagination | undefined => {
-  const limitParam = firstMatch({
-    operation,
-    names: ['limit', 'page_size', 'pageSize', 'per_page', 'perPage'],
-  });
-  const offsetParam = firstMatch({ operation, names: ['offset', 'skip'] });
-  if (limitParam && offsetParam) {
-    return { type: 'offset', limitParam, offsetParam };
-  }
-  const pageParam = firstMatch({ operation, names: ['page'] });
-  if (pageParam && limitParam) {
-    const pageSchema = operation.operation.parameters?.find((param) => {
-      return param.name === pageParam;
-    })?.schema;
-    return {
-      type: 'page',
-      pageParam,
-      sizeParam: limitParam,
-      firstPage: pageSchema?.minimum === 0 ? 0 : 1,
-    };
-  }
-  return undefined;
-};
-
-/**
- * The query params that request one page from the server.
- */
-export const paginationParams = ({
-  pagination,
-  pageIndex,
-  pageSize,
-}: {
-  pagination: ServerPagination;
-  pageIndex: number;
-  pageSize: number;
-}): Record<string, number> => {
-  if (pagination.type === 'offset') {
-    return {
-      [pagination.limitParam]: pageSize,
-      [pagination.offsetParam]: pageIndex * pageSize,
-    };
-  }
-  return {
-    [pagination.sizeParam]: pageSize,
-    [pagination.pageParam]: pageIndex + pagination.firstPage,
-  };
-};
+export type { ServerPagination } from './pagination';
+export {
+  detectServerPagination,
+  extractNextCursor,
+  extractTotal,
+  paginationParams,
+} from './pagination';
 
 // ─── Columns ─────────────────────────────────────────────────────────────────
 

@@ -16,6 +16,11 @@ export type {
   OpenApiProviderProps,
 } from './OpenApiProvider';
 export { OpenApiProvider, useOpenApi } from './OpenApiProvider';
+export type { OpenApiAppProps } from './resources/OpenApiApp';
+export { OpenApiApp } from './resources/OpenApiApp';
+export type { OpenApiViewProps } from './resources/OpenApiView';
+export { OpenApiView } from './resources/OpenApiView';
+export { useResources } from './resources/ResourcesContext';
 export type { OpenApiTableProps } from './table/OpenApiTable';
 export { OpenApiTable } from './table/OpenApiTable';
 export type {

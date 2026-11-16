@@ -1,4 +1,4 @@
-import { resolveSchema } from './schema';
+import { resolveRef, resolveSchema } from './schema';
 import {
   HTTP_METHODS,
   type OpenApiOperation,
@@ -28,9 +28,69 @@ const normalizeOperation = (raw: RawOperation): OpenApiOperation => {
 };
 
 /**
- * Locates an operation by its `operationId`. Path-level parameters are merged
- * into the operation's own (the operation wins on a name clash), as OpenAPI
- * specifies.
+ * A parameter declared by `$ref` (`#/components/parameters/Limit`) replaced by
+ * the one it points to. Unresolvable references are dropped.
+ */
+const resolveParameters = ({
+  parameters = [],
+  spec,
+}: {
+  parameters?: OpenApiParameter[];
+  spec: OpenApiSpec;
+}): OpenApiParameter[] => {
+  return parameters.flatMap((param) => {
+    if (!param.$ref) {
+      return [param];
+    }
+    const resolved = resolveRef<OpenApiParameter>(param.$ref, spec);
+    return resolved?.name && resolved.in ? [resolved] : [];
+  });
+};
+
+/**
+ * Every operation of the spec, in declaration order, with parameters declared
+ * by `$ref` resolved and path-level parameters merged into the operation's
+ * own (the operation wins on a name clash), as OpenAPI specifies. Operations
+ * without an `operationId` are left out: nothing can address them.
+ */
+export const listOperations = (spec: OpenApiSpec): ResolvedOperation[] => {
+  const operations: ResolvedOperation[] = [];
+  for (const [pathTemplate, pathItem] of Object.entries(spec.paths ?? {})) {
+    for (const method of HTTP_METHODS) {
+      const raw = pathItem[method] as RawOperation | undefined;
+      if (!raw) {
+        continue;
+      }
+      const operation = normalizeOperation(raw);
+      if (!operation.operationId) {
+        continue;
+      }
+      const own = resolveParameters({
+        parameters: operation.parameters,
+        spec,
+      });
+      const shared = resolveParameters({
+        parameters: pathItem.parameters,
+        spec,
+      });
+      const inherited = shared.filter((param) => {
+        return !own.some((o) => {
+          return o.name === param.name && o.in === param.in;
+        });
+      });
+      operations.push({
+        method,
+        pathTemplate,
+        operation: { ...operation, parameters: [...inherited, ...own] },
+      });
+    }
+  }
+  return operations;
+};
+
+/**
+ * Locates an operation by its `operationId`, with path-level parameters
+ * merged as in `listOperations`.
  */
 export const findOperation = ({
   spec,
@@ -39,30 +99,9 @@ export const findOperation = ({
   spec: OpenApiSpec;
   operationId: string;
 }): ResolvedOperation | undefined => {
-  for (const [pathTemplate, pathItem] of Object.entries(spec.paths ?? {})) {
-    for (const method of HTTP_METHODS) {
-      const raw = pathItem[method] as RawOperation | undefined;
-      if (!raw) {
-        continue;
-      }
-      const operation = normalizeOperation(raw);
-      if (operation.operationId !== operationId) {
-        continue;
-      }
-      const own = operation.parameters ?? [];
-      const inherited = (pathItem.parameters ?? []).filter((param) => {
-        return !own.some((o) => {
-          return o.name === param.name && o.in === param.in;
-        });
-      });
-      return {
-        method,
-        pathTemplate,
-        operation: { ...operation, parameters: [...inherited, ...own] },
-      };
-    }
-  }
-  return undefined;
+  return listOperations(spec).find((operation) => {
+    return operation.operation.operationId === operationId;
+  });
 };
 
 export const getParameters = ({

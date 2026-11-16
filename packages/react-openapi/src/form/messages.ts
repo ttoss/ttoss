@@ -42,6 +42,16 @@ export const messages = defineMessages({
     defaultMessage: 'Select…',
     description: 'OpenApiForm: empty option of a select field.',
   },
+  refLoading: {
+    defaultMessage: 'Loading…',
+    description:
+      'OpenApiForm: empty option of a reference select while its records load.',
+  },
+  refEmpty: {
+    defaultMessage: 'No records to choose from.',
+    description:
+      'OpenApiForm: shown in place of the checkboxes of a multi-reference field when the referenced resource has no records.',
+  },
   required: {
     defaultMessage: 'required',
     description: 'OpenApiForm: accessible text of the required-field marker.',

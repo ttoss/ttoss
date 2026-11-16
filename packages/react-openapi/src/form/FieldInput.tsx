@@ -12,19 +12,17 @@ import {
   Select,
   Textarea,
 } from '../ui/fields';
-import { Input } from '../ui/Input';
+import {
+  asText,
+  commonProps,
+  type ControlProps,
+  type FieldRenderProps,
+  InputControl,
+} from './baseControls';
 import { messages } from './messages';
+import { RefControl, RefListControl } from './RefControls';
 
-/**
- * Props a custom field renderer receives (see `OpenApiFormField.render`).
- */
-export type FieldRenderProps = {
-  id: string;
-  field: FormField;
-  value: FormValue;
-  onChange: (value: FormValue) => void;
-  invalid: boolean;
-};
+export type { FieldRenderProps } from './baseControls';
 
 type MessageKey = keyof typeof messages;
 
@@ -54,32 +52,6 @@ export const useFieldErrorMessage = () => {
     const { code, ...values } = error;
     return intl.formatMessage(messages[ERROR_MESSAGES[code]], values);
   };
-};
-
-const INPUT_TYPES: Partial<Record<FormField['kind'], string>> = {
-  email: 'email',
-  url: 'url',
-  password: 'password',
-  date: 'date',
-  datetime: 'datetime-local',
-  integer: 'number',
-  number: 'number',
-};
-
-type ControlProps = FieldRenderProps & { describedBy?: string };
-
-const commonProps = ({ id, field, invalid, describedBy }: ControlProps) => {
-  return {
-    id,
-    name: field.name,
-    'aria-invalid': invalid || undefined,
-    'aria-describedby': describedBy,
-    'aria-required': field.required || undefined,
-  };
-};
-
-const asText = (value: FormValue): string => {
-  return typeof value === 'string' ? value : '';
 };
 
 const BooleanControl = (props: ControlProps) => {
@@ -195,26 +167,6 @@ const FileControl = (props: ControlProps) => {
   );
 };
 
-const InputControl = (props: ControlProps) => {
-  const { field } = props;
-  const { example } = field.schema;
-  return (
-    <Input
-      {...commonProps(props)}
-      type={INPUT_TYPES[field.kind] ?? 'text'}
-      step={field.kind === 'number' ? 'any' : undefined}
-      min={field.schema.minimum}
-      max={field.schema.maximum}
-      autoComplete={field.kind === 'password' ? 'new-password' : undefined}
-      placeholder={example === undefined ? undefined : String(example)}
-      value={asText(props.value)}
-      onChange={(event) => {
-        props.onChange(event.target.value);
-      }}
-    />
-  );
-};
-
 const CONTROLS: Partial<
   Record<FormField['kind'], (props: ControlProps) => React.ReactElement>
 > = {
@@ -224,6 +176,8 @@ const CONTROLS: Partial<
   textarea: TextareaControl,
   json: TextareaControl,
   file: FileControl,
+  ref: RefControl,
+  refList: RefListControl,
 };
 
 /**
@@ -242,6 +196,8 @@ const FieldLabel = ({ id, field }: { id: string; field: FormField }) => {
   return (
     <Label
       id={`${id}-label`}
+      // A refList falls back to a textarea with this id; its checkbox
+      // group is named by aria-labelledby instead.
       htmlFor={field.kind === 'multiEnum' ? undefined : id}
     >
       {field.label}
