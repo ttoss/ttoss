@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-openapi-ui",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Render React UI (tables) straight from an OpenAPI spec.",
   "keywords": [
     "React",
