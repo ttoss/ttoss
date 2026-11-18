@@ -14,6 +14,7 @@ import type {
 } from '../../spec/types';
 import type { LegendSpec } from '../../spec/types.legend';
 import { buildExtrusionHeightExpression } from './extrusion';
+import { extrusionColorAndOpacity } from './extrusionAlpha';
 import { buildHeatmapPaint } from './heatmap';
 import {
   resolveDimensionMapData,
@@ -189,8 +190,10 @@ export const resolveExtrusionHeightExpression = (
 
 /**
  * Builds a MapLibre `fill-extrusion` layer spec from an extruded polygon
- * layer: the flat layer's colour and opacity, plus a height read from the same
- * value (see `buildExtrusionHeightExpression`). `lineColor` has no
+ * layer: the flat layer's colour and opacity — its colours' alpha moved into
+ * the opacity, which is the only one an extrusion honours (see
+ * `extrusionColorAndOpacity`) — plus a height read from the same value (see
+ * `buildExtrusionHeightExpression`). `lineColor` has no
  * counterpart — a prism has no outline.
  */
 const buildExtrudedPolygon: Builder = (base, layer, paint, ctx) => {
@@ -200,12 +203,16 @@ const buildExtrudedPolygon: Builder = (base, layer, paint, ctx) => {
     ctx?.legends,
     ctx?.mapData
   );
+  const { color, opacity } = extrusionColorAndOpacity({
+    color: legendFillColor ?? fp.fillColor ?? '#3b82f6',
+    fillOpacity: fp.fillOpacity,
+  });
   return {
     ...base,
     type: 'fill-extrusion',
     paint: {
-      'fill-extrusion-color': legendFillColor ?? fp.fillColor ?? '#3b82f6',
-      'fill-extrusion-opacity': fp.fillOpacity ?? 1,
+      'fill-extrusion-color': color,
+      'fill-extrusion-opacity': opacity,
       'fill-extrusion-height': resolveExtrusionHeightExpression(
         layer,
         ctx?.legends,

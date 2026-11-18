@@ -1042,6 +1042,17 @@ export interface GeovisWorkspaceContextValue {
     blocking?: boolean;
   }) => void;
   /**
+   * Replaces the whole selection at once, as switching the side of a split
+   * map does: the side being edited takes the selection it held before.
+   */
+  replaceSelection: (next: GeovisWorkspaceSelection) => void;
+  /**
+   * How many times {@link replaceSelection} has replaced the selection. A
+   * control that keeps its value locally reads it again from the selection
+   * when this changes, rather than writing its own back over the new one.
+   */
+  selectionEpoch: number;
+  /**
    * The variation change still in flight, if any. Menus render their rows inert
    * while it is set — see {@link GeovisWorkspacePendingSelection}.
    */

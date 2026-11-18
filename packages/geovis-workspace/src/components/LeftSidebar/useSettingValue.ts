@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { useGeovisWorkspace } from '../../hooks/useGeovisWorkspace';
+import { useSelectionReplaced } from '../../hooks/useSelectionReplaced';
 
 /**
  * A setting's value: held locally, seeded from the shared selection, and
@@ -35,6 +36,10 @@ export const useSettingValue = ({
   const [value, setValue] = React.useState<string>(() => {
     return selection[menuId] ?? defaultValue;
   });
+
+  // A selection replaced whole — the other side of a split map — is read
+  // again, not overwritten with the value held for the one before.
+  if (useSelectionReplaced()) setValue(selection[menuId] ?? defaultValue);
 
   React.useEffect(() => {
     if (selection[menuId] !== value) {

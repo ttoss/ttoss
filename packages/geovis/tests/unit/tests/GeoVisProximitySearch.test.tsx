@@ -134,7 +134,8 @@ describe('GeoVisProximitySearch', () => {
     await settle();
 
     expect(screen.getByText('2 services within 1 km')).toBeTruthy();
-    expect(screen.getByTitle('UBS').textContent).toBe('1');
+    // The bar says how many, not how many of each kind.
+    expect(screen.queryByTitle('UBS')).toBeNull();
     expect(screen.getByRole('button', { name: 'Place 1' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Place 2' })).toBeTruthy();
   });
@@ -217,14 +218,13 @@ describe('GeoVisProximitySearch', () => {
     expect(pin.querySelector('img')).toBeNull();
   });
 
-  test('a narrow map shortens the bar and drops the counts by kind', async () => {
+  test('a narrow map shortens the bar', async () => {
     const { calls } = await renderSearch({ width: 300 });
     clickPin();
     calls[0].resolve([northBy(1, 300, 'ubs'), northBy(2, 600, 'ubs')]);
     await settle();
 
     expect(screen.getByText('2 within 1 km')).toBeTruthy();
-    expect(screen.queryByTitle('UBS')).toBeNull();
   });
 
   test('follows the camera: a move redraws what it placed', async () => {

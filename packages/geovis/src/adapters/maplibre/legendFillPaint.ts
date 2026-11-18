@@ -1,6 +1,7 @@
 import type * as maplibregl from 'maplibre-gl';
 
 import type { VisualizationSpec } from '../../spec/types';
+import { extrusionColorAndOpacity } from './extrusionAlpha';
 import { extrusionTransitionMs } from './extrusionLifecycle';
 import { transitionExtrusionHeight } from './extrusionTransition';
 import {
@@ -123,6 +124,40 @@ const reapplyExtrusionHeight = ({
 };
 
 /**
+ * Writes a polygon layer's legend colours: as they are on a flat layer, and
+ * on an extruded one opaque, their alpha as its opacity — the extrusion
+ * ignores a colour's alpha (see `extrusionColorAndOpacity`).
+ */
+const writeLegendFill = ({
+  map,
+  layer,
+  expression,
+  extruded,
+}: {
+  map: maplibregl.Map;
+  layer: VisualizationSpec['layers'][number];
+  expression: unknown;
+  extruded: boolean;
+}) => {
+  if (!extruded) {
+    setPaintWhenReady(
+      map,
+      layer.id,
+      polygonFillColorProperty(layer),
+      expression
+    );
+    return;
+  }
+  const { color, opacity } = extrusionColorAndOpacity({
+    color: expression,
+    fillOpacity: (layer.paint as { fillOpacity?: number } | undefined)
+      ?.fillOpacity,
+  });
+  setPaintWhenReady(map, layer.id, 'fill-extrusion-color', color);
+  setPaintWhenReady(map, layer.id, 'fill-extrusion-opacity', opacity);
+};
+
+/**
  * Re-applies legend-driven polygon fill expressions for layers with active
  * legends, and the height of extruded ones — its continuous scale tops out at
  * the dataset's largest value, which a `mapData` change can move. The height
@@ -149,11 +184,11 @@ export const reapplyLegendDrivenFillPaint = (
       spec.mapData
     );
     if (!expression) continue;
-    setPaintWhenReady(
+    writeLegendFill({
       map,
-      layer.id,
-      polygonFillColorProperty(layer),
-      expression
-    );
+      layer,
+      expression,
+      extruded: mountedType === 'fill-extrusion',
+    });
   }
 };

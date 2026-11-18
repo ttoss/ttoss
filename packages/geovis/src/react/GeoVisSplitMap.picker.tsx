@@ -1,8 +1,8 @@
 import { defineMessages, useI18n } from '@ttoss/react-i18n';
-import * as React from 'react';
+import type * as React from 'react';
 
 import type { LayerControlItem } from '../spec/types';
-import { type GeoVisSplitSide, useGeoVisMapMode } from './mapMode';
+import { type GeoVisSplitSide, SPLIT_SIDE_COLOR } from './mapMode.split';
 
 const messages = defineMessages({
   sideLayer: {
@@ -64,12 +64,22 @@ const CheckIcon = () => {
   );
 };
 
+/** One entry of a side's list, and what its pill shows when chosen. */
+export interface SidePickerEntry {
+  /** `null` for the entry that empties the side. */
+  id: string | null;
+  label: string;
+  /** The `control` item it shows, for its thumbnail. */
+  item?: LayerControlItem | null;
+}
+
 /**
  * The item's thumbnail as a small swatch, a neutral dot for an item without
  * one, or an empty dashed ring for no item at all.
  */
-const ItemSwatch = ({ item }: { item: LayerControlItem | null }) => {
-  if (!item) {
+const ItemSwatch = ({ entry }: { entry: SidePickerEntry | null }) => {
+  const item = entry?.item;
+  if (!entry || entry.id === null) {
     return (
       <span
         style={{
@@ -82,7 +92,7 @@ const ItemSwatch = ({ item }: { item: LayerControlItem | null }) => {
       />
     );
   }
-  if (item.thumbnail) {
+  if (item?.thumbnail) {
     return (
       <img
         src={item.thumbnail}
@@ -110,10 +120,6 @@ const ItemSwatch = ({ item }: { item: LayerControlItem | null }) => {
   );
 };
 
-/**
- * One side's picker: a pill naming the side (A/B) and its item, opening the
- * list of items to show on that side.
- */
 /** Where a side's list opens relative to its pill. */
 const MENU_POSITION: Record<'left' | 'center' | 'right', React.CSSProperties> =
   {
@@ -122,7 +128,7 @@ const MENU_POSITION: Record<'left' | 'center' | 'right', React.CSSProperties> =
     right: { right: 0 },
   };
 
-/** A side's list of items, "No layer" first, below its pill. */
+/** A side's list of entries, below its pill. */
 const SidePickerList = ({
   keyLabel,
   menuPosition,
@@ -132,15 +138,12 @@ const SidePickerList = ({
 }: {
   keyLabel: string;
   menuPosition: React.CSSProperties;
-  entries: {
-    id: string | null;
-    label: string;
-    item: LayerControlItem | null;
-  }[];
+  entries: SidePickerEntry[];
   selected: string | null;
   onPick: (id: string | null) => void;
 }) => {
   const { intl } = useI18n();
+  const noLayer = intl.formatMessage(messages.noLayer);
   return (
     <div
       role="listbox"
@@ -195,17 +198,17 @@ const SidePickerList = ({
               background: on ? 'rgba(14,158,110,0.07)' : 'transparent',
             }}
           >
-            <ItemSwatch item={entry.item} />
+            <ItemSwatch entry={entry} />
             <span
               style={{
                 flex: 1,
                 minWidth: 0,
                 fontSize: 12,
-                color: entry.item ? INK : MUTED,
+                color: entry.id === null ? MUTED : INK,
                 fontWeight: on ? 500 : 400,
               }}
             >
-              {entry.label}
+              {entry.id === null ? noLayer : entry.label}
             </span>
             {on && (
               <span style={{ display: 'flex', color: ACCENT }}>
@@ -219,6 +222,37 @@ const SidePickerList = ({
   );
 };
 
+/** What a pill names: its entry's label, or "No layer" for an empty side. */
+const pillLabel = ({
+  current,
+  noLayer,
+}: {
+  current: SidePickerEntry | null;
+  noLayer: string;
+}) => {
+  const empty = !current || current.id === null;
+  return { empty, label: empty ? noLayer : current.label };
+};
+
+/** A pill's border: in its side's colour while edited, tinted while open. */
+const pillBorder = ({
+  active,
+  open,
+  color,
+}: {
+  active: boolean;
+  open: boolean;
+  color: string;
+}) => {
+  if (active) return `2px solid ${color}`;
+  return `1px solid ${open ? 'rgba(14,158,110,0.4)' : 'rgba(0,0,0,0.08)'}`;
+};
+
+/**
+ * One side's picker: a pill naming the side (A/B, in the side's colour) and
+ * the `control` item it shows, opening the list of items to show on that side. The pill
+ * of the side being edited is ringed in its colour.
+ */
 export const SidePicker = ({
   side,
   open,
@@ -226,6 +260,11 @@ export const SidePicker = ({
   maxWidth,
   style,
   menuAlign,
+  current,
+  entries,
+  selected,
+  onPick,
+  active,
 }: {
   side: GeoVisSplitSide;
   open: boolean;
@@ -233,23 +272,23 @@ export const SidePicker = ({
   maxWidth: number;
   style: React.CSSProperties;
   menuAlign: 'left' | 'center' | 'right';
+  /** What the side shows, or `null` for an empty side. */
+  current: SidePickerEntry | null;
+  /** The list the pill opens; empty, the pill opens none. */
+  entries: SidePickerEntry[];
+  selected: string | null;
+  onPick: (id: string | null) => void;
+  /** Whether this is the side being edited. */
+  active: boolean;
 }) => {
-  const { options, sides, setSide } = useGeoVisMapMode();
   const { intl } = useI18n();
-  const noLayer = intl.formatMessage(messages.noLayer);
-  const current =
-    options.find((item) => {
-      return item.id === sides[side];
-    }) ?? null;
-  // "No layer" first, so a side can be emptied again after a choice.
-  const entries = [
-    { id: null, label: noLayer, item: null },
-    ...options.map((item) => {
-      return { id: item.id, label: item.label, item };
-    }),
-  ];
   const key = side.toUpperCase();
-  const menuPosition = MENU_POSITION[menuAlign];
+  const color = SPLIT_SIDE_COLOR[side];
+  const { empty, label } = pillLabel({
+    current,
+    noLayer: intl.formatMessage(messages.noLayer),
+  });
+  const hasList = entries.length > 0;
 
   return (
     <div
@@ -258,12 +297,12 @@ export const SidePicker = ({
     >
       <button
         type="button"
-        onClick={onToggle}
-        aria-expanded={open}
-        aria-haspopup="listbox"
+        onClick={hasList ? onToggle : undefined}
+        aria-expanded={hasList ? open : undefined}
+        aria-haspopup={hasList ? 'listbox' : undefined}
         aria-label={intl.formatMessage(messages.sideLayerValue, {
           side: key,
-          layer: current?.label ?? noLayer,
+          layer: label,
         })}
         style={{
           display: 'flex',
@@ -273,10 +312,10 @@ export const SidePicker = ({
           height: 36,
           padding: '0 10px 0 6px',
           borderRadius: 10,
-          cursor: 'pointer',
+          cursor: hasList ? 'pointer' : 'default',
           background: '#ffffff',
           boxShadow: '0 4px 16px rgba(0,0,0,0.14)',
-          border: `1px solid ${open ? 'rgba(14,158,110,0.4)' : 'rgba(0,0,0,0.08)'}`,
+          border: pillBorder({ active, open, color }),
         }}
       >
         <span
@@ -288,7 +327,7 @@ export const SidePicker = ({
             width: 22,
             height: 22,
             borderRadius: 6,
-            background: INK,
+            background: color,
             color: '#ffffff',
             fontSize: 11,
             fontWeight: 600,
@@ -296,7 +335,7 @@ export const SidePicker = ({
         >
           {key}
         </span>
-        <ItemSwatch item={current} />
+        <ItemSwatch entry={current} />
         <span
           style={{
             minWidth: 0,
@@ -304,77 +343,30 @@ export const SidePicker = ({
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
             fontSize: 12,
-            fontWeight: current ? 500 : 400,
-            color: current ? INK : MUTED,
+            fontWeight: empty ? 400 : 500,
+            color: empty ? MUTED : INK,
           }}
         >
-          {current?.label ?? noLayer}
+          {label}
         </span>
-        <span style={{ flexShrink: 0, display: 'flex', color: '#8593a6' }}>
-          <ChevronIcon open={open} />
-        </span>
+        {hasList && (
+          <span style={{ flexShrink: 0, display: 'flex', color: '#8593a6' }}>
+            <ChevronIcon open={open} />
+          </span>
+        )}
       </button>
-      {open && (
+      {open && hasList && (
         <SidePickerList
           keyLabel={key}
-          menuPosition={menuPosition}
+          menuPosition={MENU_POSITION[menuAlign]}
           entries={entries}
-          selected={sides[side]}
+          selected={selected}
           onPick={(id) => {
-            setSide(side, id);
+            onPick(id);
             onToggle();
           }}
         />
       )}
     </div>
   );
-};
-
-/** Closes the open picker on `Escape` or a pointer down outside any picker. */
-export const useDismissPicker = (
-  open: GeoVisSplitSide | null,
-  close: () => void
-) => {
-  React.useEffect(() => {
-    if (!open) return;
-    const onPointerDown = (event: PointerEvent) => {
-      const target = event.target as Element | null;
-      if (target?.closest?.('[data-split-picker]')) return;
-      close();
-    };
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') close();
-    };
-    document.addEventListener('pointerdown', onPointerDown, true);
-    document.addEventListener('keydown', onKeyDown);
-    return () => {
-      document.removeEventListener('pointerdown', onPointerDown, true);
-      document.removeEventListener('keydown', onKeyDown);
-    };
-  }, [open, close]);
-};
-
-/**
- * Where each picker sits: centred over its own half, or — when the map is too
- * narrow for two pills side by side — stacked over the divider.
- */
-export const pickerPlacement = (side: GeoVisSplitSide, stacked: boolean) => {
-  if (stacked) {
-    return {
-      style: {
-        top: side === 'a' ? 12 : 56,
-        left: '50%',
-        transform: 'translateX(-50%)',
-      },
-      menuAlign: 'center' as const,
-    };
-  }
-  return {
-    style: {
-      top: 12,
-      left: side === 'a' ? '25%' : '75%',
-      transform: 'translateX(-50%)',
-    },
-    menuAlign: 'center' as const,
-  };
 };

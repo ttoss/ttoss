@@ -21,6 +21,7 @@ import { FiltersTab } from './FiltersTab';
 import { IconChip } from './IconChip';
 import { SettingsTab } from './SettingsTab';
 import { SidebarTab } from './SidebarTab';
+import { SplitSideBlock } from './SplitSideBlock';
 import { COLOR, FONT_HEAD } from './theme';
 import { useChipSelection } from './useChipSelection';
 import { ChoiceSettingsContext, useChoiceSettings } from './useChoiceSettings';
@@ -428,6 +429,8 @@ export const LeftSidebar = () => {
         boxShadow: ['none', '0 8px 40px rgba(0,0,0,0.14)'],
       }}
     >
+      <SplitSideBlock />
+
       {hasHeaderBand ? (
         <Header section={activeSection} onClose={closeSidebar} />
       ) : null}

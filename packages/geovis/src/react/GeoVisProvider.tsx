@@ -27,6 +27,7 @@ import {
   useMapHover,
 } from './hooks';
 import { GeoVisMapModeContext, useMapModeState } from './mapMode';
+import type { GeoVisSplitInput } from './mapMode.split';
 import {
   createProximityStore,
   GeoVisProximityContext,
@@ -129,9 +130,15 @@ const resolveAdapter = async (
   }
 };
 
-interface GeoVisProviderProps {
+interface ProviderProps {
   spec: VisualizationSpec;
   children: React.ReactNode;
+  /**
+   * The sides of the split map, built by the app: while the reader has the
+   * map split (`spec.mapModeControl`), each side renders its own spec instead
+   * of one `control` item of `spec`. See {@link GeoVisSplitInput}.
+   */
+  split?: GeoVisSplitInput;
 }
 
 /**
@@ -293,7 +300,7 @@ const isCameraOnlyChange = (
  * initializes the runtime, and keeps it in sync with spec updates.
  * Throws any adapter initialization error as a React error boundary–catchable exception.
  */
-export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
+export const GeoVisProvider = ({ spec, children, split }: ProviderProps) => {
   const [runtime, setRuntime] = React.useState<GeoVisRuntime | null>(null);
   const [adapterError, setAdapterError] = React.useState<Error | null>(null);
   const [patchState, setPatchState] = React.useState<{
@@ -451,7 +458,7 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
 
   useSpecRejectionWarning(committed.result);
 
-  const mapMode = useMapModeState({ runtime, spec: committed.spec });
+  const mapMode = useMapModeState({ runtime, spec: committed.spec, split });
   // One store for the provider's life: the search writes it from the overlays,
   // the app reads it from `children` — siblings, so neither can hand it down.
   const [proximityStore] = React.useState(createProximityStore);

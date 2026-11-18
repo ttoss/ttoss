@@ -18,7 +18,7 @@ import {
   useClickToSearch,
 } from './GeoVisProximitySearch.controls';
 import { FocusPin } from './GeoVisProximitySearch.focusPin';
-import { COMPACT_WIDTH, useCircleFrame } from './GeoVisProximitySearch.frame';
+import { useCircleFrame } from './GeoVisProximitySearch.frame';
 import { HitCard, HitPin } from './GeoVisProximitySearch.hitPin';
 import {
   useFocusedPinLook,
@@ -339,10 +339,8 @@ export const GeoVisProximitySearch = ({
         <StatusBar
           state={state}
           visible={visible}
-          config={config}
           radii={radii}
           nouns={nouns}
-          compact={width < COMPACT_WIDTH}
           tight={width < TIGHT_WIDTH}
           onRadius={(radius) => {
             void setRadius(radius);

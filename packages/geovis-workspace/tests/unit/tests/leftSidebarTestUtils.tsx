@@ -71,6 +71,15 @@ export const createGeoVisMock = () => {
     useGeoVis: () => {
       return ReactModule.useContext(MockGeoVisContext);
     },
+    // A single map: these suites never split it.
+    useGeoVisMapMode: () => {
+      return {
+        mode: 'single',
+        activeSide: 'a',
+        setMode: () => {},
+        setActiveSide: () => {},
+      };
+    },
     useGeoVisClick: () => {
       return null;
     },

@@ -120,6 +120,36 @@ export const getInitialSelection = ({
 };
 
 /**
+ * Replaces the whole selection at once — as switching the side of a split map
+ * does — counting each replacement, so the controls that hold a value locally
+ * know to read it again (see `useSelectionReplaced`).
+ */
+const useReplaceSelection = ({
+  isControlled,
+  setInternalSelection,
+  onSelectionChange,
+}: {
+  isControlled: boolean;
+  setInternalSelection: (next: GeovisWorkspaceSelection) => void;
+  onSelectionChange?: (selection: GeovisWorkspaceSelection) => unknown;
+}) => {
+  const [selectionEpoch, setSelectionEpoch] = React.useState(0);
+  const replaceSelection = React.useCallback(
+    (next: GeovisWorkspaceSelection) => {
+      if (!isControlled) {
+        setInternalSelection(next);
+      }
+      setSelectionEpoch((epoch) => {
+        return epoch + 1;
+      });
+      onSelectionChange?.(next);
+    },
+    [isControlled, setInternalSelection, onSelectionChange]
+  );
+  return { replaceSelection, selectionEpoch };
+};
+
+/**
  * Provides shared state for GeovisWorkspace and all internal components.
  * Manages the per-group selection (controlled or uncontrolled) and the sidebar
  * open state, exposing them via useGeovisWorkspace.
@@ -225,6 +255,12 @@ export const GeovisWorkspaceProvider = ({
     [currentSelection, isControlled, onSelectionChange]
   );
 
+  const { replaceSelection, selectionEpoch } = useReplaceSelection({
+    isControlled,
+    setInternalSelection,
+    onSelectionChange,
+  });
+
   const setLeftSidebarOpen = React.useCallback(
     ({ open }: { open: boolean }) => {
       if (!isLeftControlled) {
@@ -260,6 +296,8 @@ export const GeovisWorkspaceProvider = ({
       config,
       selection: currentSelection,
       setSelection,
+      replaceSelection,
+      selectionEpoch,
       pendingSelection,
       isLeftSidebarOpen,
       setLeftSidebarOpen,
@@ -275,6 +313,8 @@ export const GeovisWorkspaceProvider = ({
     config,
     currentSelection,
     setSelection,
+    replaceSelection,
+    selectionEpoch,
     pendingSelection,
     isLeftSidebarOpen,
     setLeftSidebarOpen,

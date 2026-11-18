@@ -215,6 +215,30 @@ control — a `bottom-right`/`top-right` control the sidebar never overlaps is
 left untouched. No configuration is needed; it follows the sidebar's open state
 automatically.
 
+## Split map
+
+When the map spec sets [`mapModeControl`](https://github.com/ttoss-labs/ttoss/tree/main/packages/geovis#map-mode-split-map),
+the reader can split the map in two, and the sidebar edits one side at a time.
+Nothing changes for the app: `variables`, `onVariableChange` and
+`visualizationSpec` are the side being edited, built as for a single map, and
+the workspace keeps the other side as it was when last edited.
+
+- While split, an **Editando o lado** block heads the left sidebar: **Mapa A**
+  and **Mapa B** pick the side the sidebar edits (a click on a half of the map
+  does too), **Copiar p/ B** copies the edited side onto the other, and ⇄
+  swaps the two.
+- Switching sides hands the other side's selection back through
+  `onVariableChange`; until the app builds its spec, that side keeps the spec
+  it had.
+- Each side starts as a copy of the map, and shows the layer its pill on the map
+  chose from the spec's `control`.
+- The settings that move the camera are shared by both sides, whose cameras
+  move together: every `bearing` control, and any menu whose change only tilts
+  or turns the spec's `view`, or lifts its layers into 3D (`extrusion`) — the
+  pitch and the 2D/3D choice, say. They are learnt from the app's own specs,
+  so no setting has to be marked. A change on one side reaches the other, and
+  switching or swapping sides keeps them.
+
 ## Warnings and repair
 
 The `warnings` slot's default panel renders every issue on the current

@@ -176,12 +176,12 @@ describe('map mode', () => {
     });
     expect(screen.queryByRole('button', { name: 'Camadas' })).toBeNull();
     expect(screen.getByText('2')).toBeTruthy();
-    // The left side carries on with the item that was on; the right is empty.
+    // Both sides carry on with the item that was on.
     expect(
       screen.getByRole('button', { name: 'Map A layer: UBS' })
     ).toBeTruthy();
     expect(
-      screen.getByRole('button', { name: 'Map B layer: No layer' })
+      screen.getByRole('button', { name: 'Map B layer: UBS' })
     ).toBeTruthy();
   });
 
@@ -189,9 +189,7 @@ describe('map mode', () => {
     await renderMap();
     await split();
 
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Map B layer: No layer' })
-    );
+    fireEvent.click(screen.getByRole('button', { name: 'Map B layer: UBS' }));
     fireEvent.click(screen.getByRole('option', { name: 'Parques' }));
     expect(
       screen.getByRole('button', { name: 'Map B layer: Parques' })
@@ -292,7 +290,7 @@ describe('map mode', () => {
       await renderMap();
       await split();
       const pill = () => {
-        return screen.getByRole('button', { name: 'Map B layer: No layer' });
+        return screen.getByRole('button', { name: 'Map B layer: UBS' });
       };
       expect(pill().parentElement?.style.top).toBe('12px');
 
@@ -315,7 +313,7 @@ describe('map mode', () => {
       await renderMap();
       await split();
       const pill = screen.getByRole('button', {
-        name: 'Map B layer: No layer',
+        name: 'Map B layer: UBS',
       });
       expect(pill.parentElement?.style.top).toBe('56px');
     } finally {
