@@ -24,8 +24,8 @@ const loadLocaleData = async (locale: string) => {
 /**
  * **Searching for services by distance**, through `spec.proximitySearch`:
  * click a hospital's pin. The other hospitals step aside and the services
- * within 1 km of it drop in around it; the bar under the circle counts them by
- * kind and widens the search to 2 or 3 km, asking only for the ring the first
+ * within 1 km of it drop in around it; the bar under the circle counts them
+ * and widens the search to 2 or 3 km, asking only for the ring the first
  * answer did not cover. Click a service for its card; click the hospital
  * again, or the bar's ×, to clear the search and bring the hospitals back.
  *

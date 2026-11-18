@@ -1292,13 +1292,50 @@ layer visible that the remembered choice says should be hidden, reconciliation
 hides it on the next frame — a brief flash is possible but the source is never
 remounted.
 
+## Map Mode (split map)
+
+`mapModeControl: true` offers the reader a "Modo do mapa" button: "Mapa único" keeps one map, and "Dividir em dois" splits it into two maps side by side, their cameras kept together. A pill over each side picks the `control` item it shows — so the spec needs a `control` with at least two items whose layers exist — and the layer control steps aside while split. Both sides open on the item that was on.
+
+The divider sits in the middle of the map the app's panels leave free (`viewInsets`), not of the whole canvas. Layers no `control` item names (boundaries, a basemap overlay) are drawn on both sides.
+
+### Sides the app builds
+
+By default both sides are cut from the provider's spec. To compare two whole settings — a different indicator, year or opacity on each side — the app builds a spec per side and passes them as `split`:
+
+```tsx
+<GeoVisProvider
+  spec={specA}
+  split={{ sides: { a: { spec: specA }, b: { spec: specB } } }}
+>
+  <GeoVisCanvas />
+</GeoVisProvider>
+```
+
+Each side then draws its own spec, with the `control` item its pill chose, and its own legends. One side is the one being edited: it is ringed in its colour (A green, B blue), and a click on the other half makes that one the edited side. `useGeoVisMapMode()` reads it as `activeSide`, so the app's controls can edit that side's settings.
+
+The cameras stay together: a change of `view.pitch` or `view.bearing` in a side's spec tilts or turns the map, while the fields the app leaves alone stay where the reader moved them. `@ttoss/geovis-workspace` builds the sides from its sidebar this way.
+
+### `useGeoVisMapMode`
+
+| Field           | Type                                       | Description                                                                  |
+| --------------- | ------------------------------------------ | ---------------------------------------------------------------------------- |
+| `enabled`       | `boolean`                                  | Whether the spec offers the button and has items to split between.           |
+| `mode`          | `'single' \| 'split'`                      | The current mode.                                                            |
+| `setMode`       | `(mode, sides?) => void`                   | Switches the mode; `sides` opens the split on given items, as a shared link. |
+| `options`       | `LayerControlItem[]`                       | The `control` items the pills choose between.                                |
+| `sides`         | `{ a: string \| null; b: string \| null }` | The item each side shows.                                                    |
+| `setSide`       | `(side, itemId) => void`                   | Sets a side's item.                                                          |
+| `split`         | `GeoVisSplitInput \| null`                 | The sides the app builds, or `null`.                                         |
+| `activeSide`    | `'a' \| 'b'`                               | The side being edited: `'a'` on entering the split, then the half clicked.   |
+| `setActiveSide` | `(side) => void`                           | Makes a side the one edited.                                                 |
+
 ## Proximity Search
 
 Declaring `proximitySearch` makes `<GeoVisProvider>` search the places within a radius of a pin the reader clicks. Your `query` finds the places, and the map does the rest:
 
 - a circle sweeps around the pin while the query runs;
 - the answers drop in as pins of their category;
-- a bar under the circle counts them by kind, switches between the radii and clears the search.
+- a bar under the circle says how many places it found, switches between the radii and clears the search.
 
 While a search is shown, every other pin is hidden.
 
@@ -1984,7 +2021,7 @@ mapData: [
 
 The legend explains the colour only; name what the height reads in its `subtitle` or beside the map.
 
-Height changes are animated: adding `extrusion` to a mounted layer makes the prisms rise from flat, removing it lays them down before the layer returns to a flat `fill`, and a new `maxHeight` or new data eases each prism to its new height — interrupted mid-way, the motion picks up from where it was. MapLibre does not transition data-driven paint, so the adapter blends the old and new height expressions frame by frame over `transitionMs`; a viewer's reduced-motion setting snaps instead. Pair it with `view.cameraAngleTransitionMs` so the camera tilts as the prisms rise. The swap between layer types keeps the layer's data and paint order. Paint keys follow the layer: `fillColor` and `fillOpacity` drive `fill-extrusion-color` and `fill-extrusion-opacity` (opacity is layer-wide, not per feature), and `lineColor` has no counterpart — a prism has no outline. `hoverPaint` and `selectedPaint` outlines still draw at ground level.
+Height changes are animated: adding `extrusion` to a mounted layer makes the prisms rise from flat, removing it lays them down before the layer returns to a flat `fill`, and a new `maxHeight` or new data eases each prism to its new height — interrupted mid-way, the motion picks up from where it was. MapLibre does not transition data-driven paint, so the adapter blends the old and new height expressions frame by frame over `transitionMs`; a viewer's reduced-motion setting snaps instead. Pair it with `view.cameraAngleTransitionMs` so the camera tilts as the prisms rise. The swap between layer types keeps the layer's data and paint order. Paint keys follow the layer: `fillColor` and `fillOpacity` drive `fill-extrusion-color` and `fill-extrusion-opacity` (opacity is layer-wide, not per feature), and `lineColor` has no counterpart — a prism has no outline. MapLibre ignores the alpha of a `fill-extrusion-color` and keeps colours premultiplied by it, so a translucent colour would reach the prisms darker, not fainter: an extruded layer takes its colours opaque, and their alpha — `rgba()`, `hsla()` or `#rrggbbaa` legend colours, say, to fade the classes — as its `fill-extrusion-opacity`, times `fillOpacity`. A colour with no alpha (a no-data grey) does not cancel it, a fully transparent one does not lower it, and colours that disagree take the most opaque alpha. `hoverPaint` and `selectedPaint` outlines still draw at ground level.
 
 ## Bivariate Maps
 
@@ -2030,10 +2067,11 @@ The color expression reads `['feature-state', 'density']` while the size express
 
 Provides a GeoVis runtime context for child components. Resolves the appropriate engine adapter based on `spec.engine`, initializes the runtime, and keeps it in sync with spec updates.
 
-| Prop       | Type                | Description                                                                 |
-| ---------- | ------------------- | --------------------------------------------------------------------------- |
-| `spec`     | `VisualizationSpec` | The visualization spec (memoize with `useMemo` to avoid redundant updates). |
-| `children` | `React.ReactNode`   | Child components, typically `GeoVisCanvas`.                                 |
+| Prop       | Type                | Description                                                                                                             |
+| ---------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `spec`     | `VisualizationSpec` | The visualization spec (memoize with `useMemo` to avoid redundant updates).                                             |
+| `children` | `React.ReactNode`   | Child components, typically `GeoVisCanvas`.                                                                             |
+| `split`    | `GeoVisSplitInput`  | Optional: the spec of each side of the split map, built by the app — see [Sides the app builds](#sides-the-app-builds). |
 
 > **Error handling:** if the engine adapter throws during initialization, `GeoVisProvider` re-throws the error. Wrap it with an `<ErrorBoundary>` to catch adapter errors and display a fallback UI instead of a blank screen.
 >

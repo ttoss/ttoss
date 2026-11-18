@@ -10,6 +10,10 @@ export type {
   GeoVisSplitSides,
 } from './react/mapMode';
 export { useGeoVisMapMode } from './react/mapMode';
+export type {
+  GeoVisSplitInput,
+  GeoVisSplitSideInput,
+} from './react/mapMode.split';
 export type { ProximityHit } from './react/proximity';
 export {
   type GeoVisProximitySearchValue,

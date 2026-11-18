@@ -186,7 +186,7 @@ describe('useMapModeState', () => {
     expect(tooFew.result.current.enabled).toBe(false);
   });
 
-  test('opens the split on the item switched on, the right side empty', () => {
+  test('opens the split with both sides on the item switched on', () => {
     const { result } = renderHook(() => {
       return useMapModeState({ runtime: null, spec });
     });
@@ -196,7 +196,8 @@ describe('useMapModeState', () => {
     });
 
     expect(result.current.mode).toBe('split');
-    expect(result.current.sides).toEqual({ a: 'ubs', b: null });
+    expect(result.current.sides).toEqual({ a: 'ubs', b: 'ubs' });
+    expect(result.current.activeSide).toBe('a');
   });
 
   test('opens on the sides it is handed, as a shared link does', () => {

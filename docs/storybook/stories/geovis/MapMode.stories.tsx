@@ -5,6 +5,8 @@ import type {
 } from '@ttoss/geovis';
 import { GeoVisCanvas, GeoVisProvider } from '@ttoss/geovis';
 
+import { SideSpecsMap } from './MapMode.sideSpecs';
+
 /**
  * Demonstrates the **map mode**: `spec.mapModeControl: true` makes
  * `<GeoVisProvider>` auto-mount a "Modo do mapa" button in the top-right
@@ -19,8 +21,8 @@ import { GeoVisCanvas, GeoVisProvider } from '@ttoss/geovis';
  *    the button turns green with a "2" badge, and the **Camadas** button
  *    (bottom-left) disappears: each side is now chosen from the **A** and
  *    **B** pickers at the top.
- *    Side **A** carries on with the layer that was on ("Cobertura"), side
- *    **B** starts with none.
+ *    Both sides carry on with the layer that was on ("Cobertura"), so the
+ *    split starts from two equal maps.
  * 3. Open picker **B** and pick a layer: only the right side changes. Pick
  *    "Nenhuma camada" to empty it again. The district outlines are not a
  *    `control` item, so both sides keep them.
@@ -30,6 +32,9 @@ import { GeoVisCanvas, GeoVisProvider } from '@ttoss/geovis';
  *    with the layer control back in its corner.
  * 6. Narrow the canvas below ~300px: the two pickers stack over the divider.
  * 7. `Escape` or a click outside closes the menu and the pickers.
+ *
+ * The **Side specs** story shows the other way to split: the app builds each
+ * side's spec itself and hands both to `<GeoVisProvider split>`.
  */
 export default {
   title: 'GeoVis/MapMode',
@@ -240,4 +245,28 @@ export const MapMode: StoryFn = () => {
       </div>
     </div>
   );
+};
+
+/**
+ * The app builds each side: `<GeoVisProvider split>` takes a spec per side,
+ * and its panel edits the side the reader picks (`useGeoVisMapMode()`'s
+ * `activeSide`). The pills still choose the layer each side shows, from the
+ * `control` items, now on that side's own spec.
+ *
+ * ## What to check
+ *
+ * 1. Split the map with **Modo do mapa**. The divider sits in the middle of
+ *    the map the panel leaves free, not of the whole canvas.
+ * 2. Side **A** is ringed in green and the panel reads "Editando o mapa A".
+ *    Click the right half: it is ringed in blue, and the panel now edits B.
+ * 3. Open pill **B** and pick **Hospitais**: only the right side shows them.
+ * 4. Move **Variação**, **Ano** and **Opacidade**: only the side being edited
+ *    changes, and its layer stays.
+ * 5. Move **Inclinação** and **Rotação**: both sides tilt and turn, since
+ *    their cameras are kept together — the camera follows the app's spec,
+ *    not only the reader's drag.
+ * 6. Back to **Mapa único**: the map shows A's settings.
+ */
+export const SideSpecs: StoryFn = () => {
+  return <SideSpecsMap />;
 };

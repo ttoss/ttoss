@@ -79,6 +79,10 @@
     "defaultMessage": "Usar sua localização?",
     "description": "Proximity search: title of the dialog shown before the browser asks for the reader's location."
   },
+  "SzKkSF": {
+    "defaultMessage": "Editar o mapa {side}",
+    "description": "Split map mode: the title and accessible name of the half that is not being edited; clicking it makes it the one edited. {side} is the side letter, A (left) or B (right)."
+  },
   "T/eK/a": {
     "defaultMessage": "resultados",
     "description": "Proximity search: what found places are called when the app names them nothing else, plural."

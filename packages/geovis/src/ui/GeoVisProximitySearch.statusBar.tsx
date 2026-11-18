@@ -3,10 +3,6 @@ import { Icon } from '@ttoss/react-icons';
 import type * as React from 'react';
 
 import type { ProximityHit, ProximityState } from '../react/proximity';
-import type {
-  ProximityCategory,
-  ProximitySearch,
-} from '../spec/types.proximity';
 import { messages } from './GeoVisProximitySearch.messages';
 import { Spinner } from './GeoVisProximitySearch.parts';
 import { KEYFRAMES, MONO } from './GeoVisProximitySearch.styles';
@@ -17,25 +13,6 @@ import {
   TEXT_MUTED,
   TEXT_STRONG,
 } from './palette';
-
-/** The kinds found, each with how many, in the order the spec declares them. */
-const countByCategory = (
-  hits: ProximityHit[],
-  categories: ProximityCategory[]
-) => {
-  return categories
-    .map((category) => {
-      return {
-        category,
-        count: hits.filter((hit) => {
-          return hit.categoryId === category.id;
-        }).length,
-      };
-    })
-    .filter(({ count }) => {
-      return count > 0;
-    });
-};
 
 /** The radius choice: one segment per radius on offer. */
 const RadiusChoice = ({
@@ -99,23 +76,19 @@ const RadiusChoice = ({
   );
 };
 
-/** What the bar says once the answer is in: the count, by kind when it fits. */
+/** What the bar says once the answer is in: how many were found, and where. */
 const FoundSummary = ({
   visible,
-  categories,
   radius,
   nouns,
-  compact,
   tight,
   fromUser,
   fromPoint,
   format,
 }: {
   visible: ProximityHit[];
-  categories: ProximityCategory[];
   radius: number;
   nouns: { one: string; other: string };
-  compact: boolean;
   tight: boolean;
   fromUser: boolean;
   fromPoint: boolean;
@@ -137,49 +110,7 @@ const FoundSummary = ({
                 : messages.found,
           values
         );
-  const counts = countByCategory(visible, categories);
-  return (
-    <>
-      <strong style={{ fontWeight: 600 }}>{text}</strong>
-      {count > 0 && !compact && counts.length > 0 && (
-        <span
-          style={{
-            display: 'flex',
-            gap: 8,
-            paddingLeft: 8,
-            borderLeft: '1px solid rgba(0,0,0,0.1)',
-          }}
-        >
-          {counts.map(({ category, count: n }) => {
-            return (
-              <span
-                key={category.id}
-                title={category.label}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 3,
-                  fontFamily: MONO,
-                  fontSize: 10,
-                  color: TEXT_MUTED,
-                }}
-              >
-                <span
-                  style={{
-                    width: 7,
-                    height: 7,
-                    borderRadius: 99,
-                    background: category.color,
-                  }}
-                />
-                {n}
-              </span>
-            );
-          })}
-        </span>
-      )}
-    </>
-  );
+  return <strong style={{ fontWeight: 600 }}>{text}</strong>;
 };
 
 /**
@@ -189,10 +120,8 @@ const FoundSummary = ({
 export const StatusBar = ({
   state,
   visible,
-  config,
   radii,
   nouns,
-  compact,
   tight,
   onRadius,
   onClear,
@@ -200,10 +129,8 @@ export const StatusBar = ({
 }: {
   state: ProximityState;
   visible: ProximityHit[];
-  config: ProximitySearch;
   radii: number[];
   nouns: { one: string; other: string };
-  compact: boolean;
   tight: boolean;
   onRadius: (radius: number) => void;
   onClear: () => void;
@@ -234,10 +161,8 @@ export const StatusBar = ({
       <>
         <FoundSummary
           visible={visible}
-          categories={config.categories ?? []}
           radius={state.radius}
           nouns={nouns}
-          compact={compact}
           tight={tight}
           fromUser={state.fromUser}
           fromPoint={state.fromPoint}
