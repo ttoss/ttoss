@@ -6,6 +6,7 @@ import type {
   GeovisWorkspaceSidebarSection,
 } from '../../context/GeovisWorkspaceContext';
 import { useGeovisWorkspace } from '../../hooks/useGeovisWorkspace';
+import { useSelectionReplaced } from '../../hooks/useSelectionReplaced';
 import { isGateOpen, settingsControls } from './useSections';
 
 /** Every `choice` in the sidebar, in its settings and its filters bodies. */
@@ -120,15 +121,19 @@ export const useChoiceSettings = (
   const { selection, setSelection } = useGeovisWorkspace();
   const choices = findChoices(sections);
 
-  const [picks, setPicks] = React.useState<Record<string, string | undefined>>(
-    () => {
-      return Object.fromEntries(
-        choices.map((control) => {
-          return [control.menuId, initialPick({ control, selection })];
-        })
-      );
-    }
-  );
+  const picksFrom = () => {
+    return Object.fromEntries(
+      choices.map((control) => {
+        return [control.menuId, initialPick({ control, selection })];
+      })
+    );
+  };
+  const [picks, setPicks] =
+    React.useState<Record<string, string | undefined>>(picksFrom);
+
+  // A selection replaced whole — the other side of a split map — is read
+  // again, not overwritten with the picks held for the one before.
+  if (useSelectionReplaced()) setPicks(picksFrom());
 
   // The last value each choice published, to tell the app's writes from ours.
   const published = React.useRef<Record<string, string>>({});

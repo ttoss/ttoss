@@ -33,12 +33,38 @@ export const createGeoVisMock = () => {
     click: MockClick | null;
     dismiss: () => void;
   } | null>(null);
+  // The map mode: single until a test splits it from the canvas's buttons.
+  const MockMapModeContext = ReactModule.createContext({
+    mode: 'single',
+    activeSide: 'a',
+    setMode: (_mode: string) => {},
+    setActiveSide: (_side: string) => {},
+  });
+  // Every `split` the workspace hands the provider, latest last.
+  const splitInputs: unknown[] = [];
 
   return {
+    mockSplitInputs: splitInputs,
+    useGeoVisMapMode: () => {
+      return ReactModule.useContext(MockMapModeContext);
+    },
     GeoVisProvider: ({
       spec,
+      split,
       children,
-    }: React.PropsWithChildren<{ spec: MockSpec }>) => {
+    }: React.PropsWithChildren<{ spec: MockSpec; split?: unknown }>) => {
+      const [mode, setMode] = ReactModule.useState('single');
+      const [activeSide, setActiveSide] = ReactModule.useState('a');
+      const changeMode = ReactModule.useCallback((next: string) => {
+        setMode(next);
+        setActiveSide('a');
+      }, []);
+      ReactModule.useEffect(() => {
+        if (split) splitInputs.push(split);
+      }, [split]);
+      const mapMode = ReactModule.useMemo(() => {
+        return { mode, activeSide, setMode: changeMode, setActiveSide };
+      }, [mode, activeSide, changeMode]);
       const result = spec.mockResult ?? {
         status: 'resolved',
         spec,
@@ -58,13 +84,44 @@ export const createGeoVisMock = () => {
       }, []);
 
       return (
-        <MockGeoVisContext.Provider value={{ spec, result, click, dismiss }}>
-          <div data-testid="geovis-provider">{children}</div>
-        </MockGeoVisContext.Provider>
+        <MockMapModeContext.Provider value={mapMode}>
+          <MockGeoVisContext.Provider value={{ spec, result, click, dismiss }}>
+            <div data-testid="geovis-provider">{children}</div>
+          </MockGeoVisContext.Provider>
+        </MockMapModeContext.Provider>
       );
     },
     GeoVisCanvas: () => {
-      return <div data-testid="geovis-canvas" />;
+      const { setMode, setActiveSide } =
+        ReactModule.useContext(MockMapModeContext);
+      return (
+        <div data-testid="geovis-canvas">
+          <button
+            type="button"
+            onClick={() => {
+              setMode('split');
+            }}
+          >
+            mock split
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setMode('single');
+            }}
+          >
+            mock single
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setActiveSide('b');
+            }}
+          >
+            mock click half b
+          </button>
+        </div>
+      );
     },
     useGeoVis: () => {
       const context = ReactModule.useContext(MockGeoVisContext);

@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import type { GeovisWorkspaceSidebarTimelineFilter } from '../../context/GeovisWorkspaceContext';
 import { useGeovisWorkspace } from '../../hooks/useGeovisWorkspace';
+import { useSelectionReplaced } from '../../hooks/useSelectionReplaced';
 
 /** Default seconds between auto-advance steps while playing. */
 const DEFAULT_PLAY_INTERVAL_SECONDS = 1;
@@ -47,12 +48,15 @@ export const useTimeline = ({
   const timelineMin = timeline?.min ?? 0;
   const timelineStep = timeline?.step ?? 1;
 
-  const [value, setValue] = React.useState<number>(() => {
-    // Seed from the shared selection when the timeline drives it, so a
-    // controlled/seeded value is reflected on first render.
+  // Seeded from the shared selection when the timeline drives it, so a
+  // controlled/seeded value is reflected on first render — and read again
+  // when the selection is replaced whole, as the other side of a split map.
+  const seededValue = () => {
     const seeded = timelineMenuId ? Number(selection[timelineMenuId]) : NaN;
     return seedValue({ timeline, seeded });
-  });
+  };
+  const [value, setValue] = React.useState<number>(seededValue);
+  if (useSelectionReplaced()) setValue(seededValue());
 
   // Publish the value to the shared selection (as a string) so the app can
   // react to it — this is what wires the time-lapse to the map. No-op when the

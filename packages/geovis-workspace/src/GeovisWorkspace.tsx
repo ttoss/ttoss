@@ -1,4 +1,8 @@
-import type { RepairOption, VisualizationSpec } from '@ttoss/geovis';
+import type {
+  GeoVisSplitInput,
+  RepairOption,
+  VisualizationSpec,
+} from '@ttoss/geovis';
 import { GeoVisProvider, useCompactViewport } from '@ttoss/geovis';
 import { Box } from '@ttoss/ui';
 import * as React from 'react';
@@ -20,6 +24,7 @@ import {
   type GeovisWorkspaceProviderProps,
 } from './GeovisWorkspaceProvider';
 import { useHasResolvedOnce } from './hooks/useHasResolvedOnce';
+import { WorkspaceSplit } from './split/WorkspaceSplit';
 import { applySidebarViewInsets } from './viewInsets';
 
 /**
@@ -105,32 +110,50 @@ export const GeovisWorkspace = ({
   const isTimelineHudVisible =
     isCompact && playbackStarted && !hudDismissed && !isLeftSidebarOpen;
 
+  // Every spec the map draws — the single map, and each side of a split —
+  // takes the same offsets for the sidebars and the HUD.
+  const withOffsets = React.useCallback(
+    (source: VisualizationSpec) => {
+      const withControlOffset = applyLeftSidebarControlOffset({
+        spec: source,
+        leftSidebarOpen: isLeftSidebarOpen,
+      });
+      const withHudOffset = applyTimelineHudControlOffset({
+        spec: withControlOffset,
+        hudVisible: isTimelineHudVisible,
+      });
+      const withLegendOffset = applyRightSidebarLegendOffset({
+        spec: withHudOffset,
+        rightSidebarOpen: isRightSidebarOpen,
+      });
+      return applySidebarViewInsets({
+        spec: withLegendOffset,
+        leftSidebarOpen: isLeftSidebarOpen,
+        rightSidebarOpen: isRightSidebarOpen,
+        compact: isCompact,
+      });
+    },
+    [isLeftSidebarOpen, isRightSidebarOpen, isTimelineHudVisible, isCompact]
+  );
+
   const spec = React.useMemo(() => {
-    const withControlOffset = applyLeftSidebarControlOffset({
-      spec: visualizationSpec,
-      leftSidebarOpen: isLeftSidebarOpen,
-    });
-    const withHudOffset = applyTimelineHudControlOffset({
-      spec: withControlOffset,
-      hudVisible: isTimelineHudVisible,
-    });
-    const withLegendOffset = applyRightSidebarLegendOffset({
-      spec: withHudOffset,
-      rightSidebarOpen: isRightSidebarOpen,
-    });
-    return applySidebarViewInsets({
-      spec: withLegendOffset,
-      leftSidebarOpen: isLeftSidebarOpen,
-      rightSidebarOpen: isRightSidebarOpen,
-      compact: isCompact,
-    });
-  }, [
-    visualizationSpec,
-    isLeftSidebarOpen,
-    isRightSidebarOpen,
-    isTimelineHudVisible,
-    isCompact,
-  ]);
+    return withOffsets(visualizationSpec);
+  }, [withOffsets, visualizationSpec]);
+
+  // The two sides of a split map, as `WorkspaceSplit` keeps them: the side
+  // being edited is `visualizationSpec`, the other the one it was last.
+  const [splitInput, setSplitInput] = React.useState<GeoVisSplitInput>();
+  const split = React.useMemo(() => {
+    if (!splitInput) return undefined;
+    const { a, b } = splitInput.sides;
+    return {
+      ...splitInput,
+      sides: {
+        a: { ...a, spec: withOffsets(a.spec) },
+        b: { ...b, spec: withOffsets(b.spec) },
+      },
+    };
+  }, [splitInput, withOffsets]);
 
   return (
     // `GeoVisProvider` auto-mounts any spec legend (or the layer `control`)
@@ -146,7 +169,7 @@ export const GeovisWorkspace = ({
       {...({ [WORKSPACE_ROOT_ATTRIBUTE]: '' } as object)}
       sx={{ position: 'relative' }}
     >
-      <GeoVisProvider spec={spec}>
+      <GeoVisProvider spec={spec} split={split}>
         <GeovisWorkspaceProviderWithRuntime
           config={config}
           selection={variables}
@@ -169,7 +192,12 @@ export const GeovisWorkspace = ({
         >
           {/* The app's own `view`, not the runtime's: see HomeViewContext. */}
           <HomeViewContext.Provider value={visualizationSpec.view}>
-            <Layout />
+            <WorkspaceSplit
+              appSpec={visualizationSpec}
+              onSplitInput={setSplitInput}
+            >
+              <Layout />
+            </WorkspaceSplit>
           </HomeViewContext.Provider>
         </GeovisWorkspaceProviderWithRuntime>
       </GeoVisProvider>

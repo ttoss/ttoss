@@ -31,6 +31,10 @@
     "defaultMessage": "Increase",
     "description": "Accessible label for the button that steps a setting's slider up."
   },
+  "1i1sR5": {
+    "defaultMessage": "Swap sides",
+    "description": "Split map: accessible name of the button swapping the settings of sides A and B."
+  },
   "26nzWk": {
     "defaultMessage": "Map could not be shown",
     "description": "Title shown in the map area on first mount when the spec fails before anything has ever resolved."
@@ -51,9 +55,17 @@
     "defaultMessage": "Details",
     "description": "Default title shown in the right sidebar when none is set."
   },
+  "38rJNf": {
+    "defaultMessage": "Copy side {from}'s settings to side {to}",
+    "description": "Split map: the title and accessible name of the copy button. {from} and {to} are side letters, A or B."
+  },
   "3Jc+Ry": {
     "defaultMessage": "Scroll groups backward",
     "description": "Accessible label for the arrow that scrolls the grouped-menu carousel to earlier groups."
+  },
+  "3oxukp": {
+    "defaultMessage": "Editing side",
+    "description": "Split map: the heading of the sidebar block that picks which side of the map the sidebar edits."
   },
   "3wGIVX": {
     "defaultMessage": "Aplicar",
@@ -107,6 +119,10 @@
     "defaultMessage": "Selecionado",
     "description": "Locator filter: heading above the currently selected place."
   },
+  "Bzu5pS": {
+    "defaultMessage": "Edit map {side}, {position, select, left {left} other {right}} side of the map",
+    "description": "Split map: the title of a side button. {side} is the side letter; {position} is left for A and right for B."
+  },
   "CBHuv6": {
     "defaultMessage": "Não foi possível exportar o mapa. Os tiles podem não permitir a captura da imagem.",
     "description": "Error shown in the map export dialog when capturing or encoding the image fails — usually cross-origin map tiles served without CORS."
@@ -118,6 +134,10 @@
   "DNZbIV": {
     "defaultMessage": "Gerando prévia…",
     "description": "Accessible label of the spinner shown in the export preview while the map is being captured."
+  },
+  "EJZz0J": {
+    "defaultMessage": "Swap the settings of A and B",
+    "description": "Split map: the title of the button swapping sides A and B."
   },
   "GT4LWE": {
     "defaultMessage": "Adicionar",
@@ -182,6 +202,10 @@
   "U20GSl": {
     "defaultMessage": "Play",
     "description": "Label for the timeline button that auto-advances the current value in the preview sidebar."
+  },
+  "ULABMr": {
+    "defaultMessage": "Copy to {side}",
+    "description": "Split map: button copying the edited side onto the other one. {side} is the other side letter, A or B."
   },
   "V3z2n/": {
     "defaultMessage": "The size mode configuration is invalid.",
@@ -274,6 +298,14 @@
   "emipod": {
     "defaultMessage": "Exportar mapa como PNG",
     "description": "Accessible label and tooltip of the left sidebar button that opens the map export dialog."
+  },
+  "fRDOf3": {
+    "defaultMessage": "Map {side}",
+    "description": "Split map: a button choosing the side the sidebar edits. {side} is the side letter, A or B."
+  },
+  "gO8Ya1": {
+    "defaultMessage": "Map side",
+    "description": "Split map: accessible name of the pair of buttons choosing the side the sidebar edits."
   },
   "iRi4zS": {
     "defaultMessage": "Restaurar",
@@ -446,6 +478,11 @@
     "module": "@ttoss/geovis",
     "defaultMessage": "Use your location?",
     "description": "Proximity search: title of the dialog shown before the browser asks for the reader's location."
+  },
+  "SzKkSF": {
+    "module": "@ttoss/geovis",
+    "defaultMessage": "Edit map {side}",
+    "description": "Split map mode: the title and accessible name of the half that is not being edited; clicking it makes it the one edited. {side} is the side letter, A (left) or B (right)."
   },
   "T/eK/a": {
     "module": "@ttoss/geovis",
