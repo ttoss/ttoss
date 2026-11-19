@@ -15,6 +15,7 @@ import { Router } from '@ttoss/http-server';
 import { authMiddleware } from '@ttoss/http-server-auth';
 import type Koa from 'koa';
 
+import { ApiError, errorBodyMessage, readText } from './apiError';
 import { getIdentity, requestContextStore } from './context';
 import { createMcpRequestServer } from './serveMcpRequest';
 
@@ -232,55 +233,6 @@ const buildVerifyToken = (
   };
 };
 
-const isRecord = (value: unknown): value is Record<string, unknown> => {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-};
-
-const readText = (value: unknown): string | undefined => {
-  return typeof value === 'string' && value !== '' ? value : undefined;
-};
-
-/**
- * The message an error body carries, across the two shapes REST APIs answer
- * with: `{ error: 'text' }` and `{ error: { code?, message? } }`.
- *
- * The structured one is why this is read rather than taken: an object handed
- * to `new Error()` renders as `[object Object]`, and inside a tool handler
- * that string is the whole answer the calling model acts on.
- *
- * Exported so a tool handler with its own HTTP client renders error bodies
- * exactly as `apiCall` does. Returns `undefined` when the body carries no
- * message.
- *
- * @example
- * ```typescript
- * if (!response.ok) {
- *   const body = await response.json().catch(() => undefined);
- *   throw new Error(errorBodyMessage(body) ?? `HTTP ${response.status}`);
- * }
- * ```
- */
-export const errorBodyMessage = (body: unknown): string | undefined => {
-  if (!isRecord(body)) {
-    return undefined;
-  }
-
-  const { error } = body;
-
-  if (!isRecord(error)) {
-    return readText(error);
-  }
-
-  const code = readText(error.code);
-  const message = readText(error.message);
-
-  if (message === undefined) {
-    return code;
-  }
-
-  return code === undefined ? message : `${code}: ${message}`;
-};
-
 /**
  * Options for a single `apiCall` request.
  */
@@ -315,6 +267,9 @@ export interface ApiCallOptions {
  * @param url - Full URL **or** a path starting with `/` (appended to `apiBaseUrl`)
  * @param options - Optional body and per-call header overrides
  * @returns Parsed JSON response body
+ * @throws {ApiError} On a non-2xx answer, carrying its `status` and `body`.
+ *   A tool registered with `registerTools` answers it as an `isError` result
+ *   with the envelope as `structuredContent` (see `apiErrorResult`).
  *
  * @example Bearer token forwarding (configured once in `createMcpRouter`)
  * ```typescript
@@ -397,11 +352,22 @@ export const apiCall = async (
   });
 
   if (!response.ok) {
-    const errorBody = await response.json().catch(() => {
-      return { error: response.statusText };
-    });
+    // A body that is not JSON keeps no `body`, and its message is the
+    // status text.
+    const parsed = await response.json().then(
+      (body: unknown) => {
+        return { body, message: errorBodyMessage(body) };
+      },
+      () => {
+        return { body: undefined, message: readText(response.statusText) };
+      }
+    );
 
-    throw new Error(errorBodyMessage(errorBody) ?? `HTTP ${response.status}`);
+    throw new ApiError({
+      message: parsed.message ?? `HTTP ${response.status}`,
+      status: response.status,
+      body: parsed.body,
+    });
   }
 
   // 204/205 responses have no body.
@@ -898,6 +864,13 @@ export const createMcpRouter = (
   return Object.assign(router, { notify: requestServer.notify, close });
 };
 
+export {
+  ApiError,
+  type ApiErrorParams,
+  apiErrorResult,
+  errorBodyMessage,
+  isApiError,
+} from './apiError';
 export { type DeferToolsOptions } from './deferTools';
 export {
   checkMcpSurface,

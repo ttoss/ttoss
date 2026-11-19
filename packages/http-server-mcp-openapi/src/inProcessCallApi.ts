@@ -3,6 +3,7 @@ import {
   dispatchInProcess,
   type InProcessResponse,
 } from '@ttoss/http-server';
+import { ApiError } from '@ttoss/http-server-mcp';
 
 import type { ResolvedRequest } from './openApiToTools';
 
@@ -19,8 +20,11 @@ export interface CreateInProcessCallApiArgs {
    */
   headers?: (request: ResolvedRequest) => Record<string, string | undefined>;
   /**
-   * Builds the error a non-2xx response throws. The default reads the message
-   * out of the common error envelopes (see {@link errorMessageOf}).
+   * Builds the error a non-2xx response throws. The default is an `ApiError`
+   * carrying the status and body, with the message read out of the common
+   * error envelopes (see {@link errorMessageOf}); `registerTools` answers it
+   * with the envelope as `structuredContent`. Return an `ApiError` here to
+   * keep that.
    */
   toError?: (response: InProcessResponse, request: ResolvedRequest) => Error;
 }
@@ -67,7 +71,11 @@ export const errorMessageOf = (body: unknown): string | null => {
 };
 
 const defaultToError = (response: InProcessResponse): Error => {
-  return new Error(errorMessageOf(response.body) ?? `HTTP ${response.status}`);
+  return new ApiError({
+    message: errorMessageOf(response.body) ?? `HTTP ${response.status}`,
+    status: response.status,
+    body: response.body,
+  });
 };
 
 /**

@@ -1,5 +1,6 @@
 import { App, bodyParser, Router } from '@ttoss/http-server';
 import {
+  ApiError,
   createMcpRouter,
   McpServer,
   registerTools,
@@ -143,6 +144,22 @@ describe('createInProcessCallApi', () => {
     );
   });
 
+  test('throws an ApiError carrying the status and the body', async () => {
+    const callApi = createInProcessCallApi({ app: buildRestApp() });
+
+    const error = await callApi(resolved({ headers: {} })).catch(
+      (error_: unknown) => {
+        return error_;
+      }
+    );
+
+    expect(error).toBeInstanceOf(ApiError);
+    expect(error).toMatchObject({
+      status: 401,
+      body: { error: { code: 'unauthorized', message: 'No credential' } },
+    });
+  });
+
   test('falls back to the status when the body carries no message', async () => {
     const app = new App();
 
@@ -212,6 +229,49 @@ describe('createInProcessCallApi', () => {
     expect(JSON.parse(result.content[0].text)).toEqual({
       id: 'it_9',
       viaTool: '',
+    });
+  });
+
+  test('a failed tool call carries the REST error envelope as structuredContent', async () => {
+    const app = buildRestApp();
+    const server = new McpServer({ name: 'test', version: '1.0.0' });
+
+    registerTools({
+      server,
+      tools: openApiToTools({
+        spec,
+        callApi: createInProcessCallApi({ app }),
+      }),
+    });
+
+    app.use(createMcpRouter(server).routes());
+
+    const res = await request(app.callback())
+      .post('/mcp')
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json, text/event-stream')
+      .send({
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'tools/call',
+        params: { name: 'get-item', arguments: { itemId: 'it_9' } },
+      });
+
+    const text: string = res.text;
+    const line = text.split('\n').find((l) => {
+      return l.startsWith('data:');
+    });
+    const result = JSON.parse(
+      line ? line.replace(/^data:\s*/, '') : text
+    ).result;
+
+    expect(result).toEqual({
+      content: [{ type: 'text', text: 'unauthorized: No credential' }],
+      isError: true,
+      structuredContent: {
+        status: 401,
+        error: { code: 'unauthorized', message: 'No credential' },
+      },
     });
   });
 });

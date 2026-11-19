@@ -7,6 +7,8 @@ import type {
 } from '@modelcontextprotocol/server';
 import { fromJsonSchema } from '@modelcontextprotocol/server';
 
+import { apiErrorResult, isApiError } from './apiError';
+
 /**
  * A plain JSON Schema object (draft-07 compatible) describing the shape of a
  * tool's input or output. Forwarded verbatim over `tools/list`, so features
@@ -253,7 +255,13 @@ export const registerDirectTool = ({
       _meta: tool._meta,
     },
     async (args: unknown) => {
-      return tool.handler(args as Record<string, unknown>);
+      try {
+        return await tool.handler(args as Record<string, unknown>);
+      } catch (error) {
+        // A REST error keeps its envelope; anything else is the SDK's to render.
+        if (isApiError(error)) return apiErrorResult(error);
+        throw error;
+      }
     }
   );
 };
