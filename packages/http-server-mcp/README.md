@@ -132,26 +132,63 @@ const data = await apiCall('GET', 'https://partner.api.com/data', {
 
 ### Errors
 
-A non-2xx response throws, with the message read off the error body — `{ error: 'text' }` and `{ error: { code, message } }` both work, the latter as `code: message`. A body naming neither falls back to `HTTP <status>`.
+A non-2xx response throws an `ApiError` carrying the HTTP `status` and the parsed `body` (`undefined` when it was not JSON). Its message is read off the error body — `{ error: 'text' }` and `{ error: { code, message } }` both work, the latter as `code: message`. A body naming neither falls back to `HTTP <status>`.
 
 ```typescript
 // { "error": { "code": "plan_limit_reached", "message": "Upgrade to add more." } }
-// → Error: plan_limit_reached: Upgrade to add more.
+// → ApiError: plan_limit_reached: Upgrade to add more.
 ```
 
-Inside a tool handler the thrown message is what the MCP SDK returns to the client, so it is the whole answer the calling model acts on.
+A tool registered with `registerTools` (directly, deferred or gated) that lets an `ApiError` escape answers `isError: true` with the message as text and the envelope as `structuredContent`, for every status:
+
+```json
+{
+  "isError": true,
+  "content": [
+    { "type": "text", "text": "plan_limit_reached: Upgrade to add more." }
+  ],
+  "structuredContent": {
+    "status": 403,
+    "error": { "code": "plan_limit_reached", "message": "Upgrade to add more." }
+  }
+}
+```
+
+`structuredContent.error` is the body's `error` object unchanged — `meta`, `hint`, `docs_url` and any other key pass through. A body with no `error` object carries `structuredContent: { status }` alone. Any other thrown error answers as text only, as the MCP SDK renders it.
+
+In a handler registered with `server.registerTool` directly, build the same result yourself:
+
+```typescript
+import { apiCall, apiErrorResult, isApiError } from '@ttoss/http-server-mcp';
+
+try {
+  const data = await apiCall('POST', '/tasks', { body: args });
+  return { content: [{ type: 'text', text: JSON.stringify(data) }] };
+} catch (error) {
+  if (isApiError(error)) return apiErrorResult(error);
+  throw error;
+}
+```
 
 ### Using your own HTTP client
 
-A handler that does not use `apiCall` can still reuse its two request-scoped pieces: `getApiHeaders()` returns the headers `getApiHeaders` produced for the current MCP request, and `errorBodyMessage(body)` renders an error body exactly as `apiCall` does.
+A handler that does not use `apiCall` can still reuse its request-scoped pieces: `getApiHeaders()` returns the headers `getApiHeaders` produced for the current MCP request, `errorBodyMessage(body)` renders an error body exactly as `apiCall` does, and throwing an `ApiError` keeps the envelope in the tool result.
 
 ```typescript
-import { errorBodyMessage, getApiHeaders } from '@ttoss/http-server-mcp';
+import {
+  ApiError,
+  errorBodyMessage,
+  getApiHeaders,
+} from '@ttoss/http-server-mcp';
 
 const response = await fetch(url, { headers: getApiHeaders() });
 if (!response.ok) {
   const body = await response.json().catch(() => undefined);
-  throw new Error(errorBodyMessage(body) ?? `HTTP ${response.status}`);
+  throw new ApiError({
+    message: errorBodyMessage(body) ?? `HTTP ${response.status}`,
+    status: response.status,
+    body,
+  });
 }
 ```
 

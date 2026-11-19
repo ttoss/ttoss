@@ -1,5 +1,6 @@
 import type { CallToolResult, McpServer } from '@modelcontextprotocol/server';
 
+import { apiErrorResult, isApiError } from './apiError';
 import { LEGACY_RESOURCE_URI_KEY } from './registerAppResource';
 import { registerDirectTool, resolveToolSchemas, type Tool } from './tool';
 import {
@@ -332,6 +333,10 @@ const runTool = async ({
       ? { ...result, content: [...result.content, ...schemaHint] }
       : result;
   } catch (error) {
+    if (isApiError(error)) {
+      const result = apiErrorResult(error);
+      return { ...result, content: [...result.content, ...schemaHint] };
+    }
     return {
       content: [{ type: 'text', text: errorMessageOf(error) }, ...schemaHint],
       isError: true,

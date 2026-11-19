@@ -230,7 +230,11 @@ A 2xx answers its body. Anything else throws, so the client sees a tool error
 rather than an error body rendered as a result: the message is read from a
 string body, `{ error: '…' }`, `{ error: { code, message } }` (as
 `code: message`) or `{ message: '…' }` (exported as `errorMessageOf`), falling
-back to `HTTP <status>`. Pass `toError` to build the error yourself.
+back to `HTTP <status>`. The error is an `ApiError` from `@ttoss/http-server-mcp`
+carrying the status and body, so the tool result also carries
+`structuredContent: { status, error }`, the REST envelope unchanged. Pass
+`toError` to build the error yourself; return an `ApiError` to keep the
+envelope.
 
 ## `openApiToToolDefinitions`
 
