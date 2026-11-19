@@ -900,8 +900,10 @@ export {
   defineTool,
   type DefineToolParams,
   type JsonObjectSchema,
+  type ResultWithNotes,
   type Tool,
   type ToolSchema,
+  withNotes,
 } from './tool';
 export {
   createToolGate,
