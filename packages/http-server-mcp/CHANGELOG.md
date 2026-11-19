@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.45.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fhttp-server-mcp%400.44.7...%40ttoss%2Fhttp-server-mcp%400.45.0) (2026-11-19)
+
+### Features
+
+- **http-server-mcp:** a failed tool call carries the REST error envelope as structured content ([#1463](https://github.com/ttoss/ttoss/issues/1463)) ([4856bd8](https://github.com/ttoss/ttoss/commit/4856bd8335a3580c052ea0697abf50092ee588b6))
+
 ## [0.44.7](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fhttp-server-mcp%400.44.6...%40ttoss%2Fhttp-server-mcp%400.44.7) (2026-11-16)
 
 **Note:** Version bump only for package @ttoss/http-server-mcp
