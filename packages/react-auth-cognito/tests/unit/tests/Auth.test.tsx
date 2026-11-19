@@ -64,6 +64,29 @@ test('should call Amplify Auth.signIn', async () => {
   ).toBeInTheDocument();
 });
 
+test('sign-up form validates passwordMinimumLength', async () => {
+  const user = userEvent.setup();
+
+  render(
+    <AuthProvider>
+      <Auth passwordMinimumLength={12} />
+    </AuthProvider>
+  );
+
+  const shortPass = 'abcd1234';
+
+  await user.click(await screen.findByText('Sign up'));
+  await user.type(screen.getByLabelText('Email'), email);
+  await user.type(screen.getByLabelText('Password'), shortPass);
+  await user.type(screen.getByLabelText('Confirm password'), shortPass);
+  await user.click(screen.getByRole('button', { name: /Sign up/i }));
+
+  expect(
+    await screen.findAllByText('Password requires 12 characters')
+  ).not.toHaveLength(0);
+  expect(amplifyAuth.signUp).not.toHaveBeenCalled();
+});
+
 test('should call Amplify Auth.signUp and Auth.confirmSignUp', async () => {
   const user = userEvent.setup();
 

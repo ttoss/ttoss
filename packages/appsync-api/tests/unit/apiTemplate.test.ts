@@ -476,3 +476,23 @@ describe('noneDataSourceResolvers', () => {
     ).toBeDefined();
   });
 });
+
+describe('introspectionConfig', () => {
+  test('is not set when omitted', () => {
+    const template = createApiTemplate(createApiTemplateInput);
+    expect(
+      template.Resources[AppSyncGraphQLApiLogicalId].Properties
+    ).not.toHaveProperty('IntrospectionConfig');
+  });
+
+  test.each(['ENABLED', 'DISABLED'] as const)('sets %s', (value) => {
+    const template = createApiTemplate({
+      ...createApiTemplateInput,
+      introspectionConfig: value,
+    });
+    expect(
+      template.Resources[AppSyncGraphQLApiLogicalId].Properties
+        ?.IntrospectionConfig
+    ).toBe(value);
+  });
+});

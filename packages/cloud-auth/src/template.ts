@@ -78,7 +78,35 @@ type LambdaTriggers = {
   customSMSSender?: string | CloudFormationGetAtt;
 };
 
+/**
+ * Password rules of the user pool. They apply to new and changed passwords
+ * only; existing passwords stay valid. Omitted fields keep the defaults.
+ */
+export type PasswordPolicyConfig = {
+  /** Minimum password length. Defaults to `PASSWORD_MINIMUM_LENGTH` (8). */
+  minimumLength?: number;
+  /** Defaults to `false`. */
+  requireLowercase?: boolean;
+  /** Defaults to `false`. */
+  requireNumbers?: boolean;
+  /** Defaults to `false`. */
+  requireSymbols?: boolean;
+  /** Defaults to `false`. */
+  requireUppercase?: boolean;
+  /** Defaults to 30. */
+  temporaryPasswordValidityDays?: number;
+};
+
 type CreateAuthTemplateParams = {
+  passwordPolicy?: PasswordPolicyConfig;
+  /**
+   * Sets `PreventUserExistenceErrors: ENABLED` on the primary app client:
+   * sign-in, ForgotPassword and confirmation answer the same way for an
+   * unknown user as for a known one, so an email cannot be probed for an
+   * account. Sign-up still answers `UsernameExistsException`. Defaults to
+   * `false` (the Cognito default for clients created by CloudFormation).
+   */
+  preventUserExistenceErrors?: boolean;
   autoVerifiedAttributes?: Array<'email' | 'phone_number'> | null | false;
   identityPool?: IdentityPoolConfig;
   schema?: SchemaAttribute[];
@@ -92,13 +120,29 @@ type CreateAuthTemplateParams = {
   additionalAppClients?: AdditionalAppClientConfig[];
 };
 
+const buildPasswordPolicy = (passwordPolicy: PasswordPolicyConfig = {}) => {
+  return {
+    MinimumLength: passwordPolicy.minimumLength ?? PASSWORD_MINIMUM_LENGTH,
+    RequireLowercase: passwordPolicy.requireLowercase ?? false,
+    RequireNumbers: passwordPolicy.requireNumbers ?? false,
+    RequireSymbols: passwordPolicy.requireSymbols ?? false,
+    RequireUppercase: passwordPolicy.requireUppercase ?? false,
+    TemporaryPasswordValidityDays:
+      passwordPolicy.temporaryPasswordValidityDays ?? 30,
+  };
+};
+
 const buildBaseTemplate = ({
   autoVerifiedAttributes,
   usernameAttributes,
   deletionProtection,
+  passwordPolicy,
 }: Pick<
   CreateAuthTemplateParams,
-  'autoVerifiedAttributes' | 'usernameAttributes' | 'deletionProtection'
+  | 'autoVerifiedAttributes'
+  | 'usernameAttributes'
+  | 'deletionProtection'
+  | 'passwordPolicy'
 >): CloudFormationTemplate => {
   const AutoVerifiedAttributes =
     Array.isArray(autoVerifiedAttributes) && autoVerifiedAttributes.length > 0
@@ -114,12 +158,7 @@ const buildBaseTemplate = ({
           AutoVerifiedAttributes,
           Policies: {
             PasswordPolicy: {
-              MinimumLength: PASSWORD_MINIMUM_LENGTH,
-              RequireLowercase: false,
-              RequireNumbers: false,
-              RequireSymbols: false,
-              RequireUppercase: false,
-              TemporaryPasswordValidityDays: 30,
+              ...buildPasswordPolicy(passwordPolicy),
             },
           },
           UsernameAttributes: usernameAttributes,
@@ -274,6 +313,7 @@ export const createAuthTemplate = (
     autoVerifiedAttributes = ['email'],
     usernameAttributes = ['email'],
     deletionProtection,
+    passwordPolicy,
   } = params;
 
   if (params.identityProviders?.length && !params.domain) {
@@ -286,6 +326,7 @@ export const createAuthTemplate = (
     autoVerifiedAttributes,
     usernameAttributes,
     deletionProtection,
+    passwordPolicy,
   });
 
   applyAll(template, params);

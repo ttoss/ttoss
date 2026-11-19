@@ -10,6 +10,7 @@ export {
   identityProviderLogicalId,
   type IdentityProviderType,
   type OAuthConfig,
+  type PasswordPolicyConfig,
   type ResourceServerConfig,
   type ResourceServerScope,
 } from './template';
