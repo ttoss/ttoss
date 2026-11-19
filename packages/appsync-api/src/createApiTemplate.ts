@@ -218,6 +218,7 @@ export const createApiTemplate = ({
   authenticationType = 'AMAZON_COGNITO_USER_POOLS',
   schemaComposer,
   dataSource,
+  introspectionConfig,
   lambdaFunction,
   noneDataSourceResolvers,
   userPoolConfig,
@@ -229,6 +230,12 @@ export const createApiTemplate = ({
   dataSource: {
     roleArn: CloudFormationValue<string>;
   };
+  /**
+   * `AWS::AppSync::GraphQLApi` `IntrospectionConfig`. `'DISABLED'` rejects
+   * `__schema` and `__type` queries. When omitted, the property is not set and
+   * AppSync keeps its default (`ENABLED`).
+   */
+  introspectionConfig?: 'ENABLED' | 'DISABLED';
   lambdaFunction: {
     environment?: {
       variables: Record<string, CloudFormationValue<string>>;
@@ -434,6 +441,13 @@ export const createApiTemplate = ({
   const cognitoUserPoolAuth =
     additionalAuthenticationProviders?.includes('AMAZON_COGNITO_USER_POOLS') ||
     authenticationType === 'AMAZON_COGNITO_USER_POOLS';
+
+  if (introspectionConfig) {
+    template.Resources[AppSyncGraphQLApiLogicalId].Properties = {
+      ...template.Resources[AppSyncGraphQLApiLogicalId].Properties,
+      IntrospectionConfig: introspectionConfig,
+    };
+  }
 
   if (additionalAuthenticationProviders) {
     template.Resources[AppSyncGraphQLApiLogicalId].Properties = {

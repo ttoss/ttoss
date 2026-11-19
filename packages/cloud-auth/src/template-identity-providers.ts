@@ -84,9 +84,21 @@ export const applyPrimaryAppClient = (
   {
     oauth,
     identityProviders,
-  }: { oauth?: OAuthConfig; identityProviders?: IdentityProviderConfig[] }
+    preventUserExistenceErrors,
+  }: {
+    oauth?: OAuthConfig;
+    identityProviders?: IdentityProviderConfig[];
+    preventUserExistenceErrors?: boolean;
+  }
 ) => {
   const client = template.Resources[CognitoUserPoolClientLogicalId];
+
+  if (preventUserExistenceErrors) {
+    client.Properties = {
+      ...client.Properties,
+      PreventUserExistenceErrors: 'ENABLED',
+    };
+  }
 
   if (identityProviders && identityProviders.length > 0) {
     const providerTypes = identityProviders.map((provider) => {

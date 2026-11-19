@@ -232,7 +232,7 @@ const usePasswordHandlers = ({
 
 export type AuthProps = Pick<
   AuthCoreProps,
-  'signUpTerms' | 'logo' | 'layout'
+  'signUpTerms' | 'logo' | 'layout' | 'passwordMinimumLength'
 > & {
   /**
    * Callback function invoked when an error occurs during authentication operations.
@@ -307,6 +307,7 @@ export const Auth = (props: AuthProps) => {
       signUpTerms={props.signUpTerms}
       logo={props.logo}
       layout={props.layout}
+      passwordMinimumLength={props.passwordMinimumLength}
       maxForgotPasswordCodeLength={6}
       socialProviders={props.socialProviders}
       onSocialSignIn={onSocialSignIn}

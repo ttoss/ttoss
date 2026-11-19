@@ -43,6 +43,19 @@ const template = createAuthTemplate({
 });
 ```
 
+### Password Policy and User Enumeration
+
+`passwordPolicy` sets the user pool's password rules (new and changed passwords only; omitted fields keep the defaults: minimum 8, no complexity rules). `preventUserExistenceErrors` sets `PreventUserExistenceErrors: ENABLED` on the primary app client, so sign-in, ForgotPassword and confirmation answer the same way for an unknown email as for a known one. Sign-up still answers `UsernameExistsException`. With it on, an unknown email at sign-in fails with `NotAuthorizedException` instead of `UserNotFoundException`.
+
+```typescript
+const template = createAuthTemplate({
+  passwordPolicy: { minimumLength: 12 },
+  preventUserExistenceErrors: true,
+});
+```
+
+Pass the same minimum to `<Auth passwordMinimumLength={12} />` from `@ttoss/react-auth-cognito`, so the forms validate what the pool enforces.
+
 ### Lambda Triggers
 
 Customize authentication workflows with [AWS Cognito Lambda triggers](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-working-with-lambda-triggers.html). Lambda triggers accept either string ARNs or `Fn::GetAtt` CloudFormation references.
