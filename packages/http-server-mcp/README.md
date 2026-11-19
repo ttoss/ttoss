@@ -828,6 +828,20 @@ Enable it once you're confident `inputSchema` describes every value the tool gen
 
 Builds a `Tool` from a `method` that returns data: JSON text, plus `structuredContent` when `outputSchema` is set. `null`/`undefined` answers `notFoundMessage` (default `"Not found"`) as an `isError` result. Takes every `Tool` field but `handler`.
 
+### `withNotes({ data, notes })`
+
+Returned from a `defineTool` `method` to add text beside the data: each non-empty note becomes its own text block after the data's JSON, and `structuredContent` stays the data alone, so `outputSchema` describes only the data. Use it for guidance the caller should read with the result (a hint, a caveat) that is not part of the result itself.
+
+```typescript
+method: async (args) => {
+  const report = await buildReport(args);
+  return withNotes({
+    data: report,
+    notes: report.partial ? ['Only the last 7 days are available.'] : [],
+  });
+},
+```
+
 ### `createToolGate(options?)`
 
 Returns a gate, `({ tool, requiredScope, gates? }) => Tool`, that wraps a tool in the pipeline described in [Gating tools](#gating-tools).

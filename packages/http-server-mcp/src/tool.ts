@@ -282,12 +282,56 @@ export const toolError = ({
   };
 };
 
+const NOTES = Symbol.for('@ttoss/http-server-mcp/withNotes');
+
+/** A `defineTool` result carrying text blocks beside its data. */
+export interface ResultWithNotes<T = unknown> {
+  readonly [NOTES]: true;
+  data: T;
+  notes: string[];
+}
+
+/**
+ * Wraps a `defineTool` method's data with notes: each non-empty note becomes
+ * its own text block after the data's JSON. `structuredContent` stays the
+ * data alone, so an `outputSchema` describes the data, never the notes.
+ *
+ * @example
+ * ```typescript
+ * method: async (args) => {
+ *   const report = await buildReport(args);
+ *   return withNotes({
+ *     data: report,
+ *     notes: report.partial ? ['Only the last 7 days are available.'] : [],
+ *   });
+ * },
+ * ```
+ */
+export const withNotes = <T>({
+  data,
+  notes,
+}: {
+  data: T;
+  notes: string[];
+}): ResultWithNotes<T> => {
+  return { [NOTES]: true, data, notes };
+};
+
+const isResultWithNotes = (value: unknown): value is ResultWithNotes => {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    (value as Record<symbol, unknown>)[NOTES] === true
+  );
+};
+
 /** Parameters for {@link defineTool}. */
 export interface DefineToolParams extends Omit<Tool, 'handler'> {
   /**
    * Answers a call with plain data, which becomes the tool result: JSON text,
    * plus `structuredContent` when `outputSchema` is set. Resolving to `null`
-   * or `undefined` answers `notFoundMessage` as an `isError` result.
+   * or `undefined` answers `notFoundMessage` as an `isError` result. Return
+   * {@link withNotes} to add text blocks after the data.
    */
   method: (args: Record<string, unknown>) => unknown;
   /**
@@ -320,14 +364,26 @@ export const defineTool = ({
   return {
     ...tool,
     handler: async (args) => {
-      const result = await method(args);
-      if (result == null) return toolError({ message: notFoundMessage });
+      const returned = await method(args);
+      const { data, notes } = isResultWithNotes(returned)
+        ? returned
+        : { data: returned, notes: [] };
+      if (data == null) return toolError({ message: notFoundMessage });
       // TextContent stays alongside structuredContent for clients that ignore
       // structured output (MCP spec, tools → structured content).
-      const content = [{ type: 'text' as const, text: JSON.stringify(result) }];
+      const content = [
+        { type: 'text' as const, text: JSON.stringify(data) },
+        ...notes
+          .filter((note) => {
+            return note.trim() !== '';
+          })
+          .map((text) => {
+            return { type: 'text' as const, text };
+          }),
+      ];
       return tool.outputSchema === undefined
         ? { content }
-        : { content, structuredContent: result as Record<string, unknown> };
+        : { content, structuredContent: data as Record<string, unknown> };
     },
   };
 };
