@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.46.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fhttp-server-mcp%400.45.0...%40ttoss%2Fhttp-server-mcp%400.46.0) (2026-11-19)
+
+### Features
+
+- **http-server-mcp:** a defineTool method can return notes beside its data ([#1464](https://github.com/ttoss/ttoss/issues/1464)) ([45c8609](https://github.com/ttoss/ttoss/commit/45c86099f4c757fe9c50dcfb0db2f0426bfed180))
+
 # [0.45.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fhttp-server-mcp%400.44.7...%40ttoss%2Fhttp-server-mcp%400.45.0) (2026-11-19)
 
 ### Features
