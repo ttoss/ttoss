@@ -27,6 +27,8 @@ export const STATIC_APP_BUCKET_LOGICAL_ID = 'StaticBucket';
 
 export const CLOUDFRONT_DISTRIBUTION_LOGICAL_ID = 'CloudFrontDistribution';
 
+export const ACCESS_LOGS_BUCKET_LOGICAL_ID = 'AccessLogsBucket';
+
 export const CLOUDFRONT_ORIGIN_ACCESS_CONTROL_LOGICAL_ID =
   'OriginAccessControl';
 
@@ -208,7 +210,83 @@ const getBucketStaticWebsiteTemplate = ({
   };
 };
 
+/**
+ * The bucket CloudFront standard (legacy) logging writes to. CloudFront grants
+ * its log delivery account access through a bucket ACL, so ACLs stay enabled
+ * (`BucketOwnerPreferred`); every other public access path is blocked. The
+ * bucket is retained when the stack is deleted, because CloudFormation cannot
+ * delete a bucket that still holds log files.
+ *
+ * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/standard-logging-legacy-s3.html
+ */
+const getAccessLogsBucket = ({
+  accessLogsRetentionDays,
+}: {
+  accessLogsRetentionDays: number;
+}): Resource => {
+  return {
+    Type: 'AWS::S3::Bucket',
+    DeletionPolicy: 'Retain',
+    UpdateReplacePolicy: 'Retain',
+    Properties: {
+      LifecycleConfiguration: {
+        Rules: [
+          {
+            Id: 'ExpireAccessLogs',
+            Status: 'Enabled',
+            ExpirationInDays: accessLogsRetentionDays,
+          },
+        ],
+      },
+      OwnershipControls: {
+        Rules: [{ ObjectOwnership: 'BucketOwnerPreferred' }],
+      },
+      PublicAccessBlockConfiguration: {
+        BlockPublicAcls: true,
+        BlockPublicPolicy: true,
+        IgnorePublicAcls: true,
+        RestrictPublicBuckets: true,
+      },
+    },
+  };
+};
+
+/**
+ * Adds the access logs bucket and points the distribution's logging at it.
+ */
+const addAccessLogs = ({
+  accessLogsRetentionDays,
+  cloudFrontResources,
+}: {
+  accessLogsRetentionDays?: number;
+  cloudFrontResources: { [key: string]: Resource };
+}) => {
+  if (!accessLogsRetentionDays) {
+    return;
+  }
+
+  cloudFrontResources[ACCESS_LOGS_BUCKET_LOGICAL_ID] = getAccessLogsBucket({
+    accessLogsRetentionDays,
+  });
+
+  const distribution = cloudFrontResources[CLOUDFRONT_DISTRIBUTION_LOGICAL_ID];
+
+  distribution.Properties = {
+    ...distribution.Properties,
+    DistributionConfig: {
+      ...distribution.Properties?.DistributionConfig,
+      Logging: {
+        Bucket: {
+          'Fn::GetAtt': [ACCESS_LOGS_BUCKET_LOGICAL_ID, 'DomainName'],
+        },
+        IncludeCookies: false,
+      },
+    },
+  };
+};
+
 const getCloudFrontTemplate = ({
+  accessLogsRetentionDays,
   acm,
   aliases = [],
   appendIndexHtml,
@@ -219,6 +297,7 @@ const getCloudFrontTemplate = ({
   hostedZoneName,
   viewerRequestFunctionCode,
 }: {
+  accessLogsRetentionDays?: number;
   acm?: string;
   aliases?: string[];
   appendIndexHtml?: boolean;
@@ -420,6 +499,8 @@ const getCloudFrontTemplate = ({
         }
       : {}),
   };
+
+  addAccessLogs({ accessLogsRetentionDays, cloudFrontResources });
 
   if (acm) {
     const acmRegex = /^arn:aws:acm:[-a-z0-9]+:\d{12}:certificate\/[-a-z0-9]+$/;
@@ -672,6 +753,7 @@ const getCloudFrontTemplate = ({
 };
 
 export const getStaticAppTemplate = ({
+  accessLogsRetentionDays,
   acm,
   aliases,
   appendIndexHtml,
@@ -684,6 +766,7 @@ export const getStaticAppTemplate = ({
   region,
   viewerRequestFunctionCode,
 }: {
+  accessLogsRetentionDays?: number;
   acm?: string;
   aliases?: string[];
   appendIndexHtml?: boolean;
@@ -696,8 +779,30 @@ export const getStaticAppTemplate = ({
   region: string;
   viewerRequestFunctionCode?: string;
 }): CloudFormationTemplate => {
+  /**
+   * Access logs are written by CloudFront, so a bucket only deploy has nothing
+   * to log them.
+   */
+  if (accessLogsRetentionDays !== undefined) {
+    if (!cloudfront) {
+      throw new Error(
+        'The access-logs-retention-days option requires the cloudfront option.'
+      );
+    }
+
+    if (
+      !Number.isInteger(accessLogsRetentionDays) ||
+      accessLogsRetentionDays < 1
+    ) {
+      throw new Error(
+        'The access-logs-retention-days option must be a whole number of days, 1 or more.'
+      );
+    }
+  }
+
   if (cloudfront) {
     return getCloudFrontTemplate({
+      accessLogsRetentionDays,
       acm,
       aliases,
       appendIndexHtml,

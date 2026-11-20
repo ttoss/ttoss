@@ -9,6 +9,11 @@ import { defaultBuildFolders } from './findDefaultBuildFolder';
 import { parseResponseHeaders } from './responseHeaders';
 
 export const options = {
+  'access-logs-retention-days': {
+    describe:
+      'Turn on CloudFront access logs and keep them this many days. The logs go to a private S3 bucket of the stack, which is kept when the stack is deleted. Requires the `cloudfront` option.',
+    type: 'number',
+  },
   acm: {
     describe:
       'The ARN of the certificate or the name of the exported variable whose value is the ARN of the certificate that will be associated to CloudFront.',
@@ -178,6 +183,32 @@ export const deployStaticAppCommand: CommandModule<
           if (spa) {
             throw new Error(
               'The redirect-to-trailing-slash and spa options are mutually exclusive. An extension-less URI of a SPA is a client route, not a directory, so redirecting it to a trailing slash changes the URL of every route.'
+            );
+          }
+
+          return true;
+        })
+        .check(({ accessLogsRetentionDays, cloudfront }) => {
+          if (accessLogsRetentionDays === undefined) {
+            return true;
+          }
+
+          /**
+           * Access logs are written by CloudFront, so a bucket only deploy has
+           * nothing to log them.
+           */
+          if (!cloudfront) {
+            throw new Error(
+              'The access-logs-retention-days option requires the cloudfront option.'
+            );
+          }
+
+          if (
+            !Number.isInteger(accessLogsRetentionDays) ||
+            accessLogsRetentionDays < 1
+          ) {
+            throw new Error(
+              'The access-logs-retention-days option must be a whole number of days, 1 or more.'
             );
           }
 
