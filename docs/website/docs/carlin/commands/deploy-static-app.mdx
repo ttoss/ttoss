@@ -330,6 +330,34 @@ with no network, filesystem, timers or dynamic evaluation, and no access to the
 request body. The composed function — your code plus the injected helpers — must
 stay under 10 KB, which carlin checks before deploying.
 
+### --access-logs-retention-days
+
+Turn on CloudFront access logs and keep them for the given number of days.
+
+```bash
+carlin deploy static-app --cloudfront --access-logs-retention-days 90
+```
+
+carlin adds an S3 bucket to the stack and points the distribution's standard
+logging at it. Every request CloudFront answers — people, search engine crawlers
+and AI assistants reading `llms.txt` alike — lands there as a gzipped log line
+within minutes, and a lifecycle rule deletes each file after the given number of
+days.
+
+- The bucket blocks all public access. It keeps ACLs enabled
+  (`BucketOwnerPreferred`) because CloudFront grants its log delivery account
+  access through a bucket ACL.
+- The bucket is retained when the stack is deleted, because CloudFormation
+  cannot delete a bucket that still holds log files.
+- CloudFront charges nothing for the delivery; the bucket's storage and requests
+  are billed at S3 rates.
+- The identity that deploys needs `s3:PutBucketOwnershipControls`,
+  `s3:PutLifecycleConfiguration`, `s3:GetBucketAcl` and `s3:PutBucketAcl` on the
+  new bucket, besides the permissions a static app deploy already uses.
+
+**Requires**: `--cloudfront`. The logs are written by CloudFront, so a bucket
+only deploy has nothing to log.
+
 ### --skip-upload
 
 Update CloudFormation without uploading files.

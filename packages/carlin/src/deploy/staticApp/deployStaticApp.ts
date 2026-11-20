@@ -19,22 +19,14 @@ const logPrefix = 'static-app';
  * 1. Remove old deployment versions. Keep only the 3 most recent ones.
  */
 export const deployStaticApp = async ({
-  acm,
-  aliases,
-  appendIndexHtml,
   buildFolder,
-  cloudfront,
   contentTypes,
-  redirectToTrailingSlash,
-  responseHeaders,
-  responseHeadersPolicy,
-  spa,
-  hostedZoneName,
-  region,
   skipUpload,
   uploadSourceMaps,
   viewerRequestFunctionCode,
+  ...templateOptions
 }: {
+  accessLogsRetentionDays?: number;
   acm?: string;
   aliases?: string[];
   appendIndexHtml?: boolean;
@@ -57,20 +49,10 @@ export const deployStaticApp = async ({
 }) => {
   try {
     const { stackName } = await handleDeployInitialization({ logPrefix });
-
     const params = { StackName: stackName };
 
     const template = getStaticAppTemplate({
-      acm,
-      aliases,
-      appendIndexHtml,
-      cloudfront,
-      redirectToTrailingSlash,
-      responseHeaders,
-      responseHeadersPolicy,
-      spa,
-      hostedZoneName,
-      region,
+      ...templateOptions,
       viewerRequestFunctionCode: viewerRequestFunctionCode
         ? readViewerRequestFunctionCode({ filePath: viewerRequestFunctionCode })
         : undefined,
@@ -87,7 +69,7 @@ export const deployStaticApp = async ({
       return uploadBuiltAppToS3({
         buildFolder,
         bucket,
-        cloudfront,
+        cloudfront: templateOptions.cloudfront,
         contentTypes,
         uploadSourceMaps,
       });
@@ -110,7 +92,6 @@ export const deployStaticApp = async ({
        * Stack doesn't exist. Deploy CloudFormation first, get the bucket name,
        * and upload files to S3.
        */
-
       await deploy({ params, template });
 
       const newBucket = await getStaticAppBucket({ stackName });

@@ -96,6 +96,28 @@ describe('redirect to trailing slash', () => {
   });
 });
 
+describe('access logs retention days', () => {
+  test('should throw without cloudfront', () => {
+    return expect(parse({ accessLogsRetentionDays: 90 })).rejects.toThrow(
+      'requires the cloudfront option'
+    );
+  });
+
+  test('should throw for a non positive number of days', () => {
+    return expect(
+      parse({ cloudfront: true, accessLogsRetentionDays: 0 })
+    ).rejects.toThrow('whole number of days');
+  });
+
+  test('should not throw with cloudfront', () => {
+    const options = { cloudfront: true, accessLogsRetentionDays: 90 };
+
+    return expect(parse(options)).resolves.toEqual(
+      expect.objectContaining(options)
+    );
+  });
+});
+
 describe('handling methods', () => {
   test.each([
     {

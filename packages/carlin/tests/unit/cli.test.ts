@@ -494,6 +494,22 @@ describe('redirect-to-trailing-slash option', () => {
   });
 });
 
+describe('access-logs-retention-days option', () => {
+  test('should not log by default', async () => {
+    const argv = await parseCli('deploy static-app', {});
+    expect(argv.accessLogsRetentionDays).toBeUndefined();
+  });
+
+  test('should accept access-logs-retention-days option', async () => {
+    const argv = await parseCli(
+      'deploy static-app --cloudfront --access-logs-retention-days=90',
+      {}
+    );
+
+    expect(argv.accessLogsRetentionDays).toEqual(90);
+  });
+});
+
 describe('viewer request function option', () => {
   test('should not define a viewer request function by default', async () => {
     const argv = await parseCli('deploy static-app', {});

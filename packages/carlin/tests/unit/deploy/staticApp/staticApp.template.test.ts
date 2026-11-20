@@ -5,6 +5,7 @@ import {
   parseResponseHeaders,
 } from 'src/deploy/staticApp/responseHeaders';
 import {
+  ACCESS_LOGS_BUCKET_LOGICAL_ID,
   BUCKET_CORS_CONFIGURATION,
   CACHE_POLICY_CONFIG,
   CLOUDFRONT_CACHE_POLICY_LOGICAL_ID,
@@ -613,4 +614,79 @@ describe('acm', () => {
 
     expect(distributionConfig).not.toHaveProperty('ViewerCertificate');
   });
+});
+
+describe('access logs', () => {
+  const getDistributionConfig = (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    template: any
+  ) => {
+    return template.Resources[CLOUDFRONT_DISTRIBUTION_LOGICAL_ID].Properties
+      .DistributionConfig;
+  };
+
+  test('should not log by default', () => {
+    const template = getStaticAppTemplate({ region, cloudfront: true });
+
+    expect(template.Resources[ACCESS_LOGS_BUCKET_LOGICAL_ID]).toBeUndefined();
+    expect(getDistributionConfig(template).Logging).toBeUndefined();
+  });
+
+  test('should log to a private bucket that expires the logs', () => {
+    const accessLogsRetentionDays = 90;
+
+    const template = getStaticAppTemplate({
+      region,
+      cloudfront: true,
+      accessLogsRetentionDays,
+    });
+
+    expect(getDistributionConfig(template).Logging).toEqual({
+      Bucket: { 'Fn::GetAtt': [ACCESS_LOGS_BUCKET_LOGICAL_ID, 'DomainName'] },
+      IncludeCookies: false,
+    });
+
+    const bucket = template.Resources[ACCESS_LOGS_BUCKET_LOGICAL_ID];
+
+    expect(bucket.Type).toEqual('AWS::S3::Bucket');
+    expect(bucket.DeletionPolicy).toEqual('Retain');
+    expect(bucket.Properties?.LifecycleConfiguration.Rules).toEqual([
+      {
+        Id: 'ExpireAccessLogs',
+        Status: 'Enabled',
+        ExpirationInDays: accessLogsRetentionDays,
+      },
+    ]);
+    /**
+     * CloudFront grants its log delivery account access through a bucket ACL.
+     */
+    expect(bucket.Properties?.OwnershipControls).toEqual({
+      Rules: [{ ObjectOwnership: 'BucketOwnerPreferred' }],
+    });
+    expect(bucket.Properties?.PublicAccessBlockConfiguration).toEqual({
+      BlockPublicAcls: true,
+      BlockPublicPolicy: true,
+      IgnorePublicAcls: true,
+      RestrictPublicBuckets: true,
+    });
+  });
+
+  test('should throw without cloudfront', () => {
+    return expect(() => {
+      return getStaticAppTemplate({ region, accessLogsRetentionDays: 90 });
+    }).toThrow('requires the cloudfront option');
+  });
+
+  test.each([0, -1, 1.5])(
+    'should throw for %s retention days',
+    (accessLogsRetentionDays) => {
+      return expect(() => {
+        return getStaticAppTemplate({
+          region,
+          cloudfront: true,
+          accessLogsRetentionDays,
+        });
+      }).toThrow('whole number of days');
+    }
+  );
 });
