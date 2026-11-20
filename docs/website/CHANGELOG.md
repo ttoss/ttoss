@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [15.2.0](https://github.com/ttoss/ttoss/compare/%40docs%2Fwebsite%4015.1.2...%40docs%2Fwebsite%4015.2.0) (2026-11-20)
+
+### Features
+
+- **carlin:** add access-logs-retention-days to deploy static-app ([#1466](https://github.com/ttoss/ttoss/issues/1466)) ([a5d3750](https://github.com/ttoss/ttoss/commit/a5d37503d182ca6f764303a4d46401c173da250a))
+
 ## [15.1.2](https://github.com/ttoss/ttoss/compare/%40docs%2Fwebsite%4015.1.1...%40docs%2Fwebsite%4015.1.2) (2026-11-16)
 
 **Note:** Version bump only for package @docs/website
