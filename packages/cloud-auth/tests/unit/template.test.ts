@@ -1,4 +1,4 @@
-import { createAuthTemplate } from '../../src';
+import { type CloudFormationTemplate, createAuthTemplate } from '../../src';
 import { defaultPrincipalTags } from '../../src/template';
 
 describe('user pool', () => {
@@ -995,5 +995,53 @@ describe('lambda triggers', () => {
       expect(template.Resources[postConfirmationKey]).toBeDefined();
       expect(template.Resources[customMessageKey]).toBeDefined();
     });
+  });
+});
+
+const passwordPolicyOf = (template: CloudFormationTemplate) => {
+  return template.Resources.CognitoUserPool.Properties?.Policies
+    ?.PasswordPolicy;
+};
+
+describe('password policy', () => {
+  test('keeps the default policy when not provided', () => {
+    expect(passwordPolicyOf(createAuthTemplate())).toEqual({
+      MinimumLength: 8,
+      RequireLowercase: false,
+      RequireNumbers: false,
+      RequireSymbols: false,
+      RequireUppercase: false,
+      TemporaryPasswordValidityDays: 30,
+    });
+  });
+
+  test('overrides only the fields provided', () => {
+    const template = createAuthTemplate({
+      passwordPolicy: { minimumLength: 12, requireNumbers: true },
+    });
+    expect(passwordPolicyOf(template)).toEqual({
+      MinimumLength: 12,
+      RequireLowercase: false,
+      RequireNumbers: true,
+      RequireSymbols: false,
+      RequireUppercase: false,
+      TemporaryPasswordValidityDays: 30,
+    });
+  });
+});
+
+describe('preventUserExistenceErrors', () => {
+  test('is not set by default', () => {
+    expect(
+      createAuthTemplate().Resources.CognitoUserPoolClient.Properties
+        ?.PreventUserExistenceErrors
+    ).toBeUndefined();
+  });
+
+  test('is ENABLED on the primary app client when true', () => {
+    expect(
+      createAuthTemplate({ preventUserExistenceErrors: true }).Resources
+        .CognitoUserPoolClient.Properties?.PreventUserExistenceErrors
+    ).toBe('ENABLED');
   });
 });

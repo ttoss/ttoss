@@ -227,6 +227,18 @@ createAppSyncI18nMiddleware({
 
 It is called only for an `Error` with a string `code` and no `messageRef`, thrown or returned. Return `undefined` for a code you do not map, and the error passes through with its own message. A reference already attached, such as a resolver's override, is never replaced. If the hook throws or returns something that is not a reference, the error passes through unchanged.
 
+### Disabling GraphQL introspection
+
+`introspectionConfig` sets `IntrospectionConfig` on the `AWS::AppSync::GraphQLApi`. With `'DISABLED'`, AppSync rejects `__schema` and `__type` queries. Omitted, AppSync keeps its default (`ENABLED`).
+
+```ts
+export const template = createApiTemplate({
+  schemaComposer,
+  introspectionConfig:
+    process.env.ENVIRONMENT === 'Production' ? 'DISABLED' : 'ENABLED',
+});
+```
+
 ### Custom domain name
 
 You can add a custom domain name to your API using the `customDomain` option.
