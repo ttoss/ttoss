@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.21.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fcloud-auth%400.20.2...%40ttoss%2Fcloud-auth%400.21.0) (2026-11-23)
+
+### Features
+
+- **cloud-auth:** configurable user-existence errors and password policy ([#1465](https://github.com/ttoss/ttoss/issues/1465)) ([4b2378c](https://github.com/ttoss/ttoss/commit/4b2378c92528e09ff5e116bc5e082cbb93fed523))
+
 ## 0.20.2 (2026-11-16)
 
 **Note:** Version bump only for package @ttoss/cloud-auth
