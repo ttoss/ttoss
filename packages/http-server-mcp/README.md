@@ -694,6 +694,40 @@ A view is plain HTML; a raw `postMessage` client is enough, no SDK needed. Tools
 
 To see a view, render it in a host: ext-apps' `AppBridge` in a browser works, connected before the iframe's `srcdoc` is set because the view speaks first. An agent CLI such as Claude Code is an MCP client but not an Apps host, so it never renders one.
 
+## Skills
+
+A server can ship [Agent Skills](https://agentskills.io/specification) beside its tools through the [Skills extension](https://modelcontextprotocol.io/extensions/skills/overview) (`io.modelcontextprotocol/skills`): a host lists them with `skills/list`, loads one only when it is needed, and reads its `SKILL.md` and supporting files with `resources/read` at `skill://<name>/<path>`. The skills update with the server, so a user installs nothing.
+
+The SDK implements the extension; this package re-exports it. Build the catalog once, at startup, and attach it to every server the router uses — the instance and the per-request factory:
+
+```typescript
+import {
+  createMcpRouter,
+  McpServer,
+  nodeSkillFiles,
+  registerTools,
+  SkillCatalog,
+} from '@ttoss/http-server-mcp';
+
+// A directory of skill folders, each with a SKILL.md whose `name` matches the folder.
+const skills = await SkillCatalog.load(nodeSkillFiles('./skills'));
+
+const buildServer = () => {
+  const server = new McpServer({ name: 'my-server', version: '1.0.0' });
+  registerTools({ server, tools });
+  skills.attach(server);
+  return server;
+};
+
+createMcpRouter(buildServer(), { createMcpServer: buildServer });
+```
+
+- **Both revisions.** `createMcpRouter` serves the skills methods and declares the extension on the 2025 era (`initialize`) and on `2026-07-28` (`server/discover`) alike.
+- **The manifest is computed from the bytes served.** `skills/list` carries each file's SHA-256 digest and size, and the host refuses a file that does not match, so serve the files the catalog loaded — never edit them in place after `load`.
+- **Where the files live.** `nodeSkillFiles(dir)` reads a directory on disk; on AWS Lambda, ship that directory in the bundle. `memorySkillFiles({ 'name/SKILL.md': text, … })` takes the files as strings, for skills inlined at build time.
+- **Auth.** The skills methods are not in `publicMethods`, so with `auth` configured only an authenticated client lists or reads them.
+- **Fallback.** A host without the extension never calls the skills methods. Keep the server's `instructions` and tool descriptions enough to use the tools on their own.
+
 ## Issuing tokens for MCP clients
 
 The `auth` option above covers the **resource-server** half of MCP authorization — it verifies tokens issued by an external authorization server (Cognito, Auth0, …). To make your own first-party server _issue_ the tokens an MCP client runs the full OAuth flow against, add the [`@ttoss/http-server-auth`](https://ttoss.dev/docs/modules/packages/http-server-auth) plugin's `oauthServer()` and pair it with `createMcpRouter({ auth: { verifyToken } })` so one deployment both issues and verifies tokens. See the [OAuth Authorization Server](https://ttoss.dev/docs/engineering/guidelines/oauth-authorization-server) guideline.
@@ -891,6 +925,10 @@ Registers an [MCP Apps](#mcp-apps-interactive-uis) view: a `ui://` resource whos
 ### `UI_EXTENSION_ID` / `UI_RESOURCE_MIME_TYPE`
 
 `'io.modelcontextprotocol/ui'` and `'text/html;profile=mcp-app'`. Use the first as the `capabilities.extensions` key when advertising Apps support on the `McpServer`, and the second as the MIME type a host negotiates.
+
+### `SkillCatalog`, `nodeSkillFiles`, `memorySkillFiles`
+
+Re-exported from `@modelcontextprotocol/server/ext/skills` (with `SkillsExtension`, `SKILLS_EXTENSION_ID` and the `Skill`, `SkillFiles`, `SkillSource`, `SkillCatalogOptions` and `SkillCatalogChanges` types). `SkillCatalog.load(files, options?)` builds a catalog from a `SkillFiles` adapter; `catalog.attach(server)` serves it on an `McpServer` before it connects. For a catalog built per request (per user, generated), construct `new SkillsExtension({ source })` with your own `SkillSource`. See [Skills](#skills).
 
 ## Examples
 
