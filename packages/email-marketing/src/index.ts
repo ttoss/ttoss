@@ -56,6 +56,26 @@ export type {
   WebhookResult,
 } from './provider';
 export {
+  type CreateSequenceInput,
+  createSequences,
+  type EnrollResult,
+  SEQUENCE_TAG,
+  type Sequences,
+  type SequencesOptions,
+  type SequenceTickResult,
+  STEP_TAG,
+} from './sequences';
+export type {
+  Enrollment,
+  EnrollmentCounts,
+  EnrollmentStatus,
+  EnrollmentStore,
+  Sequence,
+  SequenceStatus,
+  SequenceStep,
+  SequenceStore,
+} from './sequenceTypes';
+export {
   createSuppressionList,
   ResubscribeRefusedError,
   strongerReason,
