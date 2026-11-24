@@ -770,7 +770,7 @@ importers:
         version: 9.3.1(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@theme-ui/css':
         specifier: ^0.17.4
-        version: 0.17.4(@emotion/react@11.14.0(react@19.3.0))
+        version: 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))
       '@types/react-modal':
         specifier: ^3.16.3
         version: 3.16.3
@@ -1595,11 +1595,11 @@ importers:
   packages/http-server-mcp:
     dependencies:
       '@modelcontextprotocol/node':
-        specifier: ^2.1.1
-        version: 2.1.1(@modelcontextprotocol/server@2.3.1)
+        specifier: ^2.1.2
+        version: 2.1.2(@modelcontextprotocol/server@2.4.0)
       '@modelcontextprotocol/server':
-        specifier: ^2.3.1
-        version: 2.3.1
+        specifier: ^2.4.0
+        version: 2.4.0
       '@ttoss/auth-core':
         specifier: workspace:^
         version: link:../auth-core
@@ -1617,8 +1617,8 @@ importers:
         version: 4.6.7
     devDependencies:
       '@modelcontextprotocol/client':
-        specifier: ^2.3.1
-        version: 2.3.1
+        specifier: ^2.4.0
+        version: 2.4.0
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config
@@ -1645,8 +1645,8 @@ importers:
         version: link:../http-server-mcp
     devDependencies:
       '@modelcontextprotocol/server':
-        specifier: ^2.3.1
-        version: 2.3.1
+        specifier: ^2.4.0
+        version: 2.4.0
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config
@@ -5922,22 +5922,22 @@ packages:
   '@mixmark-io/domino@2.2.0':
     resolution: {integrity: sha512-Y28PR25bHXUg88kCV7nivXrP2Nj2RueZ3/l/jdx6J9f8J4nsEGcgX0Qe6lt7Pa+J79+kPiJU3LguR6O/6zrLOw==}
 
-  '@modelcontextprotocol/client@2.3.1':
-    resolution: {integrity: sha512-mIGZXpHsjnZ6lD+gD/WCMpR5k8yVQQ8nNFH1N0Srf7AvnwTUMYD6pvTY8ng2+He5FfV7YMZLmrjL7cLa/cc3dQ==}
+  '@modelcontextprotocol/client@2.4.0':
+    resolution: {integrity: sha512-LgrD2OphHuG12vfKFKz6SOnq7bKHQmhGJIAYdD+MZBn2npHEyry6uD8zvktodtl5CQM85MO0anUyD9JwmUmxww==}
     engines: {node: '>=20'}
 
-  '@modelcontextprotocol/core@2.3.1':
-    resolution: {integrity: sha512-laVmIhPGpWi7rG9q+0UigblRN0Hws/Yjlb6qLFtVqryXVLkc4h+yN8z731POD2LnAGQlFe7/tXhUm7Bi0YB91g==}
+  '@modelcontextprotocol/core@2.4.0':
+    resolution: {integrity: sha512-z8QBKqdfXLPzkLQuG4xp8hrVEMm1PZ1IgxMN2sMbJiFiAKOWXnAzogXn2W4aqIBlP1ea6U5yiqVquvUNM1Cj6Q==}
     engines: {node: '>=20'}
 
-  '@modelcontextprotocol/node@2.1.1':
-    resolution: {integrity: sha512-EY92OAXN2xYL7tNS/MVsWJW1v8VHAPwl9B4Ca3pCrjmvqyC+S1C/6UHsMxF2GoFPraS5Yyg56vFz9brVpFojMA==}
+  '@modelcontextprotocol/node@2.1.2':
+    resolution: {integrity: sha512-IIcIqBpr6NCQQs5DgJTgvbSOAw+3iaR/uquqg+e0nXCdudfjPg/80x0TseUnQx14AUAtE4fsJCEpJKPyb6WPVA==}
     engines: {node: '>=20'}
     peerDependencies:
-      '@modelcontextprotocol/server': ^2.3.0
+      '@modelcontextprotocol/server': ^2.4.0
 
-  '@modelcontextprotocol/server@2.3.1':
-    resolution: {integrity: sha512-e59MfWuSssj6DoQ96JCTqdW1AXT5/XtnTl0WWd6MU1Ka434fFUGGosCLJbGNySDhHGvxQWoRWK137FXYFkYNWw==}
+  '@modelcontextprotocol/server@2.4.0':
+    resolution: {integrity: sha512-rgR9yxSaAJ+bcsi/XroT/S2AfPiIWloXAnrdfYSCms9ivVju0ishu/wW0J21Ho6+ZOR1r7RyeRbjiRuF87ix5Q==}
     engines: {node: '>=20'}
 
   '@module-federation/error-codes@0.22.0':
@@ -16858,18 +16858,22 @@ packages:
   yuku-ast@0.19.0:
     resolution: {integrity: sha512-PyCsiScaelhxBGzL8dyeJkLqvRZycoh78R31Vrt/WqYrm0hMFoKwIw/X7Dx5mBKLWAMlV9I9HEyBOHnj2gZVyw==}
     engines: {node: '>=14.18.0'}
+    deprecated: 'Yuku is now one package with one core. Use "yuku" instead: https://yuku.fyi/javascript/. Existing installs keep working but get no more fixes.'
 
   yuku-codegen@0.19.0:
     resolution: {integrity: sha512-uymAKHjDuaP4BEpkXC/BSLz4DUEF5oArZ5AuD3888nb2miChjWSgpPdojEJxm3pjpXkgUaCRJQyNAbnMN33wHg==}
     engines: {node: '>=14.18.0'}
+    deprecated: 'Yuku is now one package with one core. Use "yuku" instead: https://yuku.fyi/javascript/. Existing installs keep working but get no more fixes.'
 
   yuku-core@0.19.0:
     resolution: {integrity: sha512-kYK9e1XdfirNhkipzW0wmMcSWcVF/CWnuugodfVYRCUwvoBefweL9HzB96OiKEhsx78V5WbUxbJqlizMX869Qg==}
     engines: {node: '>=14.18.0'}
+    deprecated: 'Yuku is now one package with one core. Use "yuku" instead: https://yuku.fyi/javascript/. Existing installs keep working but get no more fixes.'
 
   yuku-parser@0.19.0:
     resolution: {integrity: sha512-XrBh9ZiQK5mJVRxZBAvD6LwRyAYrK3MFtH3+onyuxFL5hFD44EC3QOmIC1FjTj6H2MMwq46/NAI+NZxLZPZgxg==}
     engines: {node: '>=14.18.0'}
+    deprecated: 'Yuku is now one package with one core. Use "yuku" instead: https://yuku.fyi/javascript/. Existing installs keep working but get no more fixes.'
 
   yup@0.32.11:
     resolution: {integrity: sha512-Z2Fe1bn+eLstG8DRR6FTavGD+MeAwyfmouhHsIUgaADz8jvFKbO/fXc2trJKZg+5EBjh4gGm3iU/t3onKlXHIg==}
@@ -21851,9 +21855,9 @@ snapshots:
 
   '@mixmark-io/domino@2.2.0': {}
 
-  '@modelcontextprotocol/client@2.3.1':
+  '@modelcontextprotocol/client@2.4.0':
     dependencies:
-      '@modelcontextprotocol/core': 2.3.1
+      '@modelcontextprotocol/core': 2.4.0
       cross-spawn: 7.0.6
       eventsource: 3.0.7
       eventsource-parser: 3.1.1
@@ -21861,19 +21865,19 @@ snapshots:
       pkce-challenge: 5.0.1
       zod: 4.6.7
 
-  '@modelcontextprotocol/core@2.3.1':
+  '@modelcontextprotocol/core@2.4.0':
     dependencies:
       zod: 4.6.7
 
-  '@modelcontextprotocol/node@2.1.1(@modelcontextprotocol/server@2.3.1)':
+  '@modelcontextprotocol/node@2.1.2(@modelcontextprotocol/server@2.4.0)':
     dependencies:
       '@hono/node-server': 1.19.17(hono@4.13.13)
-      '@modelcontextprotocol/server': 2.3.1
+      '@modelcontextprotocol/server': 2.4.0
       hono: 4.13.13
 
-  '@modelcontextprotocol/server@2.3.1':
+  '@modelcontextprotocol/server@2.4.0':
     dependencies:
-      '@modelcontextprotocol/core': 2.3.1
+      '@modelcontextprotocol/core': 2.4.0
       zod: 4.6.7
 
   '@module-federation/error-codes@0.22.0': {}
@@ -24022,7 +24026,7 @@ snapshots:
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.3.0)(react@19.3.0)
       '@theme-ui/core': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.3.0))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))
       deepmerge: 4.3.1
       react: 19.3.0
 
@@ -24033,7 +24037,7 @@ snapshots:
       '@styled-system/should-forward-prop': 5.1.5
       '@styled-system/space': 5.1.2
       '@theme-ui/core': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.3.0))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))
       '@theme-ui/theme-provider': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       '@types/styled-system': 5.1.25
       react: 19.3.0
@@ -24041,11 +24045,11 @@ snapshots:
   '@theme-ui/core@0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.3.0)(react@19.3.0)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.3.0))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))
       deepmerge: 4.3.1
       react: 19.3.0
 
-  '@theme-ui/css@0.17.4(@emotion/react@11.14.0(react@19.3.0))':
+  '@theme-ui/css@0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.3.0)(react@19.3.0)
       csstype: 3.2.3
@@ -24054,13 +24058,13 @@ snapshots:
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.3.0)(react@19.3.0)
       '@theme-ui/core': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.3.0))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))
       react: 19.3.0
 
   '@theme-ui/match-media@0.17.4(@theme-ui/core@0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0))(@theme-ui/css@0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)))(react@19.3.0)':
     dependencies:
       '@theme-ui/core': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.3.0))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))
       react: 19.3.0
 
   '@theme-ui/theme-provider@0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
@@ -24068,7 +24072,7 @@ snapshots:
       '@emotion/react': 11.14.0(@types/react@19.3.0)(react@19.3.0)
       '@theme-ui/color-modes': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       '@theme-ui/core': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.3.0))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))
       react: 19.3.0
 
   '@tmcp/adapter-valibot@0.1.6(tmcp@1.20.0(typescript@6.0.3))(valibot@1.5.0(typescript@6.0.3))':
@@ -33534,7 +33538,7 @@ snapshots:
       '@theme-ui/color-modes': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       '@theme-ui/components': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(@theme-ui/theme-provider@0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0))(react@19.3.0)
       '@theme-ui/core': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.3.0))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))
       '@theme-ui/global': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       '@theme-ui/theme-provider': 0.17.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react: 19.3.0

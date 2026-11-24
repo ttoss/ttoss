@@ -896,6 +896,7 @@ export {
   type UiToolVisibility,
 } from './registerAppResource';
 export { registerTools, type RegisterToolsParams } from './registerTools';
+export * from './skills';
 export {
   defineTool,
   type DefineToolParams,
