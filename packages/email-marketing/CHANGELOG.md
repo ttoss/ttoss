@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Femail-marketing%400.2.1...%40ttoss%2Femail-marketing%400.3.0) (2026-11-24)
+
+### Features
+
+- **email-marketing:** sequences, a series of e-mails on each address's own clock ([#1467](https://github.com/ttoss/ttoss/issues/1467)) ([a9350c2](https://github.com/ttoss/ttoss/commit/a9350c2a62996ace58d6ca57aaecf519b3be7113))
+
 ## [0.2.1](https://github.com/ttoss/ttoss/compare/%40ttoss%2Femail-marketing%400.2.0...%40ttoss%2Femail-marketing%400.2.1) (2026-11-16)
 
 ### Bug Fixes
