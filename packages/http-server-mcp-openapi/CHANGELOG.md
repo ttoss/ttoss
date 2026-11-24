@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.14.0](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fhttp-server-mcp-openapi%400.13.1...%40ttoss%2Fhttp-server-mcp-openapi%400.14.0) (2026-11-24)
+
+### Features
+
+- **http-server-mcp:** serve Agent Skills over MCP through the SDK's Skills extension ([#1468](https://github.com/ttoss/ttoss/issues/1468)) ([54e7f79](https://github.com/ttoss/ttoss/commit/54e7f79a81f9ed26579117e318f71d3c339c9eb1))
+
 ## [0.13.1](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fhttp-server-mcp-openapi%400.13.0...%40ttoss%2Fhttp-server-mcp-openapi%400.13.1) (2026-11-19)
 
 **Note:** Version bump only for package @ttoss/http-server-mcp-openapi
