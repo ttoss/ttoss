@@ -5,6 +5,13 @@ import type {
   RecipientCounts,
   RecipientStore,
 } from './campaignTypes';
+import type {
+  Enrollment,
+  EnrollmentCounts,
+  EnrollmentStore,
+  Sequence,
+  SequenceStore,
+} from './sequenceTypes';
 import type { Suppression, SuppressionStore } from './suppression';
 
 const createMemoryCampaignStore = (): CampaignStore => {
@@ -110,6 +117,104 @@ const createMemoryRecipientStore = (): RecipientStore => {
   };
 };
 
+const createMemorySequenceStore = (): SequenceStore => {
+  const sequenceRows = new Map<string, Sequence>();
+  return {
+    get: async (id) => {
+      const row = sequenceRows.get(id);
+      return row ? { ...row, steps: [...row.steps] } : null;
+    },
+    save: async (sequence) => {
+      sequenceRows.set(sequence.id, {
+        ...sequence,
+        steps: [...sequence.steps],
+      });
+    },
+    listActive: async () => {
+      return [...sequenceRows.values()]
+        .filter((row) => {
+          return row.status === 'active';
+        })
+        .map((row) => {
+          return row.id;
+        });
+    },
+  };
+};
+
+const createMemoryEnrollmentStore = (): EnrollmentStore => {
+  const enrollmentRows = new Map<string, Enrollment>();
+  const key = ({
+    sequenceId,
+    email,
+  }: {
+    sequenceId: string;
+    email: string;
+  }) => {
+    return `${sequenceId}\u0000${email}`;
+  };
+  const copy = (row: Enrollment) => {
+    return { ...row };
+  };
+  return {
+    get: async (args) => {
+      const row = enrollmentRows.get(key(args));
+      return row ? copy(row) : null;
+    },
+    add: async (enrollment) => {
+      if (enrollmentRows.has(key(enrollment))) {
+        return false;
+      }
+      enrollmentRows.set(key(enrollment), copy(enrollment));
+      return true;
+    },
+    save: async (enrollment) => {
+      enrollmentRows.set(key(enrollment), copy(enrollment));
+    },
+    claimDue: async ({ sequenceIds, now, limit }) => {
+      const claimed = [...enrollmentRows.values()]
+        .filter((row) => {
+          return (
+            row.status === 'active' &&
+            sequenceIds.includes(row.sequenceId) &&
+            row.nextAt !== null &&
+            row.nextAt <= now
+          );
+        })
+        .slice(0, limit);
+      for (const row of claimed) {
+        Object.assign(row, { status: 'sending', claimedAt: now });
+      }
+      return claimed.map(copy);
+    },
+    listStale: async ({ claimedBefore }) => {
+      return [...enrollmentRows.values()]
+        .filter((row) => {
+          return (
+            row.status === 'sending' &&
+            row.claimedAt !== null &&
+            row.claimedAt < claimedBefore
+          );
+        })
+        .map(copy);
+    },
+    count: async ({ sequenceId }) => {
+      const counts: EnrollmentCounts = {
+        active: 0,
+        sending: 0,
+        completed: 0,
+        exited: 0,
+      };
+      for (const row of enrollmentRows.values()) {
+        if (row.sequenceId === sequenceId) {
+          counts[row.status] += 1;
+        }
+      }
+      return counts;
+    },
+  };
+};
+
 const createMemorySuppressionStore = (): SuppressionStore => {
   const suppressionRows: Suppression[] = [];
   return {
@@ -153,5 +258,7 @@ export const createMemoryStores = () => {
     campaigns: createMemoryCampaignStore(),
     recipients: createMemoryRecipientStore(),
     suppressions: createMemorySuppressionStore(),
+    sequences: createMemorySequenceStore(),
+    enrollments: createMemoryEnrollmentStore(),
   };
 };

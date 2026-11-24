@@ -266,6 +266,77 @@ RETURNING *;
 Delivery events carry the campaign id in the `campaign` tag (`CAMPAIGN_TAG`),
 for per-campaign bounce and complaint counts.
 
+## Sequences: a series of e-mails on each address's own clock
+
+A campaign reaches a fixed list once. A sequence (onboarding, nurturing) sends
+a series of steps, each a delay after the previous one, to every address from
+the moment it is enrolled:
+
+```ts
+import { createSequences } from '@ttoss/email-marketing';
+
+const DAY = 24 * 60 * 60 * 1000;
+
+const sequences = createSequences({
+  marketing, // from createEmailMarketing
+  sequences: mySequenceStore,
+  enrollments: myEnrollmentStore,
+  ratePerSecond: 10,
+});
+
+const { id } = await sequences.create({
+  scope: 'acme',
+  name: 'Onboarding',
+  steps: [
+    { delayMs: 0, subject: 'Bem-vindo, {{nome}}', html, text },
+    { delayMs: 2 * DAY, subject: 'Sua primeira proposta', html, text },
+    // a step may send as another kind, e.g. a letter from a founder
+    { delayMs: 5 * DAY, kind: 'founder', subject: 'Uma carta', html, text },
+  ],
+});
+
+// on sign-up:
+await sequences.enroll({
+  sequenceId: id,
+  email: user.email,
+  variables: { nome: user.firstName },
+});
+
+// when the user reaches the goal the sequence pushes for:
+await sequences.exit({
+  sequenceId: id,
+  email: user.email,
+  reason: 'first_proposal',
+});
+
+// every minute, from the same cron as campaigns:
+await sequences.tick({ budgetMs: 50_000 });
+```
+
+- **Once per address.** `enroll` returns `enrolled`, `already_enrolled` (even
+  after it finished or left) or `invalid_email`. The first step goes out its
+  `delayMs` after `at` (default now).
+- **Each step through `send`.** Suppressions, `canSend` and `resolveSender`
+  apply at every step. A `suppressed` or `invalid_email` skip ends the
+  enrolment (`exited`, with that reason); any other skip, or a send that
+  throws, moves on to the next step.
+- **Never twice.** A step is claimed before it is sent. What a dead tick left
+  `sending` for longer than `staleAfterMs` moves on to the next step without
+  resending; an `exit` while a step is being sent wins.
+- **Editing.** `update({ id, name, steps })` keeps each enrolment's step index
+  and `nextAt`: new delays apply from the next step reached, and an enrolment
+  past the last step completes. `pause(id)` holds every step; `resume(id)`
+  sends what fell due meanwhile.
+- **Tooling.** `preview({ id, step, variables })`, `sendTest({ id, step, to })`,
+  `stats(id)` (enrolments by status: `active`, `sending`, `completed`,
+  `exited`) and `enrollment({ sequenceId, email })`.
+
+`SequenceStore` (`get`, `save`, `listActive`) and `EnrollmentStore` (`get`,
+`add`, `save`, `claimDue`, `listStale`, `count`) are yours to implement;
+`createMemoryStores()` includes both. `claimDue` must be atomic, like a
+campaign's `claim`. E-mails carry the sequence id in the `sequence` tag
+(`SEQUENCE_TAG`) and the step index in `step` (`STEP_TAG`).
+
 ## Unsubscribe
 
 Each e-mail links to `unsubscribe.url(token)`. The token is
