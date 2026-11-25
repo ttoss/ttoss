@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.1.1](https://github.com/ttoss/ttoss/compare/carlin%406.1.0...carlin%406.1.1) (2026-11-25)
+
+### Bug Fixes
+
+- update vulnerable dependencies (multer 2.5.0 + audit fix) ([#1469](https://github.com/ttoss/ttoss/issues/1469)) ([74d8359](https://github.com/ttoss/ttoss/commit/74d8359e057434516fd85991014769e2b93f73bd))
+
 # [6.1.0](https://github.com/ttoss/ttoss/compare/carlin%406.0.3...carlin%406.1.0) (2026-11-20)
 
 ### Features
