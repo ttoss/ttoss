@@ -231,6 +231,46 @@ export const WithValidation: Story = {
 };
 
 /**
+ * Wizard whose step saves before advancing. The first step's `onNext` resolves
+ * after two seconds: meanwhile the Next button shows its loading state and the
+ * wizard refuses every other navigation.
+ */
+export const WithAsyncOnNext: Story = {
+  args: {
+    steps: [
+      {
+        title: 'Save',
+        description: 'Waits on a request',
+        content: (
+          <Box>
+            <Heading as="h3" sx={{ marginBottom: '3' }}>
+              This step saves before advancing
+            </Heading>
+            <Text>
+              Click Next: the button loads for two seconds while{' '}
+              <code>onNext</code> resolves.
+            </Text>
+          </Box>
+        ),
+        onNext: () => {
+          return new Promise<boolean>((resolve) => {
+            setTimeout(() => {
+              resolve(true);
+            }, 2000);
+          });
+        },
+      },
+      {
+        title: 'Saved',
+        content: <Text>The step saved and the wizard advanced.</Text>,
+      },
+    ],
+    layout: 'top',
+    variant: 'secondary',
+  },
+};
+
+/**
  * Wizard without a Cancel button (no `onCancel` prop provided).
  */
 export const WithoutCancel: Story = {

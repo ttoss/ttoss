@@ -67,12 +67,12 @@ Labels are customizable, so applications can localize them as needed.
 
 ## WizardStep
 
-| Property      | Type                                | Description                                               |
-| ------------- | ----------------------------------- | --------------------------------------------------------- |
-| `title`       | `string`                            | Title displayed in the step list.                         |
-| `description` | `string`                            | Optional description below the title.                     |
-| `content`     | `ReactNode`                         | Content rendered when the step is active.                 |
-| `onNext`      | `() => boolean \| Promise<boolean>` | Validation callback. Return `false` to prevent advancing. |
+| Property      | Type                                | Description                                                                                                                                                                                |
+| ------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `title`       | `string`                            | Title displayed in the step list.                                                                                                                                                          |
+| `description` | `string`                            | Optional description below the title.                                                                                                                                                      |
+| `content`     | `ReactNode`                         | Content rendered when the step is active.                                                                                                                                                  |
+| `onNext`      | `() => boolean \| Promise<boolean>` | Validation callback. Return `false` to prevent advancing. While a returned Promise is pending, the next/finish button shows its loading state and the wizard refuses any other navigation. |
 
 ## Layouts
 
@@ -97,6 +97,7 @@ const StepContent = () => {
     goToNext,
     goToPrevious,
     isLastStep,
+    isNavigating,
     setStepValidation,
   } = useWizard();
 
@@ -110,17 +111,18 @@ const StepContent = () => {
 
 ### useWizard Return Value
 
-| Property            | Type                                                    | Description                                                  |
-| ------------------- | ------------------------------------------------------- | ------------------------------------------------------------ |
-| `currentStep`       | `number`                                                | Current active step index.                                   |
-| `totalSteps`        | `number`                                                | Total number of steps.                                       |
-| `goToNext`          | `() => Promise<void>`                                   | Navigate to the next step.                                   |
-| `goToPrevious`      | `() => void`                                            | Navigate to the previous step.                               |
-| `goToStep`          | `(params: { stepIndex: number }) => void`               | Navigate to a specific step.                                 |
-| `isFirstStep`       | `boolean`                                               | Whether the wizard is on the first step.                     |
-| `isLastStep`        | `boolean`                                               | Whether the wizard is on the last step.                      |
-| `getStepStatus`     | `(params: { stepIndex: number }) => WizardStepStatus`   | Get the status of a step by index.                           |
-| `setStepValidation` | `(validate: () => boolean \| Promise<boolean>) => void` | Register a validation function for the current step content. |
+| Property            | Type                                                    | Description                                                                                                                                  |
+| ------------------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `currentStep`       | `number`                                                | Current active step index.                                                                                                                   |
+| `totalSteps`        | `number`                                                | Total number of steps.                                                                                                                       |
+| `goToNext`          | `() => Promise<void>`                                   | Navigate to the next step.                                                                                                                   |
+| `goToPrevious`      | `() => void`                                            | Navigate to the previous step.                                                                                                               |
+| `goToStep`          | `(params: { stepIndex: number }) => void`               | Navigate to a specific step.                                                                                                                 |
+| `isFirstStep`       | `boolean`                                               | Whether the wizard is on the first step.                                                                                                     |
+| `isLastStep`        | `boolean`                                               | Whether the wizard is on the last step.                                                                                                      |
+| `isNavigating`      | `boolean`                                               | Whether `goToNext` is waiting on the step's validation or `onNext`; while true the next/finish button loads and every navigation is refused. |
+| `getStepStatus`     | `(params: { stepIndex: number }) => WizardStepStatus`   | Get the status of a step by index.                                                                                                           |
+| `setStepValidation` | `(validate: () => boolean \| Promise<boolean>) => void` | Register a validation function for the current step content.                                                                                 |
 
 ## Example: Form with Step-by-Step Validation
 

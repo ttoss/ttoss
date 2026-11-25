@@ -64,6 +64,12 @@ const useWizardNavigation = ({
   initialStep: number;
 }) => {
   const [currentStep, setCurrentStep] = React.useState(initialStep);
+  const [isNavigating, setIsNavigating] = React.useState(false);
+  /**
+   * The state above re-renders the buttons; this ref is what refuses a second
+   * click that lands before that render.
+   */
+  const navigatingRef = React.useRef(false);
   const stepValidationRef = React.useRef<
     (() => boolean | Promise<boolean>) | null
   >(null);
@@ -87,40 +93,48 @@ const useWizardNavigation = ({
     [currentStep]
   );
 
-  const goToNext = React.useCallback(async () => {
-    const step = steps[currentStep];
-
+  const canLeaveStep = React.useCallback(async () => {
     // Check step validation from setStepValidation first
-    if (stepValidationRef.current) {
-      const canProceed = await stepValidationRef.current();
-
-      if (!canProceed) {
-        return;
-      }
+    if (stepValidationRef.current && !(await stepValidationRef.current())) {
+      return false;
     }
 
     // Then check the step's onNext callback
-    if (step.onNext) {
-      const canProceed = await step.onNext();
+    const { onNext } = steps[currentStep];
 
-      if (!canProceed) {
+    return !onNext || (await onNext());
+  }, [currentStep, steps]);
+
+  const goToNext = React.useCallback(async () => {
+    if (navigatingRef.current) {
+      return;
+    }
+
+    navigatingRef.current = true;
+    setIsNavigating(true);
+
+    try {
+      if (!(await canLeaveStep())) {
         return;
       }
-    }
 
-    if (isLastStep) {
-      onComplete?.();
-    } else {
-      const nextStep = currentStep + 1;
-      // Clear validation before moving to next step
-      stepValidationRef.current = null;
-      setCurrentStep(nextStep);
-      onStepChange?.({ stepIndex: nextStep });
+      if (isLastStep) {
+        onComplete?.();
+      } else {
+        const nextStep = currentStep + 1;
+        // Clear validation before moving to next step
+        stepValidationRef.current = null;
+        setCurrentStep(nextStep);
+        onStepChange?.({ stepIndex: nextStep });
+      }
+    } finally {
+      navigatingRef.current = false;
+      setIsNavigating(false);
     }
-  }, [currentStep, steps, isLastStep, onComplete, onStepChange]);
+  }, [canLeaveStep, currentStep, isLastStep, onComplete, onStepChange]);
 
   const goToPrevious = React.useCallback(() => {
-    if (!isFirstStep) {
+    if (!isFirstStep && !navigatingRef.current) {
       const prevStep = currentStep - 1;
       // Clear validation before moving to previous step
       stepValidationRef.current = null;
@@ -132,6 +146,7 @@ const useWizardNavigation = ({
   const goToStep = React.useCallback(
     ({ stepIndex }: { stepIndex: number }) => {
       if (
+        !navigatingRef.current &&
         stepIndex >= 0 &&
         stepIndex < totalSteps &&
         stepIndex <= currentStep
@@ -161,6 +176,7 @@ const useWizardNavigation = ({
       goToStep,
       isFirstStep,
       isLastStep,
+      isNavigating,
       getStepStatus,
       setStepValidation,
     };
@@ -172,6 +188,7 @@ const useWizardNavigation = ({
     goToStep,
     isFirstStep,
     isLastStep,
+    isNavigating,
     getStepStatus,
     setStepValidation,
   ]);
@@ -183,6 +200,7 @@ const WizardNavigation = ({
   labels,
   isFirstStep,
   isLastStep,
+  isNavigating,
   goToPrevious,
   goToNext,
 }: {
@@ -191,6 +209,7 @@ const WizardNavigation = ({
   labels: WizardProps['labels'];
   isFirstStep: boolean;
   isLastStep: boolean;
+  isNavigating: boolean;
   goToPrevious: () => void;
   goToNext: () => Promise<void>;
 }) => {
@@ -220,7 +239,7 @@ const WizardNavigation = ({
         <Button
           variant="secondary"
           onClick={goToPrevious}
-          disabled={isFirstStep}
+          disabled={isFirstStep || isNavigating}
           aria-label={buttonLabels.previous}
         >
           {buttonLabels.previous}
@@ -228,6 +247,9 @@ const WizardNavigation = ({
         <Button
           variant={getWizardPrimaryButtonVariant(variant)}
           onClick={goToNext}
+          loading={isNavigating}
+          disabled={isNavigating}
+          aria-busy={isNavigating}
           aria-label={isLastStep ? buttonLabels.finish : buttonLabels.next}
         >
           {isLastStep ? buttonLabels.finish : buttonLabels.next}
@@ -305,6 +327,7 @@ export const Wizard = ({
             labels={labels}
             isFirstStep={contextValue.isFirstStep}
             isLastStep={contextValue.isLastStep}
+            isNavigating={contextValue.isNavigating}
             goToPrevious={contextValue.goToPrevious}
             goToNext={contextValue.goToNext}
           />

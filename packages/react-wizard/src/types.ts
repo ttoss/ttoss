@@ -30,7 +30,9 @@ export interface WizardStep {
   content: React.ReactNode;
   /**
    * Called when the user clicks "Next". If it returns false or
-   * a Promise that resolves to false, the wizard will not advance.
+   * a Promise that resolves to false, the wizard will not advance. While a
+   * returned Promise is pending, the next/finish button shows its loading
+   * state and the wizard refuses any other navigation (`isNavigating`).
    */
   onNext?: () => boolean | Promise<boolean>;
 }
@@ -122,6 +124,12 @@ export interface WizardContextValue {
    * Whether the wizard is on the last step.
    */
   isLastStep: boolean;
+  /**
+   * Whether `goToNext` is waiting on the step's validation or `onNext`. While
+   * true, the next/finish button shows its loading state, and every
+   * navigation (next, previous, a step click) is refused.
+   */
+  isNavigating: boolean;
   /**
    * Get the status of a step by index.
    */
