@@ -53,7 +53,7 @@
     "dotenv": "^18.0.7",
     "esbuild": "^0.28.2",
     "findup-sync": "^5.0.0",
-    "glob": "^13.0.6",
+    "glob": "^13.0.7",
     "import-sync": "^2.2.6",
     "js-yaml": "^5.4.3",
     "mime-types": "^3.0.2",
