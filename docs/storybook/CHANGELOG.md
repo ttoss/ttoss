@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [11.5.0](https://github.com/ttoss/ttoss/compare/%40docs%2Fstorybook%4011.4.6...%40docs%2Fstorybook%4011.5.0) (2026-11-26)
+
+### Features
+
+- **react-wizard:** show the next button loading while an async onNext resolves ([#1470](https://github.com/ttoss/ttoss/issues/1470)) ([3830758](https://github.com/ttoss/ttoss/commit/3830758c4a27722e85c9c08c1131c79ac48ce75d))
+
 ## [11.4.6](https://github.com/ttoss/ttoss/compare/%40docs%2Fstorybook%4011.4.5...%40docs%2Fstorybook%4011.4.6) (2026-11-25)
 
 ### Bug Fixes

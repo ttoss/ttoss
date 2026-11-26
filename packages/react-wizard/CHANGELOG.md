@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.12.0 (2026-11-26)
+
+### Features
+
+- **react-wizard:** show the next button loading while an async onNext resolves ([#1470](https://github.com/ttoss/ttoss/issues/1470)) ([3830758](https://github.com/ttoss/ttoss/commit/3830758c4a27722e85c9c08c1131c79ac48ce75d))
+
 ## 0.11.4 (2026-11-16)
 
 **Note:** Version bump only for package @ttoss/react-wizard
