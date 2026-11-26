@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/http-server",
-  "version": "0.15.1",
+  "version": "0.15.2",
   "description": "HTTP Server for ttoss environment",
   "keywords": [
     "koa",
@@ -37,7 +37,7 @@
     "@ttoss/i18n-core": "workspace:^",
     "koa": "^3.2.1",
     "koa-static": "^5.0.0",
-    "multer": "2.4.0"
+    "multer": "2.5.0"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",

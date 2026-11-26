@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.4.6](https://github.com/ttoss/ttoss/compare/%40docs%2Fstorybook%4011.4.5...%40docs%2Fstorybook%4011.4.6) (2026-11-25)
+
+### Bug Fixes
+
+- update vulnerable dependencies (multer 2.5.0 + audit fix) ([#1469](https://github.com/ttoss/ttoss/issues/1469)) ([74d8359](https://github.com/ttoss/ttoss/commit/74d8359e057434516fd85991014769e2b93f73bd))
+
 ## [11.4.5](https://github.com/ttoss/ttoss/compare/%40docs%2Fstorybook%4011.4.4...%40docs%2Fstorybook%4011.4.5) (2026-11-18)
 
 **Note:** Version bump only for package @docs/storybook

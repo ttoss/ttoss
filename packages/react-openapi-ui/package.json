@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-openapi-ui",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Render React UI (tables) straight from an OpenAPI spec.",
   "keywords": [
     "React",
@@ -34,7 +34,7 @@
     "test": "jest --projects tests/unit"
   },
   "devDependencies": {
-    "@tailwindcss/cli": "^4.3.3",
+    "@tailwindcss/cli": "^4.3.5",
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
@@ -42,7 +42,7 @@
     "@types/react": "^19.3.0",
     "jest": "^30.5.2",
     "react": "^19.3.0",
-    "tailwindcss": "^4.3.3",
+    "tailwindcss": "^4.3.5",
     "tsdown": "^0.23.1"
   },
   "peerDependencies": {
