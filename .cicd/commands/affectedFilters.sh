@@ -27,7 +27,11 @@ LISTING=$(pnpm ls -r --filter "...[$BASE]" --depth -1 --json) || {
   exit 0
 }
 
-echo "$LISTING" | node -e '
+# @docs/website renders every package README but depends on no package, so a
+# README edit selects the site explicitly: its build is the broken-link check.
+README_CHANGED=$(git diff --name-only "$BASE" | grep -qE '^packages/[^/]+/README\.md$' && echo 1 || true)
+
+echo "$LISTING" | README_CHANGED="$README_CHANGED" node -e '
 const root = process.cwd();
 let input = "";
 process.stdin.on("data", (chunk) => (input += chunk));
@@ -35,6 +39,9 @@ process.stdin.on("end", () => {
   const names = JSON.parse(input)
     .filter((pkg) => pkg.path !== root)
     .map((pkg) => `--filter=${pkg.name}`);
+  if (process.env.README_CHANGED && !names.includes("--filter=@docs/website")) {
+    names.push("--filter=@docs/website");
+  }
   // `//` selects only the root, which has none of these tasks: nothing runs.
   console.log(names.length ? names.join(" ") : "--filter=//");
 });
