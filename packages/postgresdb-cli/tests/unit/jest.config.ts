@@ -5,10 +5,10 @@ export default jestUnitConfig({
   transformIgnorePatterns: ['/node_modules/(?!(\\.pnpm/)?pgvector)'],
   coverageThreshold: {
     global: {
-      statements: 73.2,
-      branches: 77.7,
-      functions: 66.6,
-      lines: 73.2,
+      statements: 87.2,
+      branches: 88.4,
+      functions: 85.7,
+      lines: 87.2,
     },
   },
 });

@@ -24,6 +24,8 @@ DATABASE_PORT=5432
 
 **Environment-specific configuration:** Use `--environment` or `-e` flag to load `.env.<environment>` files (e.g., `.env.Production`, `.env.Staging`) instead of the default `.env`. This prevents accidental use of production credentials.
 
+**Pinning an environment to a branch:** set `DATABASE_GIT_BRANCH` in `.env.<environment>` (e.g. `DATABASE_GIT_BRANCH=main` in `.env.Production`) and the commands that write the schema, which are `sync --alter`, `migrate run` and `migrate baseline`, refuse to run unless the checkout is clean and its `HEAD` is exactly `origin/<branch>` after a `git fetch`. A checkout behind it would drop or skip columns newer models declare; one ahead of it would apply a schema the branch does not have yet. Untracked files are ignored. Without the variable, nothing is checked. `drift`, `migrate status` and `migrate run --dry-run` only read, so they run from any checkout.
+
 ## Commands
 
 ### `sync`

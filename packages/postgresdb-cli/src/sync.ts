@@ -1,5 +1,6 @@
 import * as readline from 'node:readline';
 
+import { checkCheckout } from './checkCheckout';
 import { getDbDynamically } from './getDbDynamically';
 
 const confirmAlter = (): Promise<boolean> => {
@@ -39,6 +40,16 @@ export const sync = async ({
 
   // Confirmation prompt for alter mode
   if (alter) {
+    const refused = checkCheckout({ environment });
+
+    if (refused) {
+      // eslint-disable-next-line no-console
+      console.error(refused);
+      process.exitCode = 1;
+
+      return;
+    }
+
     // eslint-disable-next-line no-console
     console.warn('\n⚠️  WARNING: ALTER mode will modify your database schema!');
     // eslint-disable-next-line no-console
