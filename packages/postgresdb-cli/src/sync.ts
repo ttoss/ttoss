@@ -46,7 +46,9 @@ export const sync = async ({
     // eslint-disable-next-line no-console
     console.warn('   - New columns will be added');
     // eslint-disable-next-line no-console
-    console.warn('   - Tables not in models will be preserved\n');
+    console.warn(
+      '   - Tables not in models will be preserved\n   Run `drift` first to see what would be added or dropped.\n'
+    );
 
     const confirmed = await confirmAlter();
 

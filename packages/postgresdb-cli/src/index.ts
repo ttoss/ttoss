@@ -1,6 +1,7 @@
 import { Command } from 'commander';
 
 import pkg from '../package.json';
+import { drift } from './drift';
 import { erd } from './erd';
 import { migrate } from './migrate';
 import { sync } from './sync';
@@ -20,6 +21,18 @@ program
   .description('Sync database')
   .action(sync)
   .option('--alter', 'Alter sync', false)
+  .option('-d, --db-path <dbPath>', 'db initialization file path', 'src/db.ts')
+  .requiredOption(
+    '-e, --environment <environment>',
+    'Environment name to load .env.<environment> file'
+  );
+
+program
+  .command('drift')
+  .description(
+    'Show what sync would add and what sync --alter would drop. Exits 1 if something would be dropped'
+  )
+  .action(drift)
   .option('-d, --db-path <dbPath>', 'db initialization file path', 'src/db.ts')
   .requiredOption(
     '-e, --environment <environment>',

@@ -51,6 +51,8 @@ This loads variables from `.env.Production`.
 
 ⚠️ **Caution:** The `--alter` flag modifies your database schema. Removing columns will **delete data permanently**. The CLI will prompt for confirmation before proceeding. Always backup your database before using `--alter` in production. For production environments, use proper migration tools instead of `sync`.
 
+**Run [`drift`](#drift) before and after `--alter`:** before, to see exactly which columns it would drop; after, to confirm the database now matches the models. `drift` exits `1` when something would be dropped, so `ttoss-postgresdb drift -e Production && ttoss-postgresdb sync --alter -e Production` stops before any data loss.
+
 **Testing before using `--alter`:** Always ensure your models have comprehensive tests before running `sync --alter`. Tests validate that all model properties are correctly defined and prevent accidental column removal. If a column is missing from your model definition, `--alter` will drop it from the database. See the [@ttoss/postgresdb testing guide](https://ttoss.dev/docs/modules/packages/postgresdb/#testing) for details on setting up model tests.
 
 **Add to `package.json` for convenience:**
@@ -69,6 +71,29 @@ Then run `pnpm sync -e Development` or `pnpm sync --alter -e Production` from th
 
 - `--db-path, -d`: Path to `db` object file (default: `./src/db.js`)
 - `--alter`: Alter schema to match models (default: `false`)
+- `--environment, -e`: **(Required)** Specify environment to load `.env.<environment>` file
+
+### `drift`
+
+Show how the database differs from the models, which is what `sync` would add and what `sync --alter` would drop:
+
+```bash
+pnpm dlx @ttoss/postgresdb-cli drift -e Production
+```
+
+```text
+Database: app (user: app_admin)
+In the models, not in the database (sync adds): users.nickname, invoices (table)
+In the database, not in the models (sync --alter drops): users.legacy_code
+```
+
+It loads `db` the same way `sync` does and compares each model's table in the `public` schema against the model's attributes. A table no model declares is left out, because `sync --alter` keeps it. The first line names the database and user so you can confirm which environment you reached; credentials are never printed.
+
+Exits `1` when the "drops" list is not empty, and `0` otherwise.
+
+**Options:**
+
+- `--db-path, -d`: Path to `db` object file (default: `src/db.ts`)
 - `--environment, -e`: **(Required)** Specify environment to load `.env.<environment>` file
 
 ### `migrate`
