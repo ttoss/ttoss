@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [15.3.0](https://github.com/ttoss/ttoss/compare/%40docs%2Fwebsite%4015.2.1...%40docs%2Fwebsite%4015.3.0) (2026-11-27)
+
+### Features
+
+- **postgresdb-cli:** drift command, and pin an environment's schema writes to a git branch ([#1472](https://github.com/ttoss/ttoss/issues/1472)) ([30baa88](https://github.com/ttoss/ttoss/commit/30baa88ce5a6a831f7c47f5399709c3b09d0a35a))
+
 ## [15.2.1](https://github.com/ttoss/ttoss/compare/%40docs%2Fwebsite%4015.2.0...%40docs%2Fwebsite%4015.2.1) (2026-11-25)
 
 **Note:** Version bump only for package @docs/website
