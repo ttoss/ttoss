@@ -247,15 +247,16 @@ separately, so a fleet of N sends N times the intended rate.
 
 ## API tokens
 
-Personal access tokens in the form `<prefix>_<hex>`, recognizable in logs and
-secret scanners. Show the plain token once; persist only the SHA-256 hash and
-a short display prefix.
+Personal access tokens in the form `<prefix>_<body>`, where the body is hex or
+base62 (`[0-9A-Za-z]`), recognizable in logs and secret scanners. Show the
+plain token once; persist only the SHA-256 hash and a short display prefix.
 
 ```ts
 import { generateApiToken, verifyApiToken } from '@ttoss/auth-core';
 
 const { token, tokenHash, displayPrefix } = generateApiToken({
   prefix: 'myapp',
+  encoding: 'base62', // optional; `hex` by default, same length either way
 });
 
 const isValid = verifyApiToken({

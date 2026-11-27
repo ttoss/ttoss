@@ -1,4 +1,5 @@
 export {
+  type ApiTokenEncoding,
   generateApiToken,
   type GeneratedApiToken,
   hashApiToken,
