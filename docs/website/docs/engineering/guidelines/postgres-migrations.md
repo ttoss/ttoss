@@ -21,7 +21,7 @@ flowchart TD
     E -->|Yes| G[Migration]
 ```
 
-`sync --alter` is not a cheaper migration. It drops every column the models no longer declare, which makes it correct for removing something dead and dangerous for anything else. It is a tidy-up an operator runs deliberately, never a deploy step.
+`sync --alter` is not a cheaper migration. It drops every column the models no longer declare, which makes it correct for removing something dead and dangerous for anything else. It is a tidy-up an operator runs deliberately, never a deploy step. Run `ttoss-postgresdb drift` before it to see exactly what it would add and drop, and again after to confirm the database matches the models; `drift` exits `1` while something would be dropped, so `drift && sync --alter` stops before data loss.
 
 ## The shape of one
 

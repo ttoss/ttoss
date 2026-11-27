@@ -1,6 +1,7 @@
 import type { Migration } from '@ttoss/postgresdb';
 import { runMigrationsCli } from '@ttoss/postgresdb';
 
+import { checkCheckout } from './checkCheckout';
 import { loadModuleDynamically } from './loadModuleDynamically';
 
 type MigrationsModule = {
@@ -25,6 +26,20 @@ export const migrate = async (
     tag?: string;
   }
 ) => {
+  const [command] = args;
+  const writes =
+    (command === 'run' && !args.includes('--dry-run')) ||
+    command === 'baseline';
+  const refused = writes ? checkCheckout({ environment }) : undefined;
+
+  if (refused) {
+    // eslint-disable-next-line no-console
+    console.error(refused);
+    process.exitCode = 1;
+
+    return;
+  }
+
   const loaded = await loadModuleDynamically<MigrationsModule>({
     modulePath: migrationsPath,
     environment,
