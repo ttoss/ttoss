@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.8.0 (2026-11-28)
+
+### Features
+
+- **http-server-mcp:** a failed tool call carries the REST error envelope as structured content ([#1463](https://github.com/ttoss/ttoss/issues/1463)) ([4856bd8](https://github.com/ttoss/ttoss/commit/4856bd8335a3580c052ea0697abf50092ee588b6))
+
 ## [0.7.7](https://github.com/ttoss/ttoss/compare/%40ttoss%2Foauth-client%400.7.6...%40ttoss%2Foauth-client%400.7.7) (2026-11-16)
 
 **Note:** Version bump only for package @ttoss/oauth-client
