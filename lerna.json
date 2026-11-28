@@ -16,6 +16,6 @@
       "allowPeerDependenciesUpdate": true
     }
   },
-  "ignoreChanges": ["**/__fixtures__/**", "**/tests/**"],
+  "ignoreChanges": ["**/__fixtures__/**", "**/tests/**", "**/CHANGELOG.md"],
   "packages": ["docs/*", "packages/*"]
 }

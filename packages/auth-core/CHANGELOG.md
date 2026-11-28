@@ -10,11 +10,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 - **auth-core:** generateApiToken takes encoding 'base62' ([#1473](https://github.com/ttoss/ttoss/issues/1473)) ([85b6123](https://github.com/ttoss/ttoss/commit/85b61237e51840daf67f9f30d8435ed56582367c))
 - **http-server-mcp:** a failed tool call carries the REST error envelope as structured content ([#1463](https://github.com/ttoss/ttoss/issues/1463)) ([4856bd8](https://github.com/ttoss/ttoss/commit/4856bd8335a3580c052ea0697abf50092ee588b6))
 
-### BREAKING CHANGES
-
-- **auth-core:** generateApiToken returns `<prefix>_<64 base62 chars>` by
-  default; pass `encoding: 'hex'` for the hex body. Existing tokens still verify.
-
 ## [0.28.1](https://github.com/ttoss/ttoss/compare/%40ttoss%2Fauth-core%400.28.0...%40ttoss%2Fauth-core%400.28.1) (2026-11-16)
 
 **Note:** Version bump only for package @ttoss/auth-core
