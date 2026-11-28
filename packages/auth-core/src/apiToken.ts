@@ -3,8 +3,8 @@ import crypto from 'node:crypto';
 /**
  * Primitives for long-lived API tokens (personal access tokens).
  *
- * Tokens look like `<prefix>_<64 hex chars>` — e.g. `myapp_3f2a…` — so they
- * are recognizable in logs and secret scanners. The application stores only
+ * Tokens look like `<prefix>_<64 chars>` — e.g. `myapp_3f2a…` — so they are
+ * recognizable in logs and secret scanners. The body is hex or base62. The application stores only
  * the SHA-256 hash and the display prefix, never the plain token.
  */
 
@@ -24,6 +24,26 @@ export type GeneratedApiToken = {
   displayPrefix: string;
 };
 
+export type ApiTokenEncoding = 'hex' | 'base62';
+
+const BASE62_ALPHABET =
+  '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+
+/** The largest multiple of 62 a byte holds; bytes at or above it are redrawn. */
+const BASE62_BYTE_LIMIT = 248;
+
+const randomBase62 = (length: number): string => {
+  let result = '';
+  while (result.length < length) {
+    for (const byte of crypto.randomBytes(length)) {
+      if (byte < BASE62_BYTE_LIMIT && result.length < length) {
+        result += BASE62_ALPHABET[byte % 62];
+      }
+    }
+  }
+  return result;
+};
+
 export const hashApiToken = (token: string): string => {
   return crypto.createHash('sha256').update(token).digest('hex');
 };
@@ -34,9 +54,15 @@ export const generateApiToken = (args: {
    */
   prefix: string;
   /**
-   * Number of random bytes. Defaults to 32 (64 hex characters).
+   * Size of the token body: `2 * bytes` characters in either encoding.
+   * Defaults to 32 (64 characters).
    */
   bytes?: number;
+  /**
+   * Alphabet of the token body. `base62` (`[0-9A-Za-z]`) carries about 5.95
+   * bits per character instead of 4. Defaults to `hex`.
+   */
+  encoding?: ApiTokenEncoding;
   /**
    * Number of characters of the token kept as `displayPrefix`. Defaults
    * to 12.
@@ -46,7 +72,11 @@ export const generateApiToken = (args: {
   const bytes = args.bytes ?? 32;
   const displayPrefixLength = args.displayPrefixLength ?? 12;
 
-  const token = `${args.prefix}_${crypto.randomBytes(bytes).toString('hex')}`;
+  const body =
+    args.encoding === 'base62'
+      ? randomBase62(bytes * 2)
+      : crypto.randomBytes(bytes).toString('hex');
+  const token = `${args.prefix}_${body}`;
 
   return {
     token,
