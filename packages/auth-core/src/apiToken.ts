@@ -3,9 +3,9 @@ import crypto from 'node:crypto';
 /**
  * Primitives for long-lived API tokens (personal access tokens).
  *
- * Tokens look like `<prefix>_<64 base62 chars>` — e.g. `myapp_3F2a…` — so
- * they are recognizable in logs and secret scanners. The application stores
- * only the SHA-256 hash and the display prefix, never the plain token.
+ * Tokens look like `<prefix>_<64 chars>` — e.g. `myapp_3f2a…` — so they are
+ * recognizable in logs and secret scanners. The body is hex or base62. The application stores only
+ * the SHA-256 hash and the display prefix, never the plain token.
  */
 
 export type GeneratedApiToken = {
@@ -19,7 +19,7 @@ export type GeneratedApiToken = {
   tokenHash: string;
   /**
    * First characters of the token, safe to persist for display purposes
-   * (e.g., `myapp_3F2a…`).
+   * (e.g., `myapp_3f2a…`).
    */
   displayPrefix: string;
 };
@@ -50,7 +50,7 @@ export const hashApiToken = (token: string): string => {
 
 export const generateApiToken = (args: {
   /**
-   * Application prefix, e.g. `myapp` produces tokens like `myapp_<body>`.
+   * Application prefix, e.g. `myapp` produces tokens like `myapp_<hex>`.
    */
   prefix: string;
   /**
@@ -60,7 +60,7 @@ export const generateApiToken = (args: {
   bytes?: number;
   /**
    * Alphabet of the token body. `base62` (`[0-9A-Za-z]`) carries about 5.95
-   * bits per character instead of hex's 4. Defaults to `base62`.
+   * bits per character instead of 4. Defaults to `hex`.
    */
   encoding?: ApiTokenEncoding;
   /**
@@ -73,9 +73,9 @@ export const generateApiToken = (args: {
   const displayPrefixLength = args.displayPrefixLength ?? 12;
 
   const body =
-    args.encoding === 'hex'
-      ? crypto.randomBytes(bytes).toString('hex')
-      : randomBase62(bytes * 2);
+    args.encoding === 'base62'
+      ? randomBase62(bytes * 2)
+      : crypto.randomBytes(bytes).toString('hex');
   const token = `${args.prefix}_${body}`;
 
   return {
